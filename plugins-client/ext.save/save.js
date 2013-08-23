@@ -92,12 +92,17 @@ module.exports = ext.register("ext/save/save", {
                 var at = e.page.$at;
                 var node = e.page.$doc.getNode();
 
-                if (node.getAttribute("deleted"))
+                if (node && node.getAttribute("deleted"))
                     return;
 
-                if (node && (at && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr
-                  || !at.undo_ptr && node.getAttribute("changed") == 1)
-                  && (!node.getAttribute("newfile") || e.page.$doc.getValue())) {
+                if (
+                    node 
+                    && (
+                        (at && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
+                        || (!at.undo_ptr && node.getAttribute("changed") == 1)
+                    )
+                    && (!node.getAttribute("newfile") || e.page.$doc.getValue())
+                ) {
                     ext.initExtension(_self);
 
                     if (ide.dispatchEvent("beforesavewarn", {
@@ -193,9 +198,11 @@ module.exports = ext.register("ext/save/save", {
             var doc = e.doc;
             var at = doc.$page.$at;
 
-            at.addEventListener("afterchange", function(){
+            at.addEventListener("afterchange", function onAfterChange() {
+                at.removeEventListener("afterchange", onAfterChange);
+                
                 at.undo_ptr = at.$undostack[at.$undostack.length-1];
-                apf.xmldb.removeAttribute(doc.getNode(), "changed");
+                at.dispatchEvent("afterchange");
             });
         });
 
@@ -411,7 +418,10 @@ module.exports = ext.register("ext/save/save", {
         }
 
         // raw fs events
-        ide.dispatchEvent("fs.beforefilesave", { path: path });
+        ide.dispatchEvent("fs.beforefilesave", { path: path, node: node, doc: doc });
+
+        var at = page.$at;
+        var nextPtr = at.$undostack[at.$undostack.length-1];
 
         fs.saveFile(path, value, function(data, state, extra){
 
@@ -445,6 +455,8 @@ module.exports = ext.register("ext/save/save", {
                             ? "The connection timed out."
                             : "The error reported was " + extra.message));
             }
+            
+            at.undo_ptr = nextPtr;
 
             page.$at.dispatchEvent("afterchange");
 
@@ -456,8 +468,10 @@ module.exports = ext.register("ext/save/save", {
                 silentsave: silentsave
             });
 
+            if (at.undo_ptr == at.$undostack[at.$undostack.length-1])
+                apf.xmldb.removeAttribute(node, "changed");
+            
             apf.xmldb.removeAttribute(node, "new");
-            apf.xmldb.removeAttribute(node, "changed");
             apf.xmldb.setAttribute(node, "modifieddate", apf.queryValue(extra.data, "//d:getlastmodified"));
 
             if (_self.saveBuffer[path]) {
@@ -466,8 +480,6 @@ module.exports = ext.register("ext/save/save", {
             }
         });
 
-        var at = page.$at;
-        at.undo_ptr = at.$undostack[at.$undostack.length-1];
         return false;
     },
 

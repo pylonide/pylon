@@ -49,7 +49,7 @@ module.exports = ext.register("ext/ftp/ftp", {
                 var console = window.tabConsole;
 
                 // append our own panel to the console
-                self.$panel = console.add("FTP Log", _self.pageId);
+                self.$panel = console.add("FTP Log", _self.pageID);
                 self.$panel.setAttribute("closebtn", false);
                 self.$panel.appendChild(ftpConsoleHbox);
 

@@ -41,6 +41,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
             _self.queryServerState();
         });
 
+
         ide.addEventListener("socketMessage", this.onMessage.bind(this));
 
         ide.addEventListener("consolecommand.run", function(e) {
@@ -136,7 +137,7 @@ module.exports = ext.register("ext/noderunner/noderunner", {
     debug : function() {
     },
 
-    run : function(path, args, debug, nodeVersion, otherRunner) {
+    run : function(path, args, debug, nodeVersion) {
         var runner;
         if (stProcessRunning.active || typeof path != "string")
             return false;
@@ -145,17 +146,13 @@ module.exports = ext.register("ext/noderunner/noderunner", {
 
         path = path.trim();
 
-        if (otherRunner && this.runners.indexOf(otherRunner) === -1) {
-            runner = "other";
-            nodeVersion = otherRunner;
-        }
-        else if (nodeVersion == "default" || !nodeVersion) {
+        if (nodeVersion == 'default' || !nodeVersion) {
             runner = this.detectRunner(path);
-            nodeVersion = runner == "node" ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : "auto";
+            nodeVersion = runner == 'node' ? settings.model.queryValue("auto/node-version/@version") || this.NODE_VERSION : 'auto';
         }
         else {
             runner = nodeVersion.split(" ")[0];
-            nodeVersion = nodeVersion.split(" ")[1] || "auto";
+            nodeVersion = nodeVersion.split(" ")[1] || 'auto';
         }
 
         var page = ide.getActivePageModel();

@@ -32,8 +32,9 @@ var KIND_EVENT = module.exports.KIND_EVENT = "event";
 var KIND_PACKAGE = module.exports.KIND_PACKAGE = "package";
 var KIND_HIDDEN = module.exports.KIND_HIDDEN = "hidden";
 var KIND_DEFAULT = module.exports.KIND_DEFAULT = undefined;
-var IN_CALLBACK_DEF = 2;
-var IN_CALLBACK_BODY = 1;
+var IN_CALLBACK_DEF = 1;
+var IN_CALLBACK_BODY = 2;
+var IN_CALLBACK_BODY_MAYBE = 3;
 var IN_LOOP = 1;
 var IN_LOOP_ALLOWED = 2;
 
@@ -496,6 +497,14 @@ handler.analyze = function(value, ast, callback) {
                             message: "Use of 'this' in callback function"
                         });
                     }
+                    else if (inCallback === IN_CALLBACK_BODY_MAYBE) {
+                        markers.push({
+                            pos: this.getPos(),
+                            level: 'info',
+                            type: 'info',
+                            message: "Use of 'this' in closure"
+                        });
+                    }
                 },
                 'Var(x)', function(b, node) {
                     node.setAnnotation("scope", scope);
@@ -544,8 +553,8 @@ handler.analyze = function(value, ast, callback) {
                         if (handler.isFeatureEnabled("unusedFunctionArgs"))
                             mustUseVars.push(v);
                     });
-                    var inBody = inCallback === IN_CALLBACK_DEF || isCallback(node);
-                    scopeAnalyzer(newScope, b.body, null, inBody ? IN_CALLBACK_BODY : 0, inLoop);
+                    var inBody = inCallback === IN_CALLBACK_DEF ? IN_CALLBACK_BODY : isCallback(node);
+                    scopeAnalyzer(newScope, b.body, null, inBody, inLoop);
                     return node;
                 },
                 'Catch(x, body)', function(b, node) {
@@ -664,6 +673,10 @@ handler.analyze = function(value, ast, callback) {
     callback(markers.concat(jshintMarkers));
 };
 
+/**
+ * Determine if any callbacks in the current call
+ * should definitely get a warning for any uses of 'this'.
+ */
 var isCallbackCall = function(node) {
     var result;
     node.rewrite(
@@ -679,17 +692,23 @@ var isCallbackCall = function(node) {
     return result || outline.tryExtractEventHandler(node, true);
 };
 
+/**
+ * Determine if the current callback should get a warning marker
+ * (IN_CALLBACK_BODY) for any uses of this, or just an info marker
+ * (IN_CALLBACK_BODY_MAYBE). Or, none at all (0).
+ */
 var isCallback = function(node) {
     if (!node.parent || !node.parent.parent || !node.parent.parent.isMatch('Call(_, _)'))
         return false;
-    var result;
+    var result = 0;
     node.rewrite(
-        'Function("", fargs, _)', function(b) {
+        'Function(_, fargs, _)', function(b) {
             if (b.fargs.length === 0 || b.fargs[0].cons !== 'FArg')
-                return;
+                return result = IN_CALLBACK_BODY_MAYBE;
             var name = b.fargs[0][0].value;
-            if (name === 'err' || name === 'error' || name === 'exc')
-                result = true;
+            result = name === 'err' || name === 'error' || name === 'exc'
+                ? IN_CALLBACK_BODY
+                : IN_CALLBACK_BODY_MAYBE;
         }
     );
     return result;

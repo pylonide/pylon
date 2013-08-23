@@ -21,7 +21,7 @@
         <a:spinner value="[editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" class="fixMargin5" margin="5 0 0"  />
     </a:hbox>
     <a:hbox position="12000" edge="0 5 0 0" align="center" class="underlined2">
-        <a:checkbox label="Soft Tabs" value="[editors/code/@softtabs]" style="margin-bottom:5px" flex="1" skin="checkbox_grey"/>
+        <a:checkbox label="Insert Spaces as Soft Tabs" value="[editors/code/@softtabs]" style="margin-bottom:5px" flex="1" skin="checkbox_grey"/>
         <a:spinner value="[editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" class="fixMargin5" margin="5 0 0" />
     </a:hbox>
     <a:hbox position="13000" edge="0 5 2 7" align="center" class="underlined">

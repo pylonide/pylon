@@ -36,7 +36,7 @@ util.inherits(DirWatcher, FileWatcher);
             }
             else if (event == "rename") {
                 self.readdir(function(err, files) {
-                    if (err) return console.error(err);
+                    if (err) return; // return console.error(err);
 
                     self.emit("change", {
                         path: self.path,

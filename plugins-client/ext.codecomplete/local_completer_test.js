@@ -25,7 +25,13 @@ function determineDistance(score) {
     return 1000000 - score;
 }
 
+
+completer.$getIdentifierRegex = function() {
+    return (/[A-Za-z0-9\$_]/);
+};
+        
 module.exports = {
+    
     "test basic completion" : function(next) {
         var doc = new Document("hel hello2 hello3  hello2 abc");
         var matches = completer.complete(doc, null, {row: 0, column: 3}, null, function(matches) {

@@ -411,11 +411,7 @@ module.exports = ext.register("ext/console/console", {
         lang = lang ? lang.replace(/-debug$/, "") : "generic";
         lang = lang[0].toUpperCase() + lang.substring(1);
         
-        var cfgName;
-        var runningCfg = lstRunCfg.getModel().data && lstRunCfg.getModel().queryNode("node()[@running]");
-        if (runningCfg)
-            cfgName = runningCfg.getAttribute("name");
-        var command_id = this.createOutputBlock("Running " + lang + " Process" + (cfgName ? ' ("' + cfgName + '")' : ""), true);
+        var command_id = this.createOutputBlock("Running " + lang + " Process", true);
         this.tracerToPidMap[command_id] = message_pid;
         this.pidToTracerMap[message_pid] = command_id;
 
@@ -1261,7 +1257,7 @@ module.exports = ext.register("ext/console/console", {
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
             cliBox.$ext.style.height = "28px";
 
-            apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
+            // apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
             if (!immediate && animOn) {
                 if (searchPage) {
@@ -1283,7 +1279,7 @@ module.exports = ext.register("ext/console/console", {
             if (winDbgConsole.parentNode != consoleRow)
                 this.restoreConsoleHeight();
 
-            apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
+            // apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.maxHeight = "10000px";
 

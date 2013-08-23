@@ -285,6 +285,7 @@ module.exports = function() {
         "latex"       : ["latex", "ltx"],
         "jsp"         : ["jsp", "jspx", "jhtm", "jhtml"],
         "lisp"        : ["lisp", "lsp"],
+        "logiql"      : ["logic", "lql"],
         "lua"         : ["lua"],
         "make"        : ["makefile", "Makefile"],
         "mason"       : ["mas", "mhtml", "mpl", "mtxt"],

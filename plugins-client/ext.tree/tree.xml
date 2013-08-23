@@ -74,7 +74,7 @@
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()" visible="{!require('core/ide').readonly}">Rename</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()" visible="{!require('core/ide').readonly}">Delete</a:item>
             <a:divider />
-            <a:item match="[file|folder]" command="searchinfiles">Search Files in this Folder</a:item>
+            <a:item match="[file|folder]" command="searchinfiles">Search Files Here</a:item>
             <a:divider visible="{!require('core/ide').readonly}"/>
             <a:item match="[file|folder|project]" visible="{!require('core/ide').readonly}" onclick="
                 var store = apf.clipboard.store;
@@ -90,8 +90,6 @@
             <a:item match="[file|folder[not(@root)]]" command="cut" visible="{!require('core/ide').readonly}">Cut</a:item>
             <a:item match="[file|folder[not(@root)]]" command="copy" visible="{!require('core/ide').readonly}">Copy</a:item>
             <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" visible="{!require('core/ide').readonly}" command="paste">Paste</a:item>
-            <a:divider visible="{!require('core/ide').readonly}"/>
-            <a:item match="[file]" command="runthisfile" visible="{!require('core/ide').readonly}" disabled="{stProcessRunning.active}">Run this File</a:item>
             <a:divider visible="{!require('core/ide').readonly}"/>
             <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" visible="{!require('core/ide').readonly}" 
               onclick="

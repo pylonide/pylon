@@ -1,7 +1,6 @@
 .c9-debugInfo {
-    position: absolute;
     width: 223px;
-    height: 81px;
+    height: 81px;    position: absolute;
     top: 10px;
     left: 345px;
     z-index: 50000;
@@ -20,9 +19,9 @@
 }
 
 .debugInfoDesc {
-    color: #bdbdbd;
-    background: transparent;
-    line-height: 16px;
+	color: #BDBDBD;
+	background: transparent;
+	line-height: 16px;
     position: relative;
     padding-left: 5px;
 }

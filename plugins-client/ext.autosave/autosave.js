@@ -37,14 +37,14 @@ module.exports = ext.register("ext/autosave/autosave", {
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
-            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || _self.tempEnableAutoSave;
+            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
 
-            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled")) || _self.tempEnableAutoSave;
+            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
         // when we're back online we'll trigger an autosave if enabled
@@ -116,8 +116,14 @@ module.exports = ext.register("ext/autosave/autosave", {
     onCloseFile: function(e) {
         if (tabEditors.getPages().length == 1)
             btnSave.hide();
-
-        this.save(e.page);
+        
+        var page = e.page;
+        
+        var path = Util.getDocPath(page);
+        if (path)
+            delete this.docChangeListeners[path];
+            
+        this.save(page);
     },
 
     onDocChange: function(e, doc) {

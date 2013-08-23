@@ -14,6 +14,10 @@ completer.handlesLanguage = function(language) {
     return true;
 };
 
+completer.getMaxFileSizeSupported = function() {
+    return Infinity;
+};
+
 function frequencyAnalyzer(path, text, identDict, fileDict) {
     var identifiers = text.split(/[^a-zA-Z_0-9\$]+/);
     for (var i = 0; i < identifiers.length; i++) {
@@ -51,6 +55,10 @@ function removeDocumentFromCache(path) {
 
 function analyzeDocument(path, allCode) {
     if (!analysisCache[path]) {
+        if (allCode.size > 80 * 10000) {
+            delete analysisCache[path];
+            return;
+        }
         // Delay this slightly, because in Firefox document.value is not immediately filled
         analysisCache[path] = frequencyAnalyzer(path, allCode, {}, {});
         // may be a bit redundant to do this twice, but alright...
@@ -78,7 +86,7 @@ completer.onUpdate = function(doc, callback) {
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, this.$getIdentifierRegex());
     var identDict = globalWordIndex;
     
     var allIdentifiers = [];
@@ -91,6 +99,8 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     matches = matches.filter(function(m) {
         return !globalWordFiles[m][currentPath];
     });
+    
+    matches = matches.slice(0, 40); // limit results for performance
 
     callback(matches.map(function(m) {
         var path = Object.keys(globalWordFiles[m])[0] || "[unknown]";

@@ -22,6 +22,17 @@ module.exports = function setup(options, imports, register) {
 
     this.createChild = function(callback) {
         this.args = (this.apacheArgs || []).concat(this.file, this.scriptArgs);
+        // Escape args, we're going to join them
+        this.args.map(function(a) {
+            return "'" + a.replace("'", "\\'") + "'";
+        });
+        // killall apache httpd, then run it. we can't assume we can keep track of whether it's running
+        this.args = [
+            "-c",
+            "(killall -u $USER httpd >/dev/null 2>/dev/null && sleep 1 && killall -9 httpd >/dev/null 2>/dev/null);" +
+            this.command + " " + this.args.join(" ")
+        ];
+        this.command = "sh";
         ShellRunner.prototype.createChild.call(this, callback);
     };
 

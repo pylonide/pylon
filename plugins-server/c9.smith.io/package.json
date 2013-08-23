@@ -1,0 +1,16 @@
+{
+    "name": "c9.smith.io",
+    "version": "0.0.1",
+
+    "main": "./smith.io.js",
+
+    "plugin": {
+        "provides": [
+            "smith.io"
+        ],
+        "consumes": [
+            "http",
+            "static"
+        ]
+    }
+}

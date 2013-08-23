@@ -22,15 +22,16 @@ var complete;
 
 var oldCommandKey, oldOnTextInput;
 var isDocShown;
+var idRegexes = {};
+var completionRegexes = {};
 
-var ID_REGEX = /[a-zA-Z_0-9\$\/]/;
+var DEFAULT_ID_REGEX = /[a-zA-Z_0-9\$\/]/;
 
 var CLASS_SELECTED = "cc_complete_option selected";
 var CLASS_UNSELECTED = "cc_complete_option";
 var SHOW_DOC_DELAY = 1500;
 var SHOW_DOC_DELAY_MOUSE_OVER = 100;
 var HIDE_DOC_DELAY = 1000;
-var AUTO_OPEN_DELAY = 200;
 var AUTO_UPDATE_DELAY = 200;
 var CRASHED_COMPLETION_TIMEOUT = 6000;
 var MENU_WIDTH = 330;
@@ -41,9 +42,10 @@ var deferredInvoke = lang.deferredCall(function() {
     var editor = editors.currentEditor.amlEditor.$editor;
     var pos = editor.getCursorPosition();
     var line = editor.getSession().getDocument().getLine(pos.row);
+    var regex = getIdentifierRegex();
     if (keyhandler.preceededByIdentifier(line, pos.column) ||
-       (line[pos.column - 1] === '.' && (!line[pos.column] || !line[pos.column].match(ID_REGEX))) ||
-       (lastIdentifierRegex && line[pos.column-1].match(lastIdentifierRegex)) ||
+       (line[pos.column - 1] === '.' && (!line[pos.column] || !line[pos.column].match(regex))) ||
+       (line[pos.column - 1] && line[pos.column - 1].match(regex) && keyhandler.inCompletableCodeContext(line, pos.column)) ||
        keyhandler.isRequireJSCall(line, pos.column)) {
         completer.invoke(true);
     }
@@ -54,7 +56,6 @@ var deferredInvoke = lang.deferredCall(function() {
 });
 var isInvokeScheduled = false;
 var ignoreMouseOnce = false;
-var lastIdentifierRegex;
 
 var drawDocInvoke = lang.deferredCall(function() {
     if (isPopupVisible() && complete.matches[complete.selectedIdx].doc) {
@@ -78,7 +79,7 @@ var killCrashedCompletionInvoke = lang.deferredCall(function() {
 
 function isPopupVisible() {
     return barCompleterCont.$ext.style.display !== "none";
-}
+};
 
 function getSyntax() {
     var editor = editors.currentEditor.amlEditor.$editor;
@@ -86,6 +87,10 @@ function getSyntax() {
         editor.getSession().getDocument(),
         editor.getCursorPosition(),
         editors.currentEditor.amlEditor.syntax);
+}
+
+function getIdentifierRegex() {
+    return idRegexes[getSyntax()] || DEFAULT_ID_REGEX;
 }
 
 function isJavaScript() {
@@ -108,13 +113,12 @@ function replaceText(editor, match) {
     var session = editor.getSession();
     var line = session.getLine(pos.row);
     var doc = session.getDocument();
-    var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
+    var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex || getIdentifierRegex());
     
     if (match.replaceText === "require(^^)" && isJavaScript()) {
         newText = "require(\"^^\")";
         if (!isInvokeScheduled)
-            setTimeout(deferredInvoke, AUTO_OPEN_DELAY);
-        isInvokeScheduled = true;
+            setTimeout(deferredInvoke, 0);
     }
 
     newText = newText.replace(/\t/g, session.getTabString());
@@ -130,11 +134,11 @@ function replaceText(editor, match) {
     var prefixWhitespace = line.substring(0, i);
     
     // Remove HTML duplicate '<' completions
-    var preId = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
+    var preId = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex || getIdentifierRegex());
     if (isHtml() && line[pos.column-preId.length-1] === '<' && newText[0] === '<')
         newText = newText.substring(1);
 
-    var postfix = completeUtil.retrieveFollowingIdentifier(line, pos.column, match.identifierRegex) || "";
+    var postfix = completeUtil.retrieveFollowingIdentifier(line, pos.column, match.identifierRegex || getIdentifierRegex()) || "";
     
     // Pad the text to be inserted
     var paddedLines = newText.split("\n").join("\n" + prefixWhitespace);
@@ -167,12 +171,19 @@ var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 
 module.exports = {
+    
     hook: function(ext, worker) {
         var _self = complete = this;
         language = ext;
         worker.on("complete", function(event) {
             if(ext.disabled) return;
             _self.onComplete(event);
+        });
+        worker.on("setIdentifierRegex", function(event) {
+            idRegexes[event.data.language] = event.data.identifierRegex;
+        });
+        worker.on("setCompletionRegex", function(event) {
+            completionRegexes[event.data.language] = event.data.completionRegex;
         });
         this.$onChange = this.onChange.bind(this);
         
@@ -257,14 +268,14 @@ module.exports = {
         });
     },
 
-    closeCompletionBox : function(event) {
+    closeCompletionBox : function closeCompletionBox(event) {
         barCompleterCont.$ext.style.display = "none";
         if (!editors.currentEditor.amlEditor) // no editor, try again later
             return;
         var ace = editors.currentEditor.amlEditor.$editor;
-        document.removeEventListener("click", this.closeCompletionBox);
-        ace.container.removeEventListener("DOMMouseScroll", this.closeCompletionBox);
-        ace.container.removeEventListener("mousewheel", this.closeCompletionBox);
+        document.removeEventListener("click", closeCompletionBox);
+        ace.container.removeEventListener("DOMMouseScroll", closeCompletionBox);
+        ace.container.removeEventListener("mousewheel", closeCompletionBox);
         
         if(oldCommandKey) {
             ace.keyBinding.onCommandKey = oldCommandKey;
@@ -273,6 +284,8 @@ module.exports = {
         oldCommandKey = oldOnTextInput = null;
         undrawDocInvoke.schedule(HIDE_DOC_DELAY);
     },
+    
+    isPopupVisible: isPopupVisible,
         
     populateCompletionBox: function(matches) {
         var _self = this;
@@ -303,7 +316,8 @@ module.exports = {
                     docHead = match.name + " : " + _self.$guidToLongString(match.type) + "</div>";
                 }
             }
-            var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex);
+            var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex || getIdentifierRegex());
+            
             var trim = match.meta ? " maintrim" : "";
             if (!isInferAvailable || match.icon) {
                 html += '<span class="main' + trim + '"><u>' + prefix + "</u>" + match.name.substring(prefix.length) + '</span>';
@@ -319,10 +333,10 @@ module.exports = {
                 html += '<span class="meta">' + match.meta + '</span>';
             
             if (match.doc)
-                match.doc = '<p>' + match.doc + '</p>';
+                match.$doc = '<p>' + match.doc + '</p>';
                 
             if (match.icon || match.type)
-                match.doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.doc || "");
+                match.$doc = '<div class="code_complete_doc_head">' + (docHead || match.name) + '</div>' + (match.$doc || "");
                 
             matchEl.innerHTML = html;
             matchEl.addEventListener("mouseover", function() {
@@ -371,7 +385,7 @@ module.exports = {
         this.docElement.innerHTML = '<span class="code_complete_doc_body">';
         var selected = this.matches[this.selectedIdx];
 
-        if (selected && selected.doc) {
+        if (selected && selected.$doc) {
             if (isDocShown) {
                 txtCompleterDoc.parentNode.show();
             }
@@ -380,7 +394,7 @@ module.exports = {
                 if (!isDrawDocInvokeScheduled || delayPopup)
                     drawDocInvoke.schedule(SHOW_DOC_DELAY);
             }
-            this.docElement.innerHTML += selected.doc + '</span>';
+            this.docElement.innerHTML += selected.$doc + '</span>';
         }
         else {
             txtCompleterDoc.parentNode.hide();
@@ -399,7 +413,7 @@ module.exports = {
             var matched = false;
             var matches = this.matches;
             for (var i = 0; i < matches.length && !matched; i++)
-                matched = (matches[i].identifierRegex || ID_REGEX).test(text);
+                matched = (matches[i].identifierRegex || getIdentifierRegex()).test(text);
             if (matched)
                 this.deferredInvoke();
             else
@@ -443,6 +457,7 @@ module.exports = {
                 replaceText(editor, this.matches[this.selectedIdx]);
                 this.closeCompletionBox();
                 e.preventDefault();
+                e.stopImmediatePropagation();
                 break;
             case 40: // Down
                 if (this.matchEls.length === 1) {
@@ -486,11 +501,17 @@ module.exports = {
         this.worker = worker;
     },
 
-    deferredInvoke: function() {
+    deferredInvoke: function(now) {
         if (isInvokeScheduled)
             return;
         isInvokeScheduled = true;
-        deferredInvoke.schedule(isPopupVisible() ? AUTO_UPDATE_DELAY : AUTO_OPEN_DELAY);
+        now = now || !isPopupVisible();
+        var delay = now  ? 0 : AUTO_UPDATE_DELAY;
+        deferredInvoke.schedule(delay);
+        if (!now) {
+            // Fire incremental update after document changes are known
+            setTimeout(this.onCompleteUpdate.bind(this), 0);
+        }
     },
     
     onChange: function() {
@@ -508,7 +529,9 @@ module.exports = {
         // This is required to ensure the updated document text has been sent to the worker before the 'complete' message
         var worker = this.worker;
         setTimeout(function() {
-            worker.emit("complete", {data: { pos: editor.getCursorPosition(), staticPrefix: ide.staticPrefix}});
+            var pos = editor.getCursorPosition();
+            var line = editor.getSession().getLine(pos.row);
+            worker.emit("complete", { data: { pos: pos, staticPrefix: ide.staticPrefix, line: line }});
         });
         var _self = this;
         if(forceBox)
@@ -518,35 +541,64 @@ module.exports = {
     onComplete: function(event) {
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
-        var eventPos = event.data.pos;
         var line = editor.getSession().getLine(pos.row);
     
         editor.removeEventListener("change", this.$onChange);
         killCrashedCompletionInvoke.cancel();
 
-        if (pos.column !== eventPos.column || pos.row !== eventPos.row || event.data.line != line)
+        if (!completeUtil.canCompleteForChangedLine(event.data.line, line, event.data.pos, pos, getIdentifierRegex()))
             return;
         if (event.data.isUpdate && !isPopupVisible())
             return;
 
-        var matches = event.data.matches;
-
-        lastIdentifierRegex = null;
-        for (var i = 0; i < matches.length; i++) {
-            lastIdentifierRegex = lastIdentifierRegex || matches[i].identifierRegex;
-        }
+        var matches = this.eventMatches = event.data.matches;
+        if (event.data.line !== line)
+            matches = this.filterMatches(matches, line, pos);
         
         if (matches.length === 1 && !this.forceBox) {
             replaceText(editor, matches[0]);
         }
         else if (matches.length > 0) {
-            var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, matches[0].identifierRegex);
-            this.showCompletionBox(matches, identifier);
+            var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, matches[0].identifierRegex || getIdentifierRegex());
+            if (matches.length === 1 && identifier === matches[0].replaceText)
+                this.closeCompletionBox();
+            else
+                this.showCompletionBox(matches, identifier);
         }
         else {
-            if(typeof barCompleterCont !== 'undefined')
+            if (typeof barCompleterCont !== 'undefined')
                this.closeCompletionBox();
         }
+    },
+    
+    /**
+     * Incrementally update completion results while waiting for the worker.
+     */
+    onCompleteUpdate: function() {
+        if (!isPopupVisible())
+            return;
+        var editor = editors.currentEditor.amlEditor.$editor;
+        var pos = editor.getCursorPosition();
+        var line = editor.getSession().getLine(pos.row);
+        var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, getIdentifierRegex());
+        var matches = this.filterMatches(this.eventMatches, line, pos);
+        if (matches.length)
+            this.showCompletionBox(matches, prefix);
+    },
+    
+    filterMatches: function(matches, line, pos) {
+        return matches.filter(function(match) {
+            var prefix = completeUtil.retrievePrecedingIdentifier(line, pos.column, match.identifierRegex || getIdentifierRegex());
+            return match.name.indexOf(prefix) === 0;
+        });
+    },
+    
+    getContinousCompletionRegex: function(language) {
+        return completionRegexes[language || getSyntax()];
+    },
+    
+    getIdentifierRegex: function(language) {
+        return idRegexes[language || getSyntax()];
     },
     
     destroy : function(){

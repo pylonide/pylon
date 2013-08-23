@@ -1,3 +1,4 @@
+/*global require module exports process __dirname*/
 /**
  * @copyright 2010, Ajax.org Services B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
@@ -14,6 +15,8 @@ var Workspace = require("./workspace");
 var EventEmitter = require("events").EventEmitter;
 var c9util = require("./util");
 var Path = require("path");
+
+var INDEX_TMPL = fs.readFileSync(__dirname + "/view/ide.tmpl.html", "utf8");
 
 var Ide = module.exports = function(options) {
     EventEmitter.call(this);
@@ -69,7 +72,6 @@ util.inherits(Ide, EventEmitter);
         this.workspace.createPlugins(exts);
         var statePlugin = this.workspace.getExt("state");
         if (statePlugin) {
-            var self = this;
             statePlugin.on("statechange", function(state) {
                 state.workspaceDir = statePlugin.workspace.workspaceDir;
                 state.davPrefix = statePlugin.ide.davPrefix;
@@ -85,91 +87,82 @@ util.inherits(Ide, EventEmitter);
     };
 
     this.$serveIndex = function(req, res, next) {
-        var _self = this;
-
-        var indexFile = "ide.tmpl.html";
-
-        fs.readFile(Path.join(__dirname, "/view/", indexFile), "utf8", function(err, index) {
-            if (err)
-                return next(err);
-
-            res.writeHead(200, {
-                "cache-control": "no-transform",
-                "Content-Type": "text/html"
-            });
-
-            var permissions = _self.getPermissions(req);
-            var plugins = c9util.arrayToMap(_self.options.plugins);
-            var bundledPlugins = c9util.arrayToMap(_self.options.bundledPlugins);
-
-            var client_exclude = c9util.arrayToMap(permissions.client_exclude.split("|"));
-            for (var plugin in client_exclude)
-                delete plugins[plugin];
-
-            // TODO: Exclude applicable bundledPlugins
-
-            var client_include = c9util.arrayToMap((permissions.client_include || "").split("|"));
-            for (var plugin in client_include) {
-                if (plugin)
-                    plugins[plugin] = 1;
-            }
-
-            var staticUrl = _self.options.staticUrl;
-            var workerUrl = _self.options.workerUrl;
-            var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
-                + staticUrl + '/ace/build/ace'
-                + (_self.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
-
-            var loadedDetectionScript = "";
-            if (_self.options.local) {
-                loadedDetectionScript = '<script type="text/javascript" src="/c9local/ui/connected.js?workspaceId=' +
-                    _self.options.workspaceId + '"></script>';
-            }
-
-            var replacements = {
-                davPrefix: _self.options.davPrefix,
-                workspaceDir: _self.options.workspaceDir,
-                debug: _self.options.debug,
-                workerUrl: workerUrl,
-                staticUrl: staticUrl,
-                smithIo: JSON.stringify(_self.options.smithIo),
-                sessionId: req.sessionID, // set by connect
-                uid: req.session.uid || req.session.anonid || 0,
-                pid: _self.options.pid || process.pid || 0,
-                workspaceId: _self.options.workspaceId,
-                plugins: Object.keys(plugins),
-                bundledPlugins: Object.keys(bundledPlugins),
-                readonly: (permissions.fs !== "rw"),
-                requirejsConfig: _self.options.requirejsConfig,
-                settingsXml: "",
-                runners: _self.options.runners,
-                scripts: (_self.options.debug || _self.options.packed) ? "" : aceScripts,
-                projectName: _self.options.projectName,
-                version: _self.options.version,
-                hosted: _self.options.hosted.toString(),
-                env: _self.options.env || "local",
-                packed: _self.options.packed,
-                packedName: _self.options.packedName,
-                local: _self.options.local,
-                loadedDetectionScript: loadedDetectionScript,
-                _csrf: req.session && req.session._csrf || ""
-            };
-
-            var settingsPlugin = _self.workspace.getExt("settings");
-            var user = _self.getUser(req);
-
-            if (!settingsPlugin || !user) {
-                index = template.fill(index, replacements);
-                res.end(index);
-            }
-            else {
-                settingsPlugin.loadSettings(user, function(err, settings) {
-                    replacements.settingsXml = err || !settings ? "defaults" : settings.replace(/]]>/g, '&#093;&#093;&gt;');
-                    index = template.fill(index, replacements);
-                    res.end(index);
-                });
-            }
+        res.writeHead(200, {
+            "cache-control": "no-transform",
+            "Content-Type": "text/html"
         });
+
+        var permissions = this.getPermissions(req);
+        var plugins = c9util.arrayToMap(this.options.plugins);
+        var bundledPlugins = c9util.arrayToMap(this.options.bundledPlugins);
+
+        var client_exclude = c9util.arrayToMap(permissions.client_exclude.split("|"));
+        for (var plugin in client_exclude)
+            delete plugins[plugin];
+
+        // TODO: Exclude applicable bundledPlugins
+
+        var client_include = c9util.arrayToMap((permissions.client_include || "").split("|"));
+        for (var plugin in client_include) {
+            if (plugin)
+                plugins[plugin] = 1;
+        }
+
+        var staticUrl = this.options.staticUrl;
+        var workerUrl = this.options.workerUrl;
+        var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
+            + staticUrl + '/ace/build/ace'
+            + (this.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
+
+        var loadedDetectionScript = "";
+        if (this.options.local) {
+            loadedDetectionScript = '<script type="text/javascript" src="/c9local/ui/connected.js?workspaceId=' +
+                this.options.workspaceId + '"></script>';
+        }
+
+        var replacements = {
+            davPrefix: this.options.davPrefix,
+            workspaceDir: this.options.workspaceDir,
+            debug: this.options.debug,
+            workerUrl: workerUrl,
+            staticUrl: staticUrl,
+            smithIo: JSON.stringify(this.options.smithIo),
+            sessionId: req.sessionID, // set by connect
+            uid: req.session.uid || req.session.anonid || 0,
+            pid: this.options.pid || process.pid || 0,
+            workspaceId: this.options.workspaceId,
+            plugins: Object.keys(plugins),
+            bundledPlugins: Object.keys(bundledPlugins),
+            readonly: (permissions.fs !== "rw"),
+            requirejsConfig: this.options.requirejsConfig,
+            settingsXml: "",
+            runners: this.options.runners,
+            scripts: (this.options.debug || this.options.packed) ? "" : aceScripts,
+            projectName: this.options.projectName,
+            version: this.options.version,
+            hosted: this.options.hosted.toString(),
+            env: this.options.env || "local",
+            packed: this.options.packed,
+            packedName: this.options.packedName,
+            local: this.options.local,
+            loadedDetectionScript: loadedDetectionScript,
+            _csrf: req.session && req.session._csrf || ""
+        };
+
+        var settingsPlugin = this.workspace.getExt("settings");
+        var user = this.getUser(req);
+
+        if (!settingsPlugin || !user) {
+            var index = template.fill(INDEX_TMPL, replacements);
+            res.end(index);
+        }
+        else {
+            settingsPlugin.loadSettings(user, function(err, settings) {
+                replacements.settingsXml = err || !settings ? "defaults" : settings.replace(/]]>/g, '&#093;&#093;&gt;');
+                var index = template.fill(INDEX_TMPL, replacements);
+                res.end(index);
+            });
+        }
     };
 
     this.addUser = function(username, permissions, userData) {
@@ -186,6 +179,7 @@ util.inherits(Ide, EventEmitter);
                     _self.$users[msg.user.uid].last_message_time = new Date().getTime();
                 }
                 _self.onUserMessage(msg.user, msg.message, msg.client);
+                _self.emit("message", msg);
             });
             user.on("disconnectClient", function(msg) {
                 _self.workspace.execHook("disconnect", msg.user, msg.client);

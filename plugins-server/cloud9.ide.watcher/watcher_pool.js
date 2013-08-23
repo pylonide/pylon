@@ -8,7 +8,6 @@
 
 var DirWatcher = require("./dir_watcher");
 var FileWatcher = require("./file_watcher");
-var dirname = require("path").dirname;
 
 module.exports = WatcherPool;
 
@@ -19,50 +18,23 @@ module.exports = WatcherPool;
 function WatcherPool(vfs) {
     this.vfs = vfs;
     this.watchers = {};
-    this.ignored = {};
 }
 
 (function() {
-
-    this.ignoreFile = function(path, timeout, skipParent) {
-        var self = this;
-        
-        if (this.ignored[path])
-            clearTimeout(this.ignored[path]);
-            
-        this.ignored[path] = setTimeout(function() {
-            delete(self.ignored[path]);
-        }, timeout);
-
-        if (skipParent)
-            return;
-            
-        var parentDir = dirname(path);
-        if (parentDir)
-            this.ignoreFile(parentDir, timeout, true);
-    };
 
     this.watch = function(path, onChange, onClose, callback) {
         var self = this;
         this.vfs.stat(path, {}, function(err, stat) {
             if (err)
                 return callback(err);
-                
+
             var isDir = stat.mime == "inode/directory";
             var handle = {
                 onRemove: function(e) {
-                    if (self.ignored[path]) {
-                        return;
-                    }
-                        
                     e.subtype = "remove";
                     onChange(e);
                 },
                 onChange: function(e) {
-                    if (self.ignored[path]) {
-                        return;
-                    }
-                        
                     e.subtype = isDir ? "directorychange" : "change";
                     onChange(e);
                 },
@@ -99,9 +71,11 @@ function WatcherPool(vfs) {
 
         watcher.removeListener("change", handle.onChange);
         watcher.removeListener("delete", handle.onRemove);
+        watcher.removeListener("close", handle.onClose);
 
         if (!watcher.hasListeners()) {
             watcher.close();
+            delete this.watchers[handle.path];
         }
     };
 

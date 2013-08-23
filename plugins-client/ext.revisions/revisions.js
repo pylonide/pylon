@@ -25,7 +25,6 @@ var settings = require("ext/settings/settings");
 // Ace dependencies
 var EditSession = require("ace/edit_session").EditSession;
 var Document = require("ace/document").Document;
-var ProxyDocument = require("ext/code/proxydocument");
 
 // Revision dependencies
 var markup = require("text!ext/revisions/revisions.xml");
@@ -150,7 +149,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         this.$onFileSaveFn = this.onFileSave.bind(this);
         this.$onAfterOnline = this.onAfterOnline.bind(this);
         this.$onRevisionSaved = this.onRevisionSaved.bind(this);
-        this.$onExternalChange = this.onExternalChange.bind(this);
 
         ide.addEventListener("socketMessage", this.$onMessageFn);
         ide.addEventListener("afteropenfile", this.$onOpenFileFn);
@@ -158,7 +156,6 @@ module.exports = ext.register("ext/revisions/revisions", {
         ide.addEventListener("closefile", this.$onCloseFileFn);
         ide.addEventListener("afteronline", this.$onAfterOnline);
         ide.addEventListener("revisionSaved", this.$onRevisionSaved);
-        ide.addEventListener("beforewatcherchange", this.$onExternalChange);
 
         // Remove the revision file if the file is removed.
         ide.addEventListener("removefile", this.onFileRemove.bind(this));
@@ -312,42 +309,6 @@ module.exports = ext.register("ext/revisions/revisions", {
     /////////////////////
     // Event listeners //
     /////////////////////
-
-    /** related to: Revisions#showQuestionWindow
-     * Revisions#onExternalChange(e) -> Boolean
-     * - e(Object): Event object
-     *
-     * This is the listener to the file watcher event. It is fired when a file is
-     * modified by an external application, and it starts the chain of messaging
-     * events, starting with asking the server to send over the contents of the
-     * modified file as it is after the external changes.
-     **/
-    onExternalChange: function(e) {
-        if (e.action == "remove")
-            return;
-
-        // We want to prevent autosave to keep saving while we are resolving
-        // this query.
-        this.prevAutoSaveValue = this.isAutoSaveEnabled;
-        settings.model.setQueryValue("general/@autosaveenabled", false);
-
-        var path = CoreUtil.stripWSFromPath(e.path);
-        this.changedPaths.push(path);
-
-        // Force initialization of extension (so that UI is available)
-        ext.initExtension(this);
-
-        if (winQuestionRev.visible === true || this.isCollab())
-            return;
-
-        ide.send({
-            command: "revisions",
-            subCommand: "getRealFileContents",
-            path: path
-        });
-
-        return false;
-    },
 
     onOpenFile: function(data) {
         if (!data || !data.doc)
@@ -579,98 +540,13 @@ module.exports = ext.register("ext/revisions/revisions", {
                         revision: e.data.revision,
                         forceRevisionListResponse: true
                     });
-                }
-                else if (e.data.revision.inDialog === true && winQuestionRev.visible !== true) {
-                    this.showQuestionWindow(e.data);
+
                 }
                 break;
             case "debug":
                 console.log("WORKER DEBUG\n", e.data.content);
                 break;
         }
-    },
-
-    /**
-     * Autosave#showQuestionWindow(data) -> Void
-     * - data (Object): Data about the revision to be potentially submitted, and
-     * the contents of the file before and after the external edit.
-     *
-     * Shows a dialog that lets the user choose whether to keep the current state
-     * of the document or to reload it to get the external changes.
-     **/
-    showQuestionWindow: function(data) {
-        if (typeof winQuestionRev === "undefined") {
-            return;
-        }
-
-        // No need to send these over the wire.
-        delete data.revision.finalContent;
-        delete data.revision.realContent;
-
-        var self = this;
-        var finalize = function() {
-            self.changedPaths = [];
-            winQuestionRev.hide();
-            settings.model.setQueryValue("general/@autosaveenabled", this.prevAutoSaveValue || true);
-        };
-
-        // Reload page if it has been changed. Once reloaded, the page is saved
-        // with the new content.
-        var reloadAndSave = function(_page) {
-            var path = CoreUtil.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            var index = self.changedPaths.indexOf(path);
-            if (self.changedPaths.indexOf(path) > -1) {
-                ide.addEventListener("afterreload", function onDocReload(e) {
-                    if (e.doc !== _page.$doc)
-                        return;
-
-                    // doc.setValue is redundant here, but it ensures that
-                    // the proper value will be saved.
-                    e.doc.setValue(e.data);
-
-                    // Force-save the current page
-                    var node = e.doc.getNode();
-                    if (!node.getAttribute("newfile") && !node.getAttribute("debug")) {
-                        savePlugin.quicksave(_page, function() {
-                                stripws.enable();
-                            }, true);
-                    }
-
-                    ide.removeEventListener("afterreload", onDocReload);
-                });
-                ide.dispatchEvent("reload", { doc : _page.$doc });
-            }
-            return index;
-        };
-
-        var dontReloadAndStore = function(_page) {
-            var path = CoreUtil.stripWSFromPath(_page.$model.data.getAttribute("path"));
-            var index = self.changedPaths.indexOf(path);
-            if (index > -1) {
-                ide.send({
-                    command: "revisions",
-                    subCommand: "getRealFileContents",
-                    path: path,
-                    nextAction: "storeAsRevision"
-                });
-            }
-            return index;
-        };
-
-        var pages = tabEditors.getPages();
-        Util.question(
-            "File changed, reload tab?",
-            "'" + data.path + "' has been modified while you were editing it.",
-            "Do you want to reload it?",
-            function YesReloadAll() {
-                pages.forEach(reloadAndSave);
-                setTimeout(finalize);
-            },
-            function NoDontReloadAll() {
-                pages.forEach(dontReloadAndStore);
-                setTimeout(finalize);
-            }
-        );
     },
 
     $saveExistingRevision: function(path, revision) {
@@ -903,7 +779,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return false;
 
         var doc = (doc || ide.getActivePage().$doc);
-        return doc.acedoc && doc.acedoc.doc.$isTree;
+        return doc.acesession && !!doc.acesession.collabDoc;
     },
 
     /**
@@ -1032,7 +908,7 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         var doc;
         if (!newSession) {
-            doc = new ProxyDocument(new Document(value || ""));
+            doc = new Document(value || "");
             newSession = new EditSession(doc, revObj.realSession.getMode());
             newSession.previewRevision = true;
 
@@ -1345,9 +1221,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         if (this.$onRevisionSaved)
             ide.removeEventListener("revisionSaved", this.$onRevisionSaved);
-
-        if (this.$onExternalChange)
-            ide.removeEventListener("beforewatcherchange", this.$onExternalChange);
     },
 
     enableEventListeners: function() {
@@ -1374,9 +1247,6 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         if (this.$onRevisionSaved)
             ide.addEventListener("revisionSaved", this.$onRevisionSaved);
-
-        if (this.$onExternalChange)
-            ide.addEventListener("beforewatcherchange", this.$onExternalChange);
     },
 
     enable: function() {

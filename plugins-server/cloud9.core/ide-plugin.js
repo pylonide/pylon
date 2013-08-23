@@ -126,9 +126,6 @@ module.exports = function setup(options, imports, register) {
                 getServer: function() {
                     return ide;
                 },
-                getSocketUrl: function() {
-                    console.error(new Error("ide.getSocketUrl() is DEPRECATED").stack);
-                },
                 getBaseUrl: function() {
                     return baseUrl;
                 },

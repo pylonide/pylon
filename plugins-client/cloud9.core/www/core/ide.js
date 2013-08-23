@@ -23,6 +23,7 @@ define(function(require, exports, module) {
         this.workerPrefix   = window.cloud9config.workerUrl;
         this.staticPrefix   = window.cloud9config.staticUrl;
         this.sessionId      = window.cloud9config.sessionId;
+        this.clientId       = util.uuid();
         this.workspaceId    = window.cloud9config.workspaceId;
         this.readonly       = window.cloud9config.readonly;
         this.projectName    = window.cloud9config.projectName;

@@ -11,7 +11,7 @@
             "ide",
             "session",
             "workspace-permissions",
-            "smith.transport.server"
+            "smith.io.ide"
         ]
     }
 }

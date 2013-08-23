@@ -18,7 +18,7 @@
 		"msgpack-js": "empty:",
 		"v8debug": "empty:",
 		"apf/elements": "%d/lib.apf/www/apf/elements",
-		"ace/worker": "%a",
+		"ace": "%a",
 		"%m"
 	},
     

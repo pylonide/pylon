@@ -1,0 +1,35 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:window
+      id        = "winWatcher"
+      title     = "File changed"
+      icon      = ""
+      center    = "true"
+      render    = "runtime"
+      kbclose   = "false"
+      width     = "512"
+      skin      = "bk-window2"
+      class     = "relative"
+      onkeydown = "
+        if(event.keyCode == 89) {
+            btnWatcherMerge.dispatchEvent('click', {htmlEvent: {}});
+        }
+      ">
+        <a:vbox padding="10" edge="15 20 25 20">
+            <h3 id="winWatcherHeader"></h3>
+            <div class="alertMsg">
+                <p>
+                You or a collaborator has changed this file.
+                </p>
+                Which version do you want to use?
+            </div>
+        </a:vbox>
+
+        <a:hbox edge="6 10 10" pack="start" padding="8">
+            <a:checkbox id="cbWatcherAll" skin="checkbox_black">Apply to all open files</a:checkbox>
+            <a:filler/>
+            <a:button id="btnWatcherLocal" skin="btn-default-css3" class="btn-blue">Keep Mine</a:button>
+            <a:button id="btnWatcherRemote" skin="btn-default-css3" class="btn-blue">Use Remote</a:button>
+            <a:button id="btnWatcherMerge" default="2" skin="btn-default-css3" class="btn-green">Merge Both</a:button>
+        </a:hbox>
+    </a:window>
+</a:application>

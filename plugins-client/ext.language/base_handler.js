@@ -38,6 +38,16 @@ module.exports = {
     handlesLanguage: function(language) {
         return false;
     },
+    
+    /**
+     * Returns the maximum file size this language handler supports.
+     * Should return Infinity if size does not matter.
+     * Default is 10.000 lines of 80 characters.
+     */
+    getMaxFileSizeSupported: function() {
+        // Conservative default
+        return 10000 * 80;
+    },
 
     /**
      * Determine if the language component supports parsing.
@@ -52,6 +62,17 @@ module.exports = {
      * If not specified, /[A-Za-z0-9\$\_]/ is used.
      */
     getIdentifierRegex: function() {
+        return null;
+    },
+    
+    /**
+     * Returns a regular expression used to trigger code completion.
+     * If a non-null value is returned, it is assumed continous completion
+     * is supported for this language.
+     * 
+     * As an example, Java-like languages might want to use: /\./
+     */
+    getCompletionRegex: function() {
         return null;
     },
 

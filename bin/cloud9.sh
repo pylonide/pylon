@@ -3,7 +3,7 @@
 CMD_DIR="$( cd "$( dirname "$0" )" && pwd )"
 cd "$CMD_DIR/.."
 
-make update
+make worker
 
 case `uname -a` in
 Linux*x86_64*)  echo "Linux 64 bit"

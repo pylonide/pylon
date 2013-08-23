@@ -8,6 +8,8 @@ module.exports = function setup(options, imports, register) {
             ext: "/ext"
         }
     }]);
+
+    imports.static.favicon(__dirname + "/www/favicon.ico");
     
     register(null, {
         "client.cloud9": {}

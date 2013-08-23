@@ -1,2 +1,6 @@
+./plugins-server/c9.api.ftp/ftp_test.js
+./plugins-server/c9.graceful-shutdown/graceful-shutdown_test.js
 ./plugins-client/ext.console/logger_test.js
-./plugins-server/cloud9.ide.search/search_test.js
+./plugins-server/c9.backup.duplicity/duplicity_test.js
+./plugins-client/ext.watcher/three_way_merge_test.js
+./test/integration/project_archive/archive_and_restore_test.js

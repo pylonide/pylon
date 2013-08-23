@@ -40,12 +40,15 @@ module.exports = ext.register("ext/closeconfirmation/closeconfirmation", {
     },
     
     onBeforeUnloadHandler : function () {
+        
         var changed = false;
         tabEditors.getPages().forEach(function(page){
             var node = page.$doc.getNode();
             if (node && node.getAttribute("changed") == 1 && page.$doc.getValue() && !node.getAttribute("deleted"))
                 changed = true;
         });
+        
+        ide.dispatchEvent("exit", {changed: changed});
         
         if (changed)
             return "You have unsaved changes. Your changes will be lost if you don't save them";

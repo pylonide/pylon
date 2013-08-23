@@ -11,40 +11,43 @@
     },
 
     "dependencies": {
+        "jsDAV": "https://github.com/ajaxorg/jsDAV/tarball/f78c34c94fa915ca1b24975839b78ff88ea851d6",
+        "async": "0.1.21",
+        "mappings": "0.1.x",
+        "amd-loader": "0.0.4",
+        "colors": "~0.6.0-1",
         "connect": "1.8.7",
 
         "http-error": "0.0.1",
         "simple-template": "0.0.1",
 
         "optimist": "0.3.4",
+        "netutil": "0.0.1",
+        "msgpack-js-browser": "~0.1.3",
+        "engine.io": "0.5.0",
+        "engine.io-client": "0.5.0",
+        "smith": "https://github.com/c9/smith/tarball/d83208007e681c147ebb12c30e09a193fd731391",
         "dryice": "0.4.10",
 
-        "mappings": "0.1.x",
-        "amd-loader": "0.0.4",
-        "async": "0.1.21",
-        "netutil": "0.0.1",
-        "architect": "0.1.4",
-        "connect-architect": "0.0.6",
-
-        "smith": "0.1.9",
-        "smith.io": "0.0.36",
         "vfs-architect": "0.0.2",
-        "jsDAV": "https://github.com/ajaxorg/jsDAV/tarball/209289355d69adde11dbcd0c83e6dd24a6d9184a",
+        "vfs-nodefs-adapter": "0.3.0",
 
-        "ace": "https://github.com/ajaxorg/ace/tarball/cc2a2c9e056c6d4049f8849ec3ad72974de37177",
-        "apf": "https://github.com/ajaxorg/apf/tarball/145f65bd24ae83f041418dd01a9c51d278045f3f",
-        "asyncjs": "https://github.com/ajaxorg/async.js/tarball/0b4ed5608a32c280a7690b5f52883d8d1fc0de08",
-        "v8debug": "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52",
-        "packager": "https://github.com/ajaxorg/packager/tarball/bee2a82c6d5e2875024bfdc83937e98092ccf04f",
-        "treehugger": "https://github.com/ajaxorg/treehugger/tarball/b22d7ad712f76a7e7b1070ab339d567dfbf059b1"
+        "vfs-local": "https://github.com/c9/vfs-local/tarball/5a95c4a7b313acef3338c31da0001a0d13e9c452",
+        "architect": "~0.1.10",
+        "connect-architect": "0.0.6",
+        "architect-agent": "0.2.2",
+        "architect-socket-transport": "0.3.0",
+
+
+        "ace":          "https://github.com/ajaxorg/ace/tarball/cacd51e2fe911971428dd40d9b09ba3c913a7ed5",
+        "asyncjs":      "https://github.com/ajaxorg/async.js/tarball/bd936c60bb87c58052bcc0307f4e637bd35c908f",
+        "v8debug":      "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52",
+        "treehugger":   "https://github.com/ajaxorg/treehugger/tarball/c6fb8e8c7ad7654577e1f843559fb91e925a3b79"
     },
 
     "devDependencies": {
         "nodeunit": "0.7.4",
-        "sinon": "1.3.4",
-        "rimraf": "2.0.1",
-        "vfs-local": "~0.3.4",
-        "vfs-nodefs-adapter": "~0.3.0"
+        "rimraf": "2.0.1"
     },
 
     "repository" : {
@@ -59,6 +62,7 @@
     "scripts": {
         "start": "sh ./bin/cloud9.sh",
         "build-debug": "node ./scripts/build-debug",
-        "build-packed": "node ./scripts/build-packed"
+        "build-packed": "node ./scripts/build-packed",
+        "postinstall": "make ace"
     }
 }

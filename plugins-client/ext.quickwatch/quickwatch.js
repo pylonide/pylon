@@ -30,6 +30,9 @@ module.exports = ext.register("ext/quickwatch/quickwatch", {
             hint: "quickly inspect the variable that is under the cursor",
             exec: function(){
                 _self.quickwatch();
+            },
+            isAvailable: function() {
+                return !!dbg.state;
             }
         });
     },

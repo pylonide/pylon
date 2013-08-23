@@ -15,7 +15,16 @@ var modeCache = {}; // extension -> static data
 var iconLanglist = ["php"];
 
 completer.handlesLanguage = function(language) {
-    return ["css", "php"].indexOf(language) !== -1;
+    return ["css", "less", "stylus", "php"].indexOf(language) !== -1;
+};
+
+completer.getMaxFileSizeSupported = function() {
+    return Infinity;
+};
+
+var langDuplicates = {
+    "less": "css",
+    "stylus": "css"
 };
 
 var ID_REGEXES = {
@@ -23,7 +32,7 @@ var ID_REGEXES = {
 };
 
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
-    var language = this.language;
+    var language = langDuplicates[this.language] || this.language;
     var line = doc.getLine(pos.row);
     var idRegex = ID_REGEXES[language];
     var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, idRegex);
@@ -35,7 +44,7 @@ completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     if (mode === undefined) {
         var text;
         if (language)
-            text = completeUtil.fetchText(this.staticPrefix, 'ext/codecomplete/modes/' + this.language + '.json');
+            text = completeUtil.fetchText(this.staticPrefix, 'ext/codecomplete/modes/' + language + '.json');
         mode = text ? JSON.parse(text) : {};
         // Cache
         modeCache[language] = mode;

@@ -9,7 +9,24 @@ define(function(require, exports, module) {
 var ide = require("core/ide");
 var template = "<settings />";
 
-var INTERVAL = 2000; //I would like this at 60000, but save on exit is broken
+var INTERVAL = 10000; //I would like this at 60000, but save on exit is broken
+var TRACK_INTERVAL = 60000;
+
+function throttle(timeout, callback) {
+    var blocked = false;
+    return function() {
+
+        if (blocked)
+            return;
+
+        blocked = true;
+        setTimeout(function() {
+            blocked = false;
+        }, timeout);
+
+        callback.apply(null, arguments);
+    };
+}
 
 module.exports = {
     model : new apf.model(),
@@ -56,10 +73,8 @@ module.exports = {
                 action: "set",
                 settings: data
             });
-            ide.dispatchEvent("track_action", {
-                type: "save settings",
-                settings: data
-            });
+
+            this.throttledTrackAction(data);
         }
     },
 
@@ -182,6 +197,13 @@ module.exports = {
 
         this.load(xml);
         initEvents();
+
+        this.throttledTrackAction = throttle(TRACK_INTERVAL, function(data){
+            ide.dispatchEvent("track_action", {
+                type: "save settings",
+                settings: data
+            });
+        });
 
         /**** Events ****/
         function initEvents() {

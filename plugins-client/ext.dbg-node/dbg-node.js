@@ -135,6 +135,8 @@ oop.inherits(v8DebugClient, DebugHandler);
         if (!frame || !this.$v8dbg)
             return callback();
         var bp = remoteBreakpoints[0];
+        if (!bp)
+            return this.resume(null, null, callback);
         if (bp.number !== 1)
             return callback();
 

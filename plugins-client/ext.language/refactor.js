@@ -10,12 +10,13 @@ var editors = require("ext/editors/editors");
 var PlaceHolder = require("ace/placeholder").PlaceHolder;
 var marker = require("ext/language/marker");
 var ide = require("core/ide");
-var code = require("ext/code/code");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
 
 var ID_REGEX = /[a-zA-Z_0-9\$]/;
 var oldCommandKey;
+
+/*global mnuCtxEditor mnuCtxEditorJumpToDef mnuCtxEditorRename*/
 
 var retrieveFullIdentifier = function(text, pos) {
     var buf = [];
@@ -82,7 +83,7 @@ module.exports = {
         
         var command = commands.addCommand({
             name: "renameVar",
-            hint: "Rename variable",
+            hint: "Rename refactor",
             bindKey: {mac: "Option-Command-R", win: "Ctrl-Alt-R"},
             isAvailable : function(editor) {
                 return editor && editor.amlEditor && _self.enableVariableRename;
@@ -91,6 +92,17 @@ module.exports = {
                 if(ext.disabled) return;
                 _self.renameVariable();
             }
+        });
+
+        // right click context item in ace
+        ide.addEventListener("init.ext/code/code", function() {
+            ext.nodes.push(
+                mnuCtxEditor.insertBefore(new apf.item({
+                    id : "mnuCtxEditorRename",
+                    caption : "Rename",
+                    command: "renameVar"
+                }), mnuCtxEditor.firstChild)
+            );
         });
 
     },
@@ -105,6 +117,13 @@ module.exports = {
             }
         }
         this.enableVariableRename = enableVariableRename;
+        
+        if (!window.mnuCtxEditorRename)
+            return;
+        if (enableVariableRename)
+            mnuCtxEditorRename.enable();
+        else
+            mnuCtxEditorRename.disable();
     },
     
     enableVariableRefactor: function(data) {

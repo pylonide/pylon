@@ -2242,7 +2242,7 @@ apf.Class.prototype = new (function(){
             //Remove id from global js space
             try {
                 if (this.id || this.name)
-                    self[this.id || this.name] = null;
+                    delete self[this.id || this.name];
             }
             catch (ex) {}
             return;
@@ -13175,7 +13175,7 @@ apf.xmldb = new (function(){
 
         // @todo: only do this once! - should store on the undo object
         if (oldNode.ownerDocument.importNode && newNode.ownerDocument != oldNode.ownerDocument) {
-            var oldNodeS = xmlNode;
+            var oldNodeS = newNode;
             newNode = oldNode.ownerDocument.importNode(newNode, true); //Safari issue not auto importing nodes
             if (oldNodeS.parentNode)
                 oldNodeS.parentNode.removeChild(oldNodeS);
@@ -14340,19 +14340,6 @@ apf.http = function(){
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") +
                     encodeURIComponent(requestedWithParam) + "=1";
             }
-            // global support for protection against Cross Site Request Forgery
-            // attacks by supplying a token to the global APF config object. This
-            // token will be appended to the URL and sent for each XHR.
-            // Warning: if you are doing CORS, be sure to use a different method!
-            var CSRFHeader = apf.config ? apf.config["csrf-header"] : null;
-            var CSRFToken = apf.config ? apf.config["csrf-token"] : null;
-            if (CSRFHeader) {
-                setRequestHeader("X-CSRF-Token", CSRFHeader);
-            }
-            else if (CSRFToken) {
-                CSRFToken = CSRFToken.split("=").map(function(s) { return encodeURIComponent(s); }).join("=");
-                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
-            }
 
             var withCredentials = false;
             if ("withCredentials" in options) {
@@ -14361,9 +14348,25 @@ apf.http = function(){
             else {
                 withCredentials = (apf.config && apf.config["cors-with-credentials"]) || false;
             }
-
             http.withCredentials = withCredentials;
-            http.open(this.method || options.method || "GET", httpUrl, async);
+
+            // global support for protection against Cross Site Request Forgery
+            // attacks by supplying a token to the global APF config object. This
+            // token will be appended to the URL and sent for each XHR.
+            // Warning: if you are doing CORS, be sure to use a different method!
+            var method = this.method || options.method || "GET";
+            var CSRFHeader = apf.config ? apf.config["csrf-header"] : null;
+            var CSRFToken = apf.config ? apf.config["csrf-token"] : null;
+            if (method !== "GET" && CSRFToken) {
+                CSRFToken = CSRFToken.split("=").map(function(s) { return encodeURIComponent(s); }).join("=");
+                httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
+            }
+
+            http.open(method, httpUrl, async);
+
+            if (method !== "GET" && CSRFHeader) {
+                setRequestHeader("X-CSRF-Token", CSRFHeader);
+            }
 
             if (options.username) {
                 setRequestHeader("Authorization", "Basic "
@@ -16582,8 +16585,12 @@ apf.AmlElement = function(struct, tagName){
         if (options && options.clear)
             include.setAttribute("clear", true);
         include.options  = options;
-        include.callback = options && options.callback || function(){
+        include.callback = function(e){
             _self.dispatchEvent("afteramlinserted", {src: amlDefNode});
+            options && options.callback && options.callback(e);
+            setTimeout(function(){
+                include.destroy(true, true);
+            });
         };
         this.appendChild(include);
     };
@@ -22869,7 +22876,7 @@ apf.DataBinding = function(){
      */
         return apf.queryValue(this[type || 'xmlRoot'], xpath );
     };
-    /**
+	/**
      * Queries the bound data for an array of string values
      *
      * @param {String} xpath The XPath statement which queries on the data this element is bound on.
@@ -22882,7 +22889,7 @@ apf.DataBinding = function(){
     this.queryValues = function(xpath, type){
         return apf.queryValues(this[type || 'xmlRoot'], xpath );
     };
-    
+	
     /**
      * Executes an XPath statement on the data of this model
      *
@@ -22895,7 +22902,7 @@ apf.DataBinding = function(){
      */
     this.queryNode = function(xpath, type){
         var n = this[type||'xmlRoot'];
-        return n ? n.selectSingleNode(xpath) : null;
+		return n ? n.selectSingleNode(xpath) : null;
     };
 
     /**
@@ -22910,9 +22917,9 @@ apf.DataBinding = function(){
      */
     this.queryNodes = function(xpath, type){
         var n = this[type||'xmlRoot'];
-        return n ? n.selectNodes(xpath) : [];
+		return n ? n.selectNodes(xpath) : [];
     };
-    
+	
     this.$checkLoadQueue = function(){
         // Load from queued load request
         if (this.$loadqueue) {
@@ -25486,16 +25493,16 @@ apf.StandardBinding = function(){
         
         var b, lrule, rule, bRules, bRule, value;
         if (b = this.$bindings) {
-            for (rule in b) {
-                lrule = rule.toLowerCase();
-                if (this.$supportedProperties.indexOf(lrule) > -1) {
-                    bRule = (bRules = b[lrule]).length == 1 
+	        for (rule in b) {
+	            lrule = rule.toLowerCase();
+	            if (this.$supportedProperties.indexOf(lrule) > -1) {
+	                bRule = (bRules = b[lrule]).length == 1 
                       ? bRules[0] 
                       : this.$getBindRule(lrule, xmlNode);
 
                     value = bRule.value || bRule.match;
 
-                    
+	                
                     //Remove any bounds if relevant
                     this.$clearDynamicProperty(lrule);
             
@@ -25505,9 +25512,9 @@ apf.StandardBinding = function(){
                     
                     if (this.setProperty)
                         this.setProperty(lrule, value, true);
-                }
-            }
-        }
+	            }
+	        }
+	    }
         
 
         //Think should be set in the event by the Validation Class
@@ -25549,16 +25556,16 @@ apf.StandardBinding = function(){
         
         var b, lrule, rule, bRules, bRule, value;
         if (b = this.$bindings) {
-            for (rule in b) {
-                lrule = rule.toLowerCase();
-                if (this.$supportedProperties.indexOf(lrule) > -1) {
+	        for (rule in b) {
+	            lrule = rule.toLowerCase();
+	            if (this.$supportedProperties.indexOf(lrule) > -1) {
                     bRule = (bRules = b[lrule]).length == 1 
                       ? bRules[0] 
                       : this.$getBindRule(lrule, xmlNode);
 
                     value = bRule.value || bRule.match;
 
-                    
+	                
                     //Remove any bounds if relevant
                     this.$clearDynamicProperty(lrule);
             
@@ -25568,9 +25575,9 @@ apf.StandardBinding = function(){
                     
                     if (this.setProperty)
                         this.setProperty(lrule, value);
-                }
-            }
-        }
+	            }
+	        }
+	    }
         
 
         //@todo Think should be set in the event by the Validation Class
@@ -26220,12 +26227,12 @@ apf.MultiSelect = function(){
             //Don't select on context menu
             if (fakeselect == 2) {
                 fakeselect = true;
-                userAction = true;
+    	      	userAction = true;
             }
             else {
-                fakeselect = false;
-                userAction = true;
-            }
+    	      	fakeselect = false;
+    	      	userAction = true;
+    	    }
         }
 
         if (this.$skipSelect) {
@@ -29783,10 +29790,10 @@ apf.BaseList = function(){
         oItem.setAttribute("id", Lid);
 
         elSelect.setAttribute("onmouseover",   "var o = apf.lookup(" + this.$uniqueId 
-            + "); o.$setStyleClass(this, 'hover', null, true);");
+        	+ "); o.$setStyleClass(this, 'hover', null, true);");
         elSelect.setAttribute("onselectstart", "return false;");
         elSelect.setAttribute("style",         (elSelect.getAttribute("style") || "") 
-            + ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
+        	+ ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
 
         if (this.hasFeature(apf.__RENAME__) || this.hasFeature(apf.__DRAGDROP__)) {
             elSelect.setAttribute("ondblclick", "var o = apf.lookup(" + this.$uniqueId + "); " +
@@ -29795,7 +29802,7 @@ apf.BaseList = function(){
                 
                 " o.choose()");
             elSelect.setAttribute("onmouseout", "var o = apf.lookup(" + this.$uniqueId + ");\
-                  o.$setStyleClass(this, '', ['hover'], true);\
+            	  o.$setStyleClass(this, '', ['hover'], true);\
                 this.hasPassedDown = false;");
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
                 'var o = apf.lookup(' + this.$uniqueId + ');\
@@ -31571,7 +31578,7 @@ apf.BaseTab = function(){
         {
             //page.removeNode();
             if (page.dispatchEvent("afterclose") !== false)
-                page.destroy(true, true);
+            	page.destroy(true, true);
             
             
             //@todo this is wrong, we can also use removeChild
@@ -33101,7 +33108,8 @@ apf.BaseTree = function(){
             pContainer    = htmlNode.parentNode;
 
         //Remove htmlNodes from tree
-        containerNode.parentNode.removeChild(containerNode);
+        if (containerNode)
+            containerNode.parentNode.removeChild(containerNode);
         pContainer.removeChild(htmlNode);
 
         //Datagrid??
@@ -38840,10 +38848,10 @@ apf.window = function(){
             if (e.preventDefault)
                 e.preventDefault();
            
-            try{  
+	        try{  
                 if (document.activeElement && document.activeElement.contentEditable == "true") //@todo apf3.0 need to loop here?
                     document.activeElement.blur();
-            }catch(e){}
+    	    }catch(e){}
         }
     });
 
@@ -39570,8 +39578,8 @@ apf.runIE = function(){
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s){
         var str;
         if (nodeList) {
-            for (str = [], i = 0, l = nodeList.length; i < l; i++)
-                str[i] = nodeList[i].xml;
+	        for (str = [], i = 0, l = nodeList.length; i < l; i++)
+	            str[i] = nodeList[i].xml;
         }
         str = s || apf.html_entity_decode(str.join(""));
         
@@ -40221,12 +40229,12 @@ apf.runWebkit = function(){
     apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
         var node, frag, a, i, l;
         if (nodeList) {
-            frag = document.createDocumentFragment();
-            a = [], i = 0, l = nodeList.length;
-            for (; i < l; i++) {
-                if (!(node = nodeList[i])) continue;
-                frag.appendChild(node);
-            }
+	        frag = document.createDocumentFragment();
+	        a = [], i = 0, l = nodeList.length;
+	        for (; i < l; i++) {
+	            if (!(node = nodeList[i])) continue;
+	            frag.appendChild(node);
+	        }
         }
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
@@ -52116,7 +52124,7 @@ apf.dropdown = function(struct, tagName){
                 
             break;
             default:
-                if (key == 9 || !this.xmlRoot) return;  
+                if (key == 9 || !this.xmlRoot) return;	
             
                 //if(key > 64 && key < 
                 if (!this.lookup || new Date().getTime() - this.lookup.date.getTime() > 1000)
@@ -54078,8 +54086,8 @@ apf.preview = function(struct, tagName){
     };
 
     this.refetch = function(){
-    this.$propHandlers["value"].call(this, "")
-    this.$propHandlers["value"].call(this, this.value || this.src)
+	this.$propHandlers["value"].call(this, "")
+	this.$propHandlers["value"].call(this, this.value || this.src)
     }
     
     this.addEventListener("$clear", function(){
@@ -57645,20 +57653,20 @@ apf.model = function(struct, tagName){
         
         return apf.queryValue(this.data, xpath);
     };
-    
+	
     /**
      * Gets the values of an XMLNode based on a XPath statement executed on the data of this model.
      *
      * @param  {String}  xpath  The xpath used to select a XMLNode.
      * @return  {[String]}  The values of the XMLNode
-     */ 
+     */	
     this.queryValues = function(xpath){
         if (!this.data)
             return [];
         
         return apf.queryValue(this.data, xpath);
     };
-    
+	
     /**
      * Executes an XPath statement on the data of this model
      *
@@ -62927,7 +62935,7 @@ apf.aml.setElement("skin", apf.skin);
     }
     
     this.$propHandlers["name"] = function(value){
-        if (!this.attributes.getNamedItem("src")) {
+        if (!this.src && !this.attributes.getNamedItem("src")) {
             this.$path = apf.getAbsolutePath(apf.hostPath, value) + "/index.xml";
             getSkin.call(this, this.$path);
         }
@@ -63057,6 +63065,7 @@ apf.aml.setElement("skin", apf.skin);
         }*/
     });
 }).call(apf.skin.prototype = new apf.AmlElement());
+
 
 
 
@@ -68592,6 +68601,7 @@ apf.tree = function(struct, tagName){
     };
     
     this.$updateNode = function(xmlNode, htmlNode){
+        if (!xmlNode) return;
         var elIcon  = this.$getLayoutNode("item", "icon", htmlNode),
             iconURL = this.$applyBindRule("icon", xmlNode);
         if (elIcon && iconURL) {
@@ -71533,7 +71543,7 @@ apf.textbox.masking = function(){
             if (!this.getValue()) return; //maybe not so good fix... might still flicker when content is cleared
             for (i = this.getValue().length - 1; i >= 0; i--)
                 deletePosition(i);
-            setPosition(0); 
+            setPosition(0);	
             return;
         }
         
@@ -72171,4 +72181,5 @@ apf.start();
  * Include apf.js, then just go about it as you would with the 
  * packaged version. Adapt this file to include your preferred modules
  */
+
 

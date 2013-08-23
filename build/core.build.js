@@ -17,12 +17,12 @@
     packages: [
         {
             "name": "engine.io",
-            "location": "node_modules/smith.io/node_modules/engine.io/node_modules/engine.io-client/dist",
-            "main": "engine.io-dev.js"
+            "location": "node_modules/engine.io-client",
+            "main": "engine.io.js"
         },
         {
             "name": "smith.io",
-            "location": "node_modules/smith.io/server-plugin/www",
+            "location": "plugins-server/c9.smith.io/www",
             "main": "client.js"
         },
         {
@@ -32,7 +32,7 @@
         },
         {
             "name": "msgpack-js",
-            "location": "node_modules/smith.io/node_modules/msgpack-js-browser",
+            "location": "node_modules/msgpack-js-browser",
             "main": "msgpack.js"
         }
     ],
@@ -66,9 +66,9 @@
         "core/document",
         "core/ext",
         "core/ide",
-        "core/settings", 
-        "core/util", 
-        "ext/main/main", 
+        "core/settings",
+        "core/util",
+        "ext/main/main",
         "treehugger/traverse",
         "treehugger/js/parse",
         "v8debug/util",

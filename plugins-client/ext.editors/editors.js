@@ -153,9 +153,11 @@ module.exports = ext.register("ext/editors/editors", {
                             btn.$ext.parentNode.style.overflow = "hidden";
                         }
 
-                        ide.dispatchEvent("tab.close", { page: e.page });
+                        try{ ide.dispatchEvent("tab.close", { page: e.page }); }
+                        catch(e){ console.warn("Error tab.close", e); }
 
-                        e.page.addEventListener("afterclose", _self.$close);
+                        try{ e.page.addEventListener("afterclose", _self.$close); }
+                        catch(e){ console.warn("Error afterclose", e); }
                     },
                     childNodes : [
                         btn = new apf.button({
@@ -948,7 +950,7 @@ module.exports = ext.register("ext/editors/editors", {
             if (pages.length) {
                 pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
-                    if (!pages[i] || !pages[i].$model || pages[i].$model.data.getAttribute("ignore") == "1")
+                    if (!pages[i] || !pages[i].$model || !pages[i].$model.data || pages[i].$model.data.getAttribute("ignore") == "1")
                         continue;
 
                     var file = pages[i].$model.data;
@@ -1059,7 +1061,6 @@ module.exports = ext.register("ext/editors/editors", {
         var _self   = this;
         var tabs    = tabEditors;
         var row     = options.row;
-        var text    = options.text;
         var node    = options.node;
         var path    = options.path || (node && node.getAttribute("path"));
         var page    = options.page || (path && tabs.getPage(path));
@@ -1080,7 +1081,7 @@ module.exports = ext.register("ext/editors/editors", {
             ace.selection.clearSelection();
             ace.moveCursorTo(row, column || 0);
             if (typeof endColumn == "number")
-                ace.selection.selectTo(endRow, endColumn)
+                ace.selection.selectTo(endRow, endColumn);
             ace.$blockScrolling -= 1;
             var range = ace.selection.getRange();
             var initialScroll = ace.renderer.scrollTop;
@@ -1095,7 +1096,7 @@ module.exports = ext.register("ext/editors/editors", {
                 return;
             var ace = editor.$editor;
             if (ace && !ace.$isFocused) {
-                setTimeout(f = function() {
+                setTimeout(function() {
                     ace.focus();
                     ide.dispatchEvent("aftereditorfocus");
                 }, 1);
@@ -1107,9 +1108,9 @@ module.exports = ext.register("ext/editors/editors", {
             focus();
             if (_self.currentEditor.$pendingJumpTo) {
                 ide.removeEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
-                _self.currentEditor.$pendingJumpTo = null
+                _self.currentEditor.$pendingJumpTo = null;
             }
-        };
+        }
 
 
         if (hasData) {

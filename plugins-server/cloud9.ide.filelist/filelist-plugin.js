@@ -63,7 +63,6 @@ module.exports = function setup(options, imports, register) {
                     return next(new error.Forbidden("You are not allowed to view this resource"));
 
                 // and kick off the download action!
-                var headersSent = false;
                 var query = Url.parse(req.url, true).query;
                 query.showHiddenFiles = !!parseInt(query.showHiddenFiles, 10);
 
@@ -73,18 +72,21 @@ module.exports = function setup(options, imports, register) {
                         if (!msg)
                             return;
 
-                        if (!headersSent) {
+                        if (!res.headerSent)
                             res.writeHead(200, { "content-type": "text/plain" });
-                            headersSent = true;
-                        }
                         res.write(msg);
                     },
                     // process exit
                     function(code, stderr) {
                         if (code === 0)
-                            res.end();
-                        else
-                            next("Process terminated with code " + code + ", " + stderr);
+                            return res.end();
+
+                        var errMsg = "Process terminated with code " + code + ", " + stderr;
+                        if (!res.headerSent)
+                            return next(errMsg);
+
+                        console.error(errMsg);
+                        res.end();
                     }
                 );
             });

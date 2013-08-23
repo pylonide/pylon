@@ -1,0 +1,15 @@
+{
+    "name": "c9.smith.io.ide",
+    "version": "0.0.1",
+
+    "main": "./smith.io.ide.js",
+
+    "plugin": {
+        "provides": [
+            "smith.io.ide"
+        ],
+        "consumes": [
+            "smith.io"
+        ]
+    }
+}

@@ -7,7 +7,7 @@
 
 define(function(require, exports, module) {
 
-/*global tabEditors mnuContextTabs trFiles*/
+/*global tabEditors mnuContextTabs mnuContext trFiles*/
 
 var ide = require("core/ide");
 var ext = require("core/ext");
@@ -73,7 +73,6 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     init : function(amlNode){
         var _self = this;
-        var mnuContext;
 
         this.commands.each(function(item){
             var a = item[item.length - 1];
@@ -519,14 +518,22 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
     },
 
     cycleTab: function(dir) {
-        var bRight  = dir == "right";
         var tabs    = tabEditors;
         var pages   = tabs.getPages();
         var curr    = ide.getActivePage();
         var currIdx = pages.indexOf(curr);
         if (!curr || pages.length == 1)
             return;
-        var idx = currIdx + (bRight ? 1 : -1);
+
+        var idx = currIdx;
+        switch(dir) {
+            case "right": idx++; break;
+            case "left": idx--; break;
+            case "first": idx = 0; break;
+            case "last": idx = pages.length - 1; break;
+            default: idx--;
+        }
+
         if (idx < 0)
             idx = pages.length - 1;
         if (idx > pages.length - 1)
@@ -689,7 +696,8 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
         trFiles.expandList(pathList, function() {
             trFiles.select(trFiles.queryNode(xpath + '/' + type + '[@name="' + file + '"]'));
-            trFiles.focus();
+            if (!noFocus)
+                trFiles.focus();
             scrollToFile();
 
             // Hide spinner in active tab

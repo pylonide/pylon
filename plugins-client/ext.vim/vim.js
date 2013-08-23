@@ -13,92 +13,13 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var editors = require("ext/editors/editors");
 var code = require("ext/code/code");
-var cliCmds = require("ext/vim/cli");
+var cli = require("ext/vim/cli");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
 var markupSettings =  require("text!ext/vim/settings.xml");
+var themes = require("ext/themes/themes");
 //var commands = require("ext/commands/commands");
 
-var VIM_ENABLED = false;
-var isLoading = false;
-var vimHandler = null;
-var cliAutoOpened = null;
-
-var _loadKeyboardHandler = function(path, callback) {
-    var _self = this;
-    var module;
-    try {
-        module = require(path);
-    } catch (e) {};
-    if (module)
-        return callback(module);
-
-
-    fetch(function() {
-        require([path], callback);
-    });
-
-    function fetch(callback) {
-        if (!ace.config.get("packaged"))
-            return callback();
-
-        var base = path.split("/").pop();
-        var filename = ide.staticPrefix + "/ace/build/keybinding-" + base + ".js";
-        var aceNetModule = "ace/lib/net";
-        require(aceNetModule).loadScript(filename, callback);
-    }
-};
-
-var enableVim = function enableVim() {
-    ext.initExtension(this);
-
-    ide.addEventListener("init.ext/code/code", function(e){
-        var editor = e.ext.amlEditor.$editor;
-        VIM_ENABLED = true;
-
-        if (vimHandler) {
-            editor.setKeyboardHandler(vimHandler);
-            editor.on("vimMode", vimHandler.$statusListener);
-            ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
-            require("ext/console/console").showInput();
-        } else {
-            if (isLoading)
-                return;
-            isLoading = true;
-            _loadKeyboardHandler("ace/keyboard/vim", function(module) {
-                vimHandler = module.handler;
-                vimHandler.$statusListener = function(mode) {
-                    ide.dispatchEvent("vim.changeMode", { mode : "mode" });
-                };
-                editor.setKeyboardHandler(vimHandler);
-                editor.on("vimMode", vimHandler.$statusListener);
-                ide.dispatchEvent("track_action", {type: "vim", action: "enable", mode: "normal"});
-                var cli = require("ext/console/console");
-                if (cli.hiddenInput) {
-                    cli.showInput();
-                    cliAutoOpened = true;
-                }
-                cliCmds.addCommands(vimHandler);
-            })
-        }
-    });
-};
-
-var disableVim = function() {
-    var editor = code.amlEditor.$editor;
-    if (editor) {
-        editor.keyBinding.removeKeyboardHandler(vimHandler);
-        editor.removeEventListener("vimMode", vimHandler.$statusListener);
-    }
-    ide.dispatchEvent("track_action", { type: "vim", action: "disable" });
-    VIM_ENABLED = false;
-    
-    var cli = require("ext/console/console");
-    if (!cli.hiddenInput && cliAutoOpened) {
-        cli.hideInput();
-        cliAutoOpened = false;
-    }
-};
 
 module.exports = ext.register("ext/vim/vim", {
     name  : "Vim mode",
@@ -109,65 +30,138 @@ module.exports = ext.register("ext/vim/vim", {
     alone : true,
 
     hook : function() {
-        var self = this;
-        var menuItem = new apf.item({
-            type: "check",
-            checked: "[{require('core/settings').model}::editors/code/@vimmode]",
-            onclick: function() { self.toggle(); }
-        });
-
-        menus.addItemByPath("View/Vim Mode", menuItem, 150000);
+        var _self = this;
+        var mnuKbModes = menus.addItemByPath("View/Keyboard Mode/", new apf.menu({
+            "onprop.visible" : function(e){
+                if (e.value)
+                    mnuKbModes.select(null, settings.model.queryValue("editors/code/@keyboardmode"));
+            }
+        }), 150000);
+        var c = 1000;
+        function addItem(label) {
+            menus.addItemByPath("View/Keyboard Mode/" + label, new apf.item({
+                type: "radio",
+                value: label.toLowerCase(), 
+                onclick : function(e) {
+                    _self.setMode(mnuKbModes.getValue());
+                }
+            }), c+=100);
+        }
+        window.mnuKbModes=mnuKbModes
+        
+        addItem("Default");
+        addItem("Vim");
+        addItem("Emacs");
 
         ide.addEventListener("settings.load", function(){
+            // remove old setting
+            var codeSettings = settings.model.queryNode("editors/code");
+            if (codeSettings.hasAttribute("vimmode")) {
+                codeSettings.removeAttribute("vimmode");
+            }
             settings.setDefaults("editors/code", [
-                ["vimmode", "false"]
+                ["keyboardmode", "default"]
             ]);
         });
 
-        settings.addSettings("Code Editor", markupSettings);
+        //settings.addSettings("Code Editor", markupSettings);
 
         var tryEnabling = function () {
-            if (settings.model) {
-                var sholdEnable = apf.isTrue(settings.model.queryNode("editors/code").getAttribute("vimmode"));
-                if (VIM_ENABLED == sholdEnable)
-                    return;
-                self.enable(sholdEnable === true);
-            }
+            _self.setMode();
         };
         ide.addEventListener("init.ext/code/code", tryEnabling);
         ide.addEventListener("code.ext:defaultbindingsrestored", tryEnabling);
+        
+        ide.addEventListener("theme.change", this.updateTheme.bind(this));
+
     },
 
-    toggle: function() {
-        this.enable(VIM_ENABLED === false);
-        if (code.amlEditor) {
-            code.amlEditor.focus();
+    setMode: function(mode) {
+        if (!settings.model)
+            return;
+            
+        var codeSettings = settings.model.queryNode("editors/code");
+        if (mode == undefined) {
+            mode = codeSettings.getAttribute("keyboardmode");
+        } else {
+            codeSettings.setAttribute("keyboardmode", mode);
+            settings.save();
+        }
+
+        ext.initExtension(this);
+               
+        var editor = code.amlEditor.$editor
+        if (mode == "emacs" || mode == "vim")
+            mode = "ace/keyboard/" + mode
+        else
+            mode = null;
+
+        editor.setKeyboardHandler(mode);
+   
+        if (mode) {
+            this.getCommandLine().show();
+            editor.cmdLine = this.cmdLine.ace;
+            editor.showCommandLine = function(val) {
+                editor.cmdLine.editor = editor;
+                module.exports.cmdLine.show();
+                editor.cmdLine.focus();
+                if (typeof val == "string")
+                    editor.cmdLine.setValue(val, 1);
+            }
+        } else if (this.cmdLine) {
+            this.cmdLine.hide();
         }
     },
 
     init: function() {
-        // require("ext/console/console").showInput();
     },
 
-    // Enable accepts a `doEnable` argument which executes `disable` if false.
-    enable: function(doEnable) {
-        if (doEnable !== false) {
-            ide.removeEventListener("consolecommand", cliCmds.onConsoleCommand);
-            ide.addEventListener("consolecommand", cliCmds.onConsoleCommand);
-            enableVim.call(this);
+    enable: function() {
+    },
+
+    getCommandLine: function() {
+        if (!this.cmdLine) {
+            this.cmdLine = new apf.codebox();
+            this.cmdLine.setHeight(19);
+            colMiddle.appendChild(this.cmdLine);
+            this.cmdLine.$ext.className = "searchbox tb_console";
+            this.updateTheme();
+            cli.initCmdLine(this.cmdLine.ace);
         }
-        else {
-            this.disable();
-        }
+        return this.cmdLine;
+    },
+    
+    updateTheme: function() {
+        if (!this.cmdLine)
+            return;
+        var style = this.cmdLine.ace.container.parentNode.style;
+        style.padding = "2px 1px 1px 3px";
+        style.border = "none";
+        style.borderTop = "1px solid rgba(0, 0, 0, .3)";
+        style.boxShadow = "inset 0 3px 10px 0 rgba(0, 0, 0, .1)";
+        var activeTheme = themes.getActiveTheme();
+        if (!activeTheme)
+            return;
+        this.cmdLine.ace.setTheme(activeTheme);
+        style.background = activeTheme.textBg;
     },
 
     disable: function() {
-        ide.removeEventListener("consolecommand", cliCmds.onConsoleCommand);
-        disableVim();
+        var editor = code.amlEditor.$editor;
+        if (editor) {
+            editor.keyBinding.removeKeyboardHandler(editor.$vimModeHandler);
+            editor.keyBinding.removeKeyboardHandler(editor.$emacsModeHandler);
+        }
+        this.cmdLine && this.cmdLine.hide()
     },
 
     destroy: function() {
-        menus.remove("Tools/Vim mode");
+        menus.remove("Tools/Keyboard Mode");
+        if (this.cmdLine) {
+            this.cmdLine.hide();
+            this.cmdLine.removeNode();
+            this.cmdLine = null;
+        }
         this.$destroy();
     }
 });

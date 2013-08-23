@@ -60,7 +60,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         ide.addEventListener("init.ext/tree/tree", function(){
             _self.nodes.push(
                 menus.addItemByPath("File/~", new apf.divider(), 350),
-                menus.addItemByPath("File/Upload Files", new apf.item({
+                menus.addItemByPath("File/Upload Local Files...", new apf.item({
                     onclick : function(){
                         ext.initExtension(_self);
                         winUploadFiles.show();
@@ -597,7 +597,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                             id: file.name,
                             file: file,
                             path: file.targetFolder.getAttribute("path"),
-                            _csrf: apf.config["csrf-token"]
+                            _csrf: window.cloud9config._csrf
                         });
                     }
                 }

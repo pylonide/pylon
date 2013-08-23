@@ -45,7 +45,7 @@ define(function(require, exports, module) {
             var c = 0;
             menus.addItemByPath("Help/About", new apf.item({ onclick : function(){ _self.showAbout(); }}), c += 100);
             menus.addItemByPath("Help/IDE Status", new apf.item({ onclick : function(){window.open('http://status.c9.io'); }}), c += 100);
-            var mnuChangelog = menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('http://c9.io/site/tag/changelog/') }}), c += 100);
+            var mnuChangelog = menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('http://c9.io/site/tag/changelog/'); }}), c += 100);
 
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
             //menus.addItemByPath("Help/Documentation", new apf.item({ onclick : function(){ window.open('https://docs.c9.io') }}), c += 100);
@@ -67,8 +67,8 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/Get in Touch/", null, c += 100);
 
             c = 0;
-            menus.addItemByPath("Help/Support/FAQ", new apf.item({ onclick : function(){ window.open('http://support.cloud9ide.com/forums/20346041-frequently-asked-questions'); }}), c += 100);
-            menus.addItemByPath("Help/Support/Troubleshooting Tips", new apf.item({ onclick : function(){ window.open('http://support.cloud9ide.com/forums/20329737-troubleshooting') }}), c += 100);
+            menus.addItemByPath("Help/Support/FAQ", new apf.item({ onclick : function(){ window.open('http://support.c9.io/forums/20346041-frequently-asked-questions'); }}), c += 100);
+            menus.addItemByPath("Help/Support/Troubleshooting Tips", new apf.item({ onclick : function(){ window.open('http://support.c9.io/forums/20329737-troubleshooting'); }}), c += 100);
 
             c = 0;
             menus.addItemByPath("Help/Learning/YouTube Channel for Cloud9 IDE", new apf.item({ onclick : function(){ window.open('http://www.youtube.com/user/c9ide/videos?view=pl'); }}), c += 100);

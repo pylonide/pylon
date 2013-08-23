@@ -1,0 +1,7 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:checkbox
+        class="underlined" label="Enable Auto-Merge"
+        value="[general/@automergeenabled]"
+        tooltip="Whenever the file watcher detects a file change on disk, 'auto merge' will fetch the contents from disc and merges it with the version in the editor."
+        skin="checkbox_grey" position="2200" />
+</a:application>

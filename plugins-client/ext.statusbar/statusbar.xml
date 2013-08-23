@@ -73,7 +73,7 @@
           <a:spinner value="[editors/code/@printmargincolumn]" realtime="true" min="1" max="200" width="50" />
       </a:hbox>
       <a:hbox edge="0 5 2 0" align="center">
-          <a:checkbox label="Soft Tabs" value="[editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>
+          <a:checkbox label="Insert Spaces as Soft Tabs" value="[editors/code/@softtabs]" flex="1" skin="checkbox-menu"/>
           <a:spinner value="[editors/code/@tabsize]" realtime="true" min="1" max="64" width="50" />
       </a:hbox>
       <a:hbox edge="0 5 2 23" align="center">

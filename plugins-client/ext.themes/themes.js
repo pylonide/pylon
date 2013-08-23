@@ -116,7 +116,6 @@ module.exports = ext.register("ext/themes/themes", {
         
         this.isDark = theme.isDark;
         
-        ide.dispatchEvent("theme.change", {theme: theme, path: path});
         
         var editorDiv = hboxMain.$ext;
         var editorHolder = tabEditors.parentNode.$ext;
@@ -153,21 +152,28 @@ module.exports = ext.register("ext/themes/themes", {
         apf.setStyleClass(editorHolder, cssClass);
         apf.setStyleClass(tabsDiv, cssClass);
         
+        if (!theme.bg) {
+            theme.bg = apf.getStyleRule("." + aceClass + " .ace_gutter", "backgroundColor");
+            theme.fg = apf.getStyleRule("." + aceClass + " .ace_gutter", "color");
+            theme.textBg = apf.getStyleRule("." + aceClass, "backgroundColor") ||
+                apf.getStyleRule("." + aceClass + ", ." + aceClass + " .ace_scroller", "backgroundColor");
+        }
+        
+        ide.dispatchEvent("theme.change", {theme: theme, path: path});
+        
         if (_self.loaded[path])
             return;
             
         _self.loaded[path] = true;
         
-        var bg = apf.getStyleRule("." + aceClass + " .ace_gutter", "backgroundColor");
-        var fg = apf.getStyleRule("." + aceClass + " .ace_gutter", "color");
-        theme.bg = bg;
-        theme.fg = fg;
-        
+        if (theme.textBg == "rgb(255, 255, 255)")
+            theme.textBg = "#fbfbfb";
+                
         apf.importStylesheet([
             (apf.isGecko ? [] : 
                 ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
                  (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
-                 + ";background-color: " + bg + " !important"]),
+                 + ";background-color: " + theme.bg + " !important"]),
             ["#editorDiv." + cssClass + " > .basic, "
              + "#editorDiv." + cssClass + " > .vsplitbox, "
              + "#tabsDiv." + cssClass + ", " // > .editor_tab
@@ -177,13 +183,18 @@ module.exports = ext.register("ext/themes/themes", {
              + "." + cssClass + " .revisionsBar .topbar, "
              + "." + cssClass + " .revisionsBar .revisionsHolder, "
              + "." + cssClass + " .code_complete_text_holder, "
-             + "." + cssClass + " .session_page", 
-             "color:" + fg + " !important; background-color: " + bg + " !important"],
+             + "." + cssClass + " .session_page," 
+             + "." + aceClass,
+             "color:" + theme.fg + " !important; background-color: " + theme.bg + " !important"],
             ["." + cssClass + " .searchresults > div > span, "
              + "." + cssClass + ".dark .revisions-list .revision, "
              + "." + cssClass + ".dark .cc_complete_option, "
              + "." + cssClass + " .searchresults > div",
-             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + fg + ";")]
+             (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "color:" + theme.fg + ";")],
+            // TODO find a better way to handle editor corner
+            ["." + aceClass + " .ace_scroller",
+             "color:" + theme.fg + " !important; background-color: " + theme.textBg + " !important"]
+             
         ], self, _self.stylesheet);
 
         ide.dispatchEvent("theme.init", {theme: theme, path: path});

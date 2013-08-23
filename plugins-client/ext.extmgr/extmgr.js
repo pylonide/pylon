@@ -242,6 +242,10 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     show : function(){
         ext.initExtension(this);
         winExt.show();
+        setTimeout(function() {
+            winExt.focus();
+            tbModuleName.focus();
+        }, 0);
     },
 
     destroy : function(){
