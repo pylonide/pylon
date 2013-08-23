@@ -52,6 +52,9 @@ var Runner = exports.Runner = function(vfs, options, callback) {
     if (options.env)
         this.runOptions.env = options.env;
 
+    this.runOptions.env = this.runOptions.env || {};
+    this.runOptions.env.IP = (vfs.env && vfs.env.OPENSHIFT_DIY_IP) || "0.0.0.0";
+
     this.eventEmitter = options.eventEmitter;
     this.eventName = options.eventName;
 
@@ -144,7 +147,7 @@ var Runner = exports.Runner = function(vfs, options, callback) {
             emit({
                 "type": self.name + "-exit",
                 "pid": pid,
-                "code": code,
+                "code": code || 0,
                 "extra": self.extra
             });
         });

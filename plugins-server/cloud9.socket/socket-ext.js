@@ -1,16 +1,19 @@
+/*global require module*/
 "use strict";
 
+var assert = require("assert");
 var ERROR = require("http-error");
 
 module.exports = function setup(options, imports, register) {
 
+    assert(options.socketPath, "option 'socketPath' is required");
+
     var IDE = imports.ide.getServer();
     var SESSION = imports.session;
     var PERMISSIONS = imports["workspace-permissions"];
-    var TRANSPORT = imports["smith.transport.server"];
+    var smithIde = imports["smith.io.ide"];
 
-
-    TRANSPORT.on("connect", function(connection) {
+    smithIde.addConnectionHook(options.socketPath, function(connection) {
 
         connection.on("message", function(message) {
 
@@ -39,11 +42,10 @@ module.exports = function setup(options, imports, register) {
                         IDE.addUser(uid, userPermissions);
                         IDE.addClientConnection(uid, connection, message);
                     });
-                });            
+                });
             }
         });
     });
-
 
     function getSession(sessionId, callback) {
         SESSION.get(sessionId, function(err, session) {
@@ -55,7 +57,7 @@ module.exports = function setup(options, imports, register) {
 
             return callback(null, session);
         });
-    };
+    }
 
 
     register(null, {

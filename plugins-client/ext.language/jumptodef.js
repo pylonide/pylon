@@ -40,9 +40,6 @@ module.exports = {
         // right click context item in ace
         ide.addEventListener("init.ext/code/code", function() {
             _self.nodes.push(
-                mnuCtxEditor.insertBefore(new apf.divider({
-                    visible : "{mnuCtxEditorJumpToDef.visible}"
-                }), mnuCtxEditor.firstChild),
                 mnuCtxEditor.insertBefore(new apf.item({
                     id : "mnuCtxEditorJumpToDef",
                     caption : "Jump to Definition",
@@ -112,6 +109,7 @@ module.exports = {
             return;
 
         this.activateSpinner();
+        this.onJumpStart(editor);
 
         var sel = editor.getSelection();
         var pos = sel.getCursor();
@@ -169,6 +167,22 @@ module.exports = {
             column = this.$getFirstColumn(cursor.row);
         var newPos = { row: cursor.row, column: column };
         editor.getSelection().setSelectionRange({ start: newPos, end: newPos });
+    },
+
+    onJumpStart : function(editor) {
+        var cursor = editor.getSelection().getCursor();
+        var line = editor.getDocument().getLine(cursor.row);
+        if (!line)
+            return;
+        
+        var preceding = util.retrievePrecedingIdentifier(line, cursor.column);
+        var column = cursor.column - preceding.length;
+        var following = util.retrieveFollowingIdentifier(line, column);
+        var startPos = { row: cursor.row, column: column };
+        
+        var endPos = { row: cursor.row, column: column + following.length };
+        
+        editor.getSelection().setSelectionRange({ start: startPos, end: endPos });
     },
 
     activateSpinner : function() {

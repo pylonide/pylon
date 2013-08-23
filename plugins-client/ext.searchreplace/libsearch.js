@@ -8,7 +8,7 @@
 define(function(require, exports, module) {
 
 var settings = require("core/settings");
-var prefix   = "search/"
+var prefix   = "search/";
 
 module.exports = {
     keyStroke: "",
@@ -209,7 +209,7 @@ module.exports = {
                 // \\ detection
                 if (t = value.match(/^\\\\+/g)) {
                     var odd = ((l = t[0].length) % 2);
-                    push([l - odd, sub > 0 ? "subescaped" : "escaped"]);
+                    push(l - odd, sub > 0 ? "subescaped" : "escaped");
                     continue;
                 }
 
@@ -253,15 +253,12 @@ module.exports = {
             // End Sub Matches
             if (c == ")") {
                 if (sub === 0) {
-                    out.push([")", "error"]);
-                    value = value.substr(1);
+                    push(")", "error");
                 }
                 else {
                     sub--;
                     push(")", "sub");
-                    value = value.substr(1);
                 }
-
                 continue;
             }
 
@@ -313,10 +310,9 @@ module.exports = {
                 if (c == ".")
                     continue;
                 var m = value.match(re.range);
-                if (m) {
+                if (m)
                     push(m[0], "error");
-                    continue;
-                }
+                continue;
             }
 
             // Just Text

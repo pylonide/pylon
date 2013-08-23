@@ -88,8 +88,8 @@ worker.onDocumentOpen = function(path, doc, oldPath, callback) {
 worker.$invoke = function(command, path, callback) {
     var id = commandId++;
     var commandData = {
-        command: "sh",
-        argv: ["sh", "-c", command],
+        command: "bash",
+        argv: ["bash", "-c", command],
         line: command,
         cwd: worker.workspaceDir,
         requireshandling: true,
@@ -139,6 +139,7 @@ worker.$parseOutputLine = function(line) {
         pos: { sl: parseInt(match[1], 10)-1, sc: parseInt(match[2], 10)-1 },
         type: 'unused',
         level: warningMatch ? 'warning' : infoMatch ? 'info' : 'error',
+        skipMixed: true,
         message: warningMatch ? warningMatch[1] :
                  infoMatch ? infoMatch[1] :
                  errorMatch ? errorMatch[1] :

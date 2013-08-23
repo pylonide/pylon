@@ -9,7 +9,7 @@
       storage                   = "cookie"
       baseurl                   = "{apf.host ? apf.host : ''}"
       requested-with-getparam   = "xhr"
-      csrf-token                = "{'_csrf=' + window.cloud9config._csrf}"/>
+      csrf-header                = "{window.cloud9config._csrf}"/>
 
     <!-- default model -->
     <a:model />

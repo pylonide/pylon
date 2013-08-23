@@ -1,0 +1,14 @@
+{
+    "name": "connect.session",
+    "version": "0.0.1",
+    "main": "session-ext.js",
+    "private": true,
+
+    "plugin": {
+        "provides": ["session"],
+        "consumes": [
+            "connect",
+            "session-store"
+        ]
+    }
+}

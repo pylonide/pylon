@@ -13,7 +13,6 @@ var util = require("core/util");
 var language = require("ext/language/language");
 var editors = require("ext/editors/editors");
 var settings = require("ext/settings/settings");
-var autosave = require("ext/autosave/autosave");
 
 module.exports = ext.register("ext/linereport/linereport", {
     name     : "linereport",
@@ -33,7 +32,7 @@ module.exports = ext.register("ext/linereport/linereport", {
         var _self = this;
         ide.addEventListener("init.ext/language/language", function() {
             language.worker.on("linereport_invoke", _self.onWorkerMessage.bind(_self));
-            ide.addEventListener("socketMessage", _self.onServerMessage.bind(_self));
+            ide.addEventListener("socketMessage", _self.onServerMessage.bind(_self), true);
             ide.addEventListener("afterfilesave", _self.onFileSave.bind(_self));
             // Make sure base is initialized and kept up-to-date
             language.registerLanguageHandler("ext/linereport/linereport_base");
@@ -41,10 +40,8 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
 
     onWorkerMessage : function(event) {
-        if (ide.readonly || this.isCollabSlave()) {
-            this.disabled = true;
-            return;
-        }
+        if (ide.readonly)
+            return this.disabled = true;
 
         if (!this.firstUsed && event.data.path) {
             this.firstUsed = true;
@@ -76,14 +73,14 @@ module.exports = ext.register("ext/linereport/linereport", {
         if (!id)
             return;
         switch (message.type) {
-            case "npm-module-data":
+            case "npm-module-data": case "other-data":
                 if (event.message.stream === "stdout")
                     this.stdoutBuffers[id] = (this.stdoutBuffers[id] || "") + event.message.data;
                 else
                     this.stderrBuffers[id] = (this.stderrBuffers[id] || "") + event.message.data;
 
                 break;
-            case "npm-module-exit":
+            case "npm-module-exit": case "other-exit":
                 language.worker.emit("linereport_invoke_result", {data: {
                     id: id,
                     code: event.message.code,
@@ -107,9 +104,10 @@ module.exports = ext.register("ext/linereport/linereport", {
     },
 
     onFirstUse: function(event) {
-        // Enable autosave since it makes linereport trigger automatically
-        autosave.isAutoSaveEnabled = true;
-        settings.model.setQueryValue("general/@autosaveenabled", true);
+        /* How to trigger linereport automatically with the latest
+            file state without force-enabling autosave ?
+            Collab ?! - maybe
+         */
         ide.dispatchEvent("track_action", {
             type: "linereport_firstuse",
             language: event.data.language,

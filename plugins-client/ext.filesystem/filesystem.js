@@ -462,6 +462,18 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             }
         }));
 
+        // path webdav to send the X-ClientId header
+        var originalGet = this.webdav.get;
+        this.webdav.get = function(path, options) {
+            if (!options.headers)
+                options.headers = {};
+
+            var headers = options.headers;
+            headers["X-clientId"] = ide.clientId;
+
+            return originalGet.apply(this, arguments);
+        };
+
         function openHandler(e) {
             ide.send({
                 command: "internal-isfile",
@@ -543,17 +555,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         });
                     }
                     else {
-                        //doc.addEventListener("editor.ready", function(){
-                            // populate the document
-                            doc.setValue(data);
+                        doc.setValue(data);
 
-                            // fire event
-                            dispatchAfterOpenFile();
-                        //});
+                        // fire event
+                        dispatchAfterOpenFile();
                     }
                 };
 
-                // offline / online detection has been moved into fs.readFile instead
                 fs.readFile(path, readfileCallback);
             }
         });

@@ -44,7 +44,6 @@ var EditSession = require("ace/edit_session").EditSession;
 var VirtualRenderer = require("ace/virtual_renderer").VirtualRenderer;
 var UndoManager = require("ace/undomanager").UndoManager;
 var MultiSelect = require("ace/multi_select").MultiSelect;
-var ProxyDocument = require("ext/code/proxydocument");
 var Document = require("ace/document").Document;
 var dom = require("ace/lib/dom");
 
@@ -159,7 +158,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
                     value = value.firstChild && value.firstChild.nodeValue;
             }
 
-            doc = new EditSession(new ProxyDocument(new Document(value || "")));
+            doc = new EditSession(new Document(value || ""));
             doc.setUndoManager(new UndoManager());
             doc.setMode(this.getMode(this.syntax));
 
@@ -572,7 +571,7 @@ apf.codebox = function(struct, tagName) {
         this.$inputInitFix = this.$getLayoutNode("main", "initialfix", this.$ext);
 
         this.addEventListener("resize", function(e) {
-            this.$editor.resize();
+            this.ace.resize();
         });
 
         this.$input.style.textShadow = "none";
@@ -581,7 +580,7 @@ apf.codebox = function(struct, tagName) {
         // disable unneded commands
         ace.commands.removeCommands(["find", "replace", "replaceall", "gotoline", "findnext", "findprevious"]);
         // todo is there a property for these?
-        ace.commands.removeCommands(["indent", "outdent"])
+        ace.commands.removeCommands(["indent", "outdent"]);
 
         this.$editor = this.ace = ace;
         ace.renderer.setPadding(0);
@@ -603,13 +602,31 @@ apf.codebox = function(struct, tagName) {
 
             if (ace.renderer.initialMessageNode)
                 return;
-            ace.renderer.initialMessageNode = document.createTextNode(ace.codebox["initial-message"]);
+            ace.renderer.initialMessageNode = document.createTextNode(ace.codebox["initial-message"] || "");
             ace.renderer.scroller.appendChild(ace.renderer.initialMessageNode);
         }
         ace.on("blur", onBlur);
         setTimeout(onBlur, 100);
         // todo should we do this here?
         // ace.on("resize", function(){apf.layout.forceResize();});
+        
+        if (apf.isTrue(this.getAttribute("clearbutton"))) {
+            var _self = this;
+            var visible = false;
+            ace.renderer.on("afterRender", function() {
+                var show = !!ace.getValue()
+                if (visible != show) {
+                    visible = show;
+                    _self.$button.style.display = visible ? "block" : "";
+                }
+            });
+            this.$button.addEventListener("click", function() {
+                ace.setValue("");
+            }, false)
+        }
+        this.$ext.addEventListener("mousedown", function() {
+            ace.focus();
+        }, false);
     };
     this.getValue = function() {
         return this.ace.getValue();
@@ -621,12 +638,12 @@ apf.codebox = function(struct, tagName) {
         return this.ace.selectAll();
     };
     this.$focus = function(e){
-        if (!this.$ext || this.$ext.disabled)
+        if (!this.$ext || this.disabled)
             return;
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
 
-        this.$editor.focus();
+        this.ace.focus();
     };
     this.$blur = function (){
         if (!this.$ext)
@@ -635,7 +652,10 @@ apf.codebox = function(struct, tagName) {
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
         if (this.ace)
             this.ace.blur();
-    }
+    };
+    
+    this.$enable  = function(){ this.ace.setReadOnly(false); };
+    this.$disable = function(){ this.ace.setReadOnly(true); };
 
     this.execCommand = function(command) {
         this.ace.commands.exec(command, this.ace);
@@ -643,12 +663,6 @@ apf.codebox = function(struct, tagName) {
 
     this.createSingleLineAceEditor = function(el) {
         var renderer = new VirtualRenderer(el);
-        el.style.overflow = "hidden";
-        renderer.scrollBar.element.style.top = "0";
-        renderer.scrollBar.element.style.display = "none";
-        renderer.scrollBar.orginalWidth = renderer.scrollBar.width;
-        renderer.scrollBar.width = 0;
-        renderer.content.style.height = "auto";
 
         renderer.screenToTextCoordinates = function(x, y) {
             var pos = this.pixelToScreenCoordinates(x, y);
@@ -658,60 +672,7 @@ apf.codebox = function(struct, tagName) {
             );
         };
 
-        renderer.maxLines = 4;
-        renderer.$computeLayerConfigWithScroll = renderer.$computeLayerConfig;
-        renderer.$computeLayerConfig = function() {
-            var config = this.layerConfig;
-            var height = this.session.getScreenLength() * this.lineHeight;
-            if (config.height != height) {
-                var vScroll = height > this.maxLines * this.lineHeight;
-
-                if (vScroll != this.$vScroll) {
-                    if (vScroll) {
-                        this.scrollBar.element.style.display = "";
-                        this.scrollBar.width = this.scrollBar.orginalWidth;
-                        this.container.style.height = config.height + "px";
-                        height = config.height;
-                        this.scrollTop = height - this.maxLines * this.lineHeight;
-                    } else {
-                        this.scrollBar.element.style.display = "none";
-                        this.scrollBar.width = 0;
-                    }
-
-                    this.onResize();
-                    this.$vScroll = vScroll;
-                }
-
-                if (this.$vScroll)
-                    return renderer.$computeLayerConfigWithScroll();
-
-                this.container.style.height = height + "px";
-                this.scroller.style.height = height + "px";
-                this.content.style.height = height + "px";
-                this._emit("resize");
-            }
-
-            var longestLine = this.$getLongestLine();
-            var lastRow = this.session.getLength();
-
-            this.scrollTop = 0;
-            config.width = longestLine;
-            config.padding = this.$padding;
-            config.firstRow = 0;
-            config.firstRowScreen = 0;
-            config.lastRow = lastRow;
-            config.lineHeight = this.lineHeight;
-            config.characterWidth = this.characterWidth;
-            config.minHeight = height;
-            config.maxHeight = height;
-            config.offset = 0;
-            config.height = height;
-
-            this.$gutterLayer.element.style.marginTop = 0 + "px";
-            this.content.style.marginTop = 0 + "px";
-            this.content.style.width = longestLine + 2 * this.$padding + "px";
-        };
-        renderer.isScrollableBy = function(){return false};
+        renderer.setOption("maxLines", 4);
 
         renderer.setStyle("ace_one-line");
         var editor = new Editor(renderer);
@@ -724,11 +685,21 @@ apf.codebox = function(struct, tagName) {
         editor.renderer.setHighlightGutterLine(false);
 
         editor.$mouseHandler.$focusWaitTimout = 0;
+        
+        
+        editor.setReadOnly = function(readOnly) {
+            if (this.$readOnly != readOnly) {
+                this.codebox.$ext.style.pointerEvents = readOnly ? "none" : "";
+            }
+            this.setOption("readOnly", readOnly);
+        };
 
         return editor;
     },
 
     this.$loadAml = function(){
+        if (typeof this["clearbutton"] == "undefined")
+            this.$setInheritedAttribute("clearbutton");
         if (typeof this["initial-message"] == "undefined")
             this.$setInheritedAttribute("initial-message");
     };

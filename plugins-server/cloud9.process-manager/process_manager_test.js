@@ -11,6 +11,7 @@ module.exports = {
     setUp: function() {
         this.eventEmitter = new EventEmitter();
         var vfs = vfsLocal({ root: "/" });
+        vfs.env = {};
         this.pm = new ProcessManager({
             "shell": shell.factory(vfs)
         }, this.eventEmitter);

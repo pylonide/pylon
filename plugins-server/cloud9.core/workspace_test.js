@@ -5,9 +5,10 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-"use strict";
+/*global after, afterEach, before, beforeEach, describe, it, setup, suite, teardown, test*/
 
-"mocha";
+"use strict";
+"use mocha";
 
 var assert = require("assert");
 var sinon = require("sinon");

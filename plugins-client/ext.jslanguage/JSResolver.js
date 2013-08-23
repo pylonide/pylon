@@ -14,7 +14,7 @@ define(function(require, exports, module) {
     
     this.getResolutions = function(marker){
       var type = this.getType(marker);
-      if (type){
+      if (type) {
         if (typeof this[type] === 'function'){
           return this[type](marker);
         }
@@ -26,13 +26,13 @@ define(function(require, exports, module) {
         var msg = marker.message;
         if (msg.indexOf("Missing semicolon") !== -1){
             return "missingSemicolon";
-        } else if (msg.indexOf("Unnecessary semicolon") !== -1){
+        }
+        else if (msg.indexOf("Unnecessary semicolon") !== -1) {
             return "unnecessarySemicolon";
         }
     }; 
     
-    this.missingSemicolon = function(marker){
-        console.log(marker.pos);
+    this.missingSemicolon = function(marker) {
         var label = "Add semicolon";
         var image = "";
         var row = marker.pos.sl;
@@ -57,8 +57,7 @@ define(function(require, exports, module) {
         return [markerResolution(label, image, preview, [delta])];
     };
     
-    this.unnecessarySemicolon = function(marker){
-        console.log(marker.pos);
+    this.unnecessarySemicolon = function(marker) {
         var label = "Remove semicolon";
         var image = "";
         var row = marker.pos.sl;

@@ -9,6 +9,7 @@ define(function(require, exports, module) {
 var editors = require("ext/editors/editors");
 var completionUtil = require("ext/codecomplete/complete_util");
 var editors = require("ext/editors/editors");
+var TokenIterator = require("ace/token_iterator").TokenIterator;
 
 var REQUIRE_ID_REGEX = /(?!["'])./;
 
@@ -63,32 +64,45 @@ function typeAlongComplete(e) {
 }
 
 function inputTriggerComplete(text, pasted) {
-    if (!isJavaScript())
-        return false;
-    if (!pasted && text === "." && language.isInferAvailable())
-        handleChar(text);
+    var complete = require("ext/language/complete");
+    var completionRegex = complete.getContinousCompletionRegex();
+    var idRegex = complete.getIdentifierRegex();
+    if (!pasted && completionRegex && text.match(completionRegex) && language.isInferAvailable())
+        handleChar(text, idRegex, completionRegex);
 }
 
 function typeAlongCompleteTextInput(text, pasted) {
-    if (!isJavaScript())
+    var complete = require("ext/language/complete");
+    var completionRegex = complete.getContinousCompletionRegex();
+    var idRegex = complete.getIdentifierRegex();
+    if (pasted || !completionRegex)
         return false;
-    if(!pasted)
-        handleChar(text);
+    handleChar(text, idRegex, completionRegex);
 }
 
 function isJavaScript() {
     return editors.currentEditor.amlEditor.syntax === "javascript";
 }
 
-function handleChar(ch) {
-    if (ch.match(/[A-Za-z0-9_\$\.\"\'\/]/)) {
+function inTextToken(editor, pos) {
+    var token = new TokenIterator(editor.getSession(), pos.row, pos.column).getCurrentToken();
+    return token && token.type && token.type === "text";
+}
+
+function inCommentToken(editor, pos) {
+    var token = new TokenIterator(editor.getSession(), pos.row, pos.column).getCurrentToken();
+    return token && token.type && token.type.match(/^comment/);
+}
+
+function handleChar(ch, idRegex, completionRegex) {
+    if (ch.match(idRegex || /[A-Za-z0-9_\$\.\"\'\/]/) || (completionRegex && ch.match(completionRegex))) {
         var ext = require("ext/language/complete");
         var editor = editors.currentEditor.amlEditor.$editor;
         var pos = editor.getCursorPosition();
         var line = editor.session.getDocument().getLine(pos.row);
-        if (!preceededByIdentifier(line, pos.column, ch))
+        if (!preceededByIdentifier(line, pos.column, ch) && !inTextToken(editor, pos))
             return false;
-        ext.deferredInvoke();
+        ext.deferredInvoke(ch === ".");
     }
 }
 

@@ -6,13 +6,14 @@
  */
 define(function(require, exports, module) {
     
-/*global barQuickfixCont sbQuickfix txtQuickfixHolder txtQuickfix txtQuickfixDoc */
+/*global barQuickfixCont sbQuickfix txtQuickfixHolder txtQuickfix txtQuickfixDoc mnuCtxEditor*/
 
 var ide = require("core/ide");
 var dom = require("ace/lib/dom");
 var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var lang = require("ace/lib/lang");
+var menus = require("ext/menus/menus");
 
 var quickfix;
 
@@ -74,7 +75,7 @@ module.exports = {
         commands.addCommand({
             name: "quickfix",
             hint: "quickfix",
-            bindKey: {mac: "Ctrl-Shift-Q|Ctrl-Alt-Q", win: "Ctrl-Shift-Q|Ctrl-Alt-Q"},
+            bindKey: {mac: "Ctrl-Shift-Q|Ctrl-Alt-Q", win: "Ctrl-Shift-Q|Alt-Shift-Q"},
             isAvailable : function(editor){
                 return apf.activeElement.localName == "codeeditor";
             },
@@ -82,7 +83,15 @@ module.exports = {
                 _self.invoke();
             }
         });
-          
+        
+        ide.addEventListener("init.ext/code/code", function() {
+            ext.nodes.push(
+                menus.addItemByPath("Tools/Quickfix", new apf.item({
+                    caption : "Quickfix",
+                    command: "quickfix"
+                }), 20001)
+            );
+        });
            
     },
     
@@ -94,8 +103,16 @@ module.exports = {
                
         editor.on("guttermousedown", editor.$markerListener = function(e) {
              _self.editor = editor;
-            if (e.getButton()) // !editor.isFocused()
+            if (!e.getButton())
                 return;
+            apf.addListener(mnuCtxEditor, "prop.visible", hideContext);
+            function hideContext(ev) {
+                // only fire when visibility is set to true
+                if (ev.value) {
+                    apf.removeListener(mnuCtxEditor, "prop.visible", hideContext);
+                    mnuCtxEditor.hide();
+                }
+            }
             var gutterRegion = editor.renderer.$gutterLayer.getRegion(e);
             if (gutterRegion != "markers")
                 return;

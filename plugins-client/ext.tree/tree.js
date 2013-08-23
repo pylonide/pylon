@@ -205,8 +205,10 @@ module.exports = ext.register("ext/tree/tree", {
             });
 
             if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
+                var hiddenExtensions = ["pyc", "class"];
+                var hiddenExtensionsRegex = new RegExp("\\.(?:" + hiddenExtensions.join("|") + ")$");
                 for (var file in files) {
-                    if (file.charAt(0) == '.')
+                    if (file.charAt(0) == '.' || hiddenExtensionsRegex.test(file))
                         delete files[file];
                 }
             }

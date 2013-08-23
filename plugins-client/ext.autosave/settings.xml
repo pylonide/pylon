@@ -2,5 +2,5 @@
     <a:checkbox 
         class="underlined" label="Enable Auto-Save" 
         value="[general/@autosaveenabled]" 
-        skin="checkbox_grey" position="2000" />
+        skin="checkbox_grey" position="2100" />
 </a:application>

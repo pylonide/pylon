@@ -45,7 +45,7 @@ module.exports = ext.register("ext/newresource/newresource", {
             name: "newfiletemplate",
             hint: "create a new directory resource",
             msg: "New directory created.",
-            bindKey: {mac: "Option-Ctrl-N", win: "Ctrl-Alt-N"},
+            bindKey: {mac: "Option-Ctrl-N", win: "Alt-N"},
             exec: function () {
                 _self.newfiletemplate();
             }
@@ -54,7 +54,7 @@ module.exports = ext.register("ext/newresource/newresource", {
         commands.addCommand({
             name: "newfolder",
             hint: "open the new file template dialog",
-            bindKey: {mac: "Option-Ctrl-Shift-N", win: "Ctrl-N"},
+            bindKey: {mac: "Option-Ctrl-Shift-N", win: "Ctrl-Shift-N"},
             exec: function () {
                 _self.newfolder();
             }

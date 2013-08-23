@@ -30,7 +30,6 @@ var anims = require("ext/anims/anims");
 // Ace dependencies
 var EditSession = require("ace/edit_session").EditSession;
 var Document = require("ace/document").Document;
-var ProxyDocument = require("ext/code/proxydocument");
 
 module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
     name     : "Search in files",
@@ -415,8 +414,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.appendLines(_self.consoleacedoc, messageHeader);
             }
             else {
-                _self.searchConsole.$editor.setSession(new EditSession(new ProxyDocument(new Document(messageHeader)), "ace/mode/c9search"));
-                _self.consoleacedoc = _self.searchConsole.$editor.session.getDocument().doc; // store a reference to the doc
+                _self.searchConsole.$editor.setSession(new EditSession(new Document(messageHeader), "ace/mode/c9search"));
+                _self.consoleacedoc = _self.searchConsole.$editor.session.doc; // store a reference to the doc
+
+                _self.consoleacedoc.ace = _self.searchConsole.$editor;
 
                 // set tab editor commands here
                 _self.searchConsole.$editor.commands._defaultHandlers = commands._defaultHandlers;
@@ -494,33 +495,33 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             this.firstRun = false;
 
         }
-        this.appendLines(doc, message.data);
 
-        // finish
-        if (message.type == "exit") {
-            var footer = ["\n"];
-            // if process failed add that info to the message
-            if (message.code && message.stderr) {
-                footer.push("Search in files failed with code " + message.code +
-                    " (" + message.stderr + ")");
-            }
-            else {
-                // add info about the result of this search
-                var footerData = { count: message.count, filecount: message.filecount };
-                footer.push(this.messageFooter(footerData));
-            }
-
-            footer.push("\n", "\n", "\n");
-            doc.insertLines(doc.getLength(), footer);
-
-            if (!chkSFConsole.checked) {
-                var node = doc.node;
-                node.setAttribute("saving", "0");
-                node.setAttribute("changed", "0");
-            }
-            btnSFFind.$ext.innerText = "Find";
-            this.appendLines(doc, message);
+        if (message.type !== "exit") {
+            this.appendLines(doc, message.data);
+            return true;
         }
+
+        var footer = [""];
+        // if process failed add that info to the message
+        if (message.code && message.stderr) {
+            footer.push("Search in files failed with code " + message.code +
+                " (" + message.stderr + ")");
+        }
+        else {
+            // add info about the result of this search
+            var footerData = { count: message.count, filecount: message.filecount };
+            footer.push(this.messageFooter(footerData));
+        }
+
+        footer.push("", "", "");
+        doc.insertLines(doc.getLength(), footer);
+
+        if (!chkSFConsole.checked) {
+            var node = doc.node;
+            node.setAttribute("saving", "0");
+            node.setAttribute("changed", "0");
+        }
+        btnSFFind.$ext.innerText = "Find";
         return true;
     },
 
@@ -565,11 +566,20 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (!content || (!content.length && !content.count)) // blank lines can get through
             return;
 
-        if (typeof content == "string")
-            content = content.split("\n");
+        if (typeof content != "string")
+            content = content.join("\n");
 
-        if (content.length > 0)
-            doc.insertLines(doc.getLength(), content);
+        if (content.length > 0) {
+            doc.ace.$blockScrolling++;
+            doc.insert({row: doc.getLength(), column: 0}, content);
+            doc.ace.$blockScrolling--;
+        }
+
+        //if (typeof content == "string")
+        //    content = content.split("\n");
+
+        //if (content.length > 0)
+        //    doc.insertLines(doc.getLength(), content);
     },
 
     messageHeader : function(path, options) {
@@ -591,7 +601,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         if (this.replaceAll)
             replacement = "', replaced as '" + options.replacement ;
 
-        return "Searching for '" + options.query + replacement + "' in " + path + optionsDesc + "\n";
+        return "Searching for '" + options.query + replacement + "' in " + path + optionsDesc + "\n\n";
     },
 
     messageFooter : function(countJSON) {
@@ -616,10 +626,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             this.searchConsole = this.$panel.appendChild(new apf.codeeditor({
                 syntax            : "c9search",
                 "class"           : "nocorner aceSearchConsole aceSearchResults",
-                anchors           : "0 0 0 0",
                 theme             : "ace/theme/monokai",
                 overwrite         : "[{require('core/settings').model}::editors/code/@overwrite]",
                 folding           : "true",
+                style             : "position:absolute;left:0;right:0;top:0;bottom:0",
                 behaviors         : "[{require('core/settings').model}::editors/code/@behaviors]",
                 selectstyle       : "false",
                 activeline        : "[{require('core/settings').model}::editors/code/@activeline]",
@@ -638,7 +648,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 fadefoldwidgets   : "false",
                 wrapmodeViewport  : "true"
             }));
-
+            
             _self.searchConsole.$editor.session.setWrapLimitRange(null, null);
 
             this.$panel.addEventListener("afterclose", function() {

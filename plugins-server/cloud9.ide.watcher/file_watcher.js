@@ -26,6 +26,7 @@ util.inherits(FileWatcher, EventEmitter);
         var self = this;
         this.vfs.watch(this.path, {file:false, persistent: true}, function(err, meta) {
             if (err) {
+                // console.log("ERROR".red, err);
                 return process.nextTick(function() {
                     self.emit("close");
                 });

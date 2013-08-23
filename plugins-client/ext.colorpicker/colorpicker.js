@@ -224,8 +224,9 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var editor = e.editor;
 
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax === "css" || e.amlEditor.syntax === "svg" ||
-                SyntaxDetector.getContextSyntax(doc, pos, e.amlEditor.syntax) === "css" || (line && line.indexOf("<a:skin") > -1)))
+            if (["css", "svg", "less", "stylus"].indexOf(e.amlEditor.syntax) === -1 &&
+                SyntaxDetector.getContextSyntax(doc, pos, e.amlEditor.syntax) !== "css" &&
+                (!line || line.indexOf("<a:skin") === -1))
                 return;
 
             line = doc.getLine(pos.row);
@@ -247,10 +248,11 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             var doc = e.doc;
             var pos = e.pos;
             var editor = e.editor;
-
             var line = doc.getLine(1);
-            if (!(e.amlEditor.syntax === "css" || e.amlEditor.syntax === "svg" ||
-                SyntaxDetector.getContextSyntax(doc, pos, e.amlEditor.syntax) === "css" || (line && line.indexOf("<a:skin") > -1)))
+
+            if (["css", "svg", "less", "stylus"].indexOf(e.amlEditor.syntax) === -1 &&
+                SyntaxDetector.getContextSyntax(doc, pos, e.amlEditor.syntax) !== "css" &&
+                (!line || line.indexOf("<a:skin") === -1))
                 return;
             //do not show anything when a selection is made...
             var range = editor.selection.getRange();

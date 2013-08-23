@@ -38,7 +38,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     expanded: false,
     nodes : [],
     prefsItems: [],
-    horScrollAutoHide : true,
     edgeDistance : 3,
     offsetWidth : 0,
     viewStatusBarMenuItem: null,
@@ -49,11 +48,6 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         ide.addEventListener("settings.load", function(e){
             if (!e.model.queryNode("auto/statusbar/@show"))
                 e.model.setQueryValue("auto/statusbar/@show", "true");
-
-            var codeSettings = e.model.queryNode("//editors/code");
-            if (codeSettings && codeSettings.hasAttribute("autohidehorscrollbar")) {
-                _self.horScrollAutoHide = apf.isTrue(codeSettings.getAttribute("autohidehorscrollbar"));
-            }
             
             if (apf.isTrue(e.model.queryValue("auto/statusbar/@show")))
                 _self.preinit();
@@ -142,17 +136,10 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             });
         });
 
-        this.sbWidth = code.amlEditor.$editor.renderer.scrollBar.width;
+        this.sbWidth = code.amlEditor.$editor.renderer.scrollBar.fullWidth;
         barIdeStatus.setAttribute("right", this.sbWidth + this.edgeDistance);
-        barIdeStatus.setAttribute("bottom", this.sbWidth + this.edgeDistance);
+        barIdeStatus.setAttribute("bottom", this.edgeDistance);
         code.amlEditor.$ext.parentNode.appendChild(barIdeStatus.$ext);
-
-        code.amlEditor.addEventListener("prop.autohidehorscrollbar", function(e) {
-            if (e.changed) {
-                _self.horScrollAutoHide = !!e.value;
-                _self.setPosition();
-            }
-        });
         
         // load model with initial values
         var state = mdlStatusBar.data.selectSingleNode("//state");
@@ -198,6 +185,9 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             };
             editor.addEventListener("changeSelection", _self.$onChangeStatus);                    
             editor.addEventListener("changeStatus", _self.$onChangeStatus);
+            editor.renderer.on("scrollbarVisibilityChanged", function() {
+                _self.setPosition(editor);
+            })
             editor.$hasSBEvents = true;
         }
     },
@@ -224,12 +214,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
 
         var cursor = ace.selection.lead;
         lblRowCol.setAttribute("caption", (cursor.row + 1) + ":" + (cursor.column + 1));
-        
-        if (ace.renderer.$horizScroll != this.$horizScroll) {
-            this.$horizScroll = ace.renderer.$horizScroll;
-            this.setPosition();
-        }
-    
+            
         var status = "";
         if (ace.$vimModeHandler)
             status = ace.$vimModeHandler.getStatusText();
@@ -277,11 +262,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         settings.save();
     },
 
-    setPosition : function() {
+    setPosition : function(ace) {
         var _self = this;
         var bottom = this.edgeDistance;
-        if (this.$horizScroll || !this.horScrollAutoHide)
-            bottom += this.sbWidth;
+        if (ace)
+            bottom += ace.renderer.scrollBarH.getHeight();
 
         if (this.$barMoveTimer)
             clearTimeout(this.$barMoveTimer);
@@ -289,6 +274,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         this.$barMoveTimer = setTimeout(function() {
             if (typeof barIdeStatus !== "undefined") {
                 barIdeStatus.setAttribute("bottom", bottom);
+                barIdeStatus.$ext.style.bottom = bottom + "px";
                 barIdeStatus.setAttribute("right", _self.sbWidth + _self.edgeDistance + _self.offsetWidth);
             }
         }, 50);

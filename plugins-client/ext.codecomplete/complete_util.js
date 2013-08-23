@@ -72,6 +72,26 @@ function fetchText(staticPrefix, path) {
         return false;
 }
 
+/**
+ * Determine if code completion results triggered for oldLine/oldPos
+ * would still be applicable for newLine/newPos
+ * (assuming you would filter them for things that no longer apply).
+ */
+function canCompleteForChangedLine(oldLine, newLine, oldPos, newPos, identifierRegex) {
+    if (oldPos.row !== newPos.row)
+        return false;
+    
+    if (oldLine === newLine)
+        return true;
+        
+    if (newLine.indexOf(oldLine) !== 0)
+        return false;
+        
+    var oldPrefix = retrievePrecedingIdentifier(oldLine, oldPos.column, identifierRegex);
+    var newPrefix = retrievePrecedingIdentifier(newLine, newPos.column, identifierRegex);
+    return newLine.substr(0, newLine.length - newPrefix.length) === oldLine.substr(0, oldLine.length - oldPrefix.length);
+}
+
 /** @deprecated Use retrievePrecedingIdentifier */
 exports.retrievePreceedingIdentifier = function() {
     console.error("Deprecated: 'retrievePreceedingIdentifier' - use 'retrievePrecedingIdentifier' instead"); 
@@ -81,5 +101,7 @@ exports.retrievePrecedingIdentifier = retrievePrecedingIdentifier;
 exports.retrieveFollowingIdentifier = retrieveFollowingIdentifier;
 exports.findCompletions = findCompletions;
 exports.fetchText = fetchText;
+exports.DEFAULT_ID_REGEX = ID_REGEX;
+exports.canCompleteForChangedLine = canCompleteForChangedLine;
 
 });

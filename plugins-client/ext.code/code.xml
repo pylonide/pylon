@@ -32,8 +32,7 @@
       contextmenu       = "mnuCtxEditor"
       globalcommands    = "true"
       readonly          = "{
-            (!stServerConnected.active and !require('core/ide').local) 
-            || [@loading] 
+            [@loading] 
             || (location.host and window.dbg and dbg.state and [@debug])
         }"
     />

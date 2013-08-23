@@ -4,7 +4,7 @@ var projectDir = path.normalize(__dirname + "/../");
 
 module.exports = [
     {
-        packagePath: "connect-architect/connect",
+        packagePath: "./connect",
         port: port,
         host: "localhost"
     }, {
@@ -15,11 +15,11 @@ module.exports = [
     }, {
         packagePath: "./cloud9.permissions"
     }, {
-        packagePath: "connect-architect/connect.session",
+        packagePath: "./connect.session",
         key: "dav.sid." + port,
         secret: "1234"
     }, {
-        packagePath: "connect-architect/connect.session.memory"
+        packagePath: "./connect.session.memory"
     }, {
         packagePath: "architect/plugins/architect.log"
     }, {

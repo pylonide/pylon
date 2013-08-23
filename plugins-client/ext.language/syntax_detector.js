@@ -31,7 +31,7 @@ var mixedLanguages = {
  * - Maintain a syntax tree for an opened file
  */
 function getSyntaxRegions(doc, originalSyntax) {
-     if (! mixedLanguages[originalSyntax])
+     if (!mixedLanguages[originalSyntax])
         return [{
             syntax: originalSyntax,
             sl: 0,
@@ -111,13 +111,20 @@ function getSyntaxRegions(doc, originalSyntax) {
 }
 
 function getContextSyntaxPart(doc, pos, originalSyntax) {
-     if (! mixedLanguages[originalSyntax])
-        return {
+     if (!mixedLanguages[originalSyntax]) {
+        var value;
+        var result = {
             language: originalSyntax,
-            value: doc.getValue(),
             region: getSyntaxRegions(doc, originalSyntax)[0],
             index: 0
         };
+        result.__defineGetter__("value", function() {
+            if (!value)
+                value = doc.getValue();
+            return value;
+        });
+        return result;
+    }
     var regions = getSyntaxRegions(doc, originalSyntax);
     for (var i = 0; i < regions.length; i++) {
         var region = regions[i];
@@ -136,13 +143,19 @@ function getContextSyntax(doc, pos, originalSyntax) {
 
 function regionToCodePart (doc, region, index) {
     var lines = doc.getLines(region.sl, region.el);
-    return {
-        value: region.sl === region.el ? lines[0].substring(region.sc, region.ec) :
-            [lines[0].substring(region.sc)].concat(lines.slice(1, lines.length-1)).concat([lines[lines.length-1].substring(0, region.ec)]).join(doc.getNewLineCharacter()),
+    var value;
+    var result = {
         language: region.syntax,
         region: region,
         index: index
     };
+    result.__defineGetter__("value", function() {
+        if (!value)
+            value = region.sl === region.el ? lines[0].substring(region.sc, region.ec) :
+                [lines[0].substring(region.sc)].concat(lines.slice(1, lines.length-1)).concat([lines[lines.length-1].substring(0, region.ec)]).join(doc.getNewLineCharacter());
+        return value;
+    });
+    return result;
 }
 
 function getCodeParts (doc, originalSyntax) {
@@ -155,14 +168,16 @@ function getCodeParts (doc, originalSyntax) {
 function posToRegion (region, pos) {
     return {
         row: pos.row - region.sl,
-        column: pos.column
+        column: pos.column,
+        path: pos.path
     };
 }
 
 function regionToPos (region, pos) {
     return {
         row: pos.row + region.sl,
-        column: pos.column
+        column: pos.column,
+        path: pos.path
     };
 }
 

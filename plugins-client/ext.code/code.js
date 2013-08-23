@@ -19,13 +19,14 @@ var EditSession = require("ace/edit_session").EditSession;
 var Document = require("ace/document").Document;
 var Range = require("ace/range").Range;
 var MultiSelectCommands = require("ace/multi_select").commands;
-var ProxyDocument = require("ext/code/proxydocument");
 var defaultCommands = require("ace/commands/default_commands").commands;
 var markup = require("text!ext/code/code.xml");
 var settings = require("ext/settings/settings");
 var themes = require("ext/themes/themes");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
+
+require("ace/config").setDefaultValue("renderer", "vScrollBarAlwaysVisible", true);
 
 apf.actiontracker.actions.aceupdate = function(undoObj, undo){
     var q = undoObj.args;
@@ -41,84 +42,13 @@ apf.actiontracker.actions.aceupdate = function(undoObj, undo){
         q[1].redoChanges(q[0]);
 };
 
-// name: ["Menu caption", "extensions", "content-type", "hidden|other"]
-var SupportedModes = {
-    abap: ["ABAP", "abap", "text/x-abap", "other"],
-    asciidoc: ["AsciiDoc", "asciidoc", "text/x-asciidoc", "other"],
-    c9search: ["C9Search", "c9search", "text/x-c9search", "hidden"],
-    c_cpp: ["C, C++", "c|cc|cpp|cxx|h|hh|hpp", "text/x-c"],
-    clojure: ["Clojure", "clj", "text/x-script.clojure"],
-    coffee: ["CoffeeScript", "*Cakefile|coffee|cf", "text/x-script.coffeescript"],
-    coldfusion: ["ColdFusion", "cfm", "text/x-coldfusion", "other"],
-    csharp: ["C#", "cs", "text/x-csharp"],
-    css: ["CSS", "css", "text/css"],
-    dart: ["Dart", "dart", "text/x-dart"],
-    diff: ["Diff", "diff|patch", "text/x-diff", "other"],
-    glsl: ["Glsl", "glsl|frag|vert", "text/x-glsl", "other"],
-    golang: ["Go", "go", "text/x-go"],
-    groovy: ["Groovy", "groovy", "text/x-groovy", "other"],
-    haml: ["Haml", "haml", "text/haml", "other"],
-    haxe: ["haXe", "hx", "text/haxe", "other"],
-    html: ["HTML", "htm|html|xhtml", "text/html"],
-    jade: ["Jade", "jade", "text/x-jade"],
-    java: ["Java", "java", "text/x-java-source"],
-    jsp: ["JSP", "jsp", "text/x-jsp", "other"],
-    javascript: ["JavaScript", "js", "application/javascript"],
-    json: ["JSON", "json", "application/json"],
-    jsx: ["JSX", "jsx", "text/x-jsx", "other"],
-    latex: ["LaTeX", "latex|tex|ltx|bib", "application/x-latex", "other"],
-    less: ["LESS", "less", "text/x-less"],
-    lisp: ["Lisp", "lisp|scm|rkt", "text/x-lisp", "other"],
-    liquid: ["Liquid", "liquid", "text/x-liquid", "other"],
-    lua: ["Lua", "lua", "text/x-lua"],
-    luapage: ["LuaPage", "lp", "text/x-luapage", "other"],
-    makefile: ["Makefile", "*GNUmakefile|*makefile|*Makefile|*OCamlMakefile|make", "text/x-makefile", "other"],
-    markdown: ["Markdown", "md|markdown", "text/x-markdown", "other"],
-    objectivec: ["Objective-C", "m", "text/objective-c", "other"],
-    ocaml: ["OCaml", "ml|mli", "text/x-script.ocaml", "other"],
-    perl: ["Perl", "pl|pm", "text/x-script.perl"],
-    pgsql: ["pgSQL", "pgsql", "text/x-pgsql", "other"],
-    php: ["PHP", "php|phtml", "application/x-httpd-php"],
-    powershell: ["Powershell", "ps1", "text/x-script.powershell", "other"],
-    python: ["Python", "py", "text/x-script.python"],
-    r:    ["R"    , "r", "text/x-r", "other"],
-    rdoc: ["RDoc" , "Rd", "text/x-rdoc", "other"],
-    rhtml:["RHTML", "Rhtml", "text/x-rhtml", "other"],
-    ruby: ["Ruby", "ru|gemspec|rake|rb", "text/x-script.ruby"],
-    scad: ["OpenSCAD", "scad", "text/x-scad", "other"],
-    scala: ["Scala", "scala", "text/x-scala"],
-    scss: ["SCSS", "scss|sass", "text/x-scss"],
-    sh: ["SH", "sh|bash|bat", "application/x-sh"],
-    stylus: ["Stylus", "styl|stylus", "text/x-stylus"],
-    sql: ["SQL", "sql", "text/x-sql"],
-    svg: ["SVG", "svg", "image/svg+xml", "other"],
-    tcl: ["Tcl", "tcl", "text/x-tcl", "other"],
-    text: ["Text", "txt", "text/plain", "hidden"],
-    textile: ["Textile", "textile", "text/x-web-textile", "other"],
-    typescript: ["Typescript", "ts|str", "text/x-typescript"],
-    xml: ["XML", "xml|rdf|rss|wsdl|xslt|atom|mathml|mml|xul|xbl", "application/xml"],
-    xquery: ["XQuery", "xq", "text/x-xquery"],
-    yaml: ["YAML", "yaml", "text/x-yaml"]
-};
+var modes = require("./modes");
+var SupportedModes = modes.all;
 
-var fileExtensions = {}, ModesCaption = {}, contentTypes = {}, hiddenMode = {}, otherMode = {};
-Object.keys(SupportedModes).forEach(function(name) {
-    var mode = SupportedModes[name];
-    mode.caption = mode[0];
-    mode.mime = mode[2];
-    mode.hidden = mode[3] == "hidden" ? true : false;
-    mode.other = mode[3] == "other" ? true : false;
-    mode.ext = mode[1];
-    mode.ext.split("|").forEach(function(ext) {
-        fileExtensions[ext] = name;
-    });
-    ModesCaption[mode.caption] = name;
+var fileExtensions = modes.extensions;
+var ModesCaption = modes.captions;
+var contentTypes = modes.types;
 
-    hiddenMode[mode.caption] = mode.hidden;
-    otherMode[mode.caption] = mode.other;
-
-    contentTypes[mode.mime] = name;
-});
 
 module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
@@ -279,7 +209,7 @@ module.exports = ext.register("ext/code/code", {
         }
         else {
             doc.isInited = doc.hasValue();
-            doc.acedoc = doc.acedoc || new ProxyDocument(new Document(doc.getValue() || ""));
+            doc.acedoc = doc.acedoc || new Document(doc.getValue() || "");
             var syntax = _self.getSyntax(doc.getNode());
             var mode = amlEditor.getMode(syntax);
             doc.acesession = new EditSession(doc.acedoc, mode);
@@ -343,9 +273,7 @@ module.exports = ext.register("ext/code/code", {
                 //??? destroy doc.acesession
                 setTimeout(function() {
                     if (doc.acedoc) {
-                        doc.acedoc.doc.$lines = [];
-                        doc.acedoc.doc._eventRegistry = null;
-                        doc.acedoc.doc._defaultHandlers = null;
+                        doc.acedoc.$lines = [];
                         doc.acedoc._eventRegistry = null;
                         doc.acedoc._defaultHandlers = null;
                         doc.acedoc = null;
@@ -556,9 +484,14 @@ module.exports = ext.register("ext/code/code", {
 
         c = 0;
         this.menus.push(
+            addEditorMenu("Edit/Text/Align", "alignCursors"),
+            addEditorMenu("Edit/Text/Sort Lines", "sortlines"),
+            menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
+            addEditorMenu("Edit/Text/Increase Number at Cursor", "modifyNumberUp"),
+            addEditorMenu("Edit/Text/Decrease Number at Cursor", "modifyNumberDown"),
+            menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
             addEditorMenu("Edit/Text/Remove Word Right", "removewordright"),
             addEditorMenu("Edit/Text/Remove Word Left", "removewordleft"),
-
             menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
             addEditorMenu("Edit/Text/Transpose Letters", "transposeletters")
         );
@@ -710,11 +643,11 @@ module.exports = ext.register("ext/code/code", {
 
             menus.addItemByPath("View/Syntax/Plain Text", new apf.item({
                 type: "radio",
-                value: "text/plain",
+                value: "text",
                 group : grpSyntax
             }), c += 100),
 
-            otherGrpSyntax = new apf.group({
+            otherGrpSyntax = window.otherGrpSyntax = new apf.group({
                 type : ""
             }),
 
@@ -735,22 +668,30 @@ module.exports = ext.register("ext/code/code", {
                 }
                 _self.prevSelection = this;
             }
+            _self.setSyntax(e.currentTarget.value);
         }
 
-        for (var mode in ModesCaption) {
-            if (hiddenMode[mode])
+        for (var key in SupportedModes) {
+            var mode = SupportedModes[key];
+            if (mode.hidden)
                 continue;
-
+            
             this.menus.push(
-                menus.addItemByPath("View/Syntax/" + (otherMode[mode] ? "Other/" + mode : mode), new apf.item({
+                menus.addItemByPath("View/Syntax/" + (mode.isPrimary ? mode.caption : "Other/" + mode.caption), new apf.item({
                     type: "radio",
-                    value: ModesCaption[mode],
-                    group : otherMode[mode] ? otherGrpSyntax : grpSyntax,
+                    value: mode.id,
+                    group : mode.isPrimary ? grpSyntax : otherGrpSyntax,
                     onclick : onModeClick
                 }), c += 100)
             );
         }
-
+        
+        var syntaxMenu = window[menus.getMenuId("View/Syntax/Other")];
+        syntaxMenu.addEventListener("prop.visible", function(){
+            syntaxMenu.$ext.style.maxHeight = window.innerHeight - 50 + "px";
+            syntaxMenu.$ext.style.overflowY = "auto";
+        })
+        
         c = 0;
         this.menus.push(
             /**** Goto ****/
@@ -814,6 +755,10 @@ module.exports = ext.register("ext/code/code", {
 
             if (!acesession)
                 return;
+
+            if (acesession.doc.getValue() === e.data) {
+                return;
+            }
 
             acesession.doc.setValue(e.data);
 

@@ -5,16 +5,16 @@
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-"use strict";
+/*global after, afterEach, before, beforeEach, describe, it, setup, suite, teardown, test*/
 
-"mocha";
+"use strict";
+"use mocha";
 
 var Assert = require("assert");
 var VfsLocal = require("vfs-local");
 var Search = require("./search");
 
 var basePath = __dirname;
-var workspaceId = "user/mikedeboer/cloud9";
 
 describe("search", function() {
     var o;
@@ -47,10 +47,10 @@ describe("search", function() {
             // exit
             function(code, stderr, msg) {
                 Assert.equal(code, 0);
-                Assert.equal(msg.count, 36);
-                Assert.equal(msg.filecount, 6);
+                Assert.equal(msg.count, 35);
+                Assert.equal(msg.filecount, 4);
                 var lines = out.split("\n");
-                Assert.equal(lines.length, 47);
+                Assert.equal(lines.length, 42);
 
                 next();
             }

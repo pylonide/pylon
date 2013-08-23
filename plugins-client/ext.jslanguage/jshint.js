@@ -34,7 +34,7 @@ handler.analyzeSync = function(value, ast) {
         return markers;
 
     lint(value, {
-        es5: true,
+        maxerr: 100,
         undef: false,
         onevar: false,
         passfail: false,
@@ -48,7 +48,9 @@ handler.analyzeSync = function(value, ast) {
         loopfunc: true,
         lastsemic: true,
         multistr: true,
-        onecase: true
+        onecase: true,
+        proto: true,
+        moz: true
     });
     
     lint.errors.forEach(function(warning) {
@@ -57,6 +59,8 @@ handler.analyzeSync = function(value, ast) {
         var type = "warning";
         var reason = warning.reason;
         if (reason.indexOf("Expected") !== -1 && reason.indexOf("instead saw") !== -1) // Parse error!
+            type = "error";
+        if (reason.indexOf("Unclosed string") === 0) // Parse error!
             type = "error";
         if (reason.indexOf("begun comment") !== -1) // Stupidly formulated parse error!
             type = "error";

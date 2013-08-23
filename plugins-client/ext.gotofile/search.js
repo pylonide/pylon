@@ -15,7 +15,7 @@ var fileTypes = {
     "mathml": 5, "mml": 5, "php": 1, "phtml": 1, "html": 5, "xhtml": 5, 
     "coffee": 1, "py": 1, "ru": 1, "gemspec": 5, "rake": 5, "rb": 1, "c": 1, 
     "cc": 1, "cpp": 1, "cxx": 1, "h": 2, "hh": 2, "hpp": 2, "cs": 1, "java": 1, 
-    "clj": 1, "groovy": 1, "scala": 1, "ml": 1, "mli": 1, "md": 2, 
+    "clj": 1, "groovy": 1, "logic": 1, "lql": 1, "scala": 1, "ml": 1, "mli": 1, "md": 2, 
     "markdown": 2, "textile": 5, "latex": 5, "tex": 5, "ltx": 5, "lua": 1, 
     "pl": 1, "pm": 2, "ps1": 1, "cfm": 1, "sql": 2, "sh": 1, "bash": 1, 
     "bmp": 10, "djv": 10, "djvu": 10, "gif": 10, "ico": 10, "jpg": 10, 

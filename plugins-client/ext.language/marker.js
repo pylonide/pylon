@@ -12,6 +12,18 @@ var tooltip = require('ext/language/tooltip');
 var Editors = require("ext/editors/editors");
 var Code = require("ext/code/code");
 
+
+function SimpleAnchor(row, column) {
+    this.row = row;
+    this.column = column || 0;
+}
+
+SimpleAnchor.prototype.onChange = Anchor.prototype.onChange;
+SimpleAnchor.prototype.setPosition = function(row, column) {
+    this.row = row;
+    this.column = column;
+}
+
 module.exports = {
 
     disabledMarkerTypes: {},
@@ -44,17 +56,12 @@ module.exports = {
     },
 
     removeMarkers: function(session) {
-        var markers = session.getMarkers(false);
-        for (var id in markers) {
-            // All language analysis' markers are prefixed with language_highlight
-            if (markers[id].clazz.indexOf('language_highlight_') === 0) {
-                session.removeMarker(id);
-            }
-        }
-        for (var i = 0; i < session.markerAnchors.length; i++) {
-            session.markerAnchors[i].detach();
+        var markers = session.markerAnchors
+        for (var i = 0; i < markers.length; i++) {
+            session.removeMarker(markers[i].id);
         }
         session.markerAnchors = [];
+        session.setAnnotations([]);
     },
 
     addMarkers: function(event, editor) {
@@ -65,7 +72,7 @@ module.exports = {
         
         var mySession = editor.session;
         if (!mySession.markerAnchors) mySession.markerAnchors = [];
-        this.removeMarkers(editor.session);
+        this.removeMarkers(mySession);
         mySession.languageAnnos = [];
         annos.forEach(function(anno) {
             // Certain annotations can temporarily be disabled
@@ -74,39 +81,32 @@ module.exports = {
             // Multi-line markers are not supported, and typically are a result from a bad error recover, ignore
             if(anno.pos.el && anno.pos.sl !== anno.pos.el)
                 return;
-            // Using anchors here, to automaticaly move markers as text around the marker is updated
-            var anchor = new Anchor(mySession.getDocument(), anno.pos.sl, anno.pos.sc || 0);
-            mySession.markerAnchors.push(anchor);
-            var markerId;
-            var colDiff = anno.pos.ec - anno.pos.sc;
-            var rowDiff = anno.pos.el - anno.pos.sl;
+
+            mySession.markerAnchors.push(anno);
+            var pos = anno.pos || {};
+            
+            anno.start = new SimpleAnchor(pos.sl, pos.sc);
+            
+            if (pos.sc !== undefined && pos.ec !== undefined) {
+                anno.range = new Range(pos.sl, pos.sc || 0, pos.el, pos.ec || 0);
+                anno.id = mySession.addMarker(anno.range, "language_highlight_" + (anno.type ? anno.type : "default"));
+                anno.range.start = anno.start;
+                anno.colDiff = pos.ec - pos.sc;
+                anno.rowDiff = pos.el - pos.sl;
+            }
+
+            if (!anno.message)
+                return;
             var gutterAnno = {
                 guttertext: anno.message,
                 type: anno.level || "warning",
                 text: anno.message,
                 pos: anno.pos,
-                resolutions: anno.resolutions
-                // row will be filled in updateFloat()
+                resolutions: anno.resolutions,
+                row: pos.sl
             };
-
-            function updateFloat(single) {
-                if (markerId)
-                    mySession.removeMarker(markerId);
-                gutterAnno.row = anchor.row;
-                if (anno.pos.sc !== undefined && anno.pos.ec !== undefined) {
-                    var range = Range.fromPoints(anchor.getPosition(), {
-                        row: anchor.row + rowDiff,
-                        column: anchor.column + colDiff
-                    });
-                    markerId = mySession.addMarker(range, "language_highlight_" + (anno.type ? anno.type : "default"));
-                }
-                if (single) mySession.setAnnotations(mySession.languageAnnos);
-            }
-            updateFloat();
-            anchor.on("change", function() {
-                updateFloat(true);
-            });
-            if (anno.message) mySession.languageAnnos.push(gutterAnno);
+            anno.gutterAnno = gutterAnno;
+            mySession.languageAnnos.push(gutterAnno);
         });
         mySession.setAnnotations(mySession.languageAnnos);
     },
@@ -135,69 +135,71 @@ module.exports = {
      * it does so instanteously, rather than with a 500ms delay, thereby avoid ugly box bouncing etc.
      */
     onChange: function(session, event) {
-        if(this.ext.disabled) return;
+        if (this.ext.disabled) return;
         var range = event.data.range;
-        var isInserting = event.data.action.substring(0, 6) !== "remove";
+        var isInserting = event.data.action[0] !== "r";
         var text = event.data.text;
         var adaptingId = text && text.search(/[^a-zA-Z0-9\$_]/) === -1;
+        var languageAnnos = [];
+        var markers = session.markerAnchors || [];
         if (!isInserting) { // Removing some text
-            var markers = session.getMarkers(false);
             // Run through markers
             var foundOne = false;
-            for (var id in markers) {
-                var marker = markers[id];
-                if (marker.clazz.indexOf('language_highlight_') === 0) {
-                    if (range.contains(marker.range.start.row, marker.range.start.column)) {
-                        session.removeMarker(id);
-                        foundOne = true;
-                    }
-                    else if (adaptingId && marker.range.contains(range.start.row, range.start.column)) {
-                        foundOne = true;
-                        var deltaLength = text.length;
-                        marker.range.end.column -= deltaLength;
-                    }
+            for (var i = 0; i < markers.length; i++) {
+                var marker = markers[i];
+                
+                if (!range.compareInside(marker.start.row, marker.start.column)) {
+                    session.removeMarker(marker.id);
+                    foundOne = true;
+                    continue;
+                }
+                else if (adaptingId && marker.range && marker.range.contains(range.start.row, range.start.column)) {
+                    foundOne = true;
+                    marker.colDiff -= text.length;
+                }
+                
+                var start = marker.start
+                start.onChange(event);
+                if (marker.range) {
+                    marker.range.end.row = start.row + marker.rowDiff;
+                    marker.range.end.column = start.column + marker.colDiff;
+                }
+
+                if (marker.gutterAnno) {
+                    languageAnnos.push(marker.gutterAnno);
+                    marker.gutterAnno.row = marker.start.row;
                 }
             }
-            if (!foundOne) {
-                // Didn't find any markers, therefore there will not be any anchors or annotations either
+            // Didn't find any markers, therefore there will not be any anchors or annotations either
+            if (!foundOne)
                 return;
-            }
-            // Run through anchors
-            for (var i = 0; i < session.markerAnchors.length; i++) {
-                var anchor = session.markerAnchors[i];
-                if (range.contains(anchor.row, anchor.column)) {
-                    anchor.detach();
-                }
-            }
-            // Run through annotations
-            for (var i = 0; i < session.languageAnnos.length; i++) {
-                var anno = session.languageAnnos[i];
-                if (range.contains(anno.row, 1)) {
-                    session.languageAnnos.splice(i, 1);
-                    i--;
-                }
-            }
-            session.setAnnotations(session.languageAnnos);
         }
         else { // Inserting some text
-            var markers = session.getMarkers(false);
-            // Only if inserting an identifier
-            if (!adaptingId) return;
             // Run through markers
             var foundOne = false;
-            for (var id in markers) {
-                var marker = markers[id];
-                if (marker.clazz.indexOf('language_highlight_') === 0) {
-                    if (marker.range.contains(range.start.row, range.start.column)) {
-                        foundOne = true;
-                        var deltaLength = text.length;
-                        marker.range.end.column += deltaLength;
-                    }
+            for (var i = 0; i < markers.length; i++) {
+                var marker = markers[i];
+                // Only if inserting an identifier
+                if (adaptingId && marker.range && marker.range.contains(range.start.row, range.start.column)) {
+                    foundOne = true;
+                    marker.colDiff += text.length;
+                }
+                
+                var start = marker.start
+                start.onChange(event);
+                if (marker.range) {
+                    marker.range.end.row = start.row + marker.rowDiff;
+                    marker.range.end.column = start.column + marker.colDiff;
+                }
+                
+                if (marker.gutterAnno) {
+                    languageAnnos.push(marker.gutterAnno);
+                    marker.gutterAnno.row = marker.start.row;
                 }
             }
         }
-        if (foundOne)
-            session._dispatchEvent("changeBackMarker");
+        session._dispatchEvent("changeBackMarker");
+        session.setAnnotations(languageAnnos);
     },
     
     destroy : function(){

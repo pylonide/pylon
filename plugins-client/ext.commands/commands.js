@@ -34,7 +34,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
         dev     : "Ajax.org",
         alone   : true,
         type    : ext.GENERAL,
-    
+        
         init : function(){
             var _self = this;
             
@@ -138,7 +138,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             commands && Object.keys(commands).forEach(function(name) {
                 var command = commands[name];
                 if (typeof command === "string")
-                    return this.bindKey(command, name);
+                    return this.bindKey(command, name, asDefault);
     
                 if (typeof command === "function")
                     command = { exec: command };
@@ -149,6 +149,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 if (asDefault && _self.commands[command.name])
                     return;
     
+                command.isDefault = asDefault;
                 this.addCommand(command);
             }, this);
         },
@@ -184,7 +185,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             };
         },
         
-        bindKey: function(key, command) {
+        bindKey: function(key, command, asDefault) {
             if(!key)
                 return;
 
@@ -195,12 +196,17 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 var hashId = binding.hashId;
                 var hash = (ckb[hashId] || (ckb[hashId] = {}))
                 
-                if (!hash[binding.key])
+                if (!hash[binding.key]) {
                     hash[binding.key] = command;
-                else if (Array.isArray(hash[binding.key]))
-                    hash[binding.key].push(command);
-                else
-                    hash[binding.key] = [hash[binding.key], command];
+                } else {
+                    if (!Array.isArray(hash[binding.key]))
+                        hash[binding.key] = [hash[binding.key]]
+                    
+                    if (asDefault || command.isDefault)
+                        hash[binding.key].unshift(command);
+                    else
+                        hash[binding.key].push(command);
+                }
             });
         },
          

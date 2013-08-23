@@ -17,6 +17,10 @@ completer.handlesLanguage = function(language) {
     return language === "javascript";
 };
 
+completer.getMaxFileSizeSupported = function() {
+    return Infinity;
+};
+
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var line = doc.getLine(pos.row);
     var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);

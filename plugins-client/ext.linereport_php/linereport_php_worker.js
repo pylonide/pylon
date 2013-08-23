@@ -41,7 +41,9 @@ handler.analyze = function(doc, fullAst, callback) {
  */
 handler.$postProcess = function(line) {
     return line.replace(/(.*) (in .*? )?on line ([0-9]+)$/, "$3:1: $1/")
-        .replace(/parse error in (.*)\/(.+?)\/?$/, "parse error in $2");
+        .replace(/parse error in (.*)\/(.+?)\/?$/, "parse error in $2")
+        .replace(handler.workspaceDir, "")
+        .replace(/^([\d\s:]+)(PHP (?:parse )?(Warning|Error):)/i, "$1 $3:");
 };
 
 });

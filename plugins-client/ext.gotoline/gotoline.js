@@ -172,7 +172,8 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             left: left
         });
         console.log("correcting??",correct,(correct ? correct.top : top) + "px",(correct ? correct.left : left) + "px");
-        winGotoLine.$ext.style.top = (correct ? correct.top : top) + "px";
+        winGotoLine.top = (correct ? correct.top : top);
+        winGotoLine.$ext.style.top = winGotoLine.top + "px";
 
         winGotoLine.show();
         txtLineNr.focus();

@@ -43,14 +43,16 @@ module.exports = function() {
 
         var args = this.assembleCommand(options);
 
-        if (!args)
-            return onExit(1, "Invalid arguments");
-
-        vfs.spawn(args.command, { args: args, cwd: options.path, stdoutEncoding: "utf8", stderrEncoding: "utf8" }, function(err, meta) {
+        vfs.spawn(args.command, { 
+            args: args,
+            cwd: options.path,
+            stdoutEncoding: "utf8",
+            stderrEncoding: "utf8"
+        }, function(err, meta) {
             if (err || !meta.process)
                 return onExit(1, err);
 
-            var stderr = "", gotExitCode = false, gotClose = false;
+            var stderr = "";
             meta.process.stdout.on("data", function(data) {
                 onData(data);
             });
@@ -60,21 +62,7 @@ module.exports = function() {
             });
 
             meta.process.on("exit", function(code) {
-                if (gotClose) {
-                    onExit(code, stderr);
-                }
-                else {
-                    gotExitCode = code;
-                }
-            });
-
-            meta.process.stdout.on("close", function(code) {
-                if (gotExitCode !== false) {
-                    onExit(gotExitCode, stderr);
-                }
-                else {
-                    gotClose = true;
-                }
+                onExit(code, stderr);
             });
         });
     };
@@ -83,23 +71,30 @@ module.exports = function() {
         var excludeExtensions = [
             "\\.gz", "\\.bzr", "\\.cdv", "\\.dep", "\\.dot", "\\.nib",
             "\\.plst", "_darcs", "_sgbak", "autom4te\\.cache", "cover_db",
-            "_build", "\\.tmp"
+            "_build", "\\.tmp", "\\.pyc", "\\.class"
         ];
-
         var excludeDirectories = [
             "\\.c9revisions", "\\.architect", "\\.sourcemint",
             "\\.git", "\\.hg", "\\.pc", "\\.svn", "blib",
             "CVS", "RCS", "SCCS", "\\.DS_Store"
         ];
+        var excludeAbsoluteDirectories = [
+            "/proc", "/sys", "/mnt"
+        ];
 
-        var args = ["-L", ".", "-type", "f", "-a"];
+        var args = ["-n", "10", this.env.findCmd];
+        args.command = "nice";
 
         if (this.env.platform === "darwin")
-            args.unshift("-E");
+            args.push("-E");
+        else
+            args.push("-O3");
+        
+        args.push("-P", ".", "-type", "f", "-mount", "-a");
 
         //Hidden Files
         if (!options.showHiddenFiles)
-            args.push("(", "!", "-regex", ".*/\\..*", ")");
+            args.push("(", "!", "-regex", ".*/\\..*", "-or", "-name", ".htaccess", ")");
 
         if (options.maxdepth)
             args.push("-maxdepth", options.maxdepth);
@@ -111,11 +106,14 @@ module.exports = function() {
         excludeDirectories.forEach(function(pattern){
             args.push("(", "!", "-regex", ".*\\/" + pattern + "\\/.*", ")");
         });
+        
+        excludeAbsoluteDirectories.forEach(function(dir){
+            args.push("(", "!", "-path", dir, ")");
+        });
 
         if (this.env.platform !== "darwin")
             args.push("-regextype", "posix-extended", "-print");
 
-        args.command = this.env.findCmd;
         return args;
     };
 };

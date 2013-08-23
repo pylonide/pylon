@@ -13,7 +13,7 @@ var code = require("ext/code/code");
 var editors = require("ext/editors/editors");
 var EditSession = require("ace/edit_session").EditSession;
 var WorkerClient = require("ace/worker/worker_client").WorkerClient;
-var UIWorkerClient = require("ace/worker/worker_client").UIWorkerClient;
+var createUIWorkerClient = require("ext/language/worker").createUIWorkerClient;
 var useUIWorker = window.location && /[?&]noworker=1/.test(window.location.search);
 
 var complete = require("ext/language/complete");
@@ -55,8 +55,12 @@ module.exports = ext.register("ext/language/language", {
 
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function() {
-            var Worker = useUIWorker ? UIWorkerClient : WorkerClient;
-            var worker = _self.worker = new Worker(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
+            var worker;
+            if (useUIWorker) {
+                worker = _self.worker = createUIWorkerClient(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
+            } else  {
+                worker = _self.worker = new WorkerClient(["treehugger", "ext", "ace", "c9"], "ext/language/worker", "LanguageWorker");
+            }
             complete.setWorker(worker);
 
             ide.addEventListener("closefile", function(e){
@@ -77,13 +81,16 @@ module.exports = ext.register("ext/language/language", {
                 // background tabs=open document, foreground tab=switch to file
                 // this is needed because with concorde changeSession event is fired when document is still empty
                 var isVisible = editor.xmlRoot == event.node;
-                worker.call(isVisible ? "switchFile" : "documentOpen", [
+                var data = [
                     util.stripWSFromPath(path),
                     editor.syntax,
                     event.doc.getValue(),
                     null,
                     ide.workspaceDir
-                ]);
+                ];
+                worker.call("documentOpen", data);
+                if (isVisible)
+                    worker.call("switchFile", data);
             });
 
             // Language features
@@ -114,13 +121,7 @@ module.exports = ext.register("ext/language/language", {
         settings.addSettings("Language Support", markupSettings);
 
         // disable ace worker
-        if (!EditSession.prototype.$startWorker_orig) {
-            EditSession.prototype.$startWorker_orig = EditSession.prototype.$startWorker;
-            EditSession.prototype.$startWorker = function() {
-                if (this.$modeId != "ace/mode/javascript")
-                    this.$startWorker_orig();
-            };
-        }
+        EditSession.prototype.$startWorker = function() {};
     },
 
     isWorkerEnabled : function () {
@@ -143,6 +144,7 @@ module.exports = ext.register("ext/language/language", {
         this.$onCursorChange = this.onCursorChangeDefer.bind(this);
         this.editor.session.selection.on("changeCursor", this.$onCursorChange);
         var oldSession = this.editor.session;
+        worker.$doc = oldSession;
         this.setPath();
 
         this.updateSettings();
@@ -161,6 +163,7 @@ module.exports = ext.register("ext/language/language", {
             _self.$timeout = setTimeout(function() {
                 _self.setPath();
             }, 100);
+            worker.$doc = oldSession;
         });
 
         this.editor.on("changeMode", function() {
@@ -170,11 +173,7 @@ module.exports = ext.register("ext/language/language", {
         });
 
         this.editor.on("change", function(e) {
-            e.range = {
-                start: e.data.range.start,
-                end: e.data.range.end
-            };
-            worker.emit("change", e);
+            worker.changeListener(e);
             marker.onChange(_self.editor.session, e);
         });
 
@@ -255,21 +254,28 @@ module.exports = ext.register("ext/language/language", {
      * Registers a new language handler.
      * @param modulePath  the require path of the handler
      * @param contents    (optionally) the contents of the handler script
+     * @param callback    An optional callback called when the handler is initialized
      */
-    registerLanguageHandler: function(modulePath, contents) {
+    registerLanguageHandler: function(modulePath, contents, callback) {
         var _self = this;
 
         // We have to wait until the paths for ace are set - a nice module system will fix this
         ide.addEventListener("extload", function(){
+            _self.worker.on("registered", function reply(e) {
+                if (e.data.path !== modulePath)
+                    return;
+                _self.worker.removeEventListener(reply);
+                callback && callback(e.data.err);
+            });
             _self.worker.call("register", [modulePath, contents]);
         });
     },
 
     onCursorChangeDefer: function() {
         if(!this.onCursorChangeDeferred) {
-            this.onCursorChangeDeferred = lang.deferredCall(this.onCursorChange.bind(this));
+            this.onCursorChangeDeferred = lang.delayedCall(this.onCursorChange.bind(this), 250);
         }
-        this.onCursorChangeDeferred.cancel().schedule(250);
+        this.onCursorChangeDeferred.delay(250);
     },
 
     onCursorChange: function() {

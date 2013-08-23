@@ -45,8 +45,8 @@ function wordDistanceAnalyzer(doc, pos, prefix) {
 
 function analyze(doc, pos) {
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
-    
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, completer.$getIdentifierRegex());
+
     var analysisCache = wordDistanceAnalyzer(doc, pos, identifier);
     return analysisCache;
 }
@@ -54,13 +54,15 @@ function analyze(doc, pos) {
 completer.complete = function(doc, fullAst, pos, currentNode, callback) {
     var identDict = analyze(doc, pos);
     var line = doc.getLine(pos.row);
-    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column);
+    var identifier = completeUtil.retrievePrecedingIdentifier(line, pos.column, this.$getIdentifierRegex());
     
     var allIdentifiers = [];
     for (var ident in identDict) {
         allIdentifiers.push(ident);
     }
     var matches = completeUtil.findCompletions(identifier, allIdentifiers);
+    
+    matches = matches.slice(0, 40); // limit results for performance
 
     callback(matches.map(function(m) {
         return {
