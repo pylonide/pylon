@@ -38,7 +38,7 @@ function prefixBinarySearch(items, prefix) {
         else if (prefix > items[middle]) {
             startIndex = middle + 1;
         }
-        middle = Math.floor((stopIndex + stopIndex) / 2);
+        middle = Math.floor((stopIndex + startIndex) / 2);
     }
     
     // Look back to make sure we haven't skipped any
