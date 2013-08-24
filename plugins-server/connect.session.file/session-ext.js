@@ -2,15 +2,16 @@ var assert = require("assert");
 var path = require("path");
 var fs = require("fs");
 var Store = require("connect/lib/middleware/session/store");
+var exists = fs.existsSync || path.existsSync;
 
 module.exports = function startup(options, imports, register) {
 
     assert(options.sessionsPath, "option 'sessionsPath' is required");
     
-    if (!path.existsSync(path.dirname(options.sessionsPath))) {
+    if (!exists(path.dirname(options.sessionsPath))) {
         fs.mkdir(path.dirname(options.sessionsPath), 0755);
     }
-    if (!path.existsSync(options.sessionsPath)) {
+    if (!exists(options.sessionsPath)) {
         fs.mkdir(options.sessionsPath, 0755);
     }
 
@@ -69,7 +70,8 @@ FileStore.prototype.__proto__ = Store.prototype;
 
 FileStore.prototype.get = function(sid, fn){
   var self = this;
-  path.exists(self.basePath + "/" + sid, function(exists) {
+  var exists = fs.exists || path.exists;
+  exists(self.basePath + "/" + sid, function(exists) {
       if (exists) {
           fs.readFile(self.basePath + "/" + sid, function(err, data) {
               if (err) {
@@ -117,7 +119,8 @@ FileStore.prototype.set = function(sid, sess, fn){
 
 FileStore.prototype.destroy = function(sid, fn){
   var self = this;
-  path.exists(self.basePath + "/" + sid, function(exists) {
+  var exists = fs.exists || path.exists;
+  exists(self.basePath + "/" + sid, function(exists) {
       if (exists) {
           fs.unlink(self.basePath + "/" + sid, function(err) {
               if (err) {
