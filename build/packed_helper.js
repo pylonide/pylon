@@ -73,10 +73,11 @@ function rewriteMappings(type, pluginList, callback) {
         var dir = "";
         var c9Prefix = "../plugins-client/ext.";
         var infraPrefix = "../plugins-client/ext.";
+        var exists = fs.existsSync || path.existsSync;
 
-        if (!path.existsSync(path.normalize(__dirname + "/" + c9Prefix + name))) {
+        if (!exists(path.normalize(__dirname + "/" + c9Prefix + name))) {
             //console.warn("Couldn't find " + path.normalize(__dirname + "/" + c9Prefix + name) + "; looking elsewhere...");
-            if (!path.existsSync(path.normalize(__dirname + "/" + infraPrefix + name))) {
+            if (!exists(path.normalize(__dirname + "/" + infraPrefix + name))) {
                 //console.warn("Couldn't find " + path.normalize(__dirname + "/" + infraPrefix + name) + "; looking elsewhere...");
                 
                 console.error("We have a problem. I have no idea where " + name + " is referenced.");
