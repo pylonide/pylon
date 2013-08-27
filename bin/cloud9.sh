@@ -1,6 +1,6 @@
 #!/bin/sh
 
-CMD_DIR="$( cd "$( dirname "$0" )" && pwd )"
+CMD_DIR="$( cd "$( dirname $( readlink "$0" ) )" && pwd )"
 cd "$CMD_DIR/.."
 
 make worker
