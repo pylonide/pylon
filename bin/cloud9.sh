@@ -1,7 +1,7 @@
 #!/bin/sh
 
-CMD_DIR="$( cd "$( dirname $( readlink "$0" ) )" && pwd )"
-cd "$CMD_DIR/.."
+ME=`readlink "$0" || echo "$0"`
+cd `dirname "$ME"`/..
 
 make worker
 
