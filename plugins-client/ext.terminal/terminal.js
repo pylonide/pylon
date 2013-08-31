@@ -6,7 +6,6 @@ define(function(require, exports, module) {
 
     var ttycss = require("text!ext/terminal/static/style.css");
 
-    require("socket.io");
     require(["termjs"], function(){
         require(["ext/terminal/tty"]);
     });

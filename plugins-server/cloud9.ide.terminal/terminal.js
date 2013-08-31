@@ -12,9 +12,6 @@ module.exports = function setup(options, imports, register) {
 
     imports.ide.register(name, TerminalPlugin, register);
 
-    //conf = tty.config.readConfig();
-    //app = tty.createServer(conf);
-
     var app = tty.createServer({
         shell: 'bash',
         port: 8000

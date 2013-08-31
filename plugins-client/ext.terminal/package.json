@@ -10,7 +10,6 @@
             "client-plugins",
             "static",
             "ext.console",
-            "lib.socketio",
             "lib.termjs"
         ]
     }
