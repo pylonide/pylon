@@ -48,7 +48,6 @@ var config = [
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
-    "./../plugins-client/lib.socketio",
     "./../plugins-client/lib.termjs",
     "./c9.smith.io",
     {

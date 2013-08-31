@@ -57,12 +57,12 @@ tty.open = function() {
   if (document.location.pathname) {
     var parts = document.location.pathname.split('/')
       , base = parts.slice(0, parts.length - 1).join('/') + '/'
-      , resource = base.substring(1) + 'socket.io';
+      , resource = base.substring(1) + 'engine.io';
 
     var server = window.location.href.split(":")[0] + ":" + window.location.href.split(":")[1] + ":8000";
-    tty.socket = io.connect(server, { resource: resource });
+    tty.socket = eio.Socket(server, { resource: resource });
   } else {
-    tty.socket = io.connect();
+    tty.socket = new eio.Socket();
   }
 
   tty.windows = [];
@@ -72,8 +72,6 @@ tty.open = function() {
     root: document.documentElement,
     body: document.body,
     h1: document.getElementsByTagName('h1')[0],
-    open: document.getElementById('open'),
-    lights: document.getElementById('lights'),
     newTerminal: document.getElementsByClassName('newTerminalBtn')[0]
 };
 
@@ -90,59 +88,47 @@ tty.open = function() {
     });
   }
 
-  if (open) {
-    on(open, 'click', function() {
-      new Window;
-    });
-  }
-
-  if (lights) {
-    on(lights, 'click', function() {
-      tty.toggleLights();
-    });
-  }
-
   tty.socket.on('connect', function() {
     tty.reset();
     tty.emit('connect');
   });
 
-  tty.socket.on('data', function(id, data) {
-    if (!tty.terms[id]) return;
-    tty.terms[id].write(data);
-  });
+  tty.socket.on('message', function(data) {
+    data = JSON.parse(data);
+    if(data.cmd == 'data') {
+      if(!tty.terms[data.id]) return;
+      tty.terms[data.id].write(data.payload);
+    }
+    else if(data.cmd == 'killACK') {
+      if(!tty.terms[data.id]) return;
+      tty.terms[data.id]._destroy();
+    }
+    else if(data.cmd == 'sync') {
+      console.log('Attempting to sync...');
+      console.log(data.terms);
 
-  tty.socket.on('kill', function(id) {
-    if (!tty.terms[id]) return;
-    tty.terms[id]._destroy();
-  });
+      tty.reset();
 
-  // XXX Clean this up.
-  tty.socket.on('sync', function(terms) {
-    console.log('Attempting to sync...');
-    console.log(terms);
+      var emit = tty.socket.emit;
+      tty.socket.emit = function() {};
 
-    tty.reset();
+      Object.keys(data.terms).forEach(function(key) {
+        var tdata = terms[key]
+          , win = new Window
+          , tab = win.tabs[0];
 
-    var emit = tty.socket.emit;
-    tty.socket.emit = function() {};
+        delete tty.terms[tab.id];
+        tab.pty = tdata.pty;
+        tab.id = tdata.id;
+        tty.terms[tdata.id] = tab;
+        win.resize(tdata.cols, tdata.rows);
+        tab.setProcessName(tdata.process);
+        tty.emit('open tab', tab);
+        tab.emit('open');
+      });
 
-    Object.keys(terms).forEach(function(key) {
-      var data = terms[key]
-        , win = new Window
-        , tab = win.tabs[0];
-
-      delete tty.terms[tab.id];
-      tab.pty = data.pty;
-      tab.id = data.id;
-      tty.terms[data.id] = tab;
-      win.resize(data.cols, data.rows);
-      tab.setProcessName(data.process);
-      tty.emit('open tab', tab);
-      tab.emit('open');
-    });
-
-    tty.socket.emit = emit;
+      tty.socket.emit = emit;
+    }
   });
 
   // We would need to poll the os on the serverside
@@ -252,13 +238,7 @@ function Window(socket) {
   el.appendChild(bar);
   bar.appendChild(button);
   bar.appendChild(title);
-
-  if (document.getElementById("terminalWindow") != undefined) {
-    document.getElementById('terminalWindow').appendChild(el);
-  }
-  else {
-    body.appendChild(el);
-  }
+  document.getElementById('terminalWindow').appendChild(el);
 
   tty.windows.push(this);
 
@@ -420,8 +400,7 @@ Window.prototype.resizing = function(ev) {
 
   function move(ev) {
     var x, y;
-    y = el.offsetHeight - term.element.clientHeight;
-    //y = 500; Offset not properly working in div BORKEN, YOUS NEEDS TO FIX THIS NOOW!
+    y = window.innerHeight - document.getElementsByClassName('page curpage')[0].clientHeight + 15;
     x = ev.pageX - el.offsetLeft;
     y = (ev.pageY - el.offsetTop) - y;
     el.style.width = x + 'px';
@@ -493,14 +472,9 @@ Window.prototype.maximize = function() {
 
   window.scrollTo(0, 0);
 
-  if(document.getElementsByClassName('page curpage')[0] != undefined) {
-    x = document.getElementsByClassName('page curpage')[0].clientWidth / term.element.offsetWidth;
-    y = document.getElementsByClassName('page curpage')[0].clientHeight / term.element.offsetHeight;
-  }
-  else {
-    x = root.clientWidth / term.element.offsetWidth;
-    y = root.clientHeight / term.element.offsetHeight;
-  }
+  x = document.getElementsByClassName('page curpage')[0].clientWidth / term.element.offsetWidth;
+  y = document.getElementsByClassName('page curpage')[0].clientHeight / term.element.offsetHeight;
+
   x = (x * term.cols) | 0;
   y = (y * term.rows) | 0;
 
@@ -618,23 +592,30 @@ function Tab(win, socket) {
 
   win.tabs.push(this);
 
-  this.socket.emit('create', cols, rows, function(err, data) {
-    if (err) return self._destroy();
-    self.pty = data.pty;
-    self.id = data.id;
-    tty.terms[self.id] = self;
-    self.setProcessName(data.process);
-    tty.emit('open tab', self);
-    self.emit('open');
+
+  this.socket.send(JSON.stringify({cmd: 'create', cols: cols, rows: rows}));
+
+  this.socket.on('message', function(data) {
+      data = JSON.parse(data);
+      if(data.cmd == 'createACK' && self.id == '') {
+          if(data.error) return self._destroy();
+          self.pty = data.pty;
+          self.id = data.id;
+          tty.terms[self.id] = self;
+          self.setProcessName(data.process);
+          tty.emit('open tab', self);
+          self.emit('open');
+      }
   });
-};
+
+}
 
 inherits(Tab, Terminal);
 
 // We could just hook in `tab.on('data', ...)`
 // in the constructor, but this is faster.
 Tab.prototype.handler = function(data) {
-  this.socket.emit('data', this.id, data);
+  this.socket.send(JSON.stringify({cmd: 'data', id: this.id, payload: data}));
 };
 
 // We could just hook in `tab.on('title', ...)`
@@ -701,7 +682,7 @@ Tab.prototype.focus = function() {
 Tab.prototype._resize = Tab.prototype.resize;
 
 Tab.prototype.resize = function(cols, rows) {
-  this.socket.emit('resize', this.id, cols, rows);
+  this.socket.send(JSON.stringify({cmd: 'resize', id: this.id, cols: cols, rows: rows}));
   this._resize(cols, rows);
   tty.emit('resize tab', this, cols, rows);
   this.emit('resize', cols, rows);
@@ -741,7 +722,7 @@ Tab.prototype._destroy = function() {
 
 Tab.prototype.destroy = function() {
   if (this.destroyed) return;
-  this.socket.emit('kill', this.id);
+  this.socket.send(JSON.stringify({cmd: 'kill', id: this.id}));
   this._destroy();
   tty.emit('close tab', this);
   this.emit('close');
@@ -784,9 +765,13 @@ Tab.prototype.hookKeys = function() {
   });
 
   this.on('request paste', function(key) {
-    this.socket.emit('request paste', function(err, text) {
-      if (err) return;
-      self.send(text);
+    this.socket.send(JSON.stringify({cmd: 'request paste'}));
+    this.socket.on('message', function(data) {
+      data = JSON.parse(data);
+      if(data.cmd == 'pasteACK') {
+        if(data.error) return;
+        self.send(data.stdout);
+      }
     });
   });
 
@@ -868,10 +853,15 @@ Tab.prototype.bindMouse = function() {
 
 Tab.prototype.pollProcessName = function(func) {
   var self = this;
-  this.socket.emit('process', this.id, function(err, name) {
-    if (err) return func && func(err);
-    self.setProcessName(name);
-    return func && func(null, name);
+  this.socket.send(JSON.stringify({cmd: 'process', id: this.id}));
+
+  this.socket.on('message', function(data) {
+    data = JSON.parse(data);
+    if(data.cmd == 'processACK') {
+      if (data.error) return func && func(data.error);
+      self.setProcessName(data.name);
+      return func && func(null, name);
+    }
   });
 };
 

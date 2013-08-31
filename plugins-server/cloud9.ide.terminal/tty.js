@@ -12,11 +12,10 @@ var path = require('path')
   , Stream = require('stream').Stream
   , EventEmitter = require('events').EventEmitter;
 
-var io = require('socket.io')
+var io = require('engine.io')
   , pty = require('pty.js')
   , term = require('term.js');
 
-var config = require('./config')
 var logger = require('./logger');
 
 /**
@@ -28,23 +27,24 @@ function Server(conf) {
     return new Server(conf);
   }
 
-  var self = this
-    , conf = config.checkConfig(conf);
+  var self = this;
+
+  this.sessions = {};
+  this.conf = conf;
 
   this.server = conf.https && conf.https.key
     ? require('https').createServer(conf.https)
     : require('http').createServer();
 
-  this.sessions = {};
-  this.conf = conf;
-  this.io = io.listen(this.server, conf.io || {
-    log: false
-  });
-
   this.on('listening', function() {
     self.log('Listening on port \x1b[1m%s\x1b[m.', self.conf.port);
   });
 
+  this.io = io.attach(this.server, conf.io || { log: false });
+
+  //this.io = io.listen(conf.port, conf.io || {
+  //  log: false
+  //});
   this.init();
 }
 
@@ -70,46 +70,11 @@ Server.prototype.initLocal = function() {
   });
 };
 
-Server.prototype.setAuth = function(func) {
-  this._auth = func;
-};
-
-Server.prototype.handleOptions = function(req, res, next) {
-  var self = this
-    , conf = this.conf;
-
-  res.contentType('.js');
-  fs.readFile(conf.json, 'utf8', function(err, data) {
-    try {
-      data = JSON.parse(data) || {};
-    } catch(e) {
-      data = {};
-    }
-
-    if (data.term) {
-      Object.keys(data.term).forEach(function(key) {
-        conf.term[key] = data.term[key];
-      });
-    }
-
-    res.send('Terminal._opts = '
-      + JSON.stringify(conf.term, null, 2)
-      + ';\n'
-      + '('
-      + applyConfig
-      + ')();');
-  });
-};
-
 Server.prototype.initIO = function() {
   var self = this
-    , io = this.io;
+    , io = this.io
 
-  io.configure(function() {
-    io.disable('log');
-  });
-
-  io.sockets.on('connection', function(socket) {
+  io.on('connection', function(socket) {
     return self.handleConnection(socket);
   });
 };
@@ -120,32 +85,29 @@ Server.prototype.handleConnection = function(socket) {
   // XXX Possibly wrap socket events from inside Session
   // constructor, and do: session.on('create')
   // or session.on('create term').
-  socket.on('create', function(cols, rows, func) {
-    return session.handleCreate(cols, rows, func);
-  });
-
-  socket.on('data', function(id, data) {
-    return session.handleData(id, data);
-  });
-
-  socket.on('kill', function(id) {
-    return session.handleKill(id);
-  });
-
-  socket.on('resize', function(id, cols, rows) {
-    return session.handleResize(id, cols, rows);
-  });
-
-  socket.on('process', function(id, func) {
-    return session.handleProcess(id, func);
-  });
-
-  socket.on('disconnect', function() {
-    return session.handleDisconnect();
-  });
-
-  socket.on('request paste', function(func) {
-    return session.handlePaste(func);
+  socket.on('message', function(data) {
+    data = JSON.parse(data);
+    if (data.cmd == 'data') {
+      return session.handleData(data.id, data.payload);
+    }
+    else if(data.cmd == 'create') {
+      return session.handleCreate(data.cols, data.rows);
+    }
+    else if (data.cmd == 'kill') {
+      return session.handleKill(data.id);
+    }
+    else if (data.cmd == 'resize') {
+      return session.handleResize(data.id, data.cols, data.rows);
+    }
+    else if (data.cmd == 'process') {
+      return session.handleProcess(data.id);
+    }
+    else if (data.cmd == 'disconnect') {
+      return session.handleDisconnect();
+    }
+    else if (data.cmd == 'request paste') {
+      return session.handlePaste();
+    }
   });
 };
 
@@ -181,15 +143,12 @@ function Session(server, socket) {
   this.server = server;
   this.socket = socket;
   this.terms = {};
-  this.req = socket.handshake;
 
   var conf = this.server.conf
     , terms = this.terms
     , sessions = this.server.sessions
-    , req = socket.handshake;
 
-  this.user = req.user;
-  this.id = req.user || this.uid();
+  this.id = this.uid();
 
   // Kill/sync older session.
   if (conf.syncSession) {
@@ -292,10 +251,10 @@ Session.prototype.sync = function() {
     });
   }, 30);
 
-  this.socket.emit('sync', terms);
+  this.socket.send(JSON.stringify({cmd: 'sync', terms: terms}));
 };
 
-Session.prototype.handleCreate = function(cols, rows, func) {
+Session.prototype.handleCreate = function(cols, rows) {
   var self = this
     , terms = this.terms
     , conf = this.server.conf
@@ -307,7 +266,7 @@ Session.prototype.handleCreate = function(cols, rows, func) {
 
   if (len >= conf.limitPerUser || pty.total >= conf.limitGlobal) {
     this.warning('Terminal limit reached.');
-    return func({ error: 'Terminal limit.' });
+    self.socket.send(JSON.stringify({cmd: 'createACK', error: 'Terminal limit.' }));
   }
 
   var shell = typeof conf.shell === 'function'
@@ -329,13 +288,13 @@ Session.prototype.handleCreate = function(cols, rows, func) {
   terms[id] = term;
 
   term.on('data', function(data) {
-    self.socket.emit('data', id, data);
+    socket.send(JSON.stringify({cmd: 'data', id: id, payload: data}));
   });
 
   term.on('close', function() {
     // Make sure it closes
     // on the clientside.
-    self.socket.emit('kill', id);
+    socket.send(JSON.stringify({cmd: 'killACK', id: id}));
 
     // Ensure removal.
     if (terms[id]) delete terms[id];
@@ -349,14 +308,11 @@ Session.prototype.handleCreate = function(cols, rows, func) {
     'Created pty (id: %s, master: %d, pid: %d).',
     id, term.fd, term.pid);
 
-  return func(null, {
-    id: id,
-    pty: term.pty,
-    process: sanitize(conf.shell)
-  });
+  socket.send(JSON.stringify({cmd: 'createACK', id: id, pty: term.pty, process: sanitize(conf.shell)}));
 };
 
 Session.prototype.handleData = function(id, data) {
+  //console.log('ID: %s | Payload: %s', id, data);
   var terms = this.terms;
   if (!terms[id]) {
     this.warning(''
@@ -381,11 +337,12 @@ Session.prototype.handleResize = function(id, cols, rows) {
   terms[id].resize(cols, rows);
 };
 
-Session.prototype.handleProcess = function(id, func) {
+Session.prototype.handleProcess = function(id) {
+  var socket = this.socket;
   var terms = this.terms;
   if (!terms[id]) return;
   var name = terms[id].process;
-  return func(null, sanitize(name));
+  socket.send(JSON.stringify({cmd: 'processACK', name: sanitize(name)}));
 };
 
 Session.prototype.handleDisconnect = function() {
@@ -432,15 +389,16 @@ Session.prototype.handleDisconnect = function() {
     conf.sessionTimeout / 1000 / 60 | 0);
 };
 
-Session.prototype.handlePaste = function(func) {
+Session.prototype.handlePaste = function() {
+  var socket = this.socket;
   var execFile = require('child_process').execFile;
 
   function exec(args) {
     var file = args.shift();
     return execFile(file, args, function(err, stdout, stderr) {
-      if (err) return func(err);
-      if (stderr && !stdout) return func(new Error(stderr));
-      return func(null, stdout);
+      if (err) return socket.send(JSON.stringify({cmd: 'pasteACK', error: err}));
+      if (stderr && !stdout) return socket.send(JSON.stringify({cmd: 'pasteACK', error: new Error(stderr)}));
+      socket.send(JSON.stringify({cmd: 'pasteACK', stdout: stdout}));
     });
   }
 
@@ -521,7 +479,6 @@ function applyConfig() {
 exports = Server;
 exports.Server = Server;
 exports.Session = Session;
-exports.config = config;
 exports.logger = logger;
 exports.createServer = Server;
 
