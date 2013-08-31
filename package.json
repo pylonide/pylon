@@ -37,7 +37,9 @@
         "connect-architect": "0.0.6",
         "architect-agent": "0.2.2",
         "architect-socket-transport": "0.3.0",
-
+        "socket.io": "~0.9.13",
+        "pty.js": "~0.2.3",
+        "term.js": "~0.0.3",
 
         "ace":          "https://github.com/ajaxorg/ace/tarball/cacd51e2fe911971428dd40d9b09ba3c913a7ed5",
         "asyncjs":      "https://github.com/ajaxorg/async.js/tarball/bd936c60bb87c58052bcc0307f4e637bd35c908f",
