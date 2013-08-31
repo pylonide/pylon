@@ -5,7 +5,7 @@
               onclose="return require('ext/console/console').checkIfPageCanClose(event)">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
                     <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"
-                      onclick  = "require('ext/console/console').clear()" />
+                      onclick  = "require('ext/console/console').clear();this.blur();" />
                     <a:button id="btnConsoleSettings" skin="btn_icon_only"
                       icon    = "console_settings.png"
                       margin  = "2 4 0 0"
@@ -17,6 +17,7 @@
                             console.maximizeConsoleHeight();
                         else
                             console.restoreConsoleHeight();
+                        this.blur();
                       "/>
                     <a:divider skin="divider_console"></a:divider>
                     <a:button
@@ -59,6 +60,15 @@
                       bottom = "0"
                       skin   = "console_scrollbar"
                       width  = "17" />
+                </a:page>
+                <a:page id="pgTerminal" caption="Terminal" name="terminal">
+                    <a:button id="newTerminalBtn" skin="btn_icon_only" icon="console_new_terminal.png" margin="2 2 0 0" class="newTerminalBtn"
+                              onclick = "
+                        var console = require('ext/console/console');
+                        console.hideInput();
+                        this.blur();
+                      "/>
+                    <div id="terminalWindow"></div>
                 </a:page>
             </a:tab>
 

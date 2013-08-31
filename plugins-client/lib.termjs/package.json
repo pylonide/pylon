@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.client.termjs",
+    "version": "0.0.1",
+    "main": "termjs-lib.js",
+    "private": true,
+
+    "dependencies": {
+        "term.js": "~0.0.3"
+    },
+
+    "plugin": {
+        "provides": ["client.termjs"],
+        "consumes": ["static"]
+    }
+}
