@@ -10,16 +10,19 @@ var tty = require('./tty.js');
 module.exports = function setup(options, imports, register) {
     var conf, app;
 
+    // We are registering only for boot-time information presence
     imports.ide.register(name, TerminalPlugin, register);
+
+    var server = imports.http.getServer();
 
     var app = tty.createServer({
         shell: 'bash',
-        port: 8000
+        server: server,
+        localOnly: true
     });
 
-    app.listen();
+    imports.log.info("[tty.js] Cloud9 terminal started, serving requests on port: %s".green, server.address().port);
 
-    imports.log.info("I AM ALIIIIVE!");
 };
 
 var TerminalPlugin = function(ide, workspace) {
@@ -27,7 +30,3 @@ var TerminalPlugin = function(ide, workspace) {
 };
 
 util.inherits(TerminalPlugin, Plugin);
-
-(function() {
-
-}).call(TerminalPlugin.prototype);

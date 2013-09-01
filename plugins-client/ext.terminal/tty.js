@@ -59,7 +59,7 @@ tty.open = function() {
       , base = parts.slice(0, parts.length - 1).join('/') + '/'
       , resource = base.substring(1) + 'engine.io';
 
-    var server = window.location.href.split(":")[0] + ":" + window.location.href.split(":")[1] + ":8000";
+    var server = "ws://" + window.location.href.split("\/")[2];
     tty.socket = eio.Socket(server, { resource: resource });
   } else {
     tty.socket = new eio.Socket();
@@ -626,11 +626,6 @@ Tab.prototype.handleTitle = function(title) {
   title = sanitize(title);
   this.title = title;
 
-  if (Terminal.focus === this) {
-    document.title = title;
-    // if (h1) h1.innerHTML = title;
-  }
-
   if (this.window.focused === this) {
     this.window.bar.title = title;
     // this.setProcessName(this.process);
@@ -857,7 +852,7 @@ Tab.prototype.pollProcessName = function(func) {
 
   this.socket.on('message', function(data) {
     data = JSON.parse(data);
-    if(data.cmd == 'processACK') {
+    if(data.cmd == 'processACK' && data.id == self.id) {
       if (data.error) return func && func(data.error);
       self.setProcessName(data.name);
       return func && func(null, name);

@@ -31,42 +31,28 @@ function Server(conf) {
 
   this.sessions = {};
   this.conf = conf;
-
-  this.server = conf.https && conf.https.key
-    ? require('https').createServer(conf.https)
-    : require('http').createServer();
-
-  this.on('listening', function() {
-    self.log('Listening on port \x1b[1m%s\x1b[m.', self.conf.port);
-  });
-
+  this.server = conf.server;
   this.io = io.attach(this.server, conf.io || { log: false });
-
-  //this.io = io.listen(conf.port, conf.io || {
-  //  log: false
-  //});
   this.init();
 }
 
 Server.prototype.init = function() {
   this.init = function() {};
   if (this.conf.localOnly) this.initLocal();
-  this.initIO();
+  else this.initIO();
 };
 
 Server.prototype.initLocal = function() {
   var self = this;
+  var io = this.io;
+
   this.warning('Only accepting local connections.'),
-  this.server.on('connection', function(socket) {
-    var address = socket.remoteAddress;
+  io.on('connection', function(socket) {
+    var address = socket.request.connection.remoteAddress;
     if (address !== '127.0.0.1' && address !== '::1') {
-      try {
-        socket.destroy();
-      } catch (e) {
-        ;
-      }
       self.log('Attempted connection from %s. Refused.', address);
     }
+    else return self.handleConnection(socket);
   });
 };
 
@@ -127,12 +113,6 @@ Server.prototype._log = function(level, args) {
   if (this.conf.log === false) return;
   args.unshift(level);
   return logger.apply(null, args);
-};
-
-Server.prototype.listen = function(port, hostname, func) {
-  port = port || this.conf.port || 8080;
-  hostname = hostname || this.conf.hostname;
-  return this.server.listen(port, hostname, func);
 };
 
 /**
@@ -342,7 +322,7 @@ Session.prototype.handleProcess = function(id) {
   var terms = this.terms;
   if (!terms[id]) return;
   var name = terms[id].process;
-  socket.send(JSON.stringify({cmd: 'processACK', name: sanitize(name)}));
+  socket.send(JSON.stringify({cmd: 'processACK', id: id, name: sanitize(name)}));
 };
 
 Session.prototype.handleDisconnect = function() {
