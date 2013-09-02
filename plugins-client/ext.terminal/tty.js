@@ -13,9 +13,8 @@ var document = this.document
   , window = this
   , root
   , body
-  , h1
-  , open
-  , lights
+  , pgOutput
+  , pgTerminal
   , newTerminal;
 
 /**
@@ -71,16 +70,40 @@ tty.open = function() {
   tty.elements = {
     root: document.documentElement,
     body: document.body,
-    h1: document.getElementsByTagName('h1')[0],
+    pgOutput: document.getElementsByClassName('pgOutput')[0],
+    pgTerminal: document.getElementsByClassName('pgTerminal')[0],
     newTerminal: document.getElementsByClassName('newTerminalBtn')[0]
 };
 
   root = tty.elements.root;
   body = tty.elements.body;
-  h1 = tty.elements.h1;
-  open = tty.elements.open;
-  lights = tty.elements.lights;
+  pgOutput = tty.elements.pgOutput;
+  pgTerminal = tty.elements.pgTerminal;
   newTerminal = tty.elements.newTerminal;
+
+  var settings = require("core/settings");
+  var console = require('ext/console/console');
+
+  if(pgTerminal) {
+    on(pgTerminal, 'click', function() {
+      if(!console.hiddenInput && settings.model.queryValue("auto/console/@showinput")) {
+        console.hideInput();
+        settings.model.setQueryValue("auto/console/@showinput", true);
+
+        on(document.getElementsByClassName('pgOutput')[0], 'click', function() {
+          console.showInput();
+        });
+
+        var length = document.getElementsByClassName('pgConsole').length;
+
+        for (var i = 0; i < length; i++) {
+          on(document.getElementsByClassName('pgConsole')[i], 'click', function() {
+            console.showInput();
+          });
+        }
+      }
+    });
+  }
 
   if (newTerminal) {
     on(newTerminal, 'click', function() {
@@ -176,16 +199,6 @@ tty.reset = function() {
   tty.terms = {};
 
   tty.emit('reset');
-};
-
-/**
- * Lights
- */
-
-tty.toggleLights = function() {
-  root.className = !root.className
-    ? 'dark'
-    : '';
 };
 
 /**
@@ -706,11 +719,6 @@ Tab.prototype._destroy = function() {
   if (!win.tabs.length) {
     win.destroy();
   }
-
-  // if (!tty.windows.length) {
-  //   document.title = initialTitle;
-  //   if (h1) h1.innerHTML = initialTitle;
-  // }
 
   this.__destroy();
 };

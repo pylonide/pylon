@@ -27,7 +27,7 @@
                       margin="1 0 0 1"
                       onclick="require('ext/console/console').hide();this.blur();"/>
                 </a:hbox>
-                <a:page id="pgConsole" caption="Console" name="console">
+                <a:page id="pgConsole" caption="Console" name="console" class="pgConsole">
                     <a:text id="txtConsole"
                       margin     = "3 0 0 0"
                       anchors    = "0 17 0 0"
@@ -44,7 +44,7 @@
                       skin      = "console_scrollbar"
                       width     = "17" />
                 </a:page>
-                <a:page id="pgOutput" caption="Output" name="output">
+                <a:page id="pgOutput" caption="Output" name="output" class="pgOutput">
                     <a:text id="txtOutput"
                       margin     = "3 0 0 0"
                       anchors    = "0 17 0 0"
@@ -61,13 +61,8 @@
                       skin   = "console_scrollbar"
                       width  = "17" />
                 </a:page>
-                <a:page id="pgTerminal" caption="Terminal" name="terminal">
-                    <a:button id="newTerminalBtn" skin="btn_icon_only" icon="console_new_terminal.png" margin="2 2 0 0" class="newTerminalBtn"
-                              onclick = "
-                        var console = require('ext/console/console');
-                        console.hideInput();
-                        this.blur();
-                      "/>
+                <a:page id="pgTerminal" caption="Terminal" name="terminal" class="pgTerminal">
+                    <a:button id="newTerminalBtn" skin="btn_icon_only" icon="console_new_terminal.png" margin="2 2 0 0" class="newTerminalBtn" onclick = "this.blur();"/>
                     <div id="terminalWindow"></div>
                 </a:page>
             </a:tab>
