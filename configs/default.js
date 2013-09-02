@@ -149,7 +149,8 @@ var config = [
             "ext/autosave/autosave",
             "ext/revisions/revisions",
             "ext/language/liveinspect",
-            "ext/splitview/splitview"
+            "ext/splitview/splitview",
+            "ext/touch/touch"
         ]
     }, {
         packagePath: "vfs-architect/local",

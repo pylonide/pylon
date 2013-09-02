@@ -1,0 +1,21 @@
+{
+    "name": "ext.touch",
+    "version": "0.0.1",
+    "main": "touch.js",
+    "private": true,
+    "plugin": {
+        "provides": [
+            "ext.touch"
+        ],
+        "consumes": [
+        ]
+    },
+    "devDependencies": {
+        "grunt": "*",
+        "grunt-contrib-coffee": "*",
+        "grunt-contrib-watch": "*"
+    },
+    "dependencies": {
+        "coffee-script": "*"
+    }
+}
