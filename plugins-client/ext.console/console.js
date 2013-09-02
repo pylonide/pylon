@@ -908,6 +908,7 @@ module.exports = ext.register("ext/console/console", {
 
     newtab : function() {
         var c9shell = tabConsole.add("Console");
+        c9shell.setAttribute("class", "pgConsole");
         c9shell.setAttribute("closebtn", true);
         var c9shellText = c9shell.appendChild(new apf.text({
             margin     : "3 0 0 0",
