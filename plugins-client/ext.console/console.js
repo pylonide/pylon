@@ -279,7 +279,7 @@ module.exports = ext.register("ext/console/console", {
             return;
         }
 
-        if (tabConsole.activepage === "output" || tabConsole.activepage === "pgSFResults")
+        if (tabConsole.activepage === "output" || tabConsole.activepage === "pgSFResults" || tabConsole.activepage === "terminal")
             tabConsole.set("console");
 
         parseLine || (parseLine = require("ext/console/parser"));
