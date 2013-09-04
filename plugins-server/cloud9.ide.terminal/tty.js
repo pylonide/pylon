@@ -76,21 +76,27 @@ Server.prototype.handleConnection = function(socket) {
     if (data.cmd == 'data') {
       return session.handleData(data.id, data.payload);
     }
-    else if(data.cmd == 'create') {
+    if(data.cmd == 'create') {
       return session.handleCreate(data.cols, data.rows);
     }
-    else if (data.cmd == 'kill') {
+    if (data.cmd == 'kill') {
       return session.handleKill(data.id);
     }
-    else if (data.cmd == 'resize') {
+    if (data.cmd == 'move') {
+      return session.handleMove(data.id, data.left, data.top);
+    }
+    if (data.cmd == 'resize') {
       return session.handleResize(data.id, data.cols, data.rows);
     }
-    else if (data.cmd == 'process') {
+    if (data.cmd == 'process') {
       return session.handleProcess(data.id);
     }
-    else if (data.cmd == 'request paste') {
+    if (data.cmd == 'request paste') {
       return session.handlePaste();
     }
+    
+    return console.log("Unknown message received: %s", JSON.stringify(data));
+    
   });
   socket.on('close', function() {
     return session.handleDisconnect();
@@ -123,10 +129,12 @@ function Session(server, socket) {
   this.server = server;
   this.socket = socket;
   this.terms = {};
+  this.req = socket.request;
 
   var conf = this.server.conf
     , terms = this.terms
     , sessions = this.server.sessions
+    , req = socket.request;
 
   this.id = this.uid();
 
@@ -154,8 +162,7 @@ Session.uid = 0;
 Session.prototype.uid = function() {
   if (this.server.conf.syncSession) {
     var req = this.req;
-    return req.address.address
-      + '|' + req.address.port
+    return req.connection.remoteAddress
       + '|' + req.headers['user-agent'];
   }
   return Session.uid++ + '';
@@ -203,6 +210,8 @@ Session.prototype.sync = function() {
       pty: term.pty,
       cols: term.cols,
       rows: term.rows,
+      left: term.left,
+      top: term.top,
       process: sanitize(term.process)
     };
   });
@@ -231,14 +240,13 @@ Session.prototype.sync = function() {
     });
   }, 30);
 
-  this.socket.send(JSON.stringify({cmd: 'sync', terms: terms}));
+  if(!isEmpty(terms)) this.socket.send(JSON.stringify({cmd: 'sync', terms: terms}));
 };
 
 Session.prototype.handleCreate = function(cols, rows) {
   var self = this
     , terms = this.terms
-    , conf = this.server.conf
-    , socket = this.socket;
+    , conf = this.server.conf;
 
   var len = Object.keys(terms).length
     , term
@@ -266,15 +274,18 @@ Session.prototype.handleCreate = function(cols, rows) {
 
   id = term.pty;
   terms[id] = term;
+  terms[id].left = '';
+  terms[id].top = '';
 
   term.on('data', function(data) {
-    socket.send(JSON.stringify({cmd: 'data', id: id, payload: data}));
+    //console.log('<- ID: %s | Payload: %s | Socket: %s', id, data, self.socket.readyState);
+    self.socket.send(JSON.stringify({cmd: 'data', id: id, payload: data}));
   });
 
   term.on('close', function() {
     // Make sure it closes
     // on the clientside.
-    socket.send(JSON.stringify({cmd: 'killACK', id: id}));
+    self.socket.send(JSON.stringify({cmd: 'killACK', id: id}));
 
     // Ensure removal.
     if (terms[id]) delete terms[id];
@@ -288,11 +299,11 @@ Session.prototype.handleCreate = function(cols, rows) {
     'Created pty (id: %s, master: %d, pid: %d).',
     id, term.fd, term.pid);
 
-  socket.send(JSON.stringify({cmd: 'createACK', id: id, pty: term.pty, process: sanitize(conf.shell)}));
+  self.socket.send(JSON.stringify({cmd: 'createACK', id: id, pty: term.pty, process: sanitize(conf.shell)}));
 };
 
 Session.prototype.handleData = function(id, data) {
-  //console.log('ID: %s | Payload: %s', id, data);
+  //console.log('-> ID: %s | Payload: %s', id, data);
   var terms = this.terms;
   if (!terms[id]) {
     this.warning(''
@@ -310,6 +321,13 @@ Session.prototype.handleKill = function(id) {
   terms[id].destroy();
   delete terms[id];
 };
+
+Session.prototype.handleMove = function(id, left, top) {
+  var terms = this.terms;
+  if (!terms[id]) return;
+  terms[id].left = left;
+  terms[id].top = top;
+}
 
 Session.prototype.handleResize = function(id, cols, rows) {
   var terms = this.terms;
@@ -363,10 +381,10 @@ Session.prototype.handleDisconnect = function() {
   }
 
   // XXX This could be done differently.
-  this.setTimeout(conf.sessionTimeout, destroy);
+  this.setTimeout(conf.sessionTimeout * 1000, destroy);
   this.log(
     'Preserving session for %d minutes.',
-    conf.sessionTimeout / 1000 / 60 | 0);
+    conf.sessionTimeout / 60 | 0);
 };
 
 Session.prototype.handlePaste = function() {
@@ -450,6 +468,18 @@ function applyConfig() {
   }
 
   delete Terminal._opts;
+}
+
+/**
+ * Utility
+ */
+
+function isEmpty(obj) {
+    for(var key in obj) {
+        if(obj.hasOwnProperty(key))
+            return false;
+    }
+    return true;
 }
 
 /**

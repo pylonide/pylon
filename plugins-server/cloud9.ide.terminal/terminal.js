@@ -18,7 +18,9 @@ module.exports = function setup(options, imports, register) {
     var app = tty.createServer({
         shell: 'bash',
         server: server,
-        localOnly: true
+        localOnly: true,
+        syncSession: true,
+        sessionTimeout: 3600 // in seconds
     });
 
     imports.log.info("[tty.js] Cloud9 terminal started, serving requests on port: %s".green, server.address().port);

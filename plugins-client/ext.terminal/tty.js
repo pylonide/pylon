@@ -134,16 +134,12 @@ tty.open = function() {
       termElement.dispatchEvent(evt2);
 
       console.log('Attempting to sync...');
-      console.log(data.terms);
 
       tty.reset();
 
-      var emit = tty.socket.emit;
-      tty.socket.emit = function() {};
-
       Object.keys(data.terms).forEach(function(key) {
-        var tdata = terms[key]
-          , win = new Window
+        var tdata = data.terms[key]
+          , win = new Window(tty.socket, true)
           , tab = win.tabs[0];
 
         delete tty.terms[tab.id];
@@ -151,12 +147,12 @@ tty.open = function() {
         tab.id = tdata.id;
         tty.terms[tdata.id] = tab;
         win.resize(tdata.cols, tdata.rows);
+        win.move(tdata.left, tdata.top);
         tab.setProcessName(tdata.process);
         tty.emit('open tab', tab);
         tab.emit('open');
+        console.log(' - ' + tdata.id)
       });
-
-      tty.socket.emit = emit;
     }
   });
 
@@ -211,7 +207,7 @@ tty.reset = function() {
  * Window
  */
 
-function Window(socket) {
+function Window(socket, resume) {
   var self = this;
 
   EventEmitter.call(this);
@@ -242,6 +238,7 @@ function Window(socket) {
   title.innerHTML = '';
 
   this.socket = socket || tty.socket;
+  this.resume = resume || false;
   this.element = el;
   this.grip = grip;
   this.bar = bar;
@@ -258,12 +255,11 @@ function Window(socket) {
   container = document.getElementsByClassName('page curpage')[0]
 
   if(container != undefined && container.clientHeight < 370) {
-    this.rows = container.clientHeight / 30 | 0;
+    this.rows = container.clientHeight / 27 | 0;
   }
   if(container != undefined && container.clientWidth < 600) {
     this.cols = container.clientWidth / 8 | 0;
   }
-    
 
   el.appendChild(grip);
   el.appendChild(bar);
@@ -281,6 +277,8 @@ function Window(socket) {
     tty.emit('open window', self);
     self.emit('open');
   });
+
+  this.resume = false;
 }
 
 inherits(Window, EventEmitter);
@@ -368,7 +366,9 @@ Window.prototype.destroy = function() {
 
 Window.prototype.drag = function(ev) {
   var self = this
-    , el = this.element;
+    , el = this.element
+    , socket = this.socket
+    , id = this.tabs[0].id;
 
   if (this.minimize) return;
 
@@ -402,6 +402,8 @@ Window.prototype.drag = function(ev) {
       left: el.style.left.replace(/\w+/g, ''),
       top: el.style.top.replace(/\w+/g, '')
     };
+
+    socket.send(JSON.stringify({cmd: 'move', id: id, left: el.style.left, top: el.style.top}));
 
     tty.emit('drag window', self, ev);
     self.emit('drag', ev);
@@ -537,6 +539,14 @@ Window.prototype.resize = function(cols, rows) {
   this.emit('resize', cols, rows);
 };
 
+Window.prototype.move = function(left, top) {
+  this.element.style.left = left;
+  this.element.style.top = top;
+
+  tty.emit('move window', this, left, top);
+  this.emit('move', left, top);
+};
+
 Window.prototype.each = function(func) {
   var i = this.tabs.length;
   while (i--) {
@@ -545,7 +555,8 @@ Window.prototype.each = function(func) {
 };
 
 Window.prototype.createTab = function() {
-  return new Tab(this, this.socket);
+  console.log('Resume flag: %s', this.resume);
+  return new Tab(this, this.socket, this.resume);
 };
 
 Window.prototype.highlight = function() {
@@ -587,7 +598,7 @@ Window.prototype.previousTab = function() {
  * Tab
  */
 
-function Tab(win, socket) {
+function Tab(win, socket, resume) {
   var self = this;
 
   var cols = win.cols
@@ -623,10 +634,10 @@ function Tab(win, socket) {
 
   win.tabs.push(this);
 
+  if(!resume) {
+    this.socket.send(JSON.stringify({cmd: 'create', cols: cols, rows: rows}));
 
-  this.socket.send(JSON.stringify({cmd: 'create', cols: cols, rows: rows}));
-
-  this.socket.on('message', function(data) {
+    this.socket.on('message', function(data) {
       data = JSON.parse(data);
       if(data.cmd == 'createACK' && self.id == '') {
           if(data.error) return self._destroy();
@@ -637,7 +648,8 @@ function Tab(win, socket) {
           tty.emit('open tab', self);
           self.emit('open');
       }
-  });
+    });
+  }
 
 }
 
