@@ -88,12 +88,12 @@ Server.prototype.handleConnection = function(socket) {
     else if (data.cmd == 'process') {
       return session.handleProcess(data.id);
     }
-    else if (data.cmd == 'disconnect') {
-      return session.handleDisconnect();
-    }
     else if (data.cmd == 'request paste') {
       return session.handlePaste();
     }
+  });
+  socket.on('close', function() {
+    return session.handleDisconnect();
   });
 };
 
