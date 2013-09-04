@@ -257,7 +257,7 @@ function Window(socket) {
   // The following is to accomodate very small console areas
   container = document.getElementsByClassName('page curpage')[0]
 
-  if(container != undefined && container.clientHeight < 390) {
+  if(container != undefined && container.clientHeight < 370) {
     this.rows = container.clientHeight / 30 | 0;
   }
   if(container != undefined && container.clientWidth < 600) {
