@@ -85,7 +85,7 @@ tty.open = function() {
   var console = require('ext/console/console');
 
   if(pgTerminal) {
-    on(pgTerminal, 'click', function() {
+    on(pgTerminal, 'mousedown', function() {
       if(!console.hiddenInput && settings.model.queryValue("auto/console/@showinput")) {
         console.hideInput();
         settings.model.setQueryValue("auto/console/@showinput", true);
@@ -127,6 +127,12 @@ tty.open = function() {
       tty.terms[data.id]._destroy();
     }
     else if(data.cmd == 'sync') {
+      var evt1 = document.createEvent('MouseEvents'); evt1.initMouseEvent('mousedown', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      var evt2 = document.createEvent('MouseEvents'); evt2.initMouseEvent('mouseup', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      var termElement = document.getElementsByClassName('pgTerminal')[0];
+      termElement.dispatchEvent(evt1);
+      termElement.dispatchEvent(evt2);
+
       console.log('Attempting to sync...');
       console.log(data.terms);
 
@@ -214,7 +220,8 @@ function Window(socket) {
     , grip
     , bar
     , button
-    , title;
+    , title
+    , container;
 
   el = document.createElement('div');
   el.className = 'window';
@@ -246,6 +253,17 @@ function Window(socket) {
 
   this.cols = Terminal.geometry[0];
   this.rows = Terminal.geometry[1];
+
+  // The following is to accomodate very small console areas
+  container = document.getElementsByClassName('page curpage')[0]
+
+  if(container != undefined && container.clientHeight < 390) {
+    this.rows = container.clientHeight / 30 | 0;
+  }
+  if(container != undefined && container.clientWidth < 600) {
+    this.cols = container.clientWidth / 8 | 0;
+  }
+    
 
   el.appendChild(grip);
   el.appendChild(bar);
