@@ -18,12 +18,6 @@ var document = this.document
   , newTerminal;
 
 /**
- * Initial Document Title
- */
-
-var initialTitle = document.title;
-
-/**
  * Helpers
  */
 
@@ -217,6 +211,7 @@ function Window(socket, resume) {
     , bar
     , button
     , title
+    , defaultS
     , container;
 
   el = document.createElement('div');
@@ -237,12 +232,18 @@ function Window(socket, resume) {
   title.className = 'title';
   title.innerHTML = '';
 
+  defaultS = document.createElement('div');
+  defaultS.innerHTML = '=';
+  defaultS.title = 'Default size';
+  defaultS.className = 'tabT';
+
   this.socket = socket || tty.socket;
   this.resume = resume || false;
   this.element = el;
   this.grip = grip;
   this.bar = bar;
   this.button = button;
+  this.defaultS = defaultS;
   this.title = title;
 
   this.tabs = [];
@@ -264,6 +265,7 @@ function Window(socket, resume) {
   el.appendChild(grip);
   el.appendChild(bar);
   bar.appendChild(button);
+  bar.appendChild(defaultS);
   bar.appendChild(title);
   document.getElementById('terminalWindow').appendChild(el);
 
@@ -289,6 +291,7 @@ Window.prototype.bind = function() {
     , bar = this.bar
     , grip = this.grip
     , button = this.button
+    , defaultS = this.defaultS
     , last = 0;
 
   on(button, 'click', function(ev) {
@@ -298,6 +301,11 @@ Window.prototype.bind = function() {
       self.createTab();
     }
     return cancel(ev);
+  });
+
+  on(defaultS, 'click', function(ev) {
+      self.resize(80, 24);
+      return cancel(ev);
   });
 
   on(grip, 'mousedown', function(ev) {
@@ -555,7 +563,6 @@ Window.prototype.each = function(func) {
 };
 
 Window.prototype.createTab = function() {
-  console.log('Resume flag: %s', this.resume);
   return new Tab(this, this.socket, this.resume);
 };
 
@@ -702,7 +709,6 @@ Tab.prototype.focus = function() {
     win.focused = this;
 
     win.title.innerHTML = this.process;
-    document.title = this.title || initialTitle;
     this.button.style.fontWeight = 'bold';
     this.button.style.color = '';
   }

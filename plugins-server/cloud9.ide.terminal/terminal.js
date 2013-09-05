@@ -16,6 +16,7 @@ module.exports = function setup(options, imports, register) {
     var server = imports.http.getServer();
 
     var app = tty.createServer({
+        termName: 'xterm-color',
         shell: 'bash',
         server: server,
         localOnly: true,
