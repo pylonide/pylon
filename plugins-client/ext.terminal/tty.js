@@ -18,12 +18,6 @@ var document = this.document
   , newTerminal;
 
 /**
- * Initial Document Title
- */
-
-var initialTitle = document.title;
-
-/**
  * Helpers
  */
 
@@ -85,7 +79,7 @@ tty.open = function() {
   var console = require('ext/console/console');
 
   if(pgTerminal) {
-    on(pgTerminal, 'click', function() {
+    on(pgTerminal, 'mousedown', function() {
       if(!console.hiddenInput && settings.model.queryValue("auto/console/@showinput")) {
         console.hideInput();
         settings.model.setQueryValue("auto/console/@showinput", true);
@@ -127,17 +121,19 @@ tty.open = function() {
       tty.terms[data.id]._destroy();
     }
     else if(data.cmd == 'sync') {
+      var evt1 = document.createEvent('MouseEvents'); evt1.initMouseEvent('mousedown', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      var evt2 = document.createEvent('MouseEvents'); evt2.initMouseEvent('mouseup', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+      var termElement = document.getElementsByClassName('pgTerminal')[0];
+      termElement.dispatchEvent(evt1);
+      termElement.dispatchEvent(evt2);
+
       console.log('Attempting to sync...');
-      console.log(data.terms);
 
       tty.reset();
 
-      var emit = tty.socket.emit;
-      tty.socket.emit = function() {};
-
       Object.keys(data.terms).forEach(function(key) {
-        var tdata = terms[key]
-          , win = new Window
+        var tdata = data.terms[key]
+          , win = new Window(tty.socket, true)
           , tab = win.tabs[0];
 
         delete tty.terms[tab.id];
@@ -145,12 +141,12 @@ tty.open = function() {
         tab.id = tdata.id;
         tty.terms[tdata.id] = tab;
         win.resize(tdata.cols, tdata.rows);
+        win.move(tdata.left, tdata.top);
         tab.setProcessName(tdata.process);
         tty.emit('open tab', tab);
         tab.emit('open');
+        console.log(' - ' + tdata.id)
       });
-
-      tty.socket.emit = emit;
     }
   });
 
@@ -205,7 +201,7 @@ tty.reset = function() {
  * Window
  */
 
-function Window(socket) {
+function Window(socket, resume) {
   var self = this;
 
   EventEmitter.call(this);
@@ -214,7 +210,9 @@ function Window(socket) {
     , grip
     , bar
     , button
-    , title;
+    , title
+    , defaultS
+    , container;
 
   el = document.createElement('div');
   el.className = 'window';
@@ -234,11 +232,18 @@ function Window(socket) {
   title.className = 'title';
   title.innerHTML = '';
 
+  defaultS = document.createElement('div');
+  defaultS.innerHTML = '=';
+  defaultS.title = 'Default size';
+  defaultS.className = 'tabT';
+
   this.socket = socket || tty.socket;
+  this.resume = resume || false;
   this.element = el;
   this.grip = grip;
   this.bar = bar;
   this.button = button;
+  this.defaultS = defaultS;
   this.title = title;
 
   this.tabs = [];
@@ -247,9 +252,20 @@ function Window(socket) {
   this.cols = Terminal.geometry[0];
   this.rows = Terminal.geometry[1];
 
+  // The following is to accomodate very small console areas
+  container = document.getElementsByClassName('page curpage')[0]
+
+  if(container != undefined && container.clientHeight < 370) {
+    this.rows = container.clientHeight / 27 | 0;
+  }
+  if(container != undefined && container.clientWidth < 600) {
+    this.cols = container.clientWidth / 8 | 0;
+  }
+
   el.appendChild(grip);
   el.appendChild(bar);
   bar.appendChild(button);
+  bar.appendChild(defaultS);
   bar.appendChild(title);
   document.getElementById('terminalWindow').appendChild(el);
 
@@ -263,6 +279,8 @@ function Window(socket) {
     tty.emit('open window', self);
     self.emit('open');
   });
+
+  this.resume = false;
 }
 
 inherits(Window, EventEmitter);
@@ -273,6 +291,7 @@ Window.prototype.bind = function() {
     , bar = this.bar
     , grip = this.grip
     , button = this.button
+    , defaultS = this.defaultS
     , last = 0;
 
   on(button, 'click', function(ev) {
@@ -282,6 +301,11 @@ Window.prototype.bind = function() {
       self.createTab();
     }
     return cancel(ev);
+  });
+
+  on(defaultS, 'click', function(ev) {
+      self.resize(80, 24);
+      return cancel(ev);
   });
 
   on(grip, 'mousedown', function(ev) {
@@ -350,7 +374,9 @@ Window.prototype.destroy = function() {
 
 Window.prototype.drag = function(ev) {
   var self = this
-    , el = this.element;
+    , el = this.element
+    , socket = this.socket
+    , id = this.tabs[0].id;
 
   if (this.minimize) return;
 
@@ -384,6 +410,8 @@ Window.prototype.drag = function(ev) {
       left: el.style.left.replace(/\w+/g, ''),
       top: el.style.top.replace(/\w+/g, '')
     };
+
+    socket.send(JSON.stringify({cmd: 'move', id: id, left: el.style.left, top: el.style.top}));
 
     tty.emit('drag window', self, ev);
     self.emit('drag', ev);
@@ -519,6 +547,14 @@ Window.prototype.resize = function(cols, rows) {
   this.emit('resize', cols, rows);
 };
 
+Window.prototype.move = function(left, top) {
+  this.element.style.left = left;
+  this.element.style.top = top;
+
+  tty.emit('move window', this, left, top);
+  this.emit('move', left, top);
+};
+
 Window.prototype.each = function(func) {
   var i = this.tabs.length;
   while (i--) {
@@ -527,7 +563,7 @@ Window.prototype.each = function(func) {
 };
 
 Window.prototype.createTab = function() {
-  return new Tab(this, this.socket);
+  return new Tab(this, this.socket, this.resume);
 };
 
 Window.prototype.highlight = function() {
@@ -569,7 +605,7 @@ Window.prototype.previousTab = function() {
  * Tab
  */
 
-function Tab(win, socket) {
+function Tab(win, socket, resume) {
   var self = this;
 
   var cols = win.cols
@@ -605,10 +641,10 @@ function Tab(win, socket) {
 
   win.tabs.push(this);
 
+  if(!resume) {
+    this.socket.send(JSON.stringify({cmd: 'create', cols: cols, rows: rows}));
 
-  this.socket.send(JSON.stringify({cmd: 'create', cols: cols, rows: rows}));
-
-  this.socket.on('message', function(data) {
+    this.socket.on('message', function(data) {
       data = JSON.parse(data);
       if(data.cmd == 'createACK' && self.id == '') {
           if(data.error) return self._destroy();
@@ -619,7 +655,8 @@ function Tab(win, socket) {
           tty.emit('open tab', self);
           self.emit('open');
       }
-  });
+    });
+  }
 
 }
 
@@ -672,7 +709,6 @@ Tab.prototype.focus = function() {
     win.focused = this;
 
     win.title.innerHTML = this.process;
-    document.title = this.title || initialTitle;
     this.button.style.fontWeight = 'bold';
     this.button.style.color = '';
   }
