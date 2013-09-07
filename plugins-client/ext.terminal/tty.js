@@ -80,19 +80,19 @@ tty.open = function() {
 
   if(pgTerminal) {
     on(pgTerminal, 'mousedown', function() {
-      if(!console.hiddenInput && settings.model.queryValue("auto/console/@showinput")) {
+      if(console.hiddenInput == false && settings.model.queryValue("auto/console/@showinput") == 'true') {
         console.hideInput();
         settings.model.setQueryValue("auto/console/@showinput", true);
 
         on(document.getElementsByClassName('pgOutput')[0], 'click', function() {
-          console.showInput();
+          if(settings.model.queryValue("auto/console/@showinput") == 'true') console.showInput();
         });
 
         var length = document.getElementsByClassName('pgConsole').length;
 
         for (var i = 0; i < length; i++) {
           on(document.getElementsByClassName('pgConsole')[i], 'click', function() {
-            console.showInput();
+            if(settings.model.queryValue("auto/console/@showinput") == 'true') console.showInput();
           });
         }
       }
