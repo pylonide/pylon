@@ -121,11 +121,13 @@ tty.open = function() {
       tty.terms[data.id]._destroy();
     }
     else if(data.cmd == 'sync') {
-      var evt1 = document.createEvent('MouseEvents'); evt1.initMouseEvent('mousedown', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-      var evt2 = document.createEvent('MouseEvents'); evt2.initMouseEvent('mouseup', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-      var termElement = document.getElementsByClassName('pgTerminal')[0];
-      termElement.dispatchEvent(evt1);
-      termElement.dispatchEvent(evt2);
+      if(!require('ext/console/console').hidden) {
+        var evt1 = document.createEvent('MouseEvents'); evt1.initMouseEvent('mousedown', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var evt2 = document.createEvent('MouseEvents'); evt2.initMouseEvent('mouseup', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        var termElement = document.getElementsByClassName('pgTerminal')[0];
+        termElement.dispatchEvent(evt1);
+        termElement.dispatchEvent(evt2);
+      }
 
       console.log('Attempting to sync...');
 
