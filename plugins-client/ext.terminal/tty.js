@@ -317,7 +317,10 @@ Window.prototype.bind = function() {
   });
 
   on(el, 'mousedown', function(ev) {
-    if (ev.target !== el && ev.target !== bar) return;
+    if (ev.target !== el && ev.target !== bar) {
+      if(apf.document.activeElement == null) return;
+      return apf.document.activeElement.blur();
+    }
 
     self.focus();
 
