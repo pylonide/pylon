@@ -462,7 +462,7 @@ module.exports = ext.register("ext/console/console", {
 
                 (function () {
                     var prjmatch = message.data.match(/http\:\/\/([\w_-]+)\.([\w_-]+)\./);
-                    if (!prjmatch) return;
+                    if (!prjmatch || ide.env == "local") return;
 
                     var user = prjmatch[2];
                     var project = prjmatch[1];
