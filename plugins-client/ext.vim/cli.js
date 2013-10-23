@@ -201,7 +201,9 @@ cliCmds[":"].commands = {
         cliCmds.q(null, {force: true});
     },
     tabNext: "gototabright",
+    tabn: "gototabright",
     tabPrevious: "gototableft",
+    tabp: "gototableft",
     tabfirst: function() {
         tabbehaviors.cycleTab("first");
     },
