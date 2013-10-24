@@ -208,6 +208,14 @@ cliCmds[":"].commands = {
     tablast: function() {
         tabbehaviors.cycleTab("last");
     },
+    tabnew: function(editor, data) {
+        path = data.argv[1];
+        if (!path) {
+            commands.exec("newfile");
+        } else {
+           cliCmds[":"].commands.e(editor, data); 
+        }
+    },
     tabclose: "closetab",
     tabmove: function(editor, data) {
         // todo
@@ -219,7 +227,6 @@ cliCmds[":"].commands = {
 cliCmds[":"].commands.write = cliCmds[":"].commands.w;
 cliCmds[":"].commands.tabn = cliCmds[":"].commands.tabNext;
 cliCmds[":"].commands.tabp = cliCmds[":"].commands.tabPrevious;
-cliCmds[":"].commands.tabnew = cliCmds[":"].commands.e;
 cliCmds[":"].commands.tabc = cliCmds[":"].commands.tabclose;
 
 cliCmds[":"].commands.set = {
