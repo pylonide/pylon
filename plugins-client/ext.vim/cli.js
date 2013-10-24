@@ -201,9 +201,7 @@ cliCmds[":"].commands = {
         cliCmds.q(null, {force: true});
     },
     tabNext: "gototabright",
-    tabn: "gototabright",
     tabPrevious: "gototableft",
-    tabp: "gototableft",
     tabfirst: function() {
         tabbehaviors.cycleTab("first");
     },
@@ -219,6 +217,8 @@ cliCmds[":"].commands = {
 
 // aliases
 cliCmds[":"].commands.write = cliCmds[":"].commands.w;
+cliCmds[":"].commands.tabn = cliCmds[":"].commands.tabNext;
+cliCmds[":"].commands.tabp = cliCmds[":"].commands.tabPrevious;
 
 cliCmds[":"].commands.set = {
     vimOpts: [
