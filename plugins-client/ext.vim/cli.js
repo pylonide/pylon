@@ -219,6 +219,8 @@ cliCmds[":"].commands = {
 cliCmds[":"].commands.write = cliCmds[":"].commands.w;
 cliCmds[":"].commands.tabn = cliCmds[":"].commands.tabNext;
 cliCmds[":"].commands.tabp = cliCmds[":"].commands.tabPrevious;
+cliCmds[":"].commands.tabnew = cliCmds[":"].commands.e;
+cliCmds[":"].commands.tabc = cliCmds[":"].commands.tabclose;
 
 cliCmds[":"].commands.set = {
     vimOpts: [
