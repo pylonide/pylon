@@ -200,8 +200,8 @@ cliCmds[":"].commands = {
     "q!": function() {
         cliCmds.q(null, {force: true});
     },
-    tabNext: "gototabright",
-    tabPrevious: "gototableft",
+    tabn: "gototabright",
+    tabp: "gototableft",
     tabfirst: function() {
         tabbehaviors.cycleTab("first");
     },
@@ -225,8 +225,8 @@ cliCmds[":"].commands = {
 
 // aliases
 cliCmds[":"].commands.write = cliCmds[":"].commands.w;
-cliCmds[":"].commands.tabn = cliCmds[":"].commands.tabNext;
-cliCmds[":"].commands.tabp = cliCmds[":"].commands.tabPrevious;
+cliCmds[":"].commands.tabNext = cliCmds[":"].commands.tabn;
+cliCmds[":"].commands.tabPrevious = cliCmds[":"].commands.tabp;
 cliCmds[":"].commands.tabc = cliCmds[":"].commands.tabclose;
 
 cliCmds[":"].commands.set = {
@@ -354,7 +354,7 @@ function endCommandInput(cmdLine) {
 exports.initCmdLine = function(cmdLine) {
     cmdLine.commands.bindKeys({
         "Shift-Return|Ctrl-Return|Alt-Return": function(cmdLine) { cmdLine.insert("\n"); },
-        "Esc|Shift-Esc": function(cmdLine){
+        "Esc|Shift-Esc|Ctrl-[": function(cmdLine){
             endCommandInput(cmdLine);
         },
         "Return": function run(cmdLine) {
