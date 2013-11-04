@@ -328,7 +328,7 @@ oop.inherits(v8DebugClient, DebugHandler);
             id: getId(frame),
             ref: frame.ref,
             line: frame.line,
-            script: this.$strip(script.name),
+            script: this.$strip(script.name || "anonymous"),
             scriptPath: this.getLocalScriptPath(script),
             scriptid: frame.func.scriptId //script.id,
         }, true));
