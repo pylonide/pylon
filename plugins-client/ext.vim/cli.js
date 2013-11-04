@@ -200,13 +200,21 @@ cliCmds[":"].commands = {
     "q!": function() {
         cliCmds.q(null, {force: true});
     },
-    tabNext: "gototableft",
-    tabPrevious: "gototabright",
+    tabn: "gototabright",
+    tabp: "gototableft",
     tabfirst: function() {
         tabbehaviors.cycleTab("first");
     },
     tablast: function() {
         tabbehaviors.cycleTab("last");
+    },
+    tabnew: function(editor, data) {
+        path = data.argv[1];
+        if (!path) {
+            commands.exec("newfile");
+        } else {
+           cliCmds[":"].commands.e(editor, data); 
+        }
     },
     tabclose: "closetab",
     tabmove: function(editor, data) {
@@ -217,6 +225,9 @@ cliCmds[":"].commands = {
 
 // aliases
 cliCmds[":"].commands.write = cliCmds[":"].commands.w;
+cliCmds[":"].commands.tabNext = cliCmds[":"].commands.tabn;
+cliCmds[":"].commands.tabPrevious = cliCmds[":"].commands.tabp;
+cliCmds[":"].commands.tabc = cliCmds[":"].commands.tabclose;
 
 cliCmds[":"].commands.set = {
     vimOpts: [
@@ -343,7 +354,7 @@ function endCommandInput(cmdLine) {
 exports.initCmdLine = function(cmdLine) {
     cmdLine.commands.bindKeys({
         "Shift-Return|Ctrl-Return|Alt-Return": function(cmdLine) { cmdLine.insert("\n"); },
-        "Esc|Shift-Esc": function(cmdLine){
+        "Esc|Shift-Esc|Ctrl-[": function(cmdLine){
             endCommandInput(cmdLine);
         },
         "Return": function run(cmdLine) {
