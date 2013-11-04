@@ -11285,6 +11285,7 @@
             outline         : none;
             text-overflow   : ellipsis;
         }
+        .tb_console .sbtb_middle .input { height : 18px; }
         .tb_consoleFocus .sbtb_middle,
         .tb_consoleOver .sbtb_middle,
         .tb_console .sbtb_middle:hover {
