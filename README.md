@@ -1,6 +1,6 @@
 **Issues on c9.io** If you have questions regarding the hosted service at [c9.io](http://c9.io)
 including issues with accounts or payments,
-please file them at [support.c9.io](http://support.cloud9ide.com/home) rather than as a
+please send them to [support@c9.io](mailto:support@c9.io) rather than submitting as a
 GitHub issue in this repository.
 
 # Cloud9 IDE
