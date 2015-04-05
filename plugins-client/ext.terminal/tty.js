@@ -46,6 +46,8 @@ tty.elements;
  * Open
  */
 
+var ENGINE_IO = require("engine.io");
+
 tty.open = function() {
   if (document.location.pathname) {
     var parts = document.location.pathname.split('/')
@@ -53,9 +55,9 @@ tty.open = function() {
       , resource = base.substring(1) + 'engine.io';
 
     var server = "ws://" + window.location.href.split("\/")[2];
-    tty.socket = eio.Socket(server, { resource: resource });
+    tty.socket = new ENGINE_IO.Socket(server, { resource: resource });
   } else {
-    tty.socket = new eio.Socket();
+    tty.socket = new ENGINE_IO.Socket();
   }
 
   tty.windows = [];
