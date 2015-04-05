@@ -10,25 +10,26 @@
         "web": "https://github.com/exsilium/cloud9/blob/master/README.md"
     },
 
+    "//": "ACE v1.0.0 https://github.com/ajaxorg/ace/tarball/cacd51e2fe911971428dd40d9b09ba3c913a7ed5",
+
     "dependencies": {
-        "async": "0.1.21",
-        "mappings": "0.1.x",
-        "colors": "~0.6.0-1",
+        "async": "~0.9.0",
+        "colors": "~1.0.3",
         "connect": "1.8.7",
-        "optimist": "0.3.4",
-        "msgpack-js-browser": "~0.1.3",
-        "engine.io": "0.5.0",
-        "engine.io-client": "0.5.0",
+        "optimist": "~0.6.1",
+        "msgpack-js-browser": "~0.1.4",
+        "engine.io": "~1.5.1",
+        "engine.io-client": "~1.5.1",
         "dryice": "0.4.10",
 
-        "amd-loader": "0.0.4",
-        "http-error": "0.0.1",
+        "amd-loader": "0.0.5",
+        "http-error": "0.0.5",
         "simple-template": "0.0.1",
-        "netutil": "0.0.1",
+        "netutil": "0.0.2",
         "jsDAV": "https://github.com/ajaxorg/jsDAV/tarball/f78c34c94fa915ca1b24975839b78ff88ea851d6",
-        "smith": "https://github.com/c9/smith/tarball/d83208007e681c147ebb12c30e09a193fd731391",
+        "smith": "https://github.com/c9/smith/tarball/8990e18f2ffcd3c334829d36e8aeabac99b13d18",
 
-        "vfs-architect": "0.0.2",
+        "vfs-architect": "0.0.3",
         "vfs-nodefs-adapter": "0.3.0",
         "vfs-local": "https://github.com/c9/vfs-local/tarball/9c6aae5c66851e0f9869f7c40072113f32d11cec",
 
@@ -39,8 +40,8 @@
 
         "ace":          "https://github.com/ajaxorg/ace/tarball/cacd51e2fe911971428dd40d9b09ba3c913a7ed5",
         "asyncjs":      "https://github.com/ajaxorg/async.js/tarball/bd936c60bb87c58052bcc0307f4e637bd35c908f",
-        "v8debug":      "https://github.com/ajaxorg/lib-v8debug/tarball/d2fac9b09724cb2e75e2807191eace9bc27d3b52",
-        "treehugger":   "https://github.com/ajaxorg/treehugger/tarball/c6fb8e8c7ad7654577e1f843559fb91e925a3b79"
+        "v8debug":      "https://github.com/ajaxorg/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
+        "treehugger":   "https://github.com/ajaxorg/treehugger/tarball/ea5098ac70fd77238e77c7acb6292d5013e40af0"
     },
 
     "devDependencies": {

@@ -1,8 +1,7 @@
 
 define(function(require, exports, module) {
 
-	require("engine.io");
-	var ENGINE_IO = eio;	// NOTE: `eio` is a global! See `npm info engine.io-client`.
+	var ENGINE_IO = require("engine.io");
 	var SMITH = require("smith");
 	var EVENTS = require("smith/events-amd");
 
@@ -40,8 +39,8 @@ define(function(require, exports, module) {
 	inherits(Transport, EVENTS.EventEmitter);
 
 	Transport.prototype.getUri = function() {
-		return "http" + ((this.options.secure)?"s":"") + "://" + 
-			   this.options.host + 
+		return "http" + ((this.options.secure)?"s":"") + "://" +
+			   this.options.host +
 			   ((this.options.port)?":"+this.options.port:"") +
 			   this.options.path +
 			   this.options.resource;
@@ -273,7 +272,7 @@ define(function(require, exports, module) {
 									_self.emit("disconnect", "long away (hibernate)");
 								} catch(err) {
 									console.error(err.stack);
-								}									
+								}
 							}
 			            }
 			            _self.away = false;
@@ -290,7 +289,7 @@ define(function(require, exports, module) {
 								_self.emit("back");
 							} catch(err) {
 								console.error(err.stack);
-							}								
+							}
 						}
 						options.reconnectAttempt = 0;
 						if (_self.buffer) {
@@ -304,7 +303,7 @@ define(function(require, exports, module) {
 							_self.emit("message", message);
 						} catch(err) {
 							console.error(err.stack);
-						}							
+						}
 		            }
 				});
 
@@ -365,7 +364,7 @@ define(function(require, exports, module) {
 		}
 		if (transport.debug) {
 			console.log(getLogTimestamp() + "[smith.io:" + transport.getUri() + "] New transport", options);
-		}		
+		}
 		transport.connect({}, callback);
 		return transport;
 	}
