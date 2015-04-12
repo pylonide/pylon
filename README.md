@@ -1,30 +1,40 @@
-**Issues on c9.io** If you have questions regarding the hosted service at [c9.io](http://c9.io)
-including issues with accounts or payments,
-please send them to [support@c9.io](mailto:support@c9.io) rather than submitting as a
-GitHub issue in this repository.
+# Cloud9 IDE v2
 
-# Cloud9 IDE
+As of 14th of February 2015 with ajaxorg/cloud9.94ab305ec4f092b3d5864b4117fb4d0923cc7539 the upstream author Cloud9 IDE, Inc stated that the Cloud9 v2 would no longer be maintained. The original repository issue tracker was closed and notifications were given that the project is superseded by [Cloud9 v3 SDK](https://github.com/c9/core/) with some substantial changes in licensing terms driven by alignment of business goals.
 
-Cloud9 is an open source IDE built with [Node.JS] on the back-end and JavaScript/HTML5 on the client.
-It is very actively maintained by about 20 developers in both Amsterdam and San Francisco and is one
-component of the hosted service at [c9.io](http://c9.io). The version available here runs on your local system.
+This repository is the maintenance fork for the original Cloud9 IDE that people grew to love. I'm eagerly waiting for the v3 to come out of the Alpha project status but the goal of the new version has changed considerably:
 
-Cloud9 balances the power of traditional desktop IDEs with the simplicity and elegance of editors
-like TextMate and Sublime.
+- The emphasis is on the development of [c9.io](http://c9.io) cloud-hosted service
+- The on-premises solution will be a separately licensed product
+- The distributed SDK is meant for plugin development
+- The core of the product is [no longer licensed as Open Source Software](http://cloud9-sdk.readme.io/v0.1/docs/the-licenses-for-cloud9-sdk-and-packages)
 
-Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE today.
-Fork it, hack it, and if you think others would benefit, issue a pull request on this repo
-and we'll take a look. If you have any questions, meet us in #cloud9ide on irc.freenode.net
-or ask us on Twitter [@Cloud9IDE](http://twitter.com/#!/Cloud9IDE).
+That being said, v3 will include much more features and will surely over time become a very solid and mature offering. Further more, the license allows the SDK version to be used as a personal editor. However, it is strictly prohibited to:
 
-Happy Coding!
+- Use the SDK to build or offer a service
+- Make the SDK version easily available to anyone else besides yourself
+
+If it feels like these are limiting factors for you, you are welcome to try Cloud9 v2, which is licensed under GPL version 3.
+
+## About
+
+Cloud9 is an open source IDE built with [Node.JS] on the back-end and JavaScript/HTML5 on the client. The version available here runs on your local system. Cloud9 balances the power of traditional desktop IDEs with the simplicity and elegance of editors like TextMate and Sublime.
+
+Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would benefit, file a pull request on this repo or create an issue.
+
+## Goals
+
+- Make it work with a modern node stack (NodeJS >= 0.10)
+- Keep up to date dependencies
+- Add Terminal
+- Fix bugs
 
 ## Features
 
   * High performance ACE text editor with bundled syntax highlighting support for JS, HTML, CSS and mixed modes.
   * Integrated debugger for [Node.JS] applications with views of the call stack, variables, live code execution and live inspector
-  * Advanced Javascript language analysis marking unused variables, globals, syntax errors and allowing for variable rename
-  * Local filesystem is exposed through [WebDAV](http://en.wikipedia.org/wiki/WebDAV) to the IDE, which makes it possible to connect to remote workspaces as well
+  * Advanced JavaScript language analysis marking unused variables, globals, syntax errors and allowing for variable rename
+  * Local file system is exposed through [WebDAV](http://en.wikipedia.org/wiki/WebDAV) to the IDE, which makes it possible to connect to remote workspaces as well
   * Highly extensible through both client-side and server-side plugins
   * Sophisticated process management on the server with evented messaging
 
@@ -36,15 +46,20 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 If installing on Windows, please refer to [Installation on Windows](#installation-on-windows-experimental).
 
-Requirements:
+Requirements (>= 2.1.0):
 
-  * NodeJS `>= 0.6.16`
+  * NodeJS `>= 0.10.0`
+  * libxml2-dev
+
+Requirements (< 2.1.0):
+
+  * NodeJS `>= 0.6.16, <= 0.10.0`
   * NPM `>= 1.1.16`
   * libxml2-dev
 
 Install:
 
-    git clone https://github.com/ajaxorg/cloud9.git
+    git clone https://github.com/exsilium/cloud9.git
     cd cloud9
     npm install
 
@@ -66,7 +81,7 @@ If you want to listen to all IP's:
 
     bin/cloud9.sh -l 0.0.0.0
 
-If you are listening to all IPs it is adviced to add authentication to the IDE.
+If you are listening to all IPs it is advised to add authentication to the IDE.
 You can either do this by adding a reverse proxy in front of Cloud9,
 or use the built in basic authentication through the `--username` and `--password` flags.
 
@@ -82,7 +97,7 @@ If you're running Cloud9 on Windows you'll have to follow these steps as well:
 
   * Install [Grep for Windows](http://gnuwin32.sourceforge.net/downlinks/grep.php)
   * Add `C:\Program Files (x86)\GnuWin32\bin` to your [PATH](http://www.computerhope.com/issues/ch000549.htm)
-  * Open a new instance of `cmd` with elevated rights (right click 'Run as adminstrator')
+  * Open a new instance of `cmd` with elevated rights (right click 'Run as administrator')
   * Now follow the steps under 'Install'
   * *Please note that the `npm install` fails due to a libxml error, but you can ignore that for now.*
 
@@ -139,18 +154,4 @@ The GPL version 3, read it at [http://www.gnu.org/licenses/gpl.txt](http://www.g
 
 ## Contributing
 
-Cloud9 wouldn't be where it is now without contributions. Feel free to fork and improve/enhance Cloud9 in any way your want. If you feel that the Cloud9 community will benefit from your changes, please open a pull request. To protect the interests of the Cloud9 contributors and users we require contributors to sign a Contributors License Agreement (CLA) before we pull the changes into the main repository. Our CLA is the simplest of agreements, requiring that the contributions you make to an ajax.org project are only those you're allowed to make. This helps us significantly reduce future legal risk for everyone involved. It is easy, helps everyone, takes ten minutes, and only needs to be completed once.  There are two versions of the agreement:
-
-1. [The Individual CLA](https://github.com/ajaxorg/cloud9/raw/master/doc/Contributor_License_Agreement-v2.pdf): use this version if you're working on an ajax.org project in your spare time, or can clearly claim ownership of copyright in what you'll be submitting.
-2. [The Corporate CLA](https://github.com/ajaxorg/cloud9/raw/master/doc/Corporate_Contributor_License_Agreement-v2.pdf): have your corporate lawyer review and submit this if your company is going to be contributing to ajax.org projects
-
-If you want to contribute to an ajax.org project please print the CLA and fill it out and sign it. Then either send it by snail mail or fax us or send it back scanned (or as a photo) by email. Please indicate a contact person or pull request your CLA relates to so we can quickly process and handle your agreement. Once you've submitted it, you no longer need to send one for subsequent submissions.
-
-Email: CLA@c9.io
-
-Fax: +31 (0) 206388953
-
-Address: Cloud9 IDE
-  Keizersgracht 241
-  1016 EA, Amsterdam
-  the Netherlands
+Open new issue for discussions and/or feel free to submit a pull request.

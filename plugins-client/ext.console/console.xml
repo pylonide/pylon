@@ -5,7 +5,7 @@
               onclose="return require('ext/console/console').checkIfPageCanClose(event)">
                 <a:hbox pack="end" top="2" right="3" height="24" align="center" padding="0">
                     <a:button id="btnConsoleClear" skin="btn_icon_only" icon="console_clear.png" margin="2 2 0 0"
-                      onclick  = "require('ext/console/console').clear()" />
+                      onclick  = "require('ext/console/console').clear();this.blur();" />
                     <a:button id="btnConsoleSettings" skin="btn_icon_only"
                       icon    = "console_settings.png"
                       margin  = "2 4 0 0"
@@ -17,6 +17,7 @@
                             console.maximizeConsoleHeight();
                         else
                             console.restoreConsoleHeight();
+                        this.blur();
                       "/>
                     <a:divider skin="divider_console"></a:divider>
                     <a:button
@@ -24,9 +25,14 @@
                       icon="console_close_btn.png"
                       class="dim22-22"
                       margin="1 0 0 1"
-                      onclick="require('ext/console/console').hide();this.blur();"/>
+                      onclick="
+                        var console = require('ext/console/console');
+                        if(require('core/settings').model.queryValue('auto/console/@showinput') == 'true' &amp;&amp; console.hiddenInput == true) console.showInput();
+                        console.hide();
+                        this.blur();
+                      "/>
                 </a:hbox>
-                <a:page id="pgConsole" caption="Console" name="console">
+                <a:page id="pgConsole" caption="Console" name="console" class="pgConsole">
                     <a:text id="txtConsole"
                       margin     = "3 0 0 0"
                       anchors    = "0 17 0 0"
@@ -43,7 +49,7 @@
                       skin      = "console_scrollbar"
                       width     = "17" />
                 </a:page>
-                <a:page id="pgOutput" caption="Output" name="output">
+                <a:page id="pgOutput" caption="Output" name="output" class="pgOutput">
                     <a:text id="txtOutput"
                       margin     = "3 0 0 0"
                       anchors    = "0 17 0 0"
@@ -60,6 +66,10 @@
                       skin   = "console_scrollbar"
                       width  = "17" />
                 </a:page>
+                <a:page id="pgTerminal" caption="Terminal" name="terminal" class="pgTerminal">
+                    <a:button id="newTerminalBtn" skin="btn_icon_only" icon="console_new_terminal.png" margin="2 2 0 0" class="newTerminalBtn" onclick = "this.blur();"/>
+                    <div id="terminalWindow"></div>
+                </a:page>
             </a:tab>
 
             <a:hbox id="cliBox" class="consoleInputBox" edge="1 1 2 1" padding="0" pack="end" visible="false" height="31">
@@ -74,7 +84,16 @@
                   flex            = "1" />
                 <a:button id="btnCollapseConsole" skin="btn_console_open" icon="switch.png" state="true" height="27"
                     value = "{!!tabConsole.visible}"
-                    onprop.value="try { require('ext/console/console')[event.value ? 'show' : 'hide'](); } catch(e) {} " />
+                    onprop.value="
+                      var termElement = document.getElementsByClassName('pgTerminal')[0];
+                      var console = require('ext/console/console');
+                      var settings = require('core/settings');
+                      try { console[event.value ? 'show' : 'hide'](); } catch(e) {}
+                      if(event.value == true &amp;&amp; termElement.classList.contains('curbtn') == true &amp;&amp; settings.model.queryValue('auto/console/@showinput') == 'true') {
+                        console.hideInput();
+                        settings.model.setQueryValue('auto/console/@showinput', true);
+                      }
+                    "/>
             </a:hbox>
         </a:vsplitbox>
         

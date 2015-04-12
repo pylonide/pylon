@@ -1,0 +1,15 @@
+{
+    "name": "cloud9.ide.terminal",
+    "version": "0.0.1",
+
+    "main": "./terminal.js",
+    "private": true,
+
+    "plugin": {
+        "consumes": [
+            "http",
+            "ide",
+            "log"
+        ]
+    }
+}

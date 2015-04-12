@@ -103,7 +103,7 @@ function createSmithIoServer(urlCheck, onConnection, connectionHooks) {
     var engine = engineForResource(server, match, serverId);
 
     engine.on("connection", function (socket) {
-        var url = socket.transport.request.url;
+        var url = socket.request.url;
         var m = match(url);
         if (!m)
             return;
@@ -252,4 +252,3 @@ function attachEngineIo(server, options) {
 
   return engine;
 }
-

@@ -422,7 +422,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 // set tab editor commands here
                 _self.searchConsole.$editor.commands._defaultHandlers = commands._defaultHandlers;
                 _self.searchConsole.$editor.commands.commands = commands.commands;
-                _self.searchConsole.$editor.commands.commmandKeyBinding = commands.commmandKeyBinding;
+                _self.searchConsole.$editor.commands.commandKeyBinding = commands.commandKeyBinding;
                 _self.searchConsole.$editor.getSession().setUndoManager(new apf.actiontracker());
             }
 
@@ -648,7 +648,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 fadefoldwidgets   : "false",
                 wrapmodeViewport  : "true"
             }));
-            
+
             _self.searchConsole.$editor.session.setWrapLimitRange(null, null);
 
             this.$panel.addEventListener("afterclose", function() {

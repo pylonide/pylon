@@ -279,7 +279,7 @@ module.exports = ext.register("ext/console/console", {
             return;
         }
 
-        if (tabConsole.activepage === "output" || tabConsole.activepage === "pgSFResults")
+        if (tabConsole.activepage === "output" || tabConsole.activepage === "pgSFResults" || tabConsole.activepage === "terminal")
             tabConsole.set("console");
 
         parseLine || (parseLine = require("ext/console/parser"));
@@ -908,6 +908,7 @@ module.exports = ext.register("ext/console/console", {
 
     newtab : function() {
         var c9shell = tabConsole.add("Console");
+        c9shell.setAttribute("class", "pgConsole");
         c9shell.setAttribute("closebtn", true);
         var c9shellText = c9shell.appendChild(new apf.text({
             margin     : "3 0 0 0",
