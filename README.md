@@ -1,6 +1,6 @@
 # Cloud9 IDE v2
 
-As of 14th of February 2015 with ajaxorg/cloud9.94ab305ec4f092b3d5864b4117fb4d0923cc7539 the upstream author Cloud9 IDE, Inc stated that the Cloud9 v2 would no longer be maintained. The original repository issue tracker was closed and notifications were given that the project is superseded by [Cloud9 v3 SDK](https://github.com/c9/core/) with some substantial changes in licensing terms driven by alignment of business goals.
+As of 14th of February 2015 with [ajaxorg/cloud9@94ab305ec4f092b3d5864b4117fb4d0923cc7539](https://github.com/ajaxorg/cloud9/commit/94ab305ec4f092b3d5864b4117fb4d0923cc7539) the upstream author Cloud9 IDE, Inc stated that the Cloud9 v2 would no longer be maintained. The original repository issue tracker was closed and notifications were given that the project is superseded by [Cloud9 v3 SDK](https://github.com/c9/core/) with some substantial changes in licensing terms driven by alignment of business goals.
 
 This repository is the maintenance fork for the original Cloud9 IDE that people grew to love. I'm eagerly waiting for the v3 to come out of the Alpha project status but the goal of the new version has changed considerably:
 
@@ -22,12 +22,15 @@ Cloud9 is an open source IDE built with [Node.JS] on the back-end and JavaScript
 
 Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would benefit, file a pull request on this repo or create an issue.
 
-## Goals
+## Fork Extras
 
-- Make it work with a modern node stack (NodeJS >= 0.10)
-- Keep up to date dependencies
-- Add Terminal
-- Fix bugs
+- Modern node support (NodeJS >= 0.10+)
+- Up to date dependencies and compatibility fixes
+- Terminal
+
+### Screenshot
+
+![ScreenShot](doc/screenshot01.png)
 
 ## Features
 
