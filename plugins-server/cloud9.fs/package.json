@@ -6,7 +6,7 @@
 
     "dependencies": {
         "jsdav": "0.1.x",
-        "gnu-tools": "0.0.x"
+        "gnu-tools": "https://github.com/exsilium/node-gnu-tools/tarball/704f8c086b147505589525f6d1ee103ecd79f10b"
     },
 
     "plugin": {
