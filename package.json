@@ -24,7 +24,7 @@
         "http-error": "~0.0.5",
         "simple-template": "~0.0.1",
         "netutil": "~0.0.2",
-        "jsDAV": "https://github.com/ajaxorg/jsDAV/tarball/f78c34c94fa915ca1b24975839b78ff88ea851d6",
+        "jsDAV": "https://github.com/exsilium/jsDAV/tarball/86dc2bfa253fb97700a5b6d25c5af54d102bbe09",
         "smith": "https://github.com/c9/smith/tarball/8990e18f2ffcd3c334829d36e8aeabac99b13d18",
 
         "vfs-architect": "0.0.3",
@@ -61,7 +61,8 @@
     }],
 
     "scripts": {
-        "start": "sh ./bin/cloud9.sh",
+        "start": "./bin/cloud9.sh",
+        "test": "./test/run-tests.sh",
         "postinstall": "make ace"
     }
 }
