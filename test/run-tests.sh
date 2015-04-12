@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -e
+#!/usr/bin/env sh
 echo "Node version: "
 node -v
 echo "Mocha version: "
