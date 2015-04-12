@@ -62,6 +62,7 @@
 
     "scripts": {
         "start": "sh ./bin/cloud9.sh",
+        "test": "bash ./test/run-tests.sh",
         "postinstall": "make ace"
     }
 }
