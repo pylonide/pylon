@@ -13,7 +13,9 @@
     "dependencies": {
         "async": "~0.9.0",
         "colors": "~1.0.3",
-        "connect": "1.8.7",
+        "connect": "2.29.1",
+        "express-session": "~1.11.0",
+        "urlrouter": "~0.5.4",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
         "engine.io": "~1.5.1",
