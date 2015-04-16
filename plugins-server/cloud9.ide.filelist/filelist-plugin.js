@@ -11,7 +11,6 @@ var Url = require("url");
 var Plugin = require("../cloud9.core/plugin");
 var FilelistLib = require("./filelist");
 var util = require("util");
-var Connect = require("connect");
 var error = require("http-error");
 
 var name = "filelist";
@@ -40,7 +39,7 @@ module.exports = function setup(options, imports, register) {
 
         // set up some routes as well
         var self = this;
-        IdeRoutes.use("/fs", Connect.router(function(app) {
+        IdeRoutes.use("/fs", imports.connect.getRouter()(function(app) {
             app.get("/list", self.getList.bind(self));
         }));
     };
@@ -72,7 +71,7 @@ module.exports = function setup(options, imports, register) {
                         if (!msg)
                             return;
 
-                        if (!res.headerSent)
+                        if (!res.headersSent)
                             res.writeHead(200, { "content-type": "text/plain" });
                         res.write(msg);
                     },

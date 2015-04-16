@@ -20,7 +20,7 @@ module.exports = function setup(options, imports, register) {
         }
     }
 
-    imports.connect.useStart(imports.connect.getModule().router(function(app) {
+    imports.connect.useStart(imports.connect.getRouter()(function(app) {
         app.get(/^\/alive$/, function(req, res) {
             checkAlive(req, res);
         });
