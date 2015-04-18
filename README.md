@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/exsilium/cloud9.svg?branch=master)](https://travis-ci.org/exsilium/cloud9)
+[![Dependency Status](https://gemnasium.com/exsilium/cloud9.svg)](https://gemnasium.com/exsilium/cloud9)
+
 # Cloud9 IDE v2
 
 As of 14th of February 2015 with [ajaxorg/cloud9@94ab305ec4f092b3d5864b4117fb4d0923cc7539](https://github.com/ajaxorg/cloud9/commit/94ab305ec4f092b3d5864b4117fb4d0923cc7539) the upstream author Cloud9 IDE, Inc stated that the Cloud9 v2 would no longer be maintained. The original repository issue tracker was closed and notifications were given that the project is superseded by [Cloud9 v3 SDK](https://github.com/c9/core/) with some substantial changes in licensing terms driven by alignment of business goals.
