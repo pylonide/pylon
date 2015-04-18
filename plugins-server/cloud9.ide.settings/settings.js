@@ -18,7 +18,7 @@ var FS;
 var SETTINGS_PATH;
 
 var trimFilePrefix;
-var locationsToSwap = {"files" : "active", "file" : "path", "tree_selection": "path" };  
+var locationsToSwap = {"files" : "active", "file" : "path", "tree_selection": "path" };
 var propertiesToSwap= ["projecttree", "tabcycle", "recentfiles"];
 
 module.exports = function setup(options, imports, register) {
@@ -35,7 +35,7 @@ module.exports = function setup(options, imports, register) {
             if (typeof FS.exists !== "function") {
                 FS.exists = require("path").exists;
             }
-            SETTINGS_PATH = options.absoluteSettingsPath;        
+            SETTINGS_PATH = options.absoluteSettingsPath;
         }
 
         trimFilePrefix = options.trimFilePrefix;
@@ -88,21 +88,21 @@ util.inherits(SettingsPlugin, Plugin);
                         callback(err);
                         return;
                     }
-                    
+
                     // for local version, we need to pluck the paths in settings prepended with username + workspace id (short)
                     if (trimFilePrefix !== undefined) {
                         var attrSet = '="';
-                        
+
                         for (var l in locationsToSwap) {
                             var attribute = locationsToSwap[l] + attrSet;
-                            
+
                             settings = settings.replace(new RegExp(attribute + "/workspace", "g"), attribute + trimFilePrefix + "/workspace");
                         }
-                        
+
                         propertiesToSwap.forEach(function (el, idx, arr) {
                             var openTagPos= settings.indexOf("<" + el);
                             var closeTagPos= settings.indexOf("</" + el + ">");
-    
+
                             if (openTagPos > 0 && closeTagPos > 0) {
                                 var originalPath = settings.substring(openTagPos, closeTagPos);
                                 var newPath = originalPath.replace(new RegExp("/workspace", "g"), trimFilePrefix + "/workspace");
@@ -111,7 +111,7 @@ util.inherits(SettingsPlugin, Plugin);
                             }
                         });
                     }
-                    
+
                     callback(err, settings);
                 });
             }
@@ -126,21 +126,21 @@ util.inherits(SettingsPlugin, Plugin);
         // console.log("store settings", this.settingsPath);
         // Atomic write (write to tmp file and rename) so we don't get corrupted reads if at same time.
         var tmpPath = self.settingsPath + "~" + new Date().getTime() + "-" + ++this.counter;
-        
+
         // for local version, we need to rewrite the paths in settings to store as "/workspace"
         if (trimFilePrefix !== undefined) {
             var attrSet = '="';
-            
+
             for (var l in locationsToSwap) {
                 var attribute = locationsToSwap[l] + attrSet;
-                
+
                 settings = settings.replace(new RegExp(attribute + trimFilePrefix, "g"), attribute);
             }
-            
+
             propertiesToSwap.forEach(function (el, idx, arr) {
                 var openTagPos= settings.indexOf("<" + el);
                 var closeTagPos= settings.indexOf("</" + el + ">");
-                
+
                 if (openTagPos > 0 && closeTagPos > 0) {
                     var originalPath = settings.substring(openTagPos, closeTagPos);
                     var newPath = originalPath.replace(new RegExp(trimFilePrefix, "g"), "");
@@ -148,13 +148,13 @@ util.inherits(SettingsPlugin, Plugin);
                 }
             });
         }
-                
+
         this.fs.writeFile(tmpPath, settings, "utf8", function(err) {
             if (err) {
                 callback(err);
                 return;
             }
-            self.fs.rename(tmpPath, self.settingsPath, callback);
+            self.fs.renameOverwrite(tmpPath, self.settingsPath, callback);
         });
     };
 
