@@ -20,7 +20,7 @@
         "msgpack-js-browser": "~0.1.4",
         "engine.io": "~1.5.1",
         "engine.io-client": "~1.5.1",
-        "dryice": "0.4.10",
+        "dryice": "0.4.11",
 
         "amd-loader": "~0.0.5",
         "http-error": "~0.0.5",
