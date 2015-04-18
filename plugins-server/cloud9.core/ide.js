@@ -146,7 +146,7 @@ util.inherits(Ide, EventEmitter);
             packedName: this.options.packedName,
             local: this.options.local,
             loadedDetectionScript: loadedDetectionScript,
-            _csrf: req.session && req.session._csrf || ""
+            _csrf: req.csrfToken() || ""
         };
 
         var settingsPlugin = this.workspace.getExt("settings");

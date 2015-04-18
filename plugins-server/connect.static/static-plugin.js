@@ -10,7 +10,7 @@ module.exports = function startup(options, imports, register) {
     var workerPrefix = options.workerPrefix || "/static";
 
     var connect = imports.connect.getModule();
-    var staticServer = connect.createServer();
+    var staticServer = connect();
     imports.connect.useMain(options.bindPrefix || prefix, staticServer);
 
     register(null, {
@@ -25,7 +25,7 @@ module.exports = function startup(options, imports, register) {
                 statics.forEach(function(s) {
 
 //                    console.log("MOUNT", prefix, s.mount, s.path);
-                    
+
                     if (s.router) {
                         var server = connect.static(s.path);
                         staticServer.use(s.mount, function(req, res, next) {
@@ -62,7 +62,7 @@ module.exports = function startup(options, imports, register) {
             getStaticPrefix: function() {
                 return prefix;
             },
-            
+
             getWorkerPrefix: function() {
                 return workerPrefix;
             }

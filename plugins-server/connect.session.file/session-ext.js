@@ -1,13 +1,13 @@
 var assert = require("assert");
 var path = require("path");
 var fs = require("fs");
-var Store = require("connect/lib/middleware/session/store");
+var Store = require("express-session/session/store");
 var exists = fs.existsSync || path.existsSync;
 
 module.exports = function startup(options, imports, register) {
 
     assert(options.sessionsPath, "option 'sessionsPath' is required");
-    
+
     if (!exists(path.dirname(options.sessionsPath))) {
         fs.mkdir(path.dirname(options.sessionsPath), 0755);
     }
@@ -19,7 +19,7 @@ module.exports = function startup(options, imports, register) {
         basePath: options.sessionsPath,
         reapInterval: options.maxAge || 60 * 60 * 1000    // 1 hour
     });
-    
+
     register(null, {
         "session-store": {
             on: sessionStore.on.bind(sessionStore),
@@ -29,7 +29,7 @@ module.exports = function startup(options, imports, register) {
             createSession: sessionStore.createSession.bind(sessionStore)
         }
     });
-    
+
 };
 
 
@@ -58,7 +58,7 @@ var FileStore = function(options) {
                             // session ok
                         } else {
                             self.destroy(file);
-                        }                      
+                        }
                     });
                 });
             });
@@ -93,14 +93,14 @@ FileStore.prototype.get = function(sid, fn){
                       fn(null, sess);
                   } else {
                       self.destroy(sid, fn);
-                  }                      
+                  }
               }
           });
       }
       else {
           fn();
       }
-  });      
+  });
 };
 
 FileStore.prototype.set = function(sid, sess, fn){
@@ -129,7 +129,7 @@ FileStore.prototype.destroy = function(sid, fn){
               else {
                   fn && fn();
               }
-          });              
+          });
       } else {
           fn && fn();
       }

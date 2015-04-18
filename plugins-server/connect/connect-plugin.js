@@ -1,6 +1,7 @@
 var utils = require("connect/lib/utils");
 var netutil = require("netutil");
 var connect = require("connect");
+var router = require("urlrouter");
 
 module.exports = function startup(options, imports, register) {
     imports.log.info("connect plugin start");
@@ -21,6 +22,9 @@ module.exports = function startup(options, imports, register) {
         },
         getUtils: function() {
             return utils;
+        },
+        getRouter: function() {
+            return router;
         }
     };
     hookNames.forEach(function(name) {
@@ -28,9 +32,9 @@ module.exports = function startup(options, imports, register) {
         server.use(hookServer);
         api["use" + name] = function() {
             hookServer.use.apply(hookServer, arguments);
-            
+
             var route = hookServer.stack[hookServer.stack.length-1];
-            
+
             // return "unuse"
             return function() {
                 var i = hookServer.stack.indexOf(route);
@@ -66,7 +70,7 @@ module.exports = function startup(options, imports, register) {
             return host;
         };
 
-        server.listen(port, host, function(err) {
+        var getListen = server.listen(port, host, function(err) {
             if (err)
                 return register(err);
 
@@ -80,7 +84,7 @@ module.exports = function startup(options, imports, register) {
                 "connect": api,
                 "http": {
                     getServer: function() {
-                        return server;
+                        return getListen;
                     }
                 }
             });

@@ -1,7 +1,7 @@
 {
     "name": "cloud9",
     "description": "Cloud9 IDE",
-    "version": "2.1.1",
+    "version": "2.1.2",
     "homepage" : "http://github.com/exsilium/cloud9",
     "engines": {"node": ">= 0.10.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
@@ -13,7 +13,9 @@
     "dependencies": {
         "async": "~0.9.0",
         "colors": "~1.0.3",
-        "connect": "1.8.7",
+        "connect": "2.29.1",
+        "express-session": "~1.11.0",
+        "urlrouter": "~0.5.4",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
         "engine.io": "~1.5.1",
@@ -24,31 +26,29 @@
         "http-error": "~0.0.5",
         "simple-template": "~0.0.1",
         "netutil": "~0.0.2",
-        "jsDAV": "https://github.com/exsilium/jsDAV/tarball/86dc2bfa253fb97700a5b6d25c5af54d102bbe09",
-        "smith": "https://github.com/c9/smith/tarball/8990e18f2ffcd3c334829d36e8aeabac99b13d18",
 
-        "vfs-architect": "0.0.3",
-        "vfs-nodefs-adapter": "0.3.0",
-        "vfs-local": "https://github.com/c9/vfs-local/tarball/9c6aae5c66851e0f9869f7c40072113f32d11cec",
+        "jsDAV":              "https://github.com/exsilium/jsDAV/tarball/86dc2bfa253fb97700a5b6d25c5af54d102bbe09",
+        "smith":              "https://github.com/exsilium/smith/tarball/8990e18f2ffcd3c334829d36e8aeabac99b13d18",
+        "architect":          "https://github.com/exsilium/architect/tarball/1e533e1235324303131f21461765f45cf278a45a",
+        "connect-architect":  "https://github.com/exsilium/connect-architect/tarball/538416c591c5d63e9b8803338b572141a67eeb37",
+        "architect-build":    "https://github.com/exsilium/architect-build/tarball/a3bad5180829cbb20cf73e93933f74ed1286b2bd",
 
-        "architect": "~0.1.10",
-        "connect-architect": "0.0.6",
-        "architect-agent": "0.2.2",
-        "architect-socket-transport": "0.3.0",
-        "architect-build": "https://github.com/c9/architect-build/tarball/a3bad51808",
+        "vfs-architect":      "https://github.com/exsilium/vfs-architect/tarball/aa421548f14943b77c01787b7f3f772c2dbe3028",
+        "vfs-nodefs-adapter": "https://github.com/exsilium/vfs-nodefs-adapter/tarball/development",
+        "vfs-local":          "https://github.com/exsilium/vfs-local/tarball/f7ac9227176dc28e8b71057dcd14664d102c7fc5",
 
         "ace":          "https://github.com/ajaxorg/ace/tarball/8f686eb795cc5f1e07f5de57ef6d9be6a72fd572",
         "asyncjs":      "https://github.com/ajaxorg/async.js/tarball/bd936c60bb87c58052bcc0307f4e637bd35c908f",
         "v8debug":      "https://github.com/ajaxorg/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
         "treehugger":   "https://github.com/ajaxorg/treehugger/tarball/ea5098ac70fd77238e77c7acb6292d5013e40af0",
 
-        "pty.js": "~0.2.3",
+        "pty.js": "~0.2.7-1",
         "term.js": "~0.0.3"
     },
 
     "devDependencies": {
-        "nodeunit": "0.7.4",
-        "rimraf": "2.0.1"
+        "nodeunit": "~0.9.1",
+        "rimraf": "~2.3.2"
     },
 
     "repository" : {

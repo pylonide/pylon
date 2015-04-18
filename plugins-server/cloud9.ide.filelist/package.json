@@ -9,7 +9,8 @@
             "ide",
             "vfs",
             "ide-routes",
-            "workspace-permissions"
+            "workspace-permissions",
+            "connect"
         ]
     }
 }
