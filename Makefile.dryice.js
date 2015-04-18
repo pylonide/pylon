@@ -50,34 +50,32 @@ function worker(project) {
         yeOldeError();
         process.exit(1);
     };
-    
+
     copy({
-        source: [
-            copy.source.commonjs({
-                project: workerProject,
-                require: [
-                    'ace/lib/fixoldbrowsers',
-                    'ace/lib/event_emitter',
-                    'ace/lib/oop',
-                    'ext/language/worker',
-                    'ext/codecomplete/local_completer',
-                    'ext/codecomplete/snippet_completer',
-                    'ext/codecomplete/open_files_local_completer',
-                    'ext/jslanguage/parse',
-                    'ext/jslanguage/scope_analyzer',
-                    'ext/jslanguage/jshint',
-                    'ext/jslanguage/jumptodef',
-                    'ext/jslanguage/debugger',
-                    'ext/jslanguage/outline',
-                    'ext/csslanguage/css_handler',
-                    'ext/htmllanguage/html_completer',
-                    'ext/codecomplete/mode_completer',
-                    'ext/linereport/linereport_base',
-                    'ext/linereport_php/linereport_php_worker',
-                    'ext/linereport_python/linereport_python_worker',
-                ]
-            })
-        ],
+        source: [{
+            project: workerProject,
+            require: [
+                'ace/lib/fixoldbrowsers',
+                'ace/lib/event_emitter',
+                'ace/lib/oop',
+                'ext/language/worker',
+                'ext/codecomplete/local_completer',
+                'ext/codecomplete/snippet_completer',
+                'ext/codecomplete/open_files_local_completer',
+                'ext/jslanguage/parse',
+                'ext/jslanguage/scope_analyzer',
+                'ext/jslanguage/jshint',
+                'ext/jslanguage/jumptodef',
+                'ext/jslanguage/debugger',
+                'ext/jslanguage/outline',
+                'ext/csslanguage/css_handler',
+                'ext/htmllanguage/html_completer',
+                'ext/codecomplete/mode_completer',
+                'ext/linereport/linereport_base',
+                'ext/linereport_php/linereport_php_worker',
+                'ext/linereport_python/linereport_python_worker',
+            ]
+        }],
         filter: [ copy.filter.moduleDefines, filterTextPlugin ],
         dest: worker
     });
@@ -89,7 +87,7 @@ function worker(project) {
         filter: [ /* copy.filter.uglifyjs */],
         dest: __dirname + "/plugins-client/lib.ace/www/worker/worker-language.js"
     });
-    
+
     console.error = yeOldeError;
 }
 
