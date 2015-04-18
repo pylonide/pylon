@@ -33,8 +33,8 @@
         "vfs-nodefs-adapter": "0.3.0",
         "vfs-local": "https://github.com/c9/vfs-local/tarball/9c6aae5c66851e0f9869f7c40072113f32d11cec",
 
-        "architect": "~0.1.10",
-        "connect-architect": "0.0.6",
+        "architect": "~0.1.11",
+        "connect-architect": "https://github.com/exsilium/connect-architect/tarball/538416c591c5d63e9b8803338b572141a67eeb37",
         "architect-agent": "0.2.2",
         "architect-socket-transport": "0.3.0",
         "architect-build": "https://github.com/c9/architect-build/tarball/a3bad51808",
