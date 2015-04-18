@@ -1,7 +1,8 @@
-var utils = require("connect/lib/utils");
 var netutil = require("netutil");
 var connect = require("connect");
 var router = require("urlrouter");
+var cookieParser = require("cookie-parser");
+var bodyParser = require("body-parser");
 
 module.exports = function startup(options, imports, register) {
     imports.log.info("connect plugin start");
@@ -19,9 +20,6 @@ module.exports = function startup(options, imports, register) {
     var api = {
         getModule: function() {
             return connect;
-        },
-        getUtils: function() {
-            return utils;
         },
         getRouter: function() {
             return router;
@@ -46,8 +44,8 @@ module.exports = function startup(options, imports, register) {
         };
     });
 
-    api.useSetup(connect.cookieParser());
-    api.useSetup(connect.bodyParser());
+    api.useSetup(cookieParser());
+    api.useSetup(bodyParser.json());
     if (options.serverId) {
         api.useSetup(function (req, res, next) {
             res.setHeader("X-C9-Server", options.serverId);

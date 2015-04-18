@@ -13,8 +13,13 @@
     "dependencies": {
         "async": "~0.9.0",
         "colors": "~1.0.3",
-        "connect": "2.29.1",
+        "connect": "~3.3.5",
         "express-session": "~1.11.0",
+        "cookie-parser": "~1.3.4",
+        "body-parser": "~1.12.3",
+        "serve-static": "~1.9.2",
+        "serve-favicon": "~2.2.0",
+        "csurf": "~1.8.0",
         "urlrouter": "~0.5.4",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
@@ -30,7 +35,6 @@
         "jsDAV":              "https://github.com/exsilium/jsDAV/tarball/86dc2bfa253fb97700a5b6d25c5af54d102bbe09",
         "smith":              "https://github.com/exsilium/smith/tarball/8990e18f2ffcd3c334829d36e8aeabac99b13d18",
         "architect":          "https://github.com/exsilium/architect/tarball/1e533e1235324303131f21461765f45cf278a45a",
-        "connect-architect":  "https://github.com/exsilium/connect-architect/tarball/538416c591c5d63e9b8803338b572141a67eeb37",
         "architect-build":    "https://github.com/exsilium/architect-build/tarball/a3bad5180829cbb20cf73e93933f74ed1286b2bd",
 
         "vfs-architect":      "https://github.com/exsilium/vfs-architect/tarball/aa421548f14943b77c01787b7f3f772c2dbe3028",
@@ -43,7 +47,7 @@
         "treehugger":   "https://github.com/ajaxorg/treehugger/tarball/ea5098ac70fd77238e77c7acb6292d5013e40af0",
 
         "pty.js": "~0.2.7-1",
-        "term.js": "~0.0.3"
+        "term.js": "~0.0.4"
     },
 
     "devDependencies": {

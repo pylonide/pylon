@@ -1,4 +1,4 @@
-var Session = require("connect").session;
+var Session = require("express-session");
 var assert = require("assert");
 
 module.exports = function startup(options, imports, register) {

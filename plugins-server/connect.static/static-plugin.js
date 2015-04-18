@@ -1,4 +1,6 @@
 var Connect = require("connect");
+var serveStatic = require("serve-static");
+var serveFavicon = require("serve-favicon");
 
 module.exports = function startup(options, imports, register) {
 
@@ -17,7 +19,7 @@ module.exports = function startup(options, imports, register) {
         "static": {
 
             favicon: function (path, options) {
-                imports.connect.useMain(Connect.favicon(path, options));
+                imports.connect.useMain(serveFavicon(path, options));
             },
 
             addStatics: function(statics) {
@@ -35,7 +37,7 @@ module.exports = function startup(options, imports, register) {
 
                     } else {
 
-                        staticServer.use(s.mount, connect.static(s.path));
+                        staticServer.use(s.mount, serveStatic(s.path));
 
                     }
 

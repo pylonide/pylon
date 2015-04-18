@@ -1,6 +1,5 @@
 var assert = require("assert");
 var path = require("path");
-var utils = require("connect").utils;
 var error = require("http-error");
 
 var jsDAV = require("jsDAV");
@@ -52,17 +51,14 @@ module.exports = function setup(options, imports, register) {
             if (!req.session || !(req.session.uid || req.session.anonid))
                 return next(new error.Unauthorized());
 
-            var pause = utils.pause(req);
             permissions.getPermissions(req.session.uid, workspaceId, "cloud9.fs.fs-plugin", function(err, permissions) {
                 if (err) {
                     next(err);
-                    pause.resume();
                     return;
                 }
 
                 davServer.permissions = permissions.fs;
                 davServer.exec(req, res);
-                pause.resume();
             });
         });
 
