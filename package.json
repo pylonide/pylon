@@ -21,6 +21,8 @@
         "serve-favicon": "~2.2.0",
         "csurf": "~1.8.0",
         "urlrouter": "~0.5.4",
+        "passport": "~0.2.1",
+        "passport-http": "~0.2.2",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
         "engine.io": "~1.5.1",
