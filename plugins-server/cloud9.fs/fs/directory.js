@@ -114,6 +114,7 @@ require("util").inherits(jsDAV_FS_Directory, jsDAV_FS_Node);
             });
 
             stream.end = function() {
+                clearTimeout(track.timeout);
                 if (track.length == parseInt(size, 10)) {
                     delete handler.server.chunkedUploads[path];
                     track.stream.end();
