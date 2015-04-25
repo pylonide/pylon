@@ -13,7 +13,7 @@
         apf.isTrue([mdlStatusBar::state/@showStatusbar])
       }}"
       height  = "28"
-      bottom  = "3"
+      bottom  = "15"
       right   = "3">
         <a:hbox height="23">
             <a:label id="lblEditorStatus" 
