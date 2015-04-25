@@ -37,10 +37,10 @@
         "vfs-nodefs-adapter": "https://github.com/exsilium/vfs-nodefs-adapter/tarball/development",
         "vfs-local":          "https://github.com/exsilium/vfs-local/tarball/f7ac9227176dc28e8b71057dcd14664d102c7fc5",
 
-        "ace":          "https://github.com/ajaxorg/ace/tarball/8f686eb795cc5f1e07f5de57ef6d9be6a72fd572",
+        "ace":          "https://github.com/ajaxorg/ace/tarball/v1.1.9",
         "asyncjs":      "https://github.com/ajaxorg/async.js/tarball/bd936c60bb87c58052bcc0307f4e637bd35c908f",
         "v8debug":      "https://github.com/ajaxorg/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
-        "treehugger":   "https://github.com/ajaxorg/treehugger/tarball/ea5098ac70fd77238e77c7acb6292d5013e40af0",
+        "treehugger":   "https://github.com/ajaxorg/treehugger/tarball/0.0.2",
 
         "pty.js": "~0.2.7-1",
         "term.js": "~0.0.3"

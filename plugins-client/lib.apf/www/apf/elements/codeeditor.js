@@ -198,6 +198,12 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         _self.$editor.setShowPrintMargin(_self.showprintmargin);
 
+        /* Ace report the following in v1.1.9
+           Automatically scrolling cursor into view after selection change this will be disabled in the next version
+           set editor.$blockScrolling = Infinity to disable this message
+         */
+        _self.$editor.$blockScrolling = Infinity;
+
         _self.$editor.setSession(doc);
     };
     
