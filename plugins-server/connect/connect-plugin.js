@@ -3,6 +3,7 @@ var connect = require("connect");
 var router = require("urlrouter");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
+var query = require("./middleware/query");
 
 module.exports = function startup(options, imports, register) {
     imports.log.info("connect plugin start");
@@ -23,6 +24,13 @@ module.exports = function startup(options, imports, register) {
         },
         getRouter: function() {
             return router;
+        },
+        /* The query() is backported from Connect 2.x branch because the IDE
+           relies on req.query to be populated. This does just that with the
+           help of qs and parseurl
+         */
+        query: function() {
+            return query();
         }
     };
     hookNames.forEach(function(name) {
@@ -46,6 +54,7 @@ module.exports = function startup(options, imports, register) {
 
     api.useSetup(cookieParser());
     api.useSetup(bodyParser.json());
+
     if (options.serverId) {
         api.useSetup(function (req, res, next) {
             res.setHeader("X-C9-Server", options.serverId);

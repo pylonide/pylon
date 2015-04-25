@@ -80,6 +80,7 @@ module.exports = function setup(options, imports, register) {
         var connectModule = connect.getModule();
         var server = connectModule();
         connect.useAuth(baseUrl, server);
+        connect.useStart(connect.query());
         connect.useSession(csrf());
 
         server.use(function(req, res, next) {

@@ -12,7 +12,7 @@ module.exports = function startup(options, imports, register) {
 
     connect.useSession(Session({
         store: sessionStore,
-        name: options.key,
+        name: options.name,
         secret: options.secret,
         saveUninitialized: options.saveUninitialized,
         resave: false
@@ -20,8 +20,8 @@ module.exports = function startup(options, imports, register) {
 
     register(null, {
         session: {
-            getKey: function() {
-                return options.key;
+            getName: function() {
+                return options.name;
             },
             get: sessionStore.get
         }
