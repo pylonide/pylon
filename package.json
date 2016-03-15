@@ -1,11 +1,12 @@
 {
     "name": "cloud9",
     "description": "Cloud9 IDE",
-    "version": "2.1.2",
+    "version": "2.1.3",
     "homepage" : "http://github.com/exsilium/cloud9",
     "engines": {"node": ">= 0.10.0"},
     "author": "Ajax.org B.V. <info@ajax.org>",
     "contributors": ["Sten Feldman <exile@chamber.ee> (http://sten.feldman.eesti.ee/)"],
+    "license": "GPL-3.0",
     "help": {
         "web": "https://github.com/exsilium/cloud9/blob/master/README.md"
     },
@@ -63,10 +64,6 @@
         "type" : "git",
          "url" : "git://github.com/exsilium/cloud9.git"
     },
-    "licenses": [{
-        "type": "GPLv3",
-        "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
-    }],
 
     "scripts": {
         "start": "./bin/cloud9.sh",
