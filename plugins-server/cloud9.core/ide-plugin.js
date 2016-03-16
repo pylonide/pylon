@@ -1,9 +1,9 @@
 var assert = require("assert");
-var utils = require("connect").utils;
 var error = require("http-error");
 var IdeServer = require("./ide");
 var parseUrl = require("url").parse;
 var middleware = require("./middleware");
+var csrf = require("csurf");
 
 module.exports = function setup(options, imports, register) {
 
@@ -80,8 +80,8 @@ module.exports = function setup(options, imports, register) {
         var connectModule = connect.getModule();
         var server = connectModule();
         connect.useAuth(baseUrl, server);
-        connect.useStart(connectModule.query());
-        connect.useSession(connectModule.csrf());
+        connect.useStart(connect.query());
+        connect.useSession(csrf());
 
         server.use(function(req, res, next) {
             req.parsedUrl = parseUrl(req.url);
@@ -90,19 +90,15 @@ module.exports = function setup(options, imports, register) {
                 return next(new error.Unauthorized());
             // NOTE: This gets called multiple times!
 
-            var pause = utils.pause(req);
-
             initUserAndProceed(req.session.uid || req.session.anonid, ide.options.workspaceId, function(err) {
                 if (err) {
                     next(err);
-                    pause.resume();
                     return;
                 }
 
                 // Guard against `Can't set headers after they are sent. Error: Can't set headers after they are sent.`.
                 try {
                     next();
-                    pause.resume();
                 } catch(err) {
                     console.error(err.stack);
                 }

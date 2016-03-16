@@ -170,8 +170,9 @@ var config = [
     },
     {
         packagePath: "./connect.session",
-        key: "cloud9.sid." + port,
-        secret: "v1234"
+        name: "cloud9.sid." + port,
+        secret: "v1234",
+        saveUninitialized: true
     },
     {
         packagePath: "./connect.session.file",
