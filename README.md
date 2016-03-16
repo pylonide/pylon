@@ -6,7 +6,7 @@
 
 As of 14th of February 2015 with [ajaxorg/cloud9@94ab305ec4f092b3d5864b4117fb4d0923cc7539](https://github.com/ajaxorg/cloud9/commit/94ab305ec4f092b3d5864b4117fb4d0923cc7539) the upstream author Cloud9 IDE, Inc stated that the Cloud9 v2 would no longer be maintained. The original repository issue tracker was closed and notifications were given that the project is superseded by [Cloud9 v3 SDK](https://github.com/c9/core/) with some substantial changes in licensing terms driven by alignment of business goals.
 
-This repository is the maintenance fork for the original Cloud9 IDE that people grew to love. I'm eagerly waiting for the v3 to come out of the Alpha project status but the goal of the new version has changed considerably:
+This repository is the maintenance fork for the original Cloud9 IDE that people grew to love. The v3 development is continuing strong but there are many changes to the original approach:
 
 - The emphasis is on the development of [c9.io](http://c9.io) cloud-hosted service
 - The on-premises solution will be a separately licensed product
@@ -56,13 +56,7 @@ If installing on Windows, please refer to [Installation on Windows](#installatio
 Requirements (>= 2.1.0):
 
   * NodeJS `>= 0.10.0`
-  * libxml2-dev
-
-Requirements (< 2.1.0):
-
-  * NodeJS `>= 0.6.16, <= 0.10.0`
-  * NPM `>= 1.1.16`
-  * libxml2-dev
+  * g++-4.8
 
 Install:
 
@@ -97,24 +91,6 @@ or use the built in basic authentication through the `--username` and `--passwor
 Cloud9 is compatible with all connect authentication layers,
 to implement your own, please see the `plugins-server/cloud9.connect.basic-auth` plugin
 on how we added basic authentication.
-
-## Installation on Windows (experimental)
-
-If you're running Cloud9 on Windows you'll have to follow these steps as well:
-
-  * Install [Grep for Windows](http://gnuwin32.sourceforge.net/downlinks/grep.php)
-  * Add `C:\Program Files (x86)\GnuWin32\bin` to your [PATH](http://www.computerhope.com/issues/ch000549.htm)
-  * Open a new instance of `cmd` with elevated rights (right click 'Run as administrator')
-  * Now follow the steps under 'Install'
-  * *Please note that the `npm install` fails due to a libxml error, but you can ignore that for now.*
-
-To start Cloud9, please don't start through `bin/cloud9.sh` but rather via:
-
-    node server.js [args]
-
-Please note that there will be errors displayed regarding the `find` command,
-and that some features might not work.
-Feel free to improve the Windows experience and open a pull request.
 
 ## Updating
 
@@ -161,4 +137,4 @@ The GPL version 3, read it at [http://www.gnu.org/licenses/gpl.txt](http://www.g
 
 ## Contributing
 
-Open new issue for discussions and/or feel free to submit a pull request.
+Open new issue for discussions and/or feel free to submit a pull request against the development branch

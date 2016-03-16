@@ -1,3 +1,23 @@
+v2.1.3
+======
+* The Connect middleware once again received a huge upgrade, this time to v3.4.1.
+  Due to middleware architecture changes, many new additional packages were
+  added as dependency:
+    * cookie-parser
+    * body-parser
+    * serve-static
+    * csurf
+    * qs
+    * parseurl
+    * passport
+    * passport-http
+  connect.query() was backported from Connect v2
+* Other dependencies were pumped to their newest and greatest versions
+* Fix for Stream error: Upload timed out when uploading files
+* Minor UI change
+* Travis-CI improvements
+* Repository is now detached from the original upstreadm
+
 v2.1.2
 ======
 * Connect is upgraded from v1.8.7 to more modern version of v2.29.1 this closes
