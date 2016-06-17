@@ -3,7 +3,7 @@ env:
   global:
     - CXX=g++-4.8
   matrix:
-    - NODE_VERSION="node"
+    - NODE_VERSION="5"
     - NODE_VERSION="4"
     - NODE_VERSION="4.3"
     - NODE_VERSION="4.2"
