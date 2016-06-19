@@ -4,7 +4,7 @@
 
 # Cloud9 IDE v2
 
-As of 14th of February 2015 with [ajaxorg/cloud9@94ab305ec4f092b3d5864b4117fb4d0923cc7539](https://github.com/ajaxorg/cloud9/commit/94ab305ec4f092b3d5864b4117fb4d0923cc7539) the upstream author Cloud9 IDE, Inc stated that the Cloud9 v2 would no longer be maintained. The original repository issue tracker was closed and notifications were given that the project is superseded by [Cloud9 v3 SDK](https://github.com/c9/core/) with some substantial changes in licensing terms driven by alignment of business goals.
+As of 14th of February 2015 with a commit that can no longer be linked to, the upstream author Cloud9 IDE, Inc stated that the Cloud9 v2 would no longer be maintained. The original repository issue tracker was closed and notifications were given that the project is superseded by [Cloud9 v3 SDK](https://github.com/c9/core/) with some substantial changes in licensing terms driven by alignment of business goals.
 
 This repository is the maintenance fork for the original Cloud9 IDE that people grew to love. The v3 development is continuing strong but there are many changes to the original approach:
 
@@ -91,6 +91,21 @@ or use the built in basic authentication through the `--username` and `--passwor
 Cloud9 is compatible with all connect authentication layers,
 to implement your own, please see the `plugins-server/cloud9.connect.basic-auth` plugin
 on how we added basic authentication.
+
+## Installation on Windows (experimental)
+
+If you are on Windows Insider Program, use the Bash on Windows feature to install Cloud9.
+
+Install [NVM](https://github.com/creationix/nvm) to manage node versions. Install a node version to your liking. The following is needed to install the needed build tools:
+
+    sudo apt-get update
+	sudo apt-get install build-essential
+
+Clone the Cloud9 repo to your machine and run npm:
+
+    npm install
+    make worker
+    node server.js -w ./ -l 0.0.0.0 -a x-www-browser
 
 ## Updating
 

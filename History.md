@@ -1,3 +1,9 @@
+v2.1.4
+======
+* A surprise! The previous upstream author (c9) did some spring cleaning and broke
+  some dependencies in the process
+* Engine.io as well as other external dependencies received a version bump
+
 v2.1.3
 ======
 * The Connect middleware once again received a huge upgrade, this time to v3.4.1.
