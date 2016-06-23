@@ -51,7 +51,7 @@
         "v8debug":      "https://github.com/exsilium/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
         "treehugger":   "https://github.com/exsilium/treehugger/tarball/0.0.2",
 
-        "pty.js": "~0.3.0",
+        "pty.js": "https://github.com/exsilium/pty.js/tarball/master",
         "term.js": "~0.0.7"
     },
 
