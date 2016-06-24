@@ -12,7 +12,7 @@
     },
 
     "dependencies": {
-        "async": "~1.5.2",
+        "async": "~2.0.0-rc.6",
         "colors": "~1.1.2",
         "connect": "~3.4.1",
         "express-session": "~1.13.0",
