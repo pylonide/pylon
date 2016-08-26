@@ -136,8 +136,9 @@ module.exports = {
      */
     onChange: function(session, event) {
         if (this.ext.disabled) return;
+        var range = new Range(event.start.row, event.start.column, event.end.row, event.end.column);
         var isInserting = event.action[0] !== "r";
-        var text = event.lines;
+        var text = event.lines.join('\n');
         var adaptingId = text && text.search(/[^a-zA-Z0-9\$_]/) === -1;
         var languageAnnos = [];
         var markers = session.markerAnchors || [];
@@ -147,7 +148,7 @@ module.exports = {
             for (var i = 0; i < markers.length; i++) {
                 var marker = markers[i];
                 
-                if (!compareInside(marker.start.row, marker.start.column)) {
+                if (!range.compareInside(marker.start.row, marker.start.column)) {
                     session.removeMarker(marker.id);
                     foundOne = true;
                     continue;
