@@ -36,7 +36,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
                 return type != "keypress" && type != "keydown" && !ide.readonly;
             }
             
-            return self.trFiles && apf.activeElement == trFiles && !trFiles.renaming && !ide.readonly;
+            return self.trFiles && !trFiles.renaming && !ide.readonly;
         };
         
         commands.addCommand({
@@ -130,7 +130,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     paste: function() {
-       if (self.trFiles && apf.document.activeElement == trFiles) {
+        if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.pasteSelection(trFiles);
         }
         else {
@@ -140,7 +140,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
                 if (document.execCommand("paste")) return;
             } catch(e) {}
 
-            ace.onPaste(aceClipboardText);
+            ace.$handlePaste(aceClipboardText);
         }
     },
 
