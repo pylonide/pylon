@@ -99,14 +99,16 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         else {
             var ace = this.$getAce();
             ace.focus();
+            aceClipboardText = ace.getCopyText() || aceClipboardText;
+            var cutCommand = ace.$nativeCommands.commands.cut;
+            ace.blur();
+            
             // try-catch is needed because firefox throws error instead of returning false
             try {
                 // due to some bug in chrome "cut" is very slow
                 document.execCommand("copy");
             } catch(e) {}
-            aceClipboardText = ace.getCopyText() || aceClipboardText;
 
-            var cutCommand = ace.$nativeCommands.commands.cut;
             ace.commands.exec(cutCommand, ace);
         }
     },
@@ -121,11 +123,11 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         else {
             var ace = this.$getAce();
             ace.focus();
+            aceClipboardText = ace.getCopyText() || aceClipboardText;
+            ace.blur();
             try {
                 if (document.execCommand("copy")) return;
             } catch(e) {}
-
-            aceClipboardText = ace.getCopyText() || aceClipboardText;
         }
     },
 
@@ -135,12 +137,18 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
         else {
             var ace = this.$getAce();
-            ace.focus();
-            try {
-                if (document.execCommand("paste")) return;
-            } catch(e) {}
-
-            ace.$handlePaste(aceClipboardText);
+            
+            if(aceClipboardText.length > 0) {
+                ace.focus();
+                ace.$handlePaste(aceClipboardText);
+            }
+            else {
+                ace.blur();
+                
+                try {
+                    if (document.execCommand("paste")) return;
+                } catch(e) {}
+            }
         }
     },
 
