@@ -1,7 +1,7 @@
 language: generic
 env:
   global:
-    - CXX=g++-4.8
+    - CXX=g++-4.9
   matrix:
     - NODE_VERSION="node"
     - NODE_VERSION="5"
@@ -22,7 +22,7 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - g++-4.8
+    - g++-4.9
 before_install:
   - git clone https://github.com/creationix/nvm.git /tmp/.nvm;
     source /tmp/.nvm/nvm.sh;
