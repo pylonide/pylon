@@ -55,9 +55,8 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         
         commands.addCommand({
             name: "paste",
-            bindKey: {mac: "Command-V", win: "Ctrl-V"},
             isAvailable : isAvailable,
-            exec: function(){ _self.paste(); }
+            exec: function(editor, args){ _self.paste(editor, args); }
         });
         
         commands.addCommand({
@@ -100,6 +99,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             var ace = this.$getAce();
             ace.focus();
             aceClipboardText = ace.getCopyText() || aceClipboardText;
+            apf.clipboard.put(aceClipboardText);
             var cutCommand = ace.$nativeCommands.commands.cut;
             ace.blur();
             
@@ -124,6 +124,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             var ace = this.$getAce();
             ace.focus();
             aceClipboardText = ace.getCopyText() || aceClipboardText;
+            apf.clipboard.put(aceClipboardText);
             ace.blur();
             try {
                 if (document.execCommand("copy")) return;
@@ -131,23 +132,28 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         }
     },
 
-    paste: function() {
+    paste: function(editor, args) {
         if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.pasteSelection(trFiles);
         }
         else {
             var ace = this.$getAce();
             
-            if(aceClipboardText.length > 0) {
-                ace.focus();
-                ace.$handlePaste(aceClipboardText);
+            if(args.text) {
+                // The paste event came in via keyboard shortcut, we have access
+                // to the system clipboard content
+                apf.clipboard.put(args.text);
+                ace.$handlePaste(args);
+            }
+            else if(!apf.clipboard.empty && typeof apf.clipboard.store === 'string') {
+                // The paste event was triggered via menus or cli, we have a string
+                // in apf.clipboard
+                ace.$handlePaste(apf.clipboard.store);
             }
             else {
-                ace.blur();
-                
-                try {
-                    if (document.execCommand("paste")) return;
-                } catch(e) {}
+                // The paste event was triggered via menus or cli, we only have
+                // access to the internal clipboard
+                ace.$handlePaste(aceClipboardText);
             }
         }
     },
