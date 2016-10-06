@@ -645,6 +645,7 @@ function Tab(win, socket, resume) {
   this.process = '';
   this.open();
   this.hookKeys();
+  this.hookMouse();
 
   win.tabs.push(this);
 
@@ -838,6 +839,47 @@ Tab.prototype.hookKeys = function() {
   this.on('request term previous', function(key) {
     this.window.previousTab();
   });
+};
+
+Tab.prototype.hookMouse = function() {
+  var self = this;
+  
+  on(self.element, 'mouseup', function(ev) {
+    if(!window.getSelection) return;
+    
+    // \u00A0 - Non-breaking space
+    // \t - Tab
+    var clipboardBuffer = window.getSelection().toString().replace(/[\u00A0\t]+$/gm, "").replace(/\u00A0/gm, " ");
+
+    // Left mouse button
+    if(ev.which == 1 && (clipboardBuffer.length > 0)) {
+      var termTextarea = document.getElementById('termTextarea');
+      
+      apf.clipboard.put(clipboardBuffer);
+      
+      termTextarea.value = clipboardBuffer;
+      termTextarea.focus();
+      
+      document.execCommand('SelectAll');
+    
+      try {
+        if (document.execCommand("copy")) {
+          termTextarea.value = "";
+          return;
+        }
+      } catch(e) {}
+      
+      termTextarea.value = "";
+    }
+    // Right mouse button
+    else if(ev.which == 3 && !apf.clipboard.empty) {
+      if(typeof apf.clipboard.store === 'string') {
+        self.send(apf.clipboard.store); 
+      }
+    }
+  });
+  
+  on(self.element, 'contextmenu', function(ev) { ev.preventDefault(); });
 };
 
 Tab.prototype._ignoreNext = function() {
