@@ -3,12 +3,15 @@
 
 var util = require("util");
 var Plugin = require("../cloud9.core/plugin");
+var assert = require("assert");
 
 var name = "terminal";
 var tty = require('./tty.js');
 
 module.exports = function setup(options, imports, register) {
     var conf, app;
+    
+    assert.equal(typeof options.localOnly, "boolean", "Option 'localOnly' is required");
 
     // We are registering only for boot-time information presence
     imports.ide.register(name, TerminalPlugin, register);
@@ -19,7 +22,7 @@ module.exports = function setup(options, imports, register) {
         termName: 'xterm-color',
         shell: 'bash',
         server: server,
-        localOnly: true,
+        localOnly: options.localOnly,
         syncSession: true,
         sessionTimeout: 3600 // in seconds
     });
