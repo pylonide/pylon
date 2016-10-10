@@ -54,7 +54,7 @@ module.exports = function setup(options, imports, register) {
             projectName: options.projectName || "",
             smithIo: options.smithIo,
             baseUrl: baseUrl,
-            debug: (options.debug === true) ? true : false,
+            debug: (options.c9debug === true) ? true : false,
             workerUrl: workerPrefix,
             staticUrl: staticPrefix,
             workspaceId: workspaceId,

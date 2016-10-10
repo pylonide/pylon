@@ -65,7 +65,7 @@ var config = [
         host: host
     }, {
         packagePath: "./cloud9.core",
-        debug: false,
+        c9debug: false,
         fsUrl: fsUrl,
         smithIo: {
             port: port,
