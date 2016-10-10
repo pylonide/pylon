@@ -44,11 +44,9 @@ define(function(require, exports, module) {
 
             var c = 0;
             menus.addItemByPath("Help/About", new apf.item({ onclick : function(){ _self.showAbout(); }}), c += 100);
-            menus.addItemByPath("Help/IDE Status", new apf.item({ onclick : function(){window.open('http://status.c9.io'); }}), c += 100);
-            var mnuChangelog = menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('http://c9.io/site/tag/changelog/'); }}), c += 100);
+            var mnuChangelog = menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/releases'); }}), c += 100);
 
             menus.addItemByPath("Help/~", new apf.divider(), c += 100);
-            //menus.addItemByPath("Help/Documentation", new apf.item({ onclick : function(){ window.open('https://docs.c9.io') }}), c += 100);
             ide.addEventListener("hook.ext/keybindings_default/keybindings_default", function(c, e) {
                 menus.addItemByPath("Help/Keyboard Shortcuts", new apf.item({ onclick : function(){ e.ext.keybindings(); }}), c);
             }.bind(this, c += 100));
@@ -67,17 +65,13 @@ define(function(require, exports, module) {
             menus.addItemByPath("Help/Get in Touch/", null, c += 100);
 
             c = 0;
-            menus.addItemByPath("Help/Support/FAQ", new apf.item({ onclick : function(){ window.open('http://support.c9.io/forums/20346041-frequently-asked-questions'); }}), c += 100);
-            menus.addItemByPath("Help/Support/Troubleshooting Tips", new apf.item({ onclick : function(){ window.open('http://support.c9.io/forums/20329737-troubleshooting'); }}), c += 100);
+            menus.addItemByPath("Help/Support/GitHub Issues", new apf.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/issues'); }}), c += 100);
 
             c = 0;
-            menus.addItemByPath("Help/Learning/YouTube Channel for Cloud9 IDE", new apf.item({ onclick : function(){ window.open('http://www.youtube.com/user/c9ide/videos?view=pl'); }}), c += 100);
+            menus.addItemByPath("Help/Learning/GitHub Wiki", new apf.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/wiki'); }}), c += 100);
 
             c = 0;
-            menus.addItemByPath("Help/Get in Touch/Blog", new apf.item({ onclick : function(){ window.open('http://blog.c9.io/'); }}), c += 100);
-            menus.addItemByPath("Help/Get in Touch/Twitter (for Cloud9 IDE support)", new apf.item({ onclick : function(){ window.open('https://twitter.com/#!/C9Support'); }}), c += 100);
-            menus.addItemByPath("Help/Get in Touch/Twitter (for general Cloud9 tweets)", new apf.item({ onclick : function(){ window.open('https://twitter.com/#!/cloud9ide'); }}), c += 100);
-            menus.addItemByPath("Help/Get in Touch/Facebook", new apf.item({ onclick : function(){ window.open('https://www.facebook.com/Cloud9IDE'); }}), c += 100);
+            menus.addItemByPath("Help/Get in Touch/GitHub Issues", new apf.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/issues'); }}), c += 100);
 
             if (window.cloud9config.hosted || (ide.local && ide.onLine)) {
                 var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog&count=1";
@@ -117,10 +111,6 @@ define(function(require, exports, module) {
 
             aboutDialog.show();
             document.getElementById("c9Version").innerHTML = apf.escapeXML("Version " + window.cloud9config.version);
-        },
-
-        launchTwitter: function() {
-            alert("Let's go to Twitter!");
         }
     });
 

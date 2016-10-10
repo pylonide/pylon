@@ -120,6 +120,7 @@ util.inherits(Ide, EventEmitter);
         }
 
         var replacements = {
+            version: this.options.version,
             davPrefix: this.options.davPrefix,
             workspaceDir: this.options.workspaceDir,
             debug: this.options.debug,

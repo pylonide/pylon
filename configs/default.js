@@ -65,6 +65,7 @@ var config = [
         host: host
     }, {
         packagePath: "./cloud9.core",
+        version: require('../package.json').version,
         c9debug: false,
         fsUrl: fsUrl,
         smithIo: {
