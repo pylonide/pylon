@@ -88,7 +88,7 @@ define(function(require, exports, module) {
     if (window.cloud9config.debug)
         console.info("Connecting", JSON.parse(window.cloud9config.smithIo));
 
-    SMITH_IO.connect(JSON.parse(window.cloud9config.smithIo), function(err, connection) {
+    SMITH_IO.connect({prefix: JSON.parse(window.cloud9config.smithIo).prefix}, function(err, connection) {
         if (err)
             return console.error(err);
 
