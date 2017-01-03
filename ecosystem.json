@@ -15,6 +15,10 @@
           "ref"  : "origin/development",
           "path" : "/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/www/cloud9",
           "ssh-options" : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
+          "pre-setup" : "mkdir /home/" + process.env.PM2_DEPLOY_STAGING_USER + "/workspace",
+          "post-setup" : "echo 'export C9_USERNAME=" + process.env.PM2_DEPLOY_STAGING_USERNAME + "' >> ~/.bashrc && " +
+                         "echo 'export C9_PASSWORD=" + process.env.PM2_DEPLOY_STAGING_PASSWORD + "' >> ~/.bashrc && " +
+                         "echo 'export C9_WORKSPACE=/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/workspace' >> ~/.bashrc",
           "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json",
           "env" : {
               "NODE_ENV" : "staging"
