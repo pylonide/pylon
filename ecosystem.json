@@ -17,10 +17,7 @@
           "ssh-options" : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
           "post-deploy" : "npm install && pm2 startOrRestart ecosystem.json",
           "env" : {
-              "NODE_ENV" : "staging",
-              "C9_WORKSPACE" : "/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/workspace",
-              "C9_USERNAME" : process.env.PM2_DEPLOY_STAGING_USERNAME,
-              "C9_PASSWORD" : process.env.PM2_DEPLOY_STAGING_PASSWORD
+              "NODE_ENV" : "staging"
           }
       }
   }
