@@ -46,7 +46,7 @@
         "vfs-nodefs-adapter": "https://github.com/exsilium/vfs-nodefs-adapter/tarball/development",
         "vfs-local":          "https://github.com/exsilium/vfs-local/tarball/0dad9de26ee45e9b6368b31a4fc5d0b8dc82ea7a",
 
-        "ace":          "https://github.com/ajaxorg/ace/tarball/v1.2.5",
+        "ace":          "https://github.com/ajaxorg/ace/tarball/v1.2.6",
         "asyncjs":      "https://github.com/exsilium/async.js/tarball/bd936c60bb87c58052bcc0307f4e637bd35c908f",
         "v8debug":      "https://github.com/exsilium/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
         "treehugger":   "https://github.com/exsilium/treehugger/tarball/0.0.2",
@@ -68,6 +68,6 @@
     "scripts": {
         "start": "./bin/cloud9.sh",
         "test": "./test/run-tests.sh",
-        "postinstall": "make ace"
+        "postinstall": "cd node_modules/ace; make clean pre_build; ./Makefile.dryice.js minimal; cd ../.."
     }
 }
