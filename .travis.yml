@@ -14,6 +14,12 @@ env:
 os:
   - linux
   - osx
+
+matrix:
+  allow_failures:
+    - os: osx
+      env: NODE_VERSION="node"
+
 addons:
   apt:
     sources:
