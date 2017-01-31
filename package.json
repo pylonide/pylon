@@ -28,8 +28,8 @@
         "passport-http": "~0.3.0",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
-        "engine.io": "~2.0.0",
-        "engine.io-client": "~2.0.0",
+        "engine.io": "~2.0.1",
+        "engine.io-client": "~2.0.1",
         "dryice": "0.4.11",
 
         "amd-loader": "~0.0.5",
