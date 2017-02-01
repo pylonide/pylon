@@ -16,7 +16,7 @@
 
 .c9Staff {
     position: absolute;
-    top: 170px;
+    top: 140px;
     left: 92px;
     color: #aaaaaa;
     font-size: 11px;
@@ -29,7 +29,26 @@
     color: #dddddd;
     font-size: 10px;
     position: absolute;
-    top: 140px;
+    top: 120px;
+    left: 170px;
+}
+
+.c9Maintainers {
+    position: absolute;
+    top: 210px;
+    left: 92px;
+    color: #aaaaaa;
+    font-size: 11px;
+    width: 390px;
+    line-height: 16px;
+}
+
+.c9MaintainersHeader {
+    text-transform:uppercase;
+    color: #dddddd;
+    font-size: 10px;
+    position: absolute;
+    top: 190px;
     left: 170px;
 }
 

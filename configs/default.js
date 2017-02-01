@@ -19,13 +19,14 @@ for (var i = 0; i < clientDirs.length; i++) {
     clientExtensions[name] = __dirname + "/../plugins-client/" + dir;
 }
 
-var projectDir = (argv.w && path.resolve(process.cwd(), argv.w)) || process.cwd();
+var projectDir = process.env.C9_WORKSPACE || (argv.w && path.resolve(process.cwd(), argv.w)) || process.cwd();
 var fsUrl = "/workspace";
 var vfsUrl = "/vfs";
 
 var port = argv.p || process.env.PORT || 3131;
 var host = argv.l || process.env.IP || "localhost";
 var debugPort = argv.b || process.env.DEBUG_PORT || 5858;
+var termLocal = process.env.C9_TERMLOCAL || (host === 'localhost' || host === '127.0.0.1') ? true : false
 
 var useAuth = argv.username && argv.password;
 
@@ -64,7 +65,8 @@ var config = [
         host: host
     }, {
         packagePath: "./cloud9.core",
-        debug: false,
+        version: require('../package.json').version,
+        c9debug: false,
         fsUrl: fsUrl,
         smithIo: {
             port: port,
@@ -229,7 +231,10 @@ var config = [
     "./cloud9.ide.shell",
     "./cloud9.ide.state",
     "./cloud9.ide.watcher",
-    "./cloud9.ide.terminal"
+    {
+        packagePath: "./cloud9.ide.terminal",
+        localOnly: termLocal
+    }
 ];
 
 if (useAuth) {

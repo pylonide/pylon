@@ -111,8 +111,7 @@ util.inherits(Ide, EventEmitter);
         var staticUrl = this.options.staticUrl;
         var workerUrl = this.options.workerUrl;
         var aceScripts = '<script type="text/javascript" data-ace-worker-path="/static/js/worker" src="'
-            + staticUrl + '/ace/build/ace'
-            + (this.options.debug ? "-uncompressed" : "") + '.js"></script>\n';
+            + staticUrl + '/ace/build/ace.js"></script>\n';
 
         var loadedDetectionScript = "";
         if (this.options.local) {
@@ -121,6 +120,7 @@ util.inherits(Ide, EventEmitter);
         }
 
         var replacements = {
+            version: this.options.version,
             davPrefix: this.options.davPrefix,
             workspaceDir: this.options.workspaceDir,
             debug: this.options.debug,

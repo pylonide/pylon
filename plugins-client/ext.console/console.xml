@@ -68,7 +68,7 @@
                 </a:page>
                 <a:page id="pgTerminal" caption="Terminal" name="terminal" class="pgTerminal">
                     <a:button id="newTerminalBtn" skin="btn_icon_only" icon="console_new_terminal.png" margin="2 2 0 0" class="newTerminalBtn" onclick = "this.blur();"/>
-                    <div id="terminalWindow"></div>
+                    <div id="terminalWindow" canSelect="true"></div>
                 </a:page>
             </a:tab>
 

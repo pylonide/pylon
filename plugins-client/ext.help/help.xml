@@ -26,8 +26,17 @@
                     Mostafa Eweda, Ruben Daniels
                 </p>
             </div>
+            <div class="c9MaintainersHeader">
+                <p>Kept alive by:</p>
+            </div>
+            <div class="c9Maintainers">
+                <p>
+                    Sten Feldman
+                </p>
+            </div>
             <div class="c9Copyright">
-                <p>&#169; 2010 — 2013 Cloud9 IDE Inc. All rights reserved</p>
+                <p>&#169; 2010 — 2013 Cloud9 IDE Inc. All rights reserved<br />
+                   &#169; 2013 — 2016 Sten Feldman</p>
             </div>
         </div>
     </a:window>

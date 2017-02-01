@@ -370,7 +370,7 @@
                         <div class="c9-mbar-cont"> </div>
 
                         <div class="c9-mbar-round">
-                            <a id="backToC9" href="http://c9.io/" class="mainlogo backToC9" target="_blank" title="Go to c9.io">c9.io</a>
+                            <a id="backToC9" href="http://github.com/exsilium/cloud9/" class="mainlogo backToC9" target="_blank" title="Go to Cloud9 Github"></a>
                             <div class="c9-activity"><div id="saveStatus" class="light"> </div></div>
                             <div class="c9-local"> </div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>

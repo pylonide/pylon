@@ -8,7 +8,7 @@ As of 14th of February 2015 with a commit that can no longer be linked to, the u
 
 This repository is the maintenance fork for the original Cloud9 IDE that people grew to love. The v3 development is continuing strong but there are many changes to the original approach:
 
-- The emphasis is on the development of [c9.io](http://c9.io) cloud-hosted service
+- The emphasis is on the development of [c9.io](http://c9.io) cloud-hosted service (Acquired by Amazon as of July 2016)
 - The on-premises solution will be a separately licensed product
 - The distributed SDK is meant for plugin development
 - The core of the product is [no longer licensed as Open Source Software](http://cloud9-sdk.readme.io/v0.1/docs/the-licenses-for-cloud9-sdk-and-packages)
@@ -35,6 +35,8 @@ Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE 
 ### Screenshot
 
 ![ScreenShot](doc/screenshot01.png)
+
+![ScreenShot](doc/screenshot02.png)
 
 ## Features
 

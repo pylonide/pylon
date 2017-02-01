@@ -136,9 +136,9 @@ module.exports = {
      */
     onChange: function(session, event) {
         if (this.ext.disabled) return;
-        var range = event.data.range;
-        var isInserting = event.data.action[0] !== "r";
-        var text = event.data.text;
+        var range = new Range(event.start.row, event.start.column, event.end.row, event.end.column);
+        var isInserting = event.action[0] !== "r";
+        var text = event.lines.join('\n');
         var adaptingId = text && text.search(/[^a-zA-Z0-9\$_]/) === -1;
         var languageAnnos = [];
         var markers = session.markerAnchors || [];
@@ -153,7 +153,7 @@ module.exports = {
                     foundOne = true;
                     continue;
                 }
-                else if (adaptingId && marker.range && marker.range.contains(range.start.row, range.start.column)) {
+                else if (adaptingId && marker.range && marker.range.contains(event.start.row, event.start.column)) {
                     foundOne = true;
                     marker.colDiff -= text.length;
                 }
@@ -180,7 +180,7 @@ module.exports = {
             for (var i = 0; i < markers.length; i++) {
                 var marker = markers[i];
                 // Only if inserting an identifier
-                if (adaptingId && marker.range && marker.range.contains(range.start.row, range.start.column)) {
+                if (adaptingId && marker.range && marker.range.contains(event.start.row, event.start.column)) {
                     foundOne = true;
                     marker.colDiff += text.length;
                 }

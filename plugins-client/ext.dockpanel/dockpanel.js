@@ -98,33 +98,35 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         );
 
         ide.addEventListener("extload", function(e){
-            ide.addEventListener("settings.load", function(e){
-                var model = settings.model;
-                var strSettings = model.queryValue("auto/dockpanel/text()");
+            ide.addEventListener("extload.user", function(e){
+                ide.addEventListener("settings.load", function(e){
+                    var model = settings.model;
+                    var strSettings = model.queryValue("auto/dockpanel/text()");
 
-                var state = _self.defaultState;
-                if (strSettings) {
-                    // JSON parse COULD fail
-                    try {
-                        state = JSON.parse(strSettings);
-                        var defaultBars = _self.defaultState.bars;
-                        for (var i = 0, l = Math.max(state.bars.length, defaultBars.length); i < l; i++) {
-                            if (!defaultBars[i]) {
-                                state.bars[i] = null;
-                                continue;
+                    var state = _self.defaultState;
+                    if (strSettings) {
+                        // JSON parse COULD fail
+                        try {
+                            state = JSON.parse(strSettings);
+                            var defaultBars = _self.defaultState.bars;
+                            for (var i = 0, l = Math.max(state.bars.length, defaultBars.length); i < l; i++) {
+                                if (!defaultBars[i]) {
+                                    state.bars[i] = null;
+                                    continue;
+                                }
+                                // Code update adding more dockables
+                                if (!state.bars[i] || state.bars[i].sections.length < defaultBars[i].sections.length)
+                                    state.bars[i] = defaultBars[i];
                             }
-                            // Code update adding more dockables
-                            if (!state.bars[i] || state.bars[i].sections.length < defaultBars[i].sections.length)
-                                state.bars[i] = defaultBars[i];
-                       }
+                        }
+                        catch (ex) {}
                     }
-                    catch (ex) {}
-                }
 
-                ide.dispatchEvent("dockpanel.load.settings", {state: state});
-                _self.layout.loadState(state);
-                _self.loaded = true;
-                ide.dispatchEvent("dockpanel.loaded", {state: state});
+                    ide.dispatchEvent("dockpanel.load.settings", {state: state});
+                    _self.layout.loadState(state);
+                    _self.loaded = true;
+                    ide.dispatchEvent("dockpanel.loaded", {state: state});
+                });
             });
         });
 

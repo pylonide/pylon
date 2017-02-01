@@ -20,6 +20,7 @@ var settings = require("ext/settings/settings");
 
 var LOAD_TIMEOUT_REMOTE = 30 * 1000;
 var LOAD_TIMEOUT_LOCAL = 5 * 1000;
+var extensionsToLoad = 0;
 
 module.exports = ext.register("ext/extmgr/extmgr", {
     name   : "Extension Manager",
@@ -48,9 +49,18 @@ module.exports = ext.register("ext/extmgr/extmgr", {
 
             ide.addEventListener("extload", function(){
                 var nodes = e.model.queryNodes("auto/extensions/plugin");
+                
+                extensionsToLoad = nodes.length;
+                
                 for (var n = 0; n < nodes.length; n++)
                     _self.loadExtension(nodes[n].getAttribute("realPath") || nodes[n].getAttribute("path"), nodes[n]);
 
+                var checkInterval = setInterval(function () { 
+                    if (extensionsToLoad == 0) {
+                        ide.dispatchEvent("extload.user");
+                        clearInterval(checkInterval);
+                    }
+                }, 500); 
                 _self.loadedSettings = true;
             });
         });
@@ -165,6 +175,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 clearTimeout(timer);
                 tbModuleName.enable();
                 btnAdd.enable();
+                extensionsToLoad--;
                 return;
             }
             ide.dispatchEvent("track_action", {
@@ -176,6 +187,7 @@ module.exports = ext.register("ext/extmgr/extmgr", {
             settings.save();
             _self.$enableInput(true);
             clearTimeout(timer);
+            extensionsToLoad--;
         });
     },
 

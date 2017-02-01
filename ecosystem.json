@@ -1,0 +1,29 @@
+{
+  "apps" : [{
+    "name"        : "cloud9",
+    "script"      : "server.js",
+    "args"        : ["-l", "0.0.0.0", "-p", "8181", "--username", process.env.C9_USERNAME, "--password", process.env.C9_PASSWORD],
+    "node_args"   : "",
+    "merge_logs"  : true
+  }],
+  // Deployment part
+  "deploy" : {
+      "staging" : {
+          "user" : process.env.PM2_DEPLOY_STAGING_USER,
+          "host" : process.env.PM2_DEPLOY_STAGING_HOST,
+          "repo" : "https://github.com/exsilium/cloud9.git",
+          "ref"  : "origin/development",
+          "path" : "/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/www/cloud9",
+          "ssh-options" : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
+          "pre-setup" : "mkdir /home/" + process.env.PM2_DEPLOY_STAGING_USER + "/workspace",
+          "post-setup" : "echo 'export C9_USERNAME=" + process.env.PM2_DEPLOY_STAGING_USERNAME + "' >> ~/.bashrc && " +
+                         "echo 'export C9_PASSWORD=" + process.env.PM2_DEPLOY_STAGING_PASSWORD + "' >> ~/.bashrc && " +
+                         "echo 'export C9_WORKSPACE=/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/workspace' >> ~/.bashrc",
+          "pre-deploy" : "pm2 stop all; rm -rf node_modules",
+          "post-deploy" : "npm install && pm2 start ecosystem.json",
+          "env" : {
+              "NODE_ENV" : "staging"
+          }
+      }
+  }
+}

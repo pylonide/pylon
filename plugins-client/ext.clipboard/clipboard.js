@@ -36,7 +36,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
                 return type != "keypress" && type != "keydown" && !ide.readonly;
             }
             
-            return self.trFiles && apf.activeElement == trFiles && !trFiles.renaming && !ide.readonly;
+            return self.trFiles && !trFiles.renaming && !ide.readonly;
         };
         
         commands.addCommand({
@@ -55,9 +55,8 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         
         commands.addCommand({
             name: "paste",
-            bindKey: {mac: "Command-V", win: "Ctrl-V"},
             isAvailable : isAvailable,
-            exec: function(){ _self.paste(); }
+            exec: function(editor, args){ _self.paste(editor, args); }
         });
         
         commands.addCommand({
@@ -99,14 +98,17 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         else {
             var ace = this.$getAce();
             ace.focus();
+            aceClipboardText = ace.getCopyText() || aceClipboardText;
+            apf.clipboard.put(aceClipboardText);
+            var cutCommand = ace.$nativeCommands.commands.cut;
+            ace.blur();
+            
             // try-catch is needed because firefox throws error instead of returning false
             try {
                 // due to some bug in chrome "cut" is very slow
                 document.execCommand("copy");
             } catch(e) {}
-            aceClipboardText = ace.getCopyText() || aceClipboardText;
 
-            var cutCommand = ace.$nativeCommands.commands.cut;
             ace.commands.exec(cutCommand, ace);
         }
     },
@@ -121,26 +123,38 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         else {
             var ace = this.$getAce();
             ace.focus();
+            aceClipboardText = ace.getCopyText() || aceClipboardText;
+            apf.clipboard.put(aceClipboardText);
+            ace.blur();
             try {
                 if (document.execCommand("copy")) return;
             } catch(e) {}
-
-            aceClipboardText = ace.getCopyText() || aceClipboardText;
         }
     },
 
-    paste: function() {
-       if (self.trFiles && apf.document.activeElement == trFiles) {
+    paste: function(editor, args) {
+        if (self.trFiles && apf.document.activeElement == trFiles) {
             apf.clipboard.pasteSelection(trFiles);
         }
         else {
             var ace = this.$getAce();
-            ace.focus();
-            try {
-                if (document.execCommand("paste")) return;
-            } catch(e) {}
-
-            ace.onPaste(aceClipboardText);
+            
+            if(args.text) {
+                // The paste event came in via keyboard shortcut, we have access
+                // to the system clipboard content
+                apf.clipboard.put(args.text);
+                ace.$handlePaste(args);
+            }
+            else if(!apf.clipboard.empty && typeof apf.clipboard.store === 'string') {
+                // The paste event was triggered via menus or cli, we have a string
+                // in apf.clipboard
+                ace.$handlePaste(apf.clipboard.store);
+            }
+            else {
+                // The paste event was triggered via menus or cli, we only have
+                // access to the internal clipboard
+                ace.$handlePaste(aceClipboardText);
+            }
         }
     },
 

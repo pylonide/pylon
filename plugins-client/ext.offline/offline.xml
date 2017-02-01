@@ -21,6 +21,6 @@
 
     <a:bar id="barOfflineCover" class="bar-offline-cover" visible="false" zindex="100">
         <div class="offline-cover"></div>
-        <div class="offline-indicator">Connection is lost! Trying to reach c9.io...</div>
+        <div class="offline-indicator">Connection is lost! Trying to reach server...</div>
     </a:bar>
 </a:application>

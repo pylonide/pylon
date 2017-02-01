@@ -52,9 +52,15 @@ tty.open = function() {
   if (document.location.pathname) {
     var parts = document.location.pathname.split('/')
       , base = parts.slice(0, parts.length - 1).join('/') + '/'
-      , resource = base.substring(1) + 'engine.io';
+      , resource = base.substring(1) + 'engine.io'
+      , server;
 
-    var server = "ws://" + window.location.href.split("\/")[2];
+    if(window.location.href.split(":")[0] === 'https')
+      server = 'wss://';
+    else
+      server = 'ws://';
+      
+    server = server + window.location.href.split("\/")[2];
     tty.socket = new ENGINE_IO.Socket(server, { resource: resource });
   } else {
     tty.socket = new ENGINE_IO.Socket();
@@ -78,23 +84,23 @@ tty.open = function() {
   newTerminal = tty.elements.newTerminal;
 
   var settings = require("core/settings");
-  var console = require('ext/console/console');
+  var c9console = require('ext/console/console');
 
   if(pgTerminal) {
     on(pgTerminal, 'mousedown', function() {
-      if(console.hiddenInput == false && settings.model.queryValue("auto/console/@showinput") == 'true') {
-        console.hideInput();
+      if(c9console.hiddenInput == false && settings.model.queryValue("auto/console/@showinput") == 'true') {
+        c9console.hideInput();
         settings.model.setQueryValue("auto/console/@showinput", true);
 
         on(document.getElementsByClassName('pgOutput')[0], 'click', function() {
-          if(settings.model.queryValue("auto/console/@showinput") == 'true') console.showInput();
+          if(settings.model.queryValue("auto/console/@showinput") == 'true') c9console.showInput();
         });
 
         var length = document.getElementsByClassName('pgConsole').length;
 
         for (var i = 0; i < length; i++) {
           on(document.getElementsByClassName('pgConsole')[i], 'click', function() {
-            if(settings.model.queryValue("auto/console/@showinput") == 'true') console.showInput();
+            if(settings.model.queryValue("auto/console/@showinput") == 'true') c9console.showInput();
           });
         }
       }
@@ -107,9 +113,13 @@ tty.open = function() {
     });
   }
 
-  tty.socket.on('connect', function() {
+  tty.socket.on('open', function() {
     tty.reset();
     tty.emit('connect');
+  });
+  
+  tty.socket.on('close', function(reason){
+    console.log("Disconnect! " + reason);
   });
 
   tty.socket.on('message', function(data) {
@@ -645,6 +655,7 @@ function Tab(win, socket, resume) {
   this.process = '';
   this.open();
   this.hookKeys();
+  this.hookMouse();
 
   win.tabs.push(this);
 
@@ -838,6 +849,47 @@ Tab.prototype.hookKeys = function() {
   this.on('request term previous', function(key) {
     this.window.previousTab();
   });
+};
+
+Tab.prototype.hookMouse = function() {
+  var self = this;
+  
+  on(self.element, 'mouseup', function(ev) {
+    if(!window.getSelection) return;
+    
+    // \u00A0 - Non-breaking space
+    // \t - Tab
+    var clipboardBuffer = window.getSelection().toString().replace(/[\u00A0\t]+$/gm, "").replace(/\u00A0/gm, " ");
+
+    // Left mouse button
+    if(ev.which == 1 && (clipboardBuffer.length > 0)) {
+      var termTextarea = document.getElementById('termTextarea');
+      
+      apf.clipboard.put(clipboardBuffer);
+      
+      termTextarea.value = clipboardBuffer;
+      termTextarea.focus();
+      
+      document.execCommand('SelectAll');
+    
+      try {
+        if (document.execCommand("copy")) {
+          termTextarea.value = "";
+          return;
+        }
+      } catch(e) {}
+      
+      termTextarea.value = "";
+    }
+    // Right mouse button
+    else if(ev.which == 3 && !apf.clipboard.empty) {
+      if(typeof apf.clipboard.store === 'string') {
+        self.send(apf.clipboard.store); 
+      }
+    }
+  });
+  
+  on(self.element, 'contextmenu', function(ev) { ev.preventDefault(); });
 };
 
 Tab.prototype._ignoreNext = function() {
