@@ -119,7 +119,8 @@ tty.open = function() {
   });
   
   tty.socket.on('close', function(reason){
-    console.log("Disconnect! " + reason);
+    console.log("Disconnect: " + reason + ". Reconnecting...");
+    tty.socket.open();
   });
 
   tty.socket.on('message', function(data) {
