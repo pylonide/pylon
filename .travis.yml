@@ -1,24 +1,17 @@
-language: generic
-env:
-  global:
-    - CXX=g++-4.9
-  matrix:
-    - NODE_VERSION="node"
-    - NODE_VERSION="6"
-    - NODE_VERSION="5"
-    - NODE_VERSION="4"
-    - NODE_VERSION="0.12"
-    - NODE_VERSION="0.11"
-    - NODE_VERSION="0.10"
-    - NODE_VERSION="iojs"  
+language: node_js
+node_js:
+  - "node"
+  - "6"
+  - "5"
+  - "4"
+  - "0.12"
+  - "0.11"
+  - "0.10"
+  - "iojs"
+
 os:
   - linux
   - osx
-
-matrix:
-  allow_failures:
-    - os: osx
-      env: NODE_VERSION="node"
 
 addons:
   apt:
@@ -26,11 +19,10 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.9
+
 before_install:
-  - git clone https://github.com/creationix/nvm.git /tmp/.nvm;
-    source /tmp/.nvm/nvm.sh;
-    nvm install $NODE_VERSION;
-    nvm use --delete-prefix $NODE_VERSION;
+  - if [ `uname` = "Linux" ]; then export CXX=g++-4.9; fi
+
 install:
   - npm install
 script:
