@@ -1,6 +1,7 @@
 V2.1.6
 ======
-* Dependency updates: body-parser, connect, qs, serve-favicon
+* Dependency updates: async, engine.io, body-parser, connect, qs, serve-favicon
+* TTY reconnects automatically when disconnection occurs
 
 V2.1.5
 ======

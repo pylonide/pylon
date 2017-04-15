@@ -12,14 +12,14 @@
     },
 
     "dependencies": {
-        "async": "~2.1.4",
+        "async": "~2.3.0",
         "colors": "~1.1.2",
         "connect": "~3.6.0",
         "express-session": "~1.15.0",
         "cookie-parser": "~1.4.3",
         "body-parser": "~1.17.1",
         "serve-static": "~1.11.1",
-        "serve-favicon": "~2.4.1",
+        "serve-favicon": "~2.4.2",
         "csurf": "~1.9.0",
         "urlrouter": "~0.5.4",
         "qs": "~6.4.0",
@@ -28,8 +28,8 @@
         "passport-http": "~0.3.0",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
-        "engine.io": "~2.0.1",
-        "engine.io-client": "~2.0.1",
+        "engine.io": "~2.1.1",
+        "engine.io-client": "~2.1.1",
         "dryice": "0.4.11",
 
         "amd-loader": "~0.0.5",
