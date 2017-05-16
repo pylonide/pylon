@@ -5,8 +5,9 @@ define(function(require, exports, module) {
     var util = require("core/util");
 
     var ttycss = require("text!ext/terminal/static/style.css");
+    var xtermcss = require("text!ext/terminal/static/xterm.css");
 
-    require(["termjs"], function(){
+    require(["xterm"], function(){
         require(["ext/terminal/tty"]);
     });
 
@@ -17,12 +18,14 @@ define(function(require, exports, module) {
         deps     : [],
         type     : ext.GENERAL,
         ttycss   : util.replaceStaticPrefix(ttycss),
+        xtermcss : util.replaceStaticPrefix(xtermcss),
 
         nodes : [],
 
         init : function(){
             var _self = this;
             apf.importCssString(this.ttycss);
+            apf.importCssString(this.xtermcss);
         },
 
         hook : function(){

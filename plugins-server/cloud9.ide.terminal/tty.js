@@ -13,8 +13,8 @@ var path = require('path')
   , EventEmitter = require('events').EventEmitter;
 
 var io = require('engine.io')
-  , pty = require('pty.js')
-  , term = require('term.js');
+  , pty = require('node-pty')
+  , term = require('xterm');
 
 var logger = require('./logger');
 
