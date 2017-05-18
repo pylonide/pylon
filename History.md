@@ -2,6 +2,15 @@ V2.1.6
 ======
 * Dependency updates: async, engine.io, body-parser, connect, qs, serve-favicon
 * TTY reconnects automatically when disconnection occurs
+* Ace editor has webkit based scrollbars also for Firefox & Chrome
+* Final release known to work with legacy unsupported Node.js versions:
+    * v0.10 (End-of-Life: 2016-10-31)
+    * v0.11 (Experimental development branch not supported)
+    * v0.12 (End-of-Life: 2016-12-31)
+    * io.js
+* Going forward the above mentioned version support will be dropped. Cloud9v2 
+  project will try to align with the [nodejs/LTS](https://github.com/nodejs/LTS)
+  calendar. Minor version bump will occur whenever any node versions are being dropped.
 
 V2.1.5
 ======

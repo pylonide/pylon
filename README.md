@@ -120,6 +120,16 @@ To update to the latest version (if this doesn't work, just make a fresh clone):
 
     npm install
 
+## Creating your own Plugins
+
+Cloud9v2 functionality is all created around server and client-side plugins.
+However, there is hardly any documentation about the APIs to create your own
+plugins. To get you started, please see [exsilium/cloud9-plugin-ungit](https://github.com/exsilium/cloud9-plugin-ungit)
+to see how to get started.
+
+Going forward, there will be efforts made to sort out the documentation and
+write some tutorials to make it more easier to get started.
+
 ## Open Source Projects Used
 
 The Cloud9 IDE couldn't be this cool if it weren't for the wildly productive
