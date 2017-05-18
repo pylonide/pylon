@@ -12,14 +12,14 @@
     },
 
     "dependencies": {
-        "async": "~2.3.0",
+        "async": "~2.4.0",
         "colors": "~1.1.2",
-        "connect": "~3.6.0",
-        "express-session": "~1.15.0",
+        "connect": "~3.6.2",
+        "express-session": "~1.15.3",
         "cookie-parser": "~1.4.3",
-        "body-parser": "~1.17.1",
-        "serve-static": "~1.11.1",
-        "serve-favicon": "~2.4.2",
+        "body-parser": "~1.17.2",
+        "serve-static": "~1.12.3",
+        "serve-favicon": "~2.4.3",
         "csurf": "~1.9.0",
         "urlrouter": "~0.5.4",
         "qs": "~6.4.0",
@@ -56,8 +56,8 @@
     },
 
     "devDependencies": {
-        "nodeunit": "~0.10.2",
-        "rimraf": "~2.5.4"
+        "nodeunit": "~0.11.0",
+        "rimraf": "~2.6.1"
     },
 
     "repository" : {
