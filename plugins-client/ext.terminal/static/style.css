@@ -110,14 +110,6 @@ body {
 .grip:hover {
 }
 
-.terminal {
-  border: #000 solid 5px;
-  font-family: menlo,courier new,fixed,swiss,sans-serif;
-  font-size: 11px;
-  color: #f0f0f0;
-  background: #000;
-}
-
 .reverse-video {
   color: #000;
   background: #f0f0f0;

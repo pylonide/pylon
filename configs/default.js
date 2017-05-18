@@ -49,7 +49,7 @@ var config = [
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
-    "./../plugins-client/lib.termjs",
+    "./../plugins-client/lib.xterm",
     "./c9.smith.io",
     {
         packagePath: "./c9.smith.io.ide",
