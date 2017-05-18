@@ -5,9 +5,9 @@ define(function(require, exports, module) {
     var util = require("core/util");
 
     var ttycss = require("text!ext/terminal/static/style.css");
-    var xtermcss = require("text!ext/terminal/static/xterm.css");
+    var xtermcss = require("text!xterm/xterm.css");
 
-    require(["xterm"], function(){
+    require(["xterm/xterm"], function(){
         require(["ext/terminal/tty"]);
     });
 
