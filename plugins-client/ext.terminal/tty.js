@@ -1,7 +1,7 @@
 define(function(require) {
 
-  var Terminal = require("xterm");
-  var fit = require("xterm-fit");
+  var Terminal = require("xterm/xterm");
+  var fit = require("xterm/addons/fit/fit");
 
   /**
    * Based on tty.js
