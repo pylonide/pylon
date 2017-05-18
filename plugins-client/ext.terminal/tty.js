@@ -520,7 +520,11 @@ define(function(require) {
         root.className = m.root;
 
         self.resize(m.cols, m.rows);
-        term.element.focus();
+
+        // This seems to be required by Chrome for proper focusing
+        setTimeout(function() {
+          term.element.focus();
+        }, 50);
       };
 
       window.scrollTo(0, 0);
@@ -725,8 +729,6 @@ define(function(require) {
       this.handleTitle(this.title);
 
       this._focus();
-
-      win.focus();
     };
 
     Tab.prototype._resize = Tab.prototype.resize;
