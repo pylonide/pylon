@@ -9,18 +9,14 @@ module.exports = function setup(options, imports, register) {
     }]);
 
     imports.static.addStatics([{
-        path: base + "/dist/addons/attach",
+        path: base + "/dist/addons",
         mount: "/xterm/addons",
         rjs: {
-            "xterm-attach": "/xterm/addons/attach"
-        }
-    }]);
-
-    imports.static.addStatics([{
-        path: base + "/dist/addons/fit",
-        mount: "/xterm/addons",
-        rjs: {
-            "xterm-fit": "/xterm/addons/fit"
+          "xterm-attach": "/xterm/addons/attach/attach",
+          "xterm-fit": "/xterm/addons/fit/fit",
+          "xterm-fullscreen": "/xterm/addons/fullscreen/fullscreen",
+          "xterm-linkify": "/xterm/addons/linkify/linkify",
+          "xterm-terminado": "/xterm/addons/terminado/terminado"
         }
     }]);
 

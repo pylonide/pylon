@@ -1,9 +1,10 @@
 define(function(require) {
 
   var Terminal = require("xterm");
+  var fit = require("xterm-fit");
 
   /**
-   * tty.js
+   * Based on tty.js
    * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
    */
 
@@ -119,7 +120,6 @@ define(function(require) {
 
       tty.socket.on('open', function () {
         tty.reset();
-        tty.emit('connect');
       });
 
       tty.socket.on('close', function (reason) {
@@ -164,9 +164,14 @@ define(function(require) {
             win.resize(tdata.cols, tdata.rows);
             win.move(tdata.left, tdata.top);
             tab.setProcessName(tdata.process);
-            tty.emit('open tab', tab);
-            tab.emit('open');
             console.log(' - ' + tdata.id)
+
+            /* This is a hack but otherwise the focus remains on the hidden
+             * console at the bottom of the page
+             */
+            setTimeout(function () {
+              win.focus();
+            }, 50);
           });
         }
       });
@@ -184,7 +189,7 @@ define(function(require) {
         }
       }, 2 * 1000);
 
-      // Keep windows maximized.
+      // Keep windows maximized when browser size changes
       on(window, 'resize', function () {
         var i = tty.windows.length
           , win;
@@ -197,9 +202,6 @@ define(function(require) {
           }
         }
       });
-
-      tty.emit('load');
-      tty.emit('open');
     };
 
     /**
@@ -214,8 +216,6 @@ define(function(require) {
 
       tty.windows = [];
       tty.terms = {};
-
-      tty.emit('reset');
     };
 
     /**
@@ -229,6 +229,7 @@ define(function(require) {
 
       var el
         , grip
+        , xterm
         , bar
         , button
         , title
@@ -237,9 +238,14 @@ define(function(require) {
 
       el = document.createElement('div');
       el.className = 'window';
+      el.style.width = '580px';
+      el.style.height = '336px';
 
       grip = document.createElement('div');
       grip.className = 'grip';
+
+      xterm = document.createElement('div');
+      xterm.className = 'xterm-container';
 
       bar = document.createElement('div');
       bar.className = 'bar';
@@ -284,6 +290,7 @@ define(function(require) {
       }
 
       el.appendChild(grip);
+      el.appendChild(xterm);
       el.appendChild(bar);
       bar.appendChild(button);
       bar.appendChild(defaultS);
@@ -295,11 +302,6 @@ define(function(require) {
       this.createTab();
       this.focus();
       this.bind();
-
-      this.tabs[0].once('open', function () {
-        tty.emit('open window', self);
-        self.emit('open');
-      });
 
       this.resume = false;
     }
@@ -321,7 +323,6 @@ define(function(require) {
         } else {
           self.createTab();
         }
-        return cancel(ev);
       });
 
       on(defaultS, 'click', function (ev) {
@@ -332,7 +333,6 @@ define(function(require) {
       on(grip, 'mousedown', function (ev) {
         self.focus();
         self.resizing(ev);
-        //return cancel(ev);
       });
 
       on(el, 'mousedown', function (ev) {
@@ -343,16 +343,12 @@ define(function(require) {
 
         self.focus();
 
-        cancel(ev);
-
         if (new Date - last < 600) {
           return self.maximize();
         }
         last = new Date;
 
         self.drag(ev);
-
-        return cancel(ev);
       });
     };
 
@@ -372,9 +368,6 @@ define(function(require) {
 
       // Focus Foreground Tab
       this.focused.focus();
-
-      tty.emit('focus window', this);
-      this.emit('focus');
     };
 
     Window.prototype.destroy = function () {
@@ -391,9 +384,6 @@ define(function(require) {
       this.each(function (term) {
         term.destroy();
       });
-
-      tty.emit('close window', this);
-      this.emit('close');
     };
 
     Window.prototype.drag = function (ev) {
@@ -437,8 +427,8 @@ define(function(require) {
 
         socket.send(JSON.stringify({cmd: 'move', id: id, left: el.style.left, top: el.style.top}));
 
-        tty.emit('drag window', self, ev);
-        self.emit('drag', ev);
+        tty.terms[id].focus();
+
       }
 
       on(document, 'mousemove', move);
@@ -451,11 +441,6 @@ define(function(require) {
         , term = this.focused;
 
       if (this.minimize) delete this.minimize;
-
-      var resize = {
-        w: el.clientWidth,
-        h: el.clientHeight
-      };
 
       el.style.overflow = 'hidden';
       el.style.opacity = '0.70';
@@ -474,16 +459,19 @@ define(function(require) {
 
       function up() {
         var x, y;
+        var colsMultiplier = 7.2;
 
-        x = el.clientWidth / resize.w;
-        y = el.clientHeight / resize.h;
-        x = (x * term.cols) | 0;
-        y = (y * term.rows) | 0;
+        // We can get the line height of a row
+        var rows = document.getElementsByClassName('xterm-rows')[0];
+        var rowsMultiplier = parseInt(rows.style.getPropertyValue('line-height'));
+
+        x = Math.floor(parseInt(el.style.width) / colsMultiplier);
+        y = Math.floor(parseInt(el.style.height) / rowsMultiplier);
 
         self.resize(x, y);
 
-        el.style.width = '';
-        el.style.height = '';
+        el.style.width = x * colsMultiplier + 'px';
+        el.style.height = y * rowsMultiplier + 'px';
 
         el.style.overflow = '';
         el.style.opacity = '';
@@ -513,6 +501,8 @@ define(function(require) {
         rows: term.rows,
         left: el.offsetLeft,
         top: el.offsetTop,
+        width: el.style.width,
+        height: el.style.height,
         root: root.className
       };
 
@@ -521,8 +511,8 @@ define(function(require) {
 
         el.style.left = m.left + 'px';
         el.style.top = m.top + 'px';
-        el.style.width = '';
-        el.style.height = '';
+        el.style.width = m.width;
+        el.style.height = m.height;
         term.element.style.width = '';
         term.element.style.height = '';
         el.style.boxSizing = '';
@@ -530,33 +520,25 @@ define(function(require) {
         root.className = m.root;
 
         self.resize(m.cols, m.rows);
-
-        tty.emit('minimize window', self);
-        self.emit('minimize');
+        term.element.focus();
       };
 
       window.scrollTo(0, 0);
 
-      x = document.getElementsByClassName('page curpage')[0].clientWidth / term.element.offsetWidth;
-      y = document.getElementsByClassName('page curpage')[0].clientHeight / term.element.offsetHeight;
-
-      x = (x * term.cols) | 0;
-      y = (y * term.rows) | 0;
+      var xterm = el.getElementsByClassName('xterm-container')[0];
+      xterm.style.width = '100%';
+      xterm.style.height = '100%';
 
       el.style.left = '0px';
       el.style.top = '0px';
       el.style.width = '100%';
       el.style.height = '100%';
-      term.element.style.width = '100%';
-      term.element.style.height = '100%';
       el.style.boxSizing = 'border-box';
       this.grip.style.display = 'none';
       root.className = 'maximized';
 
-      this.resize(x, y);
-
-      tty.emit('maximize window', this);
-      this.emit('maximize');
+      fit.fit(term);
+      term.element.focus();
     };
 
     Window.prototype.resize = function (cols, rows) {
@@ -566,17 +548,11 @@ define(function(require) {
       this.each(function (term) {
         term.resize(cols, rows);
       });
-
-      tty.emit('resize window', this, cols, rows);
-      this.emit('resize', cols, rows);
     };
 
     Window.prototype.move = function (left, top) {
       this.element.style.left = left;
       this.element.style.top = top;
-
-      tty.emit('move window', this, left, top);
-      this.emit('move', left, top);
     };
 
     Window.prototype.each = function (func) {
@@ -637,7 +613,9 @@ define(function(require) {
 
       Terminal.call(this, {
         cols: cols,
-        rows: rows
+        rows: rows,
+        cursorBlink: false,
+        tabStopWidth: 4
       });
 
       var button = document.createElement('div');
@@ -651,7 +629,6 @@ define(function(require) {
         } else {
           self.focus();
         }
-        return cancel(ev);
       });
 
       this.id = '';
@@ -660,12 +637,10 @@ define(function(require) {
       this.button = button;
       this.element = null;
       this.process = '';
-      this.open();
+      this.open(document.getElementById('xterm-container'), false);
+
       this.hookKeys();
       this.hookMouse();
-
-      // This is just a workaround for the moment, because the width goes to zero
-      win.element.style.width = '580px';
 
       win.tabs.push(this);
 
@@ -680,11 +655,11 @@ define(function(require) {
             self.id = data.id;
             tty.terms[self.id] = self;
             self.setProcessName(data.process);
-            tty.emit('open tab', self);
-            self.emit('open');
           }
         });
       }
+
+      this.focus();
 
     }
 
@@ -720,9 +695,15 @@ define(function(require) {
     Tab.prototype._focus = Tab.prototype.focus;
 
     Tab.prototype.focus = function () {
-      if (Terminal.focus === this) return;
+
+      if (Terminal.focus === this) {
+        this.element.focus();
+        return;
+      }
 
       var win = this.window;
+
+      var xterm = win.element.getElementsByClassName('xterm-container')[0];
 
       // maybe move to Tab.prototype.switch
       if (win.focused !== this) {
@@ -733,7 +714,7 @@ define(function(require) {
           win.focused.button.style.fontWeight = '';
         }
 
-        win.element.appendChild(this.element);
+        xterm.appendChild(this.element);
         win.focused = this;
 
         win.title.innerHTML = this.process;
@@ -746,9 +727,6 @@ define(function(require) {
       this._focus();
 
       win.focus();
-
-      tty.emit('focus tab', this);
-      this.emit('focus');
     };
 
     Tab.prototype._resize = Tab.prototype.resize;
@@ -756,8 +734,6 @@ define(function(require) {
     Tab.prototype.resize = function (cols, rows) {
       this.socket.send(JSON.stringify({cmd: 'resize', id: this.id, cols: cols, rows: rows}));
       this._resize(cols, rows);
-      tty.emit('resize tab', this, cols, rows);
-      this.emit('resize', cols, rows);
     };
 
     Tab.prototype.__destroy = Tab.prototype.destroy;
@@ -791,8 +767,6 @@ define(function(require) {
       if (this.destroyed) return;
       this.socket.send(JSON.stringify({cmd: 'kill', id: this.id}));
       this._destroy();
-      tty.emit('close tab', this);
-      this.emit('close');
     };
 
     Tab.prototype.hookKeys = function () {
@@ -800,6 +774,7 @@ define(function(require) {
 
       // Alt-[jk] to quickly swap between windows.
       this.on('key', function (key, ev) {
+        // focusKeys no longer supported by xterm
         if (Terminal.focusKeys === false) {
           return;
         }
@@ -979,17 +954,10 @@ define(function(require) {
     Tab.prototype.setProcessName = function (name) {
       name = sanitize(name);
 
-      if (this.process !== name) {
-        this.emit('process', name);
-      }
-
       this.process = name;
       this.button.title = name;
 
       if (this.window.focused === this) {
-        // if (this.title) {
-        //   name += ' (' + this.title + ')';
-        // }
         this.window.title.innerHTML = name;
       }
     };

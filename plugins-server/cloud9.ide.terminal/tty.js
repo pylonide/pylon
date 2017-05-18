@@ -265,17 +265,20 @@ Session.prototype.handleCreate = function(cols, rows) {
     ? conf.shellArgs(this)
     : conf.shellArgs;
 
-  term = pty.fork(shell, shellArgs, {
+  term = pty.spawn(shell, shellArgs, {
     name: conf.termName,
     cols: cols,
     rows: rows,
-    cwd: conf.cwd || process.env.HOME
+    cwd: conf.cwd || process.env.HOME,
+    env: process.env
   });
 
   id = term.pty;
   terms[id] = term;
   terms[id].left = '';
   terms[id].top = '';
+  terms[id].cols = cols;
+  terms[id].rows = rows;
 
   term.on('data', function(data) {
     //console.log('<- ID: %s | Payload: %s | Socket: %s', id, data, self.socket.readyState);
@@ -333,6 +336,8 @@ Session.prototype.handleResize = function(id, cols, rows) {
   var terms = this.terms;
   if (!terms[id]) return;
   terms[id].resize(cols, rows);
+  terms[id].cols = cols;
+  terms[id].rows = rows;
 };
 
 Session.prototype.handleProcess = function(id) {
