@@ -68,6 +68,6 @@
     "scripts": {
         "start": "./bin/cloud9.sh",
         "test": "./test/run-tests.sh",
-        "postinstall": "cd node_modules/ace; make clean pre_build; ./Makefile.dryice.js minimal; cd ../.."
+        "postinstall": "cd node_modules/ace; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker"
     }
 }
