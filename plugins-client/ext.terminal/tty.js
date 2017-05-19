@@ -238,8 +238,6 @@ define(function(require) {
 
       el = document.createElement('div');
       el.className = 'window';
-      el.style.width = '580px';
-      el.style.height = '336px';
 
       grip = document.createElement('div');
       grip.className = 'grip';
@@ -288,6 +286,9 @@ define(function(require) {
       if (container != undefined && container.clientWidth < 600) {
         this.cols = container.clientWidth / 8 | 0;
       }
+      
+      var colsMultiplier = 7.2; // This is bad, we need to get this somehow dynamically
+      el.style.width = Math.floor(this.cols * colsMultiplier) + 'px';
 
       el.appendChild(grip);
       el.appendChild(xterm);
@@ -459,7 +460,7 @@ define(function(require) {
 
       function up() {
         var x, y;
-        var colsMultiplier = 7.2;
+        var colsMultiplier = 7.2; // This is bad, we need to get this somehow dynamically
 
         // We can get the line height of a row
         var rows = document.getElementsByClassName('xterm-rows')[0];
@@ -470,8 +471,8 @@ define(function(require) {
 
         self.resize(x, y);
 
-        el.style.width = x * colsMultiplier + 'px';
-        el.style.height = y * rowsMultiplier + 'px';
+        el.style.width = Math.floor(x * colsMultiplier) + 'px';
+        el.style.height = Math.floor(y * rowsMultiplier) + 'px';
 
         el.style.overflow = '';
         el.style.opacity = '';
