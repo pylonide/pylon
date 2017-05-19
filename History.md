@@ -1,3 +1,9 @@
+V2.2.0
+======
+* Drop support for legacy node version v0.10, v0.11, v0.12, io.js
+* Engine.io stack upgraded to v3.x
+* Terminal now uses xterm project in favour of term.js
+
 V2.1.6
 ======
 * Dependency updates: async, engine.io, body-parser, connect, qs, serve-favicon
