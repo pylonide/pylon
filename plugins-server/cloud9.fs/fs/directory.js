@@ -9,12 +9,12 @@
 
 var jsDAV_FS_Node     = require("./node").jsDAV_FS_Node;
 var jsDAV_FS_File     = require("./file").jsDAV_FS_File;
-var jsDAV_Directory   = require("jsDAV/lib/DAV/directory").jsDAV_Directory;
-var jsDAV_iCollection = require("jsDAV/lib/DAV/iCollection").jsDAV_iCollection;
-var jsDAV_iQuota      = require("jsDAV/lib/DAV/iQuota").jsDAV_iQuota;
+var jsDAV_Directory   = require("jsDAV/lib/DAV/directory");
+var jsDAV_iCollection = require("jsDAV/lib/DAV/interfaces/iCollection");
+var jsDAV_iQuota      = require("jsDAV/lib/DAV/interfaces/iQuota");
 
 var Path              = require("path");
-var Exc               = require("jsDAV/lib/DAV/exceptions");
+var Exc               = require("jsDAV/lib/shared/exceptions");
 var Stream            = require('stream').Stream;
 
 function jsDAV_FS_Directory(vfs, path, stat) {

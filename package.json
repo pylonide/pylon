@@ -37,7 +37,7 @@
         "simple-template": "~0.0.1",
         "netutil": "~0.0.2",
 
-        "jsDAV":              "https://github.com/exsilium/jsDAV/tarball/c1007752fbf88d4b28e72855bc34c31e3772b68c",
+        "jsDAV":              "https://github.com/exsilium/jsDAV/tarball/f1c1c8b1d99bfdfcae609154ca0c6d1a01e857da",
         "smith":              "https://github.com/exsilium/smith/tarball/8990e18f2ffcd3c334829d36e8aeabac99b13d18",
         "architect":          "~0.1.13",
         "architect-build":    "https://github.com/exsilium/architect-build/tarball/17268dce6559e05548b53143a91a9d83d0e19e40",

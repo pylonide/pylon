@@ -5,9 +5,9 @@
  */
 "use strict";
 
-var jsDAV_iNode = require("jsDAV/lib/DAV/iNode").jsDAV_iNode;
-var Exc         = require("jsDAV/lib/DAV/exceptions");
-var Util        = require("jsDAV/lib/DAV/util");
+var jsDAV_iNode = require("jsDAV/lib/DAV/interfaces/iNode");
+var Exc         = require("jsDAV/lib/shared/exceptions");
+var Util        = require("jsDAV/lib/shared/util");
 
 function jsDAV_FS_Node(vfs, path, stat) {
     this.vfs = vfs;

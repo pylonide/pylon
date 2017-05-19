@@ -5,11 +5,11 @@
  */
 "use strict";
 
-var jsDAV_Tree = require("jsDAV/lib/DAV/tree").jsDAV_Tree;
+var jsDAV_Tree = require("jsDAV/lib/DAV/tree");
 var jsDAV_FS_Directory = require("./directory").jsDAV_FS_Directory;
 var jsDAV_FS_File = require("./file").jsDAV_FS_File;
 
-var Exc = require("jsDAV/lib/DAV/exceptions");
+var Exc = require("jsDAV/lib/shared/exceptions");
 var Path = require("path");
 
 

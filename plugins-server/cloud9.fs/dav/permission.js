@@ -1,4 +1,4 @@
-var jsDAV_ServerPlugin = require("jsDAV/lib/DAV/plugin").jsDAV_ServerPlugin;
+var jsDAV_ServerPlugin = require("jsDAV/lib/DAV/plugin");
 var util = require("util");
 
 var Permission = module.exports = function(handler) {
