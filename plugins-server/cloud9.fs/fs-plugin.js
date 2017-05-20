@@ -3,7 +3,7 @@ var path = require("path");
 var error = require("http-error");
 
 var jsDAV = require("jsDAV");
-var jsDAV_Tree_Filesystem = require("./fs/tree").jsDAV_Tree_Filesystem;
+var jsDAV_Tree_Filesystem = require("./fs/tree");
 var BrowserPlugin = require("jsDAV/lib/DAV/plugins/browser");
 var DavFilewatch = require("./dav/filewatch");
 var DavPermission = require("./dav/permission");

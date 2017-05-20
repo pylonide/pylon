@@ -7,8 +7,8 @@
  */
 "use strict";
 
-var jsDAV_FS_Node     = require("./node").jsDAV_FS_Node;
-var jsDAV_FS_File     = require("./file").jsDAV_FS_File;
+var jsDAV_FS_Node     = require("./node");
+var jsDAV_FS_File     = require("./file");
 var jsDAV_Directory   = require("jsDAV/lib/DAV/directory");
 var jsDAV_iCollection = require("jsDAV/lib/DAV/interfaces/iCollection");
 var jsDAV_iQuota      = require("jsDAV/lib/DAV/interfaces/iQuota");
@@ -17,13 +17,11 @@ var Path              = require("path");
 var Exc               = require("jsDAV/lib/shared/exceptions");
 var Stream            = require('stream').Stream;
 
-function jsDAV_FS_Directory(vfs, path, stat) {
+var jsDAV_FS_Directory = module.exports = function(vfs, path, stat) {
     this.vfs = vfs;
     this.path = path;
     this.$stat = stat;
-}
-
-exports.jsDAV_FS_Directory = jsDAV_FS_Directory;
+};
 
 require("util").inherits(jsDAV_FS_Directory, jsDAV_FS_Node);
 

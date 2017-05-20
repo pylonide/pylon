@@ -9,13 +9,11 @@ var jsDAV_iNode = require("jsDAV/lib/DAV/interfaces/iNode");
 var Exc         = require("jsDAV/lib/shared/exceptions");
 var Util        = require("jsDAV/lib/shared/util");
 
-function jsDAV_FS_Node(vfs, path, stat) {
+var jsDAV_FS_Node = module.exports = function(vfs, path, stat) {
     this.vfs = vfs;
     this.path = path;
     this.$stat = stat;
-}
-
-exports.jsDAV_FS_Node = jsDAV_FS_Node;
+};
 
 (function() {
     /**
@@ -49,11 +47,11 @@ exports.jsDAV_FS_Node = jsDAV_FS_Node;
 
     this._stat = function(path, callback) {
         var self = this;
-        
+
         if (!callback) {
             callback = path;
             path = this.path;
-            
+
             if (this.$stat)
                 return callback(null, this.$stat);
         }

@@ -6,8 +6,8 @@
 "use strict";
 
 var jsDAV_Tree = require("jsDAV/lib/DAV/tree");
-var jsDAV_FS_Directory = require("./directory").jsDAV_FS_Directory;
-var jsDAV_FS_File = require("./file").jsDAV_FS_File;
+var jsDAV_FS_Directory = require("./directory");
+var jsDAV_FS_File = require("./file");
 
 var Exc = require("jsDAV/lib/shared/exceptions");
 var Path = require("path");
@@ -22,12 +22,10 @@ var Path = require("path");
  * @param {Object} vfs
  * @contructor
  */
-function jsDAV_Tree_Filesystem(vfs, basePath) {
+var jsDAV_Tree_Filesystem = module.exports = function(vfs, basePath) {
     this.vfs = vfs;
     this.basePath = basePath || "";
-}
-
-exports.jsDAV_Tree_Filesystem = jsDAV_Tree_Filesystem;
+};
 
 (function() {
     /**

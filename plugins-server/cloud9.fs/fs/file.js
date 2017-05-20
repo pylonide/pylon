@@ -1,17 +1,15 @@
 "use strict";
 
-var jsDAV_FS_Node = require("./node").jsDAV_FS_Node;
+var jsDAV_FS_Node = require("./node");
 var jsDAV_iFile = require("jsDAV/lib/DAV/interfaces/iFile");
 var Exc = require("jsDAV/lib/shared/exceptions");
 var Util = require("jsDAV/lib/shared/util");
 
-function jsDAV_FS_File(vfs, path, stat) {
+var jsDAV_FS_File = module.exports = function(vfs, path, stat) {
     this.vfs = vfs;
     this.path = path;
     this.$stat = stat;
-}
-
-exports.jsDAV_FS_File = jsDAV_FS_File;
+};
 
 require("util").inherits(jsDAV_FS_File, jsDAV_FS_Node);
 
