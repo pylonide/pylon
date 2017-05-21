@@ -35,7 +35,7 @@ module.exports = function setup(options, imports, register) {
             standalone: false
         };
 
-        davOptions.tree = new jsDAV_Tree_Filesystem(imports.vfs, mountDir);
+        davOptions.tree = jsDAV_Tree_Filesystem.new(imports.vfs, mountDir);
 
         var filewatch = new DavFilewatch();
 

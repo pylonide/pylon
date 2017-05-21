@@ -5,39 +5,40 @@ var events = require("events");
 var Filewatch = module.exports = function(options) {
     var self = this;
     
-    var plugin = function(handler) {
+    var plugin = jsDAV_ServerPlugin.extend({
+      initialize: function(handler) {
 
-        jsDAV_ServerPlugin.call(this, handler);
+        jsDAV_ServerPlugin.new(this, handler);
 
         handler.addEventListener("afterWriteContent", function(e, uri) {
-            self.emit("afterWrite", {
-                file: "/" + uri
-            });
-            e.next();
+          self.emit("afterWrite", {
+            file: "/" + uri
+          });
+          e.next();
         });
 
         handler.addEventListener("afterDelete", function(e, uri) {
-            self.emit("afterDelete", {
-                file: "/" + uri
-            });
-            e.next();
+          self.emit("afterDelete", {
+            file: "/" + uri
+          });
+          e.next();
         });
-        
+
         handler.addEventListener("afterMove", function(e, uri) {
-            self.emit("afterMove", {
-                file: "/" + uri
-            });
-            e.next();
+          self.emit("afterMove", {
+            file: "/" + uri
+          });
+          e.next();
         });
-        
+
         handler.addEventListener("afterCopy", function(e, uri) {
-            self.emit("afterCopy", {
-                file: "/" + uri
-            });
-            e.next();
+          self.emit("afterCopy", {
+            file: "/" + uri
+          });
+          e.next();
         });
-    }
-    util.inherits(plugin, jsDAV_ServerPlugin);
+      }
+    });
 
     self.getPlugin = function() {
         return plugin;
