@@ -479,7 +479,8 @@ define(function(require) {
         el.style.cursor = '';
         root.style.cursor = '';
         term.element.style.height = '';
-
+        term.element.focus();
+        
         off(document, 'mousemove', move);
         off(document, 'mouseup', up);
       }
