@@ -38,11 +38,11 @@ var jsDAV_FS_File = module.exports = jsDAV_FS_Node.extend(jsDAV_File, {
       this.vfs.mkfile(path, {}, function(err, meta) {
         if (err) {
           if (err.code == "EACCES")
-            err = new Exc.jsDAV_Exception_Forbidden("Permission denied to write file:" + path);
+            err = new Exc.Forbidden("Permission denied to write file:" + path);
           return callback(err);
         }
 
-        handler.getRequestBody(type, meta.stream, callback);
+        handler.getRequestBody(type, meta.stream, false, callback);
       });
     }
   },

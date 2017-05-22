@@ -47,7 +47,7 @@ var jsDAV_FS_Directory = module.exports = jsDAV_FS_Node.extend(jsDAV_Collection,
         if (err)
           return callback(err);
 
-        handler.getRequestBody(enc, meta.stream, callback);
+        handler.getRequestBody(enc, meta.stream, false, callback);
       });
     }
   },
@@ -117,7 +117,7 @@ var jsDAV_FS_Directory = module.exports = jsDAV_FS_Node.extend(jsDAV_Collection,
         this.emit("close");
       };
 
-      handler.getRequestBody(type, stream, callback);
+      handler.getRequestBody(type, stream, false, callback);
     }
   },
 
@@ -145,7 +145,7 @@ var jsDAV_FS_Directory = module.exports = jsDAV_FS_Node.extend(jsDAV_Collection,
 
     this._stat(path, function(err, stat) {
       if (err)
-        return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found"));
+        return callback(new Exc.FileNotFound("File at location " + path + " not found"));
 
       callback(null, stat.mime == "inode/directory"
                 ? new jsDAV_FS_Directory(self.vfs, path, stat)

@@ -39,11 +39,11 @@ var jsDAV_Tree_Filesystem = module.exports = jsDAV_Tree.extend({
     path = this.getRealPath(path);
     var nicePath = this.stripSandbox(path);
     if (!this.insideSandbox(path))
-      return callback(new Exc.jsDAV_Exception_Forbidden("You are not allowed to access " + nicePath));
+      return callback(new Exc.Forbidden("You are not allowed to access " + nicePath));
 
     this.vfs.stat(path, {}, function(err, stat) {
       if (err)
-        return callback(new Exc.jsDAV_Exception_FileNotFound("File at location " + path + " not found"));
+        return callback(new Exc.FileNotFound("File at location " + path + " not found"));
 
       callback(null, stat.mime == "inode/directory"
                 ? jsDAV_FS_Directory.new(self.vfs, path, stat)
@@ -82,7 +82,7 @@ var jsDAV_Tree_Filesystem = module.exports = jsDAV_Tree.extend({
     source = this.getRealPath(source);
     destination = this.getRealPath(destination);
     if (!this.insideSandbox(destination)) {
-      return callback(new Exc.jsDAV_Exception_Forbidden("You are not allowed to copy to " +
+      return callback(new Exc.Forbidden("You are not allowed to copy to " +
                       this.stripSandbox(destination)));
     }
 
@@ -112,7 +112,7 @@ var jsDAV_Tree_Filesystem = module.exports = jsDAV_Tree.extend({
     source = this.getRealPath(source);
     destination = this.getRealPath(destination);
     if (!this.insideSandbox(destination)) {
-      return callback(new Exc.jsDAV_Exception_Forbidden("You are not allowed to move to " +
+      return callback(new Exc.Forbidden("You are not allowed to move to " +
         this.stripSandbox(destination)));
     }
 
