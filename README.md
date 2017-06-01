@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/exsilium/cloud9.svg?branch=master)](https://travis-ci.org/exsilium/cloud9)
-[![Dependency Status](https://gemnasium.com/exsilium/cloud9.svg)](https://gemnasium.com/exsilium/cloud9)
+[![Dependency Status](https://gemnasium.com/exsilium/cloud9.svg)](https://gemnasium.com/github.com/exsilium/cloud9)
 [![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://www.coinbase.com/checkouts/4d5a4ffc1b22e35493703aafb37488d5 "One-time donation to keep this fork alive")
 
 # Cloud9 IDE v2
