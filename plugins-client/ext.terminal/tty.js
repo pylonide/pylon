@@ -278,7 +278,7 @@ define(function(require) {
       this.rows = Terminal.geometry[1];
 
       // The following is to accomodate very small console areas
-      container = document.getElementsByClassName('page curpage')[0]
+      container = document.getElementsByClassName('page pgTerminal curpage')[0]
 
       if (container != undefined && container.clientHeight < 370) {
         this.rows = container.clientHeight / 27 | 0;
@@ -451,7 +451,7 @@ define(function(require) {
 
       function move(ev) {
         var x, y;
-        y = window.innerHeight - document.getElementsByClassName('page curpage')[0].clientHeight + 15;
+        y = window.innerHeight - document.getElementsByClassName('page pgTerminal curpage')[0].clientHeight + 15;
         x = ev.pageX - el.offsetLeft;
         y = (ev.pageY - el.offsetTop) - y;
         el.style.width = x + 'px';
