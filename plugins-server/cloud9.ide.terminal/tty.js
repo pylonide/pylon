@@ -1,5 +1,5 @@
 /**
- * tty.js
+ * Based on tty.js
  * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
  */
 
@@ -8,15 +8,9 @@
  */
 
 var path = require('path')
-  , fs = require('fs')
-  , Stream = require('stream').Stream
-  , EventEmitter = require('events').EventEmitter;
-
-var io = require('engine.io')
+  , io = require('engine.io')
   , pty = require('node-pty')
-  , term = require('xterm');
-
-var logger = require('./logger');
+  , logger = require('./logger');
 
 /**
  * Server
@@ -431,14 +425,6 @@ Session.prototype.clearTimeout = function() {
   clearTimeout(this.timeout);
   delete this.timeout;
 };
-
-// Server Methods
-Object.keys(EventEmitter.prototype).forEach(function(key) {
-  if (Server.prototype[key]) return;
-  Server.prototype[key] = function() {
-    return this.server[key].apply(this.server, arguments);
-  };
-});
 
 /**
  * Helpers
