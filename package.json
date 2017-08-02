@@ -1,70 +1,65 @@
 {
     "name": "cloud9",
     "description": "Cloud9 IDE",
-    "version": "2.1.6",
-    "homepage" : "http://github.com/exsilium/cloud9",
-    "engines": {"node": ">= 4.0.0"},
+    "version": "2.2.0",
+    "homepage": "http://github.com/exsilium/cloud9",
+    "engines": {
+        "node": ">= 4.8.4"
+    },
     "author": "Ajax.org B.V. <info@ajax.org>",
-    "contributors": ["Sten Feldman <exile@chamber.ee> (http://sten.feldman.eesti.ee/)"],
+    "contributors": [
+        "Sten Feldman <exile@chamber.ee> (http://sten.feldman.eesti.ee/)"
+    ],
     "license": "GPL-3.0",
     "help": {
         "web": "https://github.com/exsilium/cloud9/blob/master/README.md"
     },
-
     "dependencies": {
-        "async": "~2.4.0",
+        "async": "~2.5.0",
         "colors": "~1.1.2",
         "connect": "~3.6.2",
-        "express-session": "~1.15.3",
+        "express-session": "~1.15.4",
         "cookie-parser": "~1.4.3",
         "body-parser": "~1.17.2",
         "serve-static": "~1.12.3",
         "serve-favicon": "~2.4.3",
         "csurf": "~1.9.0",
         "urlrouter": "~0.5.4",
-        "qs": "~6.4.0",
+        "qs": "~6.5.0",
         "parseurl": "~1.3.1",
         "passport": "~0.3.2",
         "passport-http": "~0.3.0",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
         "engine.io": "~3.1.0",
-        "engine.io-client": "~3.1.0",
+        "engine.io-client": "~3.1.1",
         "dryice": "0.4.11",
-
         "amd-loader": "~0.0.8",
         "http-error": "~0.0.6",
         "simple-template": "~0.0.1",
         "netutil": "~0.0.2",
         "jsDAV": "~0.3.4",
-
-        "smith":              "https://github.com/exsilium/smith/tarball/8990e18f2ffcd3c334829d36e8aeabac99b13d18",
-        "architect":          "~0.1.13",
-        "architect-build":    "https://github.com/exsilium/architect-build/tarball/17268dce6559e05548b53143a91a9d83d0e19e40",
-
-        "vfs-architect":      "https://github.com/exsilium/vfs-architect/tarball/51b9f3e14a0ee796fbc2c0988c73ea65c94ed9e3",
+        "smith": "https://github.com/exsilium/smith/tarball/8990e18f2ffcd3c334829d36e8aeabac99b13d18",
+        "architect": "~0.1.13",
+        "architect-build": "https://github.com/exsilium/architect-build/tarball/17268dce6559e05548b53143a91a9d83d0e19e40",
+        "vfs-architect": "https://github.com/exsilium/vfs-architect/tarball/51b9f3e14a0ee796fbc2c0988c73ea65c94ed9e3",
         "vfs-nodefs-adapter": "https://github.com/exsilium/vfs-nodefs-adapter/tarball/development",
-        "vfs-local":          "https://github.com/exsilium/vfs-local/tarball/983b86fd7706b75317773ea721c135a041f8cf37",
-
-        "ace":          "https://github.com/ajaxorg/ace/tarball/v1.2.6",
-        "asyncjs":      "https://github.com/exsilium/async.js/tarball/bd936c60bb87c58052bcc0307f4e637bd35c908f",
-        "v8debug":      "https://github.com/exsilium/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
-        "treehugger":   "https://github.com/exsilium/treehugger/tarball/0.0.2",
-
-        "node-pty": "~0.6.4",
-        "xterm": "~2.6.0"
+        "vfs-local": "https://github.com/exsilium/vfs-local/tarball/c5e6237a55859a07ab90cc259f31cd17dd6c7aed",
+        "ace": "https://github.com/ajaxorg/ace/tarball/v1.2.8",
+        "asyncjs": "https://github.com/exsilium/async.js/tarball/bd936c60bb87c58052bcc0307f4e637bd35c908f",
+        "v8debug": "https://github.com/exsilium/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
+        "treehugger": "https://github.com/exsilium/treehugger/tarball/0.0.2",
+        "node-pty": "~0.6.10",
+        "xterm": "~2.8.1"
     },
-
     "devDependencies": {
-        "nodeunit": "~0.11.0",
+        "nodeunit": "~0.11.1",
         "rimraf": "~2.6.1"
     },
-
-    "repository" : {
-        "type" : "git",
-         "url" : "git://github.com/exsilium/cloud9.git"
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/exsilium/cloud9.git"
     },
-
     "scripts": {
         "start": "./bin/cloud9.sh",
         "test": "./test/run-tests.sh",
