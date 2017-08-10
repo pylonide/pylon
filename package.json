@@ -1,5 +1,5 @@
 {
-    "name": "packager",
+    "name": "apf-packager",
     "version": "0.1.1",
     "private": true,
     "dependencies": {
