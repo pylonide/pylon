@@ -4,7 +4,7 @@
     "private": true,
     "dependencies": {
         "asyncjs": "~0.0.2",
-        "apf": "git://github.com/exsilium/apf.git",
+        "apf": "https://github.com/exsilium/apf/tarball/e898da47df2c7c7f2252f636fc587fc2984f5b8f",
         "libxml": "git://github.com/exsilium/node-libxml.git"
     },
     "scripts": {
