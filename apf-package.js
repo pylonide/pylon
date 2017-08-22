@@ -1,10 +1,8 @@
-require("asyncjs");
-
 // used by apf-node below
-XMLParser = require('libxml/lib/libxml');
+XPath = require('xpath');
+DOMParser = require('xmldom').DOMParser;
 
 require("apf");
-require("libxml/lib/libxml");
 
 var Fs = require("fs");
 var Path = require("path");

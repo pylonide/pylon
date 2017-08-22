@@ -1,13 +1,13 @@
 {
     "name": "apf-packager",
-    "version": "0.1.1",
+    "version": "0.2.0",
     "private": true,
     "dependencies": {
-        "asyncjs": "~0.0.2",
-        "apf": "https://github.com/exsilium/apf/tarball/e898da47df2c7c7f2252f636fc587fc2984f5b8f",
-        "libxml": "git://github.com/exsilium/node-libxml.git"
+        "apf": "git://github.com/exsilium/apf.git",
+        "xmldom": "~0.1.27",
+        "xpath": "~0.0.24"
     },
     "scripts": {
-      "build": "mkdir -p build && node apf-package.js projects/apf_cloud9.apr"
+      "build": "mkdir -p build && node apf-package.js projects/apf_cloud9.apr && cat ./build/apf_release.js | sed 's\/\\(\\\/\\*FILEHEAD(\\).*\/\/g' > ./build/apf_release_cleaned.js"
     }
 }
