@@ -72,7 +72,7 @@ apf.DOMParser.prototype = new (function(){
             //#ifdef __WITH_EXPLICIT_LOWERCASE
             xmlNode = apf.getXmlDom(str, null, this.preserveWhiteSpace || apf.debug).documentElement;
             var i, l,
-                nodes = xmlNode.selectNodes(XPATH);
+                nodes = XPath.select(XPATH, xmlNode);
             // Case insensitive support
             for (i = 0, l = nodes.length; i < l; i++) {
                 (nodes[i].ownerElement || nodes[i].selectSingleNode(".."))
