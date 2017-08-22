@@ -5,7 +5,6 @@ DOMParser = require('xmldom').DOMParser;
 require("apf");
 
 var Fs = require("fs");
-var Path = require("path");
 
 boot();
 
@@ -28,9 +27,9 @@ function boot() {
     var project = (argv.length == 3) ? argv[2] : "apf_release.apr";
     console.log("using file: " + __dirname + "/projects/" + project);
 
-    if (!Path.existsSync(project)) {
+    if (!Fs.existsSync(project)) {
         project = __dirname + "/projects/" + project;
-        if (!Path.existsSync(project)) {
+        if (!Fs.existsSync(project)) {
             console.log("ERROR: unable to find project file");
             return process.exit(1);
         }
