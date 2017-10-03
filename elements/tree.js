@@ -445,6 +445,7 @@ apf.tree = function(struct, tagName){
     };
     
     this.$updateNode = function(xmlNode, htmlNode){
+        if (!xmlNode) return;
         var elIcon  = this.$getLayoutNode("item", "icon", htmlNode),
             iconURL = this.$applyBindRule("icon", xmlNode);
         if (elIcon && iconURL) {

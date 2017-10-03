@@ -1042,8 +1042,8 @@ apf.window = function(){
             amlNode   : amlNode || apf.document.documentElement
         });
 
-        //Non IE/ iPhone selection handling
-        if (apf.isIE || apf.isIphone)
+        //Non IE/ iPhone selection handling or overruled
+        if (apf.isIE || apf.isIphone || amlNode.getAttribute("canSelect"))
             return;
 
         var canSelect = !((!apf.document
@@ -1078,7 +1078,7 @@ apf.window = function(){
 
     //IE selection handling
     apf.addListener(document, "selectstart", function(e){
-        if (!apf.isIE)
+        if (!apf.isIE || amlNode.getAttribute("canSelect"))
             return;
         
         if (!e) e = event;

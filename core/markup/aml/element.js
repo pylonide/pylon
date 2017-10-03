@@ -479,9 +479,9 @@ apf.AmlElement = function(struct, tagName){
         if (options && options.clear)
             include.setAttribute("clear", true);
         include.options  = options;
-        include.callback = function(){
+        include.callback = function(e){
             _self.dispatchEvent("afteramlinserted", {src: amlDefNode});
-            options && options.callback && options.callback();
+            options && options.callback && options.callback(e);
             setTimeout(function(){
                 include.destroy(true, true);
             });
