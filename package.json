@@ -8,6 +8,6 @@
         "xpath": "~0.0.24"
     },
     "scripts": {
-      "build": "mkdir -p build && node apf-package.js projects/apf_cloud9.apr && cat ./build/apf_release.js | sed 's\/\\(\\\/\\*FILEHEAD(\\).*\/\/g' > ./build/apf_release_cleaned.js"
+        "build": "mkdir -p build && node apf-package.js projects/apf_cloud9.apr && cat ./build/apf_release.js | sed 's/\\(\\/\\*FILEHEAD(\\).*//g' > ./build/apf_release_cleaned.js"
     }
 }

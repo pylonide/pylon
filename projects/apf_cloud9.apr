@@ -116,6 +116,7 @@
         <p:define name="__WITH_DATA_INSTRUCTIONS" value="1" />
         <p:define name="__WITH_ECMAEXT" value="1" />
         <p:define name="__WITH_ENTITY_ENCODING" value="1" />
+        <p:define name="__WITH_AMLEVENT" value="1" />
         <p:define name="__WITH_EVENT_BUBBLING" value="1" />
         <p:define name="__WITH_FOCUS" value="1" />
         <!--p:define name="__WITH_WINDOW_FOCUS" value="1" /-->
@@ -343,6 +344,11 @@
         <p:define name="__WITH_AMLTEXTRECTANGLE" value="1" />
         <p:define name="__ENABLE_INTERACTIVE_CANCEL" value="1" />
         <p:define name="__WITH_BASE64" value="1" />
+        <p:define name="__WITH_RDB" value="1" />
+        <p:define name="__AMLCOLORPICKER" value="1" />
+        <p:define name="__AMLIMG" value="1" />
+        <p:define name="__AMLPROGRESSBAR" value="1" />
+        <p:define name="__WITH_LIVEMARKUP" value="1" />
         
         <!-- NOT USED DEFINES -->
         <!-- TURNED OFF Features to avoid parsing errors -->
@@ -382,7 +388,6 @@
         <p:define name="__WITH_WINDOW_FOCUS" value="0" />
         <p:define name="__WITH_SYNTAX" value="0" />
         <p:define name="__WITH_TEXTDIFF" value="0" />
-        <p:define name="__WITH_RDB" value="0" />
         <p:define name="__TESTS" value="0" />
         <p:define name="__WITH_XMLDIFF" value="0" />
         <p:define name="__SUPPORT_IPHONE" value="0" />
@@ -441,7 +446,6 @@
         <p:define name="__WITH_APP_DEFAULTS" value="0" />
         <p:define name="__ENABLE_LIVETEXT" value="0" />
         <p:define name="__WITH_AMLDOM_W3C_XPATH" value="0" />
-        <p:define name="__WITH_AMLEVENT" value="0" />
         <p:define name="__WITH_LIVEEDIT" value="0" />
         <p:define name="__WITH_AMLRANGE" value="0" />
         <p:define name="__AMLRANGE" value="0" />
@@ -534,7 +538,6 @@
         <p:define name="__AMLCALENDAR" value="0" />
         <p:define name="__AMLCALENDARLIST" value="0" />
         <p:define name="__AMLCOLLECTION" value="0" />
-        <p:define name="__AMLCOLORPICKER" value="0" />
         <p:define name="__WITH_CONVERTIFRAME" value="0" />
         <p:define name="__AMLSERVICES" value="0" />
         <p:define name="__AMLEDITOR" value="0" />
@@ -542,7 +545,6 @@
         <p:define name="__AMLFLOWCHART" value="0" />
         <p:define name="__AMLFLOWCHART2" value="0" />
         <p:define name="__AMLGALLERY" value="0" />
-        <p:define name="__AMLIMG" value="0" />
         <p:define name="__AMLLINESELECT" value="0" />
         <p:define name="__AMLLOADINDICATOR" value="0" />
         <p:define name="__AMLMAP" value="0" />
@@ -552,7 +554,6 @@
         <p:define name="__AMLPAGER" value="0" />
         <p:define name="__AMLPALETTE" value="0" />
         <p:define name="__TP_PERSIST" value="0" />
-        <p:define name="__AMLPROGRESSBAR" value="0" />
         <p:define name="__AMLPROPEDIT" value="0" />
         <p:define name="__WITH_SKIN_INCLUDES" value="0" />
         <p:define name="__AMLSLIDER" value="0" />
@@ -579,7 +580,6 @@
         <p:define name="__ENABLE_TEXTBOX_AUTOCOMPLETE" value="0" />
         <p:define name="__ENABLE_TEXTBOX_AUTOCOMPLETE2" value="0" />
         <p:define name="__WITH_VIDEO_VLC" value="0" />
-        <p:define name="__WITH_LIVEMARKUP" value="0" />
         <p:define name="__ENABLE_WINDOW_WIDGET" value="0" />
         <p:define name="__INC_ALL" value="0" />
     </p:defines>
