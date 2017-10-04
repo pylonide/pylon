@@ -53,6 +53,7 @@
         "xterm": "~2.8.1"
     },
     "devDependencies": {
+        "apf-packager": "https://github.com/exsilium/apf-packager/tarball/master",
         "nodeunit": "~0.11.1",
         "rimraf": "~2.6.1"
     },
