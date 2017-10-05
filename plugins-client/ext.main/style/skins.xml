@@ -9383,7 +9383,7 @@
         left : 0;
         right : 0;
 
-        clip: rect(0px 3000px 30px 0px);
+        clip: rect(0px 4000px 30px 0px);
         display : -webkit-box;
         display : -moz-box;
     }
