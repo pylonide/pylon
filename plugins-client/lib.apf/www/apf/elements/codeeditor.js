@@ -473,8 +473,11 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         new MultiSelect(this.$editor);
 
         if (apf.isTrue(this.getAttribute("globalcommands"))){
-            if(this.$editor.keyBinding.setDefaultHandler)
-                this.$editor.keyBinding.setDefaultHandler(null);
+            if(this.$editor.keyBinding.setDefaultHandler && !apf.isIphone) {
+              // Don't remove the default handler in case of iOS devices, we might need it for
+              // hardware keyboard to operate correctly in Ace
+              this.$editor.keyBinding.setDefaultHandler(null);
+            }
         }
 
         // read defaults...
