@@ -25,11 +25,11 @@ If it feels like these are limiting factors for you, you are welcome to try Clou
 
 Cloud9 is an open source IDE built with [Node.JS] on the back-end and JavaScript/HTML5 on the client. The version available here runs on your local system. Cloud9 balances the power of traditional desktop IDEs with the simplicity and elegance of editors like TextMate and Sublime.
 
-Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would benefit, file a pull request on this repo or create an issue.
+Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would benefit, file a pull request against `development` branch in this repo or create an issue.
 
 ## Fork Extras
 
-- Modern node support (NodeJS >= 0.10+)
+- Modern node support (NodeJS >= 4.8.4+)
 - Up to date dependencies and compatibility fixes
 - Terminal
 
@@ -56,10 +56,12 @@ We support the newer versions of Chrome, Firefox and Safari.
 
 If installing on Windows, please refer to [Installation on Windows](#installation-on-windows-experimental).
 
-Requirements (>= 2.1.0):
+Requirements (>= 2.2.0):
 
-  * NodeJS `>= 0.10.0`
-  * g++-4.8
+  * NodeJS `>= 4.8.4`
+  * g++-4.8 (Required for pty compilation)
+  * make (Required for pty compilation)
+  * python (Required for pty compilation)
 
 Install:
 
@@ -102,7 +104,7 @@ If you are on Windows Insider Program, use the Bash on Windows feature to instal
 Install [NVM](https://github.com/creationix/nvm) to manage node versions. Install a node version to your liking. The following is needed to install the needed build tools:
 
     sudo apt-get update
-	sudo apt-get install build-essential
+    sudo apt-get install build-essential
 
 Clone the Cloud9 repo to your machine and run npm:
 
@@ -126,7 +128,7 @@ To update to the latest version (if this doesn't work, just make a fresh clone):
 Cloud9v2 functionality is all created around server and client-side plugins.
 However, there is hardly any documentation about the APIs to create your own
 plugins. To get you started, please see [exsilium/cloud9-plugin-ungit](https://github.com/exsilium/cloud9-plugin-ungit)
-to see how to get started.
+to see how to get started for a client-side only plugin.
 
 Going forward, there will be efforts made to sort out the documentation and
 write some tutorials to make it more easier to get started.
