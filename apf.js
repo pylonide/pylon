@@ -270,7 +270,7 @@
         if (this.$bdetect)
             return;
         
-        /* Browser -  platform and feature detection, based on prototype's and mootools 1.3.
+        /* Browser -  platform and feature detection, based on prototype's and mootools 1.6.
          *
          * Major browser/engines flags
          *
@@ -300,9 +300,25 @@
         var Browser = this.$bdetect = (function() {
             
             var ua       = navigator.userAgent.toLowerCase(),
-                platform = navigator.platform.toLowerCase(),
-                UA       = ua.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/) || [null, 'unknown', 0],
-                mode     = UA[1] == 'ie' && document.documentMode;
+                platform = navigator.platform.toLowerCase();
+                
+            // chrome is included in the edge UA, so need to check for edge first,
+            // before checking if it's chrome.
+            var UA = ua.match(/(edge)[\s\/:]([\w\d\.]+)/);
+
+            if (!UA) {
+              UA = ua.match(/(opera|ie|firefox|chrome|trident|crios|version)[\s\/:]([\w\d\.]+)?.*?(safari|(?:rv[\s\/:]|version[\s\/:])([\w\d\.]+)|$)/) || [null, 'unknown', 0];
+            }
+
+            if (UA[1] == 'trident') {
+              UA[1] = 'ie';
+              if (UA[4]) UA[2] = UA[4];
+            }
+            else if (UA[1] == 'crios') {
+              UA[1] = 'chrome';
+            }
+
+            var mode = UA[1] == 'ie' && document.documentMode;
 
             var b = {
 
@@ -338,6 +354,7 @@
         this.isChrome      = !!Browser.chrome;
         this.isSafari      = !!Browser.safari;
         this.isSafariOld   = Browser.safari && Browser.version === 2.4;
+        this.isEdge        = !!Browser.edge;
         this.isWebkit      = this.isSafari || this.isChrome || UA.indexOf("konqueror") != -1;
         this.isOpera       = !!Browser.opera;
         this.isIE          = !!Browser.ie;
