@@ -342,7 +342,7 @@ apf.tree = function(struct, tagName){
         var elSelect = this.$getLayoutNode("item", "select"),
             strMouseDown;
         
-        //#ifdef __WITH_RENAME || __WITH_DRAGDROP
+        //#ifdef __WITH_RENAME || __WITH_DRAGDROP || __WITH_IOS
         if (this.hasFeature(apf.__RENAME__) || this.hasFeature(apf.__DRAGDROP__)) {
             strMouseDown =
                 'var o = apf.lookup(' + this.$uniqueId + ');\
@@ -351,8 +351,25 @@ apf.tree = function(struct, tagName){
                  this.hasPassedDown = true;\
                  if (event.button == 2) \
                     o.stopRename();\
-                 else if (!o.renaming && o.hasFocus() && isSelected == 1) \
-                    this.dorename = true;\
+                 else if (!o.renaming && o.hasFocus() && isSelected == 1) {' + 
+                    // #ifndef __WITH_IOS
+                    'this.dorename = true;' +
+                    // #endif
+                    // #ifdef __WITH_IOS
+                    'if(apf.isIphone) { \
+                      if (xmlNode.nodeName === "folder") { \
+                        o.slideToggle(this, null, null, true); \
+                        apf.cancelBubble(event, o); \
+                      } \
+                      else { \
+                        o.choose(null, true); \
+                      } \
+                    } \
+                    else { \
+                      this.dorename = true; \
+                    }' +
+                    // #endif
+                 '} \
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
                      o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);\
                  apf.cancelBubble(event, o);';
