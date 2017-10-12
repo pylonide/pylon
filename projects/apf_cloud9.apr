@@ -350,6 +350,9 @@
         <p:define name="__AMLPROGRESSBAR" value="1" />
         <p:define name="__WITH_LIVEMARKUP" value="1" />
         
+        <!-- ADDED -->
+        <p:define name="__WITH_IOS" value="1" />
+        
         <!-- NOT USED DEFINES -->
         <!-- TURNED OFF Features to avoid parsing errors -->
         <p:define name="__WITH_O3" value="0" />
