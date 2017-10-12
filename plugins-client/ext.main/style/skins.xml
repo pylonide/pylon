@@ -11926,6 +11926,7 @@
 
             color: #222;
             -webkit-font-smoothing: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .hboxTrFiles {
