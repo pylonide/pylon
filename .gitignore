@@ -46,3 +46,5 @@ plugins-client/lib.apf/www/apf-packaged/apf_debug.js
 .idea/
 cloud9.iml
 atlassian-ide-plugin.xml
+plugins-client/ext.test
+plugins-client/ext.ungit

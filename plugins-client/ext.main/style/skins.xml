@@ -271,12 +271,12 @@
         }
         .c9-mbar-round {
             background : url(images/c9-no-repeat.png) no-repeat 0 0;
-            height: 37px;
+            height: 18px;
             pointer-events: none;
             position: fixed;
             right: 0;
             top: 0;
-            width: 74px;
+            width: 33px;
             z-index: 999;
         }
         .c9-mbar-round .mainlogo {
@@ -305,7 +305,7 @@
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
         	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
         	height: 10px;
-        	left: 24px;
+        	left: 20px;
             pointer-events: all;
         	position: absolute;
         	top: 4px;
@@ -370,7 +370,6 @@
                         <div class="c9-mbar-cont"> </div>
 
                         <div class="c9-mbar-round">
-                            <a id="backToC9" href="http://github.com/exsilium/cloud9/" class="mainlogo backToC9" target="_blank" title="Go to Cloud9 Github"></a>
                             <div class="c9-activity"><div id="saveStatus" class="light"> </div></div>
                             <div class="c9-local"> </div>
                             <div class="c9-offline" onmouseover="require('ext/offline/offline').toggleInfoDiv(1);" onmouseout="require('ext/offline/offline').toggleInfoDiv(0);"> </div>
