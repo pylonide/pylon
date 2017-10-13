@@ -775,6 +775,15 @@ define(function(require) {
 
     Tab.prototype.hookKeys = function () {
       var self = this;
+      
+      // Handle space in iOS
+      if(apf.isIphone) {
+        on(self.element, 'keydown', function (ev) {
+          if(ev.charCode === 0 && ev.code === "Space") {
+            self.send(" ");
+          }
+        });
+      }
 
       // Alt-[jk] to quickly swap between windows.
       this.on('key', function (key, ev) {
