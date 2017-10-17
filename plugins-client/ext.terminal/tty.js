@@ -26,8 +26,6 @@ define(function(require) {
      * Helpers
      */
 
-    var EventEmitter = Terminal.EventEmitter;
-
     function cancel(ev, force) {
       if (!this.cancelEvents && !force) {
         return;
@@ -50,7 +48,8 @@ define(function(require) {
      * tty
      */
 
-    var tty = new EventEmitter;
+    var EventEmitter = require("ace/lib/event_emitter").EventEmitter;
+    var tty = Object.create(EventEmitter);
 
     /**
      * Shared
