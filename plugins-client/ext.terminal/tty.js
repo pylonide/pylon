@@ -26,11 +26,25 @@ define(function(require) {
      * Helpers
      */
 
-    var EventEmitter = Terminal.EventEmitter
-      , inherits = Terminal.inherits
-      , on = Terminal.on
-      , off = Terminal.off
-      , cancel = Terminal.cancel;
+    var EventEmitter = Terminal.EventEmitter;
+
+    function cancel(ev, force) {
+      if (!this.cancelEvents && !force) {
+        return;
+      }
+      ev.preventDefault();
+      ev.stopPropagation();
+      return false;
+    }
+    
+    function inherits(child, parent) {
+      function f() {
+        this.constructor = child;
+      }
+      f.prototype = parent.prototype;
+      child.prototype = new f;
+    }
+
 
     /**
      * tty
@@ -92,30 +106,30 @@ define(function(require) {
       var c9console = require('ext/console/console');
 
       if (pgTerminal) {
-        on(pgTerminal, 'mousedown', function () {
+        pgTerminal.addEventListener('mousedown', function () {
           if (c9console.hiddenInput == false && settings.model.queryValue("auto/console/@showinput") == 'true') {
             c9console.hideInput();
             settings.model.setQueryValue("auto/console/@showinput", true);
 
-            on(document.getElementsByClassName('pgOutput')[0], 'click', function () {
+            document.getElementsByClassName('pgOutput')[0].addEventListener('click', function () {
               if (settings.model.queryValue("auto/console/@showinput") == 'true') c9console.showInput();
             });
 
             var length = document.getElementsByClassName('pgConsole').length;
 
             for (var i = 0; i < length; i++) {
-              on(document.getElementsByClassName('pgConsole')[i], 'click', function () {
+              document.getElementsByClassName('pgConsole')[i].addEventListener('click', function () {
                 if (settings.model.queryValue("auto/console/@showinput") == 'true') c9console.showInput();
               });
             }
           }
-        });
+        }, false);
       }
 
       if (newTerminal) {
-        on(newTerminal, 'click', function () {
+        newTerminal.addEventListener('click', function () {
           new Window;
-        });
+        }, false);
       }
 
       tty.socket.on('open', function () {
@@ -190,7 +204,7 @@ define(function(require) {
       }, 2 * 1000);
 
       // Keep windows maximized when browser size changes
-      on(window, 'resize', function () {
+      window.addEventListener('resize', function () {
         var i = tty.windows.length
           , win;
 
@@ -201,7 +215,7 @@ define(function(require) {
             win.maximize();
           }
         }
-      });
+      }, false);
     };
 
     /**
@@ -224,8 +238,6 @@ define(function(require) {
 
     function Window(socket, resume) {
       var self = this;
-
-      EventEmitter.call(this);
 
       var el
         , grip
@@ -307,8 +319,6 @@ define(function(require) {
       this.resume = false;
     }
 
-    inherits(Window, EventEmitter);
-
     Window.prototype.bind = function () {
       var self = this
         , el = this.element
@@ -318,25 +328,25 @@ define(function(require) {
         , defaultS = this.defaultS
         , last = 0;
 
-      on(button, 'click', function (ev) {
+      button.addEventListener('click', function (ev) {
         if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
           self.destroy();
         } else {
           self.createTab();
         }
-      });
+      }, false);
 
-      on(defaultS, 'click', function (ev) {
+      defaultS.addEventListener('click', function (ev) {
         self.resize(80, 24);
         return cancel(ev);
-      });
+      }, false);
 
-      on(grip, 'mousedown', function (ev) {
+      grip.addEventListener('mousedown', function (ev) {
         self.focus();
         self.resizing(ev);
-      });
+      }, false);
 
-      on(el, 'mousedown', function (ev) {
+      el.addEventListener('mousedown', function (ev) {
         if (ev.target !== el && ev.target !== bar) {
           if (apf.document.activeElement == null) return;
           return apf.document.activeElement.blur();
@@ -350,7 +360,7 @@ define(function(require) {
         last = new Date;
 
         self.drag(ev);
-      });
+      }, false);
     };
 
     Window.prototype.focus = function () {
@@ -418,8 +428,8 @@ define(function(require) {
         el.style.cursor = '';
         root.style.cursor = '';
 
-        off(document, 'mousemove', move);
-        off(document, 'mouseup', up);
+        document.removeEventListener('mousemove', move, false);
+        document.removeEventListener('mouseup', up, false);
 
         var ev = {
           left: el.style.left.replace(/\w+/g, ''),
@@ -432,8 +442,8 @@ define(function(require) {
 
       }
 
-      on(document, 'mousemove', move);
-      on(document, 'mouseup', up);
+      document.addEventListener('mousemove', move, false);
+      document.addEventListener('mouseup', up, false);
     };
 
     Window.prototype.resizing = function (ev) {
@@ -480,13 +490,13 @@ define(function(require) {
         root.style.cursor = '';
         term.element.style.height = '';
         term.element.focus();
-        
-        off(document, 'mousemove', move);
-        off(document, 'mouseup', up);
+         
+        document.removeEventListener('mousemove', move, false);
+        document.removeEventListener('mouseup', up, false);
       }
 
-      on(document, 'mousemove', move);
-      on(document, 'mouseup', up);
+      document.addEventListener('mousemove', move, false);
+      document.addEventListener('mouseup', up, false);
     };
 
     Window.prototype.maximize = function () {
@@ -629,13 +639,13 @@ define(function(require) {
       button.innerHTML = '\u2022';
       win.bar.appendChild(button);
 
-      on(button, 'click', function (ev) {
+      button.addEventListener('click', function (ev) {
         if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
           self.destroy();
         } else {
           self.focus();
         }
-      });
+      }, false);
 
       this.id = '';
       this.socket = socket || tty.socket;
@@ -852,7 +862,7 @@ define(function(require) {
     Tab.prototype.hookMouse = function () {
       var self = this;
 
-      on(self.element, 'mouseup', function (ev) {
+      self.element.addEventListener('mouseup', function (ev) {
         if (!window.getSelection) return;
 
         // \u00A0 - Non-breaking space
@@ -886,11 +896,11 @@ define(function(require) {
             self.send(apf.clipboard.store);
           }
         }
-      });
+      }, false);
 
-      on(self.element, 'contextmenu', function (ev) {
+      self.element.addEventListener('contextmenu', function (ev) {
         ev.preventDefault();
-      });
+      }, false);
     };
 
     Tab.prototype._ignoreNext = function () {
@@ -1005,13 +1015,13 @@ define(function(require) {
       if (load.done) return;
       load.done = true;
 
-      off(document, 'load', load);
-      off(document, 'DOMContentLoaded', load);
+      document.removeEventListener('load', load, false);
+      document.removeEventListener('DOMContentLoaded', load, false);
       tty.open();
     }
 
-    on(document, 'load', load);
-    on(document, 'DOMContentLoaded', load);
+    document.addEventListener('load', load, false);
+    document.addEventListener('DOMContentLoaded', load, false);
     setTimeout(load, 1000);
 
     /**
