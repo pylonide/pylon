@@ -285,8 +285,8 @@ define(function(require) {
       this.tabs = [];
       this.focused = null;
 
-      this.cols = Terminal.geometry[0];
-      this.rows = Terminal.geometry[1];
+      this.cols = 80;
+      this.rows = 24;
 
       // The following is to accomodate very small console areas
       container = document.getElementsByClassName('page pgTerminal curpage')[0]

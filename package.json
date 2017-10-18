@@ -50,7 +50,7 @@
         "v8debug": "https://github.com/exsilium/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
         "treehugger": "https://github.com/exsilium/treehugger/tarball/0.0.2",
         "node-pty": "~0.7.1",
-        "xterm": "~2.9.2"
+        "xterm": "~2.9.1"
     },
     "devDependencies": {
         "apf-packager": "https://github.com/exsilium/apf-packager/tarball/master",
