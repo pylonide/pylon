@@ -787,7 +787,7 @@ define(function(require) {
       
       // Handle space in iOS
       if(apf.isIphone) {
-        on(self.element, 'keydown', function (ev) {
+        self.element.addEventListener('keydown', function (ev) {
           if(ev.charCode === 0 && ev.code === "Space") {
             self.send(" ");
           }

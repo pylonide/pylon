@@ -200,10 +200,10 @@ Session.prototype.sync = function() {
   Object.keys(this.terms).forEach(function(key) {
     var term = self.terms[key];
     terms[key] = {
-      id: term.pty,
-      pty: term.pty,
-      cols: term.cols,
-      rows: term.rows,
+      id: term._pty,
+      pty: term._pty,
+      cols: term._cols,
+      rows: term._rows,
       left: term.left,
       top: term.top,
       process: sanitize(term.process)
@@ -212,8 +212,8 @@ Session.prototype.sync = function() {
 
   Object.keys(self.terms).forEach(function(key) {
     var term = self.terms[key]
-      , cols = term.cols
-      , rows = term.rows;
+      , cols = term._cols
+      , rows = term._rows;
 
     // A tricky way to get processes to redraw.
     // Some programs won't redraw unless the
@@ -267,7 +267,7 @@ Session.prototype.handleCreate = function(cols, rows) {
     env: process.env
   });
 
-  id = term.pty;
+  id = term._pty;
   terms[id] = term;
   terms[id].left = '';
   terms[id].top = '';
@@ -289,14 +289,14 @@ Session.prototype.handleCreate = function(cols, rows) {
 
     self.log(
       'Closed pty (%s): %d.',
-      term.pty, term.fd);
+      term._pty, term._fd);
   });
 
   this.log(
     'Created pty (id: %s, master: %d, pid: %d).',
-    id, term.fd, term.pid);
+    id, term._fd, term._pid);
 
-  self.socket.send(JSON.stringify({cmd: 'createACK', id: id, pty: term.pty, process: sanitize(conf.shell)}));
+  self.socket.send(JSON.stringify({cmd: 'createACK', id: id, pty: term._pty, process: sanitize(conf.shell)}));
 };
 
 Session.prototype.handleData = function(id, data) {
