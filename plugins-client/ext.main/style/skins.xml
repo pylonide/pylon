@@ -157,11 +157,11 @@
         }
 
         .c9-menu-bar .c9-mbar-bcont .c9-offline {
-            width:42px;
-            height:21px;
+            width:86px;
+            height:20px;
             position:absolute;
-            background:url(images/offline.png) no-repeat 0 0;
-            top:26px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='86' height='20'%3E%3ClinearGradient id='b' x2='0' y2='100%25'%3E%3Cstop offset='0' stop-color='%23bbb' stop-opacity='.1'/%3E%3Cstop offset='1' stop-opacity='.1'/%3E%3C/linearGradient%3E%3CclipPath id='a'%3E%3Crect width='86' height='20' rx='3' fill='%23fff'/%3E%3C/clipPath%3E%3Cg clip-path='url%28%23a%29'%3E%3Cpath fill='%23555' d='M0 0h43v20H0z'/%3E%3Cpath fill='%23e05d44' d='M43 0h43v20H43z'/%3E%3Cpath fill='url%28%23b%29' d='M0 0h86v20H0z'/%3E%3C/g%3E%3Cg fill='%23fff' text-anchor='middle' font-family='DejaVu Sans,Verdana,Geneva,sans-serif' font-size='110'%3E%3Ctext x='225' y='150' fill='%23010101' fill-opacity='.3' transform='scale%28.1%29' textLength='330'%3Estatus%3C/text%3E%3Ctext x='225' y='140' transform='scale%28.1%29' textLength='330'%3Estatus%3C/text%3E%3Ctext x='635' y='150' fill='%23010101' fill-opacity='.3' transform='scale%28.1%29' textLength='330'%3Eoffline%3C/text%3E%3Ctext x='635' y='140' transform='scale%28.1%29' textLength='330'%3Eoffline%3C/text%3E%3C/g%3E%3C/svg%3E") no-repeat 0 0;
+            top:7px;
             right: 3px;
             display: none;
             z-index: 100000;
@@ -270,8 +270,7 @@
             cursor: default;
         }
         .c9-mbar-round {
-            background : url(images/c9-no-repeat.png) no-repeat 0 0;
-            height: 18px;
+            height: 4px;
             pointer-events: none;
             position: fixed;
             right: 0;
@@ -279,41 +278,24 @@
             width: 33px;
             z-index: 999;
         }
-        .c9-mbar-round .mainlogo {
-            background: url("images/c9-no-repeat.png") no-repeat 0 -44px;
-            display: block;
-            height: 26px;
-            left: 33px;
-            pointer-events: all;
-            position: absolute;
-            text-indent: 100%;
-            top: 4px;
-            width: 37px;
-        }
-       .updateAvailable .c9-mbar-round .mainlogo {
-           background: url("images/c9-no-repeat.png") no-repeat -96px -44px;
-           cursor: pointer;
-       }
-
         .not-loggedin .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
           top: 55px;
-       }
-
+        }
         .readonly .c9-menu-bar .c9-mbar-bcont .c9-mbar-round {
            top: 35px;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-activity {
-        	background : url(images/c9-no-repeat.png) no-repeat -84px 0;
-        	height: 10px;
+        	background : rgba(0, 0, 0, 0.2);
+        	height: 4px;
         	left: 20px;
             pointer-events: all;
         	position: absolute;
-        	top: 4px;
+        	top: 0;
         	width: 10px;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-activity .light {
-            background : url(images/c9-no-repeat.png) no-repeat -102px -19px; /* nothing */
-            height: 10px;
+            background : rgb(18, 188, 0);
+            height: 4px;
             left: 0;
             position: absolute;
             top: 0;
@@ -2112,13 +2094,10 @@
                -moz-animation: saving .4s linear 0 infinite;
                     animation: saving .4s linear 0 infinite;
 
-            background-position: -102px 0px !important;
+            background: rgb(255, 255, 0) !important;
         }
         .c9-menu-bar .c9-mbar-bcont .c9-activity .saved {
-            background-position: -102px -19px !important;
-        }
-        .c9-menu-bar .c9-mbar-bcont .c9-activity .save {
-            background-position: -84px -19px !important;
+            background: rgb(18, 188, 0) !important;
         }
 
     ]]></a:style>
