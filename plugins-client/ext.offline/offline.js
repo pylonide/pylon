@@ -33,12 +33,9 @@ module.exports = ext.register("ext/offline/offline", {
 
         var offline = this.offline = new Offline("cloud9", (window.location.pathname + "/$reconnect").replace(/\/\//g, "/"));
 
-        // preload the offline images programmatically:
-        var img = new Image();
-        img.src = ide.staticPrefix + "/ext/main/style/images/offline.png";
-
         if (ide.local) {
-            img = new Image();
+            // preload the offline images programmatically:
+            var img = new Image();
             img.src = ide.staticPrefix + "/ext/main/style/images/local_green.png";
         }
 
