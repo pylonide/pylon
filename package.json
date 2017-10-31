@@ -42,15 +42,15 @@
         "architect": "~0.1.13",
         "node-pty": "~0.7.2",
         "xterm": "~2.9.2",
-        "ace": "https://github.com/ajaxorg/ace/tarball/v1.2.8",
+        "ace": "https://github.com/ajaxorg/ace/tarball/v1.2.9",
         "smith": "https://github.com/exsilium/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
         "architect-build": "https://github.com/exsilium/architect-build/tarball/f572a41f5cd4650e1ec2452a47a7644e60a6e5ea",
         "vfs-architect": "https://github.com/exsilium/vfs-architect/tarball/6a729efb9ba8241aab0c354f098caf1b0f7c18db",
         "vfs-nodefs-adapter": "https://github.com/exsilium/vfs-nodefs-adapter/tarball/7ce86b0242aa0941aad68cc8ecca3d82308dd276",
         "vfs-local": "https://github.com/exsilium/vfs-local/tarball/890b96c73747a677d3a46ce7f97ae3c78d9f0f5c",
         "asyncjs": "https://github.com/exsilium/async.js/tarball/be2c5b9195312c9c4aa8c3e29932b0b9784bcae7",
-        "v8debug": "https://github.com/exsilium/lib-v8debug/tarball/2bf0dbe5d8fd4b57920c377f0a5e20cd37cf8a61",
-        "treehugger": "https://github.com/exsilium/treehugger/tarball/0.0.2"
+        "v8debug": "https://github.com/exsilium/lib-v8debug/tarball/863c0ce1e39a4f100457d306e1d2cc2b0283fa2a",
+        "treehugger": "https://github.com/exsilium/treehugger/tarball/5e44be92211e3c63661e520f02778e41141efbf9"
     },
     "devDependencies": {
         "apf-packager": "https://github.com/exsilium/apf-packager/tarball/master",
