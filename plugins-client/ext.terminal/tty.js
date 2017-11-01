@@ -862,19 +862,12 @@ define(function(require) {
       var self = this;
 
       self.element.addEventListener('mouseup', function (ev) {
-        if (!window.getSelection) return;
-
-        // \u00A0 - Non-breaking space
-        // \t - Tab
-        var clipboardBuffer = window.getSelection().toString().replace(/[\u00A0\t]+$/gm, "").replace(/\u00A0/gm, " ");
-
         // Left mouse button
-        if (ev.which == 1 && (clipboardBuffer.length > 0)) {
+        if (ev.which == 1 && self.selectionManager.hasSelection) {
           var termTextarea = document.getElementsByClassName('xterm-helper-textarea')[0];
 
-          apf.clipboard.put(clipboardBuffer);
-
-          termTextarea.value = clipboardBuffer;
+          apf.clipboard.put(self.selectionManager.selectionText);
+          termTextarea.value = self.selectionManager.selectionText;
           termTextarea.focus();
 
           document.execCommand('SelectAll');
