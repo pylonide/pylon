@@ -44,7 +44,7 @@
         "xterm": "~2.9.2",
         "ace": "https://github.com/ajaxorg/ace/tarball/v1.2.9",
         "smith": "https://github.com/exsilium/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
-        "architect-build": "https://github.com/exsilium/architect-build/tarball/f572a41f5cd4650e1ec2452a47a7644e60a6e5ea",
+        "architect-build": "https://github.com/exsilium/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
         "vfs-architect": "https://github.com/exsilium/vfs-architect/tarball/6a729efb9ba8241aab0c354f098caf1b0f7c18db",
         "vfs-nodefs-adapter": "https://github.com/exsilium/vfs-nodefs-adapter/tarball/7ce86b0242aa0941aad68cc8ecca3d82308dd276",
         "vfs-local": "https://github.com/exsilium/vfs-local/tarball/890b96c73747a677d3a46ce7f97ae3c78d9f0f5c",
