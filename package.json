@@ -15,14 +15,14 @@
         "web": "https://github.com/exsilium/cloud9/blob/master/README.md"
     },
     "dependencies": {
-        "async": "~2.5.0",
+        "async": "~2.6.0",
         "colors": "~1.1.2",
         "connect": "~3.6.5",
         "express-session": "~1.15.6",
         "cookie-parser": "~1.4.3",
         "body-parser": "~1.18.2",
         "serve-static": "~1.13.1",
-        "serve-favicon": "~2.4.3",
+        "serve-favicon": "~2.4.5",
         "csurf": "~1.9.0",
         "urlrouter": "~0.5.4",
         "qs": "~6.5.1",
@@ -31,8 +31,8 @@
         "passport-http": "~0.3.0",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
-        "engine.io": "~3.1.3",
-        "engine.io-client": "~3.1.3",
+        "engine.io": "~3.1.4",
+        "engine.io-client": "~3.1.4",
         "dryice": "0.4.11",
         "amd-loader": "~0.0.8",
         "http-error": "~0.0.6",
@@ -40,7 +40,7 @@
         "netutil": "~0.0.2",
         "jsDAV": "~0.3.4",
         "architect": "~0.1.13",
-        "node-pty": "~0.7.2",
+        "node-pty": "~0.7.3",
         "xterm": "~2.9.2",
         "ace": "https://github.com/ajaxorg/ace/tarball/v1.2.9",
         "smith": "https://github.com/exsilium/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
@@ -54,7 +54,7 @@
     },
     "devDependencies": {
         "apf-packager": "https://github.com/exsilium/apf-packager/tarball/master",
-        "nodeunit": "~0.11.1",
+        "nodeunit": "~0.11.2",
         "rimraf": "~2.6.2"
     },
     "repository": {
