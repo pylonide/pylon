@@ -25,6 +25,7 @@ var settings = require("ext/settings/settings");
 var themes = require("ext/themes/themes");
 var markupSettings = require("text!ext/code/settings.xml");
 var editors = require("ext/editors/editors");
+var UndoManager = require("ace/undomanager").UndoManager;
 
 require("ace/config").setDefaultValue("renderer", "vScrollBarAlwaysVisible", true);
 
@@ -217,7 +218,7 @@ module.exports = ext.register("ext/code/code", {
             doc.acedoc = doc.acesession.getDocument();
             doc.acesession.c9doc = doc;
 
-            doc.acesession.setUndoManager(actiontracker);
+            doc.acesession.setUndoManager(new UndoManager());
 
             if (doc.isInited && doc.state)
                  _self.setState(doc, doc.state);
