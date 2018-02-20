@@ -108,12 +108,12 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
                 args: args
             };
 
-            if (cloud9config.debug) {
-                var retvalue = this._emit("exec", execEvent);
-            } else try {
-                var retvalue = this._emit("exec", execEvent);
-            } catch (e) {}
-
+            if (editor && editor.$nativeCommands) {
+              var retvalue = editor.$nativeCommands.exec(command, editor, args);
+              }
+            else {
+              var retvalue = this._emit("exec", execEvent);
+            }
 
             if (retvalue !== false && e) {
 //                e.returnValue = false;

@@ -280,7 +280,6 @@ module.exports = ext.register("ext/language/language", {
 
     onCursorChange: function() {
         this.worker.emit("cursormove", {data: this.editor.getCursorPosition()});
-        this.editor.renderer.scrollCursorIntoView(null, 0.5);
     },
 
     enable: function () {
