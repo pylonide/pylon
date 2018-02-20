@@ -298,9 +298,6 @@ define(function(require) {
         this.cols = container.clientWidth / 8 | 0;
       }
       
-      var colsMultiplier = 7.2; // This is bad, we need to get this somehow dynamically
-      el.style.width = Math.floor(this.cols * colsMultiplier) + 'px';
-
       el.appendChild(grip);
       el.appendChild(xterm);
       el.appendChild(bar);
@@ -451,6 +448,11 @@ define(function(require) {
         , term = this.focused;
 
       if (this.minimize) delete this.minimize;
+      
+      var resize = {
+        w: el.clientWidth,
+        h: el.clientHeight
+      };
 
       el.style.overflow = 'hidden';
       el.style.opacity = '0.70';
@@ -469,19 +471,16 @@ define(function(require) {
 
       function up() {
         var x, y;
-        var colsMultiplier = 7.2; // This is bad, we need to get this somehow dynamically
 
-        // We can get the line height of a row
-        var rows = document.getElementsByClassName('xterm-rows')[0];
-        var rowsMultiplier = parseInt(rows.style.getPropertyValue('line-height'));
-
-        x = Math.floor(parseInt(el.style.width) / colsMultiplier);
-        y = Math.floor(parseInt(el.style.height) / rowsMultiplier);
+        x = el.clientWidth / resize.w;
+        y = el.clientHeight / resize.h;
+        x = (x * term.cols) | 0;
+        y = (y * term.rows) | 0;
 
         self.resize(x, y);
 
-        el.style.width = Math.floor(x * colsMultiplier) + 'px';
-        el.style.height = Math.floor(y * rowsMultiplier) + 'px';
+        el.style.width = '';
+        el.style.height = '';
 
         el.style.overflow = '';
         el.style.opacity = '';
@@ -630,7 +629,8 @@ define(function(require) {
         cols: cols,
         rows: rows,
         cursorBlink: false,
-        tabStopWidth: 4
+        tabStopWidth: 4,
+        fontSize: 12
       });
 
       var button = document.createElement('div');
