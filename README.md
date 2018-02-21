@@ -9,17 +9,18 @@ As of 14th of February 2015 with a commit that can no longer be linked to, the u
 
 This repository is the maintenance fork for the original Cloud9 IDE that people grew to love. The v3 development is continuing strong but there are many changes to the original approach:
 
-- The emphasis is on the development of [c9.io](http://c9.io) cloud-hosted service (Acquired by Amazon as of July 2016)
-- The on-premises solution will be a separately licensed product
+- The emphasis shifted to the development of [c9.io](http://c9.io) cloud-hosted service, which was acquired by Amazon in July 2016.
+- On the 30th of November 2017, [AWS Cloud9](https://aws.amazon.com/cloud9/) was announced.
+- The on-premises solution will be a separately licensed product (if at all, since AWS aquired Cloud9)
 - The distributed SDK is meant for plugin development
 - The core of the product is [no longer licensed as Open Source Software](http://cloud9-sdk.readme.io/v0.1/docs/the-licenses-for-cloud9-sdk-and-packages)
 
-That being said, v3 will include much more features and will surely over time become a very solid and mature offering. Further more, the license allows the SDK version to be used as a personal editor. However, it is strictly prohibited to:
+That being said, AWS Cloud9 includes much more features and is a very solid and mature offering. Further more, the license allows the SDK version to be used as a personal editor. However, it is strictly prohibited to:
 
 - Use the SDK to build or offer a service
 - Make the SDK version easily available to anyone else besides yourself
 
-If it feels like these are limiting factors for you, you are welcome to try Cloud9 v2, which is licensed under GPL version 3.
+If it feels like these are limiting factors for you, you are welcome to try Cloud9 v2, which is licensed under [GPL version 3](LICENSE).
 
 ## About
 
@@ -29,7 +30,7 @@ Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE 
 
 ## Fork Extras
 
-- Modern node support (NodeJS >= 4.8.4+)
+- Modern node support (NodeJS >= 4.8.5)
 - Up to date dependencies and compatibility fixes
 - Terminal
 
@@ -58,10 +59,10 @@ If installing on Windows, please refer to [Installation on Windows](#installatio
 
 Requirements (>= 2.2.0):
 
-  * NodeJS `>= 4.8.4`
-  * g++-4.8 (Required for pty compilation)
-  * make (Required for pty compilation)
-  * python (Required for pty compilation)
+  * NodeJS `>= 4.8.5`
+  * g++-4.9 (Required for node-pty compilation)
+  * make (Required for node-pty compilation)
+  * python (Required for node-pty compilation)
 
 Install:
 
@@ -163,8 +164,8 @@ Thanks to all developers and contributors of these projects!
 
 ## License
 
-The GPL version 3, read it at [http://www.gnu.org/licenses/gpl.txt](http://www.gnu.org/licenses/gpl.txt)
+The [GPL v3](LICENSE).
 
 ## Contributing
 
-Open new issue for discussions and/or feel free to submit a pull request against the development branch
+Open new issue for discussion and/or feel free to submit a pull request against the `development` branch.

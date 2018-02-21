@@ -140,9 +140,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         tooltip.add( btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications, or run your <span>PHP</span>, <span>Python</span>, or <span>Ruby</span> code.\
-            For more help, check out our guided tour in the Help menu.\
-            Want your language supported? Tweet us \
-            <a href='http://twitter.com/Cloud9IDE' target='_blank'>@Cloud9IDE</a>!",
+            For more help, check out our guided tour in the Help menu.",
             width : "203px",
             timeout : 1000,
             hideonclick : true

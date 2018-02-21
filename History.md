@@ -3,6 +3,11 @@ V2.2.0
 * Drop support for legacy node version v0.10, v0.11, v0.12, io.js
 * Engine.io stack upgraded to v3.x
 * Terminal now uses xterm project in favour of term.js
+* new jsDAV
+* Basic iPad Pro support with hw keyboard and touch controls
+* Basic Microsoft Edge support
+* Overall fixes and dependency updates
+* Includes ACE 1.3.1
 
 V2.1.6
 ======
