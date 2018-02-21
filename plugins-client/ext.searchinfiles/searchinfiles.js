@@ -515,7 +515,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         }
 
         footer.push("", "", "");
-        doc.insertLines(doc.getLength(), footer);
+        doc.insertFullLines(doc.getLength(), footer);
 
         if (!chkSFConsole.checked) {
             var node = doc.node;
@@ -575,12 +575,6 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             doc.insert({row: doc.getLength(), column: 0}, content);
             doc.ace.$blockScrolling--;
         }
-
-        //if (typeof content == "string")
-        //    content = content.split("\n");
-
-        //if (content.length > 0)
-        //    doc.insertLines(doc.getLength(), content);
     },
 
     messageHeader : function(path, options) {
