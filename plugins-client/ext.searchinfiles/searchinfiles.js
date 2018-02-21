@@ -26,6 +26,7 @@ var tooltip = require("ext/tooltip/tooltip");
 var libsearch = require("ext/searchreplace/libsearch");
 var searchreplace = require("ext/searchreplace/searchreplace");
 var anims = require("ext/anims/anims");
+var UndoManager = require("ace/undomanager").UndoManager;
 
 // Ace dependencies
 var EditSession = require("ace/edit_session").EditSession;
@@ -423,7 +424,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.searchConsole.$editor.commands._defaultHandlers = commands._defaultHandlers;
                 _self.searchConsole.$editor.commands.commands = commands.commands;
                 _self.searchConsole.$editor.commands.commandKeyBinding = commands.commandKeyBinding;
-                _self.searchConsole.$editor.getSession().setUndoManager(new apf.actiontracker());
+                _self.searchConsole.$editor.getSession().setUndoManager(new UndoManager());
             }
 
             _self.setHighlight(_self.searchConsole.$editor.getSession(), options.query);
