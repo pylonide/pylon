@@ -785,6 +785,15 @@ define(function(require) {
     Tab.prototype.hookKeys = function () {
       var self = this;
       
+      // Ctrl-V (Paste on Windows)
+      if(apf.isWin) {
+        this.attachCustomKeyEventHandler(function (e) {
+          if (e.ctrlKey == true && e.keyCode == 86) {
+            return false; // Do nothing
+          }
+        });
+      }
+      
       // Handle space in iOS
       if(apf.isIphone) {
         self.element.addEventListener('keydown', function (ev) {
