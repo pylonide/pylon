@@ -1,5 +1,5 @@
 /**
- * tty.js
+ * Based on tty.js
  * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
  */
 
@@ -8,15 +8,9 @@
  */
 
 var path = require('path')
-  , fs = require('fs')
-  , Stream = require('stream').Stream
-  , EventEmitter = require('events').EventEmitter;
-
-var io = require('engine.io')
-  , pty = require('pty.js')
-  , term = require('term.js');
-
-var logger = require('./logger');
+  , io = require('engine.io')
+  , pty = require('node-pty')
+  , logger = require('./logger');
 
 /**
  * Server
@@ -206,10 +200,10 @@ Session.prototype.sync = function() {
   Object.keys(this.terms).forEach(function(key) {
     var term = self.terms[key];
     terms[key] = {
-      id: term.pty,
-      pty: term.pty,
-      cols: term.cols,
-      rows: term.rows,
+      id: term._pty,
+      pty: term._pty,
+      cols: term._cols,
+      rows: term._rows,
       left: term.left,
       top: term.top,
       process: sanitize(term.process)
@@ -218,8 +212,8 @@ Session.prototype.sync = function() {
 
   Object.keys(self.terms).forEach(function(key) {
     var term = self.terms[key]
-      , cols = term.cols
-      , rows = term.rows;
+      , cols = term._cols
+      , rows = term._rows;
 
     // A tricky way to get processes to redraw.
     // Some programs won't redraw unless the
@@ -265,17 +259,20 @@ Session.prototype.handleCreate = function(cols, rows) {
     ? conf.shellArgs(this)
     : conf.shellArgs;
 
-  term = pty.fork(shell, shellArgs, {
+  term = pty.spawn(shell, shellArgs, {
     name: conf.termName,
     cols: cols,
     rows: rows,
-    cwd: conf.cwd || process.env.HOME
+    cwd: conf.cwd || process.env.HOME,
+    env: process.env
   });
 
-  id = term.pty;
+  id = term._pty;
   terms[id] = term;
   terms[id].left = '';
   terms[id].top = '';
+  terms[id].cols = cols;
+  terms[id].rows = rows;
 
   term.on('data', function(data) {
     //console.log('<- ID: %s | Payload: %s | Socket: %s', id, data, self.socket.readyState);
@@ -292,14 +289,14 @@ Session.prototype.handleCreate = function(cols, rows) {
 
     self.log(
       'Closed pty (%s): %d.',
-      term.pty, term.fd);
+      term._pty, term._fd);
   });
 
   this.log(
     'Created pty (id: %s, master: %d, pid: %d).',
-    id, term.fd, term.pid);
+    id, term._fd, term._pid);
 
-  self.socket.send(JSON.stringify({cmd: 'createACK', id: id, pty: term.pty, process: sanitize(conf.shell)}));
+  self.socket.send(JSON.stringify({cmd: 'createACK', id: id, pty: term._pty, process: sanitize(conf.shell)}));
 };
 
 Session.prototype.handleData = function(id, data) {
@@ -333,6 +330,8 @@ Session.prototype.handleResize = function(id, cols, rows) {
   var terms = this.terms;
   if (!terms[id]) return;
   terms[id].resize(cols, rows);
+  terms[id].cols = cols;
+  terms[id].rows = rows;
 };
 
 Session.prototype.handleProcess = function(id) {
@@ -426,14 +425,6 @@ Session.prototype.clearTimeout = function() {
   clearTimeout(this.timeout);
   delete this.timeout;
 };
-
-// Server Methods
-Object.keys(EventEmitter.prototype).forEach(function(key) {
-  if (Server.prototype[key]) return;
-  Server.prototype[key] = function() {
-    return this.server[key].apply(this.server, arguments);
-  };
-});
 
 /**
  * Helpers

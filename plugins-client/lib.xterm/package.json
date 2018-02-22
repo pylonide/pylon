@@ -1,15 +1,15 @@
 {
-    "name": "cloud9.client.termjs",
+    "name": "cloud9.client.xterm",
     "version": "0.0.1",
-    "main": "termjs-lib.js",
+    "main": "xterm-lib.js",
     "private": true,
 
     "dependencies": {
-        "term.js": "~0.0.3"
+        "xterm": "~2.6.0"
     },
 
     "plugin": {
-        "provides": ["client.termjs"],
+        "provides": ["client.xterm"],
         "consumes": ["static"]
     }
 }

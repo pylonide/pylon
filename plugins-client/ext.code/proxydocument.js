@@ -73,8 +73,8 @@ oop.inherits(ProxyDocument, Document);
         return this.doc.insertInLine(position, text);
     };
 
-    this.insertLines = function (row, lines) {
-        return this.doc.insertLines(row, lines);
+    this.insertFullLines = function (row, lines) {
+        return this.doc.insertFullLines(row, lines);
     };
 
     this.removeNewLine = function (row) {

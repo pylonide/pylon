@@ -10,7 +10,7 @@ var VfsSocket = require("./vfs_socket");
 var StandaloneV8DebuggerService = require("v8debug").StandaloneV8DebuggerService;
 
 var DebugProxy = module.exports = function(vfs, port) {
-    process.EventEmitter.call(this);
+    require('events').EventEmitter.call(this);
     var _self = this;
 
     this.connected = false;
@@ -31,7 +31,7 @@ var DebugProxy = module.exports = function(vfs, port) {
     });
 };
 
-util.inherits(DebugProxy, process.EventEmitter);
+util.inherits(DebugProxy, require('events').EventEmitter);
 
 (function() {
 

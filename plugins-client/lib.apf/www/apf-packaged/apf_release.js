@@ -272,7 +272,7 @@ VERSION:'3.0beta',
         if (this.$bdetect)
             return;
         
-        /* Browser -  platform and feature detection, based on prototype's and mootools 1.3.
+        /* Browser -  platform and feature detection, based on prototype's and mootools 1.6.
          *
          * Major browser/engines flags
          *
@@ -302,9 +302,25 @@ VERSION:'3.0beta',
         var Browser = this.$bdetect = (function() {
             
             var ua       = navigator.userAgent.toLowerCase(),
-                platform = navigator.platform.toLowerCase(),
-                UA       = ua.match(/(opera|ie|firefox|chrome|version)[\s\/:]([\w\d\.]+)?.*?(safari|version[\s\/:]([\w\d\.]+)|$)/) || [null, 'unknown', 0],
-                mode     = UA[1] == 'ie' && document.documentMode;
+                platform = navigator.platform.toLowerCase();
+                
+            // chrome is included in the edge UA, so need to check for edge first,
+            // before checking if it's chrome.
+            var UA = ua.match(/(edge)[\s\/:]([\w\d\.]+)/);
+
+            if (!UA) {
+              UA = ua.match(/(opera|ie|firefox|chrome|trident|crios|version)[\s\/:]([\w\d\.]+)?.*?(safari|(?:rv[\s\/:]|version[\s\/:])([\w\d\.]+)|$)/) || [null, 'unknown', 0];
+            }
+
+            if (UA[1] == 'trident') {
+              UA[1] = 'ie';
+              if (UA[4]) UA[2] = UA[4];
+            }
+            else if (UA[1] == 'crios') {
+              UA[1] = 'chrome';
+            }
+
+            var mode = UA[1] == 'ie' && document.documentMode;
 
             var b = {
 
@@ -340,6 +356,7 @@ VERSION:'3.0beta',
         this.isChrome      = !!Browser.chrome;
         this.isSafari      = !!Browser.safari;
         this.isSafariOld   = Browser.safari && Browser.version === 2.4;
+        this.isEdge        = !!Browser.edge;
         this.isWebkit      = this.isSafari || this.isChrome || UA.indexOf("konqueror") != -1;
         this.isOpera       = !!Browser.opera;
         this.isIE          = !!Browser.ie;
@@ -39882,7 +39899,7 @@ apf.runNonIe = function (){
         ASYNCNOTSUPPORTED           = true;
     } catch(e) {/*trap*/} 
     
-    Document.prototype.onreadystatechange = null;
+    if(!apf.isEdge) Document.prototype.onreadystatechange = null;
     Document.prototype.parseError         = 0;
     
     Array.prototype.item = function(i){return this[i];};
@@ -68517,8 +68534,23 @@ apf.tree = function(struct, tagName){
                  this.hasPassedDown = true;\
                  if (event.button == 2) \
                     o.stopRename();\
-                 else if (!o.renaming && o.hasFocus() && isSelected == 1) \
-                    this.dorename = true;\
+                 else if (!o.renaming && o.hasFocus() && isSelected == 1) {' + 
+                    
+                    
+                    'if(apf.isIphone) { \
+                      if (xmlNode.nodeName === "folder") { \
+                        o.slideToggle(this, null, null, true); \
+                        apf.cancelBubble(event, o); \
+                      } \
+                      else { \
+                        o.choose(null, true); \
+                      } \
+                    } \
+                    else { \
+                      this.dorename = true; \
+                    }' +
+                    
+                 '} \
                  if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
                      o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);\
                  apf.cancelBubble(event, o);';

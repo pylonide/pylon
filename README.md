@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/exsilium/cloud9.svg?branch=master)](https://travis-ci.org/exsilium/cloud9)
-[![Dependency Status](https://gemnasium.com/exsilium/cloud9.svg)](https://gemnasium.com/exsilium/cloud9)
-[![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://www.coinbase.com/checkouts/4d5a4ffc1b22e35493703aafb37488d5 "One-time donation to keep this fork alive")
+[![Master Dependency Status](https://beta.gemnasium.com/badges/github.com/exsilium/cloud9.svg)](https://beta.gemnasium.com/projects/github.com/exsilium/cloud9)
+[![Development Dependency Status](https://beta.gemnasium.com/badges/bitbucket.org/c9dev/cloud9-development.svg)](https://beta.gemnasium.com/projects/bitbucket.org/c9dev/cloud9-development)
+[![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://www.coinbase.com/checkouts/9f4183a5164f2c4bd53d6afc74068ec4 "One-time donation to keep this fork alive")
 
 # Cloud9 IDE v2
 
@@ -8,27 +9,28 @@ As of 14th of February 2015 with a commit that can no longer be linked to, the u
 
 This repository is the maintenance fork for the original Cloud9 IDE that people grew to love. The v3 development is continuing strong but there are many changes to the original approach:
 
-- The emphasis is on the development of [c9.io](http://c9.io) cloud-hosted service (Acquired by Amazon as of July 2016)
-- The on-premises solution will be a separately licensed product
+- The emphasis shifted to the development of [c9.io](http://c9.io) cloud-hosted service, which was acquired by Amazon in July 2016.
+- On the 30th of November 2017, [AWS Cloud9](https://aws.amazon.com/cloud9/) was announced.
+- The on-premises solution will be a separately licensed product (if at all, since AWS aquired Cloud9)
 - The distributed SDK is meant for plugin development
 - The core of the product is [no longer licensed as Open Source Software](http://cloud9-sdk.readme.io/v0.1/docs/the-licenses-for-cloud9-sdk-and-packages)
 
-That being said, v3 will include much more features and will surely over time become a very solid and mature offering. Further more, the license allows the SDK version to be used as a personal editor. However, it is strictly prohibited to:
+That being said, AWS Cloud9 includes much more features and is a very solid and mature offering. Further more, the license allows the SDK version to be used as a personal editor. However, it is strictly prohibited to:
 
 - Use the SDK to build or offer a service
 - Make the SDK version easily available to anyone else besides yourself
 
-If it feels like these are limiting factors for you, you are welcome to try Cloud9 v2, which is licensed under GPL version 3.
+If it feels like these are limiting factors for you, you are welcome to try Cloud9 v2, which is licensed under [GPL version 3](LICENSE).
 
 ## About
 
 Cloud9 is an open source IDE built with [Node.JS] on the back-end and JavaScript/HTML5 on the client. The version available here runs on your local system. Cloud9 balances the power of traditional desktop IDEs with the simplicity and elegance of editors like TextMate and Sublime.
 
-Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would benefit, file a pull request on this repo or create an issue.
+Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE today. Fork it, hack it, and if you think others would benefit, file a pull request against `development` branch in this repo or create an issue.
 
 ## Fork Extras
 
-- Modern node support (NodeJS >= 0.10+)
+- Modern node support (NodeJS >= 4.8.5)
 - Up to date dependencies and compatibility fixes
 - Terminal
 
@@ -51,14 +53,26 @@ Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE 
 
 We support the newer versions of Chrome, Firefox and Safari.
 
+### Basic iPad Pro support with keyboard
+
+As of v2.2.0 efforts have been made to make c9v2 usable with iPad. However, for a smoother ride, some keyboard settings needs to be changed:
+
+- Settings -> General -> Keyboard -> Auto-Correction -> `Off`
+- Settings -> General -> Keyboard -> Smart Punctuation -> `Off` (interferes with coding by changing quotes)
+- Settings -> General -> Keyboard -> Shortcuts -> `Off` (interferes by displaying bottom bar that hides the console prompt)
+
+![iPad ScreenShot](doc/screenshot03.png)
+
 ## Installation and Usage
 
 If installing on Windows, please refer to [Installation on Windows](#installation-on-windows-experimental).
 
-Requirements (>= 2.1.0):
+Requirements (>= 2.2.0):
 
-  * NodeJS `>= 0.10.0`
-  * g++-4.8
+  * NodeJS `>= 4.8.5`
+  * g++-4.9 (Required for node-pty compilation)
+  * make (Required for node-pty compilation)
+  * python (Required for node-pty compilation)
 
 Install:
 
@@ -101,7 +115,7 @@ If you are on Windows Insider Program, use the Bash on Windows feature to instal
 Install [NVM](https://github.com/creationix/nvm) to manage node versions. Install a node version to your liking. The following is needed to install the needed build tools:
 
     sudo apt-get update
-	sudo apt-get install build-essential
+    sudo apt-get install build-essential
 
 Clone the Cloud9 repo to your machine and run npm:
 
@@ -125,7 +139,7 @@ To update to the latest version (if this doesn't work, just make a fresh clone):
 Cloud9v2 functionality is all created around server and client-side plugins.
 However, there is hardly any documentation about the APIs to create your own
 plugins. To get you started, please see [exsilium/cloud9-plugin-ungit](https://github.com/exsilium/cloud9-plugin-ungit)
-to see how to get started.
+to see how to get started for a client-side only plugin.
 
 Going forward, there will be efforts made to sort out the documentation and
 write some tutorials to make it more easier to get started.
@@ -160,8 +174,8 @@ Thanks to all developers and contributors of these projects!
 
 ## License
 
-The GPL version 3, read it at [http://www.gnu.org/licenses/gpl.txt](http://www.gnu.org/licenses/gpl.txt)
+The [GPL v3](LICENSE).
 
 ## Contributing
 
-Open new issue for discussions and/or feel free to submit a pull request against the development branch
+Open new issue for discussion and/or feel free to submit a pull request against the `development` branch.

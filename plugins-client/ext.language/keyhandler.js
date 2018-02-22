@@ -38,7 +38,7 @@ function onTextInput(text, pasted) {
 }
 
 function onCommandKey(e) {
-    if (language.disabled)
+    if(e === null || language.disabled)
         return false;
     if (language.isContinuousCompletionEnabled())
         typeAlongComplete(e);

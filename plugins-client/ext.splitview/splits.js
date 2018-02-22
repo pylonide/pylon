@@ -23,7 +23,7 @@ var SplitView, ActiveSplit;
 
 var K = apf.K;
 var CloneUndoManager = exports.CloneUndoManager = {};
-["execute", "undo", "redo", "reset", "hasUndo", "hasRedo"].forEach(function(func) {
+["execute", "undo", "redo", "reset", "hasUndo", "hasRedo", "add", "addSelection", "startNewGroup", "addSession"].forEach(function(func) {
     CloneUndoManager[func] = K;
 });
 

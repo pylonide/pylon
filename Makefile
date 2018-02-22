@@ -6,8 +6,8 @@ update: worker
 
 # packages apf
 apf:
-	cd node_modules/packager; node package.js projects/apf_cloud9.apr
-	cd node_modules/packager; cat build/apf_release.js | sed 's/\(\/\*FILEHEAD(\).*//g' > ../../plugins-client/lib.apf/www/apf-packaged/apf_release.js
+	cd node_modules/apf-packager && ln -sf ../../apf node_modules/apf && npm run build
+	cp node_modules/apf-packager/build/apf_release_cleaned.js ./plugins-client/lib.apf/www/apf-packaged/apf_release.js
 
 # package debug version of apf
 apfdebug:

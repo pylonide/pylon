@@ -19,6 +19,13 @@ document.body.style.display = "block"; //might wanna make this variable based on
 apf.config.resize = cloud9config.debug ? true : false;
 apf.initialize('<a:application xmlns:a="http://ajax.org/2005/aml" />');
 
+// OVerscroll is a complex problem. This doesn't solve it. Preferences remain unscrollable
+document.body.addEventListener('touchmove',function(e) {
+  if(!(e.target.className == "caption" || e.target.className == "item-fix" || e.target.className == "item-fix plus")) {
+    e.preventDefault();
+  }
+});
+
 module.exports = ext.register("ext/main/main", {
     dev     : "Ajax.org",
     name    : "Main",

@@ -5,92 +5,90 @@
  */
 "use strict";
 
-var jsDAV_iNode = require("jsDAV/lib/DAV/iNode").jsDAV_iNode;
-var Exc         = require("jsDAV/lib/DAV/exceptions");
-var Util        = require("jsDAV/lib/DAV/util");
+var jsDAV_iNode = require("jsDAV/lib/DAV/interfaces/iNode");
+var Exc         = require("jsDAV/lib/shared/exceptions");
+var Util        = require("jsDAV/lib/shared/util");
 
-function jsDAV_FS_Node(vfs, path, stat) {
+var jsDAV_FS_Node = module.exports = jsDAV_iNode.extend({
+  initialize: function(vfs, path, stat) {
     this.vfs = vfs;
     this.path = path;
     this.$stat = stat;
-}
+  },
 
-exports.jsDAV_FS_Node = jsDAV_FS_Node;
+  /**
+   * Returns the name of the node
+   *
+   * @return {string}
+   */
+  getName: function() {
+    return Util.splitPath(this.path)[1];
+  },
 
-(function() {
-    /**
-     * Returns the name of the node
-     *
-     * @return {string}
-     */
-    this.getName = function() {
-        return Util.splitPath(this.path)[1];
-    };
+  /**
+   * Renames the node
+   *
+   * @param {string} name The new name
+   * @return void
+   */
+  setName: function(name, callback) {
+    var parentPath = Util.splitPath(this.path)[0];
+    var newName    = Util.splitPath(name)[1];
 
-    /**
-     * Renames the node
-     *
-     * @param {string} name The new name
-     * @return void
-     */
-    this.setName = function(name, callback) {
-        var parentPath = Util.splitPath(this.path)[0];
-        var newName    = Util.splitPath(name)[1];
+    var newPath = parentPath + "/" + newName;
+    var self = this;
+    this.vfs.rename(newPath, {from: this.path}, function(err) {
+      if (err)
+        return callback(err);
+      self.path = newPath;
+      callback();
+    });
+  },
 
-        var newPath = parentPath + "/" + newName;
-        var self = this;
-        this.vfs.rename(newPath, {from: this.path}, function(err) {
-            if (err)
-                return callback(err);
-            self.path = newPath;
-            callback();
-        });
-    };
+  _stat: function(path, callback) {
+    var self = this;
 
-    this._stat = function(path, callback) {
-        var self = this;
-        
-        if (!callback) {
-            callback = path;
-            path = this.path;
-            
-            if (this.$stat)
-                return callback(null, this.$stat);
-        }
+    if (!callback) {
+      callback = path;
+      path = this.path;
 
-        this.vfs.stat(path, {}, function(err, stat) {
-            console.log("stat", err, stat);
-            if (err || !stat) {
-                return callback(new Exc.jsDAV_Exception_FileNotFound("File at location "
-                    + self.path + " not found"));
-            }
-            self.$stat = stat;
-            callback(null, stat);
-        });
-    };
+      if (this.$stat)
+        return callback(null, this.$stat);
+    }
 
-    /**
-     * Returns the last modification time, as a unix timestamp
-     *
-     * @return {Number}
-     */
-    this.getLastModified = function(callback) {
-        this._stat(function(err, stat) {
-            if (err)
-                return callback(err);
+    this.vfs.stat(path, {}, function(err, stat) {
+      console.log("stat", err, stat);
+      if (err || !stat) {
+        return callback(new Exc.FileNotFound("File at location "
+                        + self.path + " not found"));
+      }
+      self.$stat = stat;
+      callback(null, stat);
+    });
+  },
 
-            callback(null, stat.mtime);
-        });
-    };
+  /**
+   * Returns the last modification time, as a unix timestamp
+   *
+   * @return {Number}
+   */
+  getLastModified: function(callback) {
+    this._stat(function(err, stat) {
+      if (err)
+        return callback(err);
 
-    /**
-     * Returns whether a node exists or not
-     *
-     * @return {Boolean}
-     */
-    this.exists = function(callback) {
-        this._stat(function(err, stat) {
-            return callback(!err && !stat.err);
-        });
-    };
-}).call(jsDAV_FS_Node.prototype = new jsDAV_iNode());
+      callback(null, stat.mtime);
+    });
+  },
+
+  /**
+   * Returns whether a node exists or not
+   *
+   * @return {Boolean}
+   */
+  exists: function(callback) {
+    this._stat(function(err, stat) {
+      return callback(!err && !stat.err);
+    });
+  }
+});
