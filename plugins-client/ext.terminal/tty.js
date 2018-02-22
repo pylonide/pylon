@@ -711,11 +711,6 @@ define(function(require) {
 
     Tab.prototype.focus = function () {
 
-      if (Terminal.focus === this) {
-        this.element.focus();
-        return;
-      }
-
       var win = this.window;
 
       var xterm = win.element.getElementsByClassName('xterm-container')[0];
@@ -738,8 +733,13 @@ define(function(require) {
       }
 
       this.handleTitle(this.title);
-
-      this._focus();
+      
+      if(apf.isIphone) {
+        this.element.focus(); // Focus on element
+      }
+      else {
+        this._focus(); // Use xterm.js focus
+      }
     };
 
     Tab.prototype._resize = Tab.prototype.resize;
@@ -794,12 +794,16 @@ define(function(require) {
         });
       }
       
-      // Handle space in iOS
+      // Handle space in iOS & keep focus off from the xterm.js textarea
       if(apf.isIphone) {
         self.element.addEventListener('keydown', function (ev) {
           if(ev.charCode === 0 && ev.code === "Space") {
             self.send(" ");
           }
+        });
+        
+        self.element.addEventListener('keyup', function (ev) {
+          self.element.focus();
         });
       }
 

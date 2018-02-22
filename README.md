@@ -53,6 +53,16 @@ Cloud9 is built entirely on a web stack, making it the most hacker-friendly IDE 
 
 We support the newer versions of Chrome, Firefox and Safari.
 
+### Basic iPad Pro support with keyboard
+
+As of v2.2.0 efforts have been made to make c9v2 usable with iPad. However, for a smoother ride, some keyboard settings needs to be changed:
+
+- Settings -> General -> Keyboard -> Auto-Correction -> `Off`
+- Settings -> General -> Keyboard -> Smart Punctuation -> `Off` (interferes with coding by changing quotes)
+- Settings -> General -> Keyboard -> Shortcuts -> `Off` (interferes by displaying bottom bar that hides the console prompt)
+
+![iPad ScreenShot](doc/screenshot03.png)
+
 ## Installation and Usage
 
 If installing on Windows, please refer to [Installation on Windows](#installation-on-windows-experimental).
