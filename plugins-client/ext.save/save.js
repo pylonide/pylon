@@ -89,7 +89,7 @@ module.exports = ext.register("ext/save/save", {
 
         ide.addEventListener("init.ext/editors/editors", function() {
           tabEditors.addEventListener("close", _self.$close = function(e) {
-            var at = e.page.$editor.amlEditor.$editor.session.getUndoManager();
+            var um = e.page.$editor.amlEditor.$editor.session.getUndoManager();
             var node = e.page.$doc.getNode();
 
             if (node && node.getAttribute("deleted")) {
@@ -97,7 +97,7 @@ module.exports = ext.register("ext/save/save", {
             }
 
             if (node && (
-              (at && at.$undoStack[at.$undoStack.length-1]) ||
+              (um && um.$undoStack[um.$undoStack.length-1]) ||
                 (node.getAttribute("changed") == 1)
               ) &&
               (!node.getAttribute("newfile") || e.page.$doc.getValue()))
@@ -136,7 +136,7 @@ module.exports = ext.register("ext/save/save", {
 
                       tabEditors.remove(page, true, page.noAnim);
                       if (resetUndo) {
-                        at.reset();
+                        um.reset();
                       }
                     };
 
