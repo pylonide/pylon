@@ -87,76 +87,80 @@ module.exports = ext.register("ext/save/save", {
             }
         });
 
-        ide.addEventListener("init.ext/editors/editors", function(){
-            tabEditors.addEventListener("close", _self.$close = function(e) {
-                var at = e.page.$at;
-                var node = e.page.$doc.getNode();
+        ide.addEventListener("init.ext/editors/editors", function() {
+          tabEditors.addEventListener("close", _self.$close = function(e) {
+            var at = e.page.$editor.amlEditor.$editor.session.getUndoManager();
+            var node = e.page.$doc.getNode();
 
-                if (node && node.getAttribute("deleted"))
-                    return;
+            if (node && node.getAttribute("deleted")) {
+              return;
+            }
 
-                if (
-                    node 
-                    && (
-                        (at && at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr)
-                        || (!at.undo_ptr && node.getAttribute("changed") == 1)
-                    )
-                    && (!node.getAttribute("newfile") || e.page.$doc.getValue())
-                ) {
-                    ext.initExtension(_self);
+            if (node && (
+              (at && at.$undoStack[at.$undoStack.length-1]) ||
+                (node.getAttribute("changed") == 1)
+              ) &&
+              (!node.getAttribute("newfile") || e.page.$doc.getValue()))
+              {
+                ext.initExtension(_self);
 
-                    if (ide.dispatchEvent("beforesavewarn", {
-                        page : e.page,
-                        doc  : e.page.$doc
-                    }) === false)
+                if (ide.dispatchEvent("beforesavewarn", {
+                  page : e.page,
+                  doc  : e.page.$doc
+                }) === false)
+                  return;
+
+                var pages   = tabEditors.getPages(),
+                currIdx = pages.indexOf(e.page);
+                tabEditors.set(pages[currIdx].id); //jump to file
+
+                var filename = node.getAttribute("path").replace(ide.workspaceDir, "").replace(ide.davPrefix, "");
+
+                winCloseConfirm.page = e.page;
+                winCloseConfirm.all  = -100;
+                winCloseConfirm.show();
+
+                fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
+
+                winCloseConfirm.addEventListener("hide", function() {
+                  if (winCloseConfirm.all != -100) {
+                    var f = function(resetUndo) {
+                      var page;
+                      if (!(page=winCloseConfirm.page)) {
                         return;
+                      }
+                      delete winCloseConfirm.page;
+                      delete page.noAnim;
 
-                    var pages   = tabEditors.getPages(),
-                    currIdx = pages.indexOf(e.page);
-                    tabEditors.set(pages[currIdx].id); //jump to file
+                      page.dispatchEvent("aftersavedialogclosed");
 
-                    var filename = node.getAttribute("path").replace(ide.workspaceDir, "").replace(ide.davPrefix, "");
+                      tabEditors.remove(page, true, page.noAnim);
+                      if (resetUndo) {
+                        at.reset();
+                      }
+                    };
 
-                    winCloseConfirm.page = e.page;
-                    winCloseConfirm.all  = -100;
-                    winCloseConfirm.show();
+                    if (winCloseConfirm.all == -200) {
+                      _self.quicksave(winCloseConfirm.page, f);
+                    }
+                    else {
+                      f(true);
+                    }
 
-                    fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
+                  }
+                  else {
+                    tabEditors.dispatchEvent("aftersavedialogcancel");
+                  }
 
-                    winCloseConfirm.addEventListener("hide", function(){
-                        if (winCloseConfirm.all != -100) {
-                            var f = function(resetUndo){
-                                var page;
-                                if (!(page=winCloseConfirm.page))
-                                    return;
-                                delete winCloseConfirm.page;
-                                delete page.noAnim;
+                  winCloseConfirm.removeEventListener("hide", arguments.callee);
+                });
 
-                                page.dispatchEvent("aftersavedialogclosed");
+                btnYesAll.hide();
+                btnNoAll.hide();
 
-                                tabEditors.remove(page, true, page.noAnim);
-                                if (resetUndo)
-                                    page.$at.undo(-1);
-                            };
-
-                            if (winCloseConfirm.all == -200)
-                                _self.quicksave(winCloseConfirm.page, f);
-                            else
-                                f(true);
-                            /*winSaveAs.page = winCloseConfirm.page;*/
-                        }
-                        else
-                            tabEditors.dispatchEvent("aftersavedialogcancel");
-
-                        winCloseConfirm.removeEventListener("hide", arguments.callee);
-                    });
-
-                    btnYesAll.hide();
-                    btnNoAll.hide();
-
-                    e.preventDefault();
-                }
-            }, true);
+                e.preventDefault();
+              }
+          }, true);
         });
 
         this.nodes.push(
@@ -195,14 +199,15 @@ module.exports = ext.register("ext/save/save", {
         );
 
         ide.addEventListener("afterreload", function(e){
+          // Are we ever coming here?
             var doc = e.doc;
             var at = doc.$page.$at;
 
-            at.addEventListener("afterchange", function onAfterChange() {
-                at.removeEventListener("afterchange", onAfterChange);
+            doc.$page.addEventListener("afterchange", function onAfterChange() {
+                doc.$page.removeEventListener("afterchange", onAfterChange);
                 
-                at.undo_ptr = at.$undostack[at.$undostack.length-1];
-                at.dispatchEvent("afterchange");
+                at.undo_ptr = at.$undoStack[at.$undoStack.length-1];
+                doc.$page.dispatchEvent("afterchange");
             });
         });
 
@@ -319,7 +324,7 @@ module.exports = ext.register("ext/save/save", {
         var _self = this;
         apf.asyncForEach(pages, function(item, next) {
             var at = item.$at;
-            if (at.undo_ptr && at.$undostack[at.$undostack.length-1] !== at.undo_ptr) {
+            if (at.undo_ptr && at.$undoStack[at.$undoStack.length-1] !== at.undo_ptr) {
                 if (winCloseConfirm.all == 1)
                     _self.quicksave(item);
 
@@ -420,8 +425,8 @@ module.exports = ext.register("ext/save/save", {
         // raw fs events
         ide.dispatchEvent("fs.beforefilesave", { path: path, node: node, doc: doc });
 
-        var at = page.$at;
-        var nextPtr = at.$undostack[at.$undostack.length-1];
+        var at = page.$editor.amlEditor.$editor.session.getUndoManager();
+        var nextPtr = at.$undoStack[at.$undoStack.length-1];
 
         fs.saveFile(path, value, function(data, state, extra){
 
@@ -456,9 +461,9 @@ module.exports = ext.register("ext/save/save", {
                             : "The error reported was " + extra.message));
             }
             
-            at.undo_ptr = nextPtr;
+            at.reset();
 
-            page.$at.dispatchEvent("afterchange");
+            page.dispatchEvent("afterchange");
 
             ide.dispatchEvent("afterfilesave", {
                 node: node,
@@ -468,7 +473,7 @@ module.exports = ext.register("ext/save/save", {
                 silentsave: silentsave
             });
 
-            if (at.undo_ptr == at.$undostack[at.$undostack.length-1])
+            if (at.undo_ptr == at.$undoStack[at.$undoStack.length-1])
                 apf.xmldb.removeAttribute(node, "changed");
             
             apf.xmldb.removeAttribute(node, "new");
@@ -556,8 +561,8 @@ module.exports = ext.register("ext/save/save", {
         });
 
         var at = page.$at
-        at.undo_ptr = at.$undostack[at.$undostack.length-1];
-        page.$at.dispatchEvent("afterchange", {
+        at.undo_ptr = at.$undoStack[at.$undoStack.length-1];
+        page.dispatchEvent("afterchange", {
             newPath: newPath
         });
     },

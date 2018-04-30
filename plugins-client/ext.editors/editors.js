@@ -14,6 +14,7 @@ var util = require("core/util");
 var settings = require("core/settings");
 var commands = require("ext/commands/commands");
 var anims = require("ext/anims/anims");
+var UndoManager = require("ace/undomanager").UndoManager;
 
 /*global tabEditors colMiddle barButtonContainer barButtons tabExtMgr tabmenubtn
   trfiles logobar*/
@@ -439,8 +440,7 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$buttons.style.overflow = "";
 
         var model = new apf.model();
-        var fake = tabs.add("{([@changed] == 1 ? '*' : '') + %[.].getAttribute('name')}", filepath, editor.path, null, function(page){
-            page.$at     = new apf.actiontracker();
+        var fake = tabs.add("{([@changed] == 1 ? '*' : '') + %[.].getAttribute('name')}", filepath, editor.path, null, function(page) {
             page.$doc    = doc;
             doc.$page    = page;
             page.$editor = editor;
@@ -501,38 +501,27 @@ module.exports = ext.register("ext/editors/editors", {
     },
 
     initEditorEvents: function(page, model) {
-        model = model || page.$model;
-        page.$at.addEventListener("afterchange", function(e) {
-            if (e.action == "reset") {
-                delete this.undo_ptr;
-                return;
-            }
+      model = model || page.$model;
+      page.addEventListener("afterchange", function(e) {
+        var val;
+        if(page.$editor.amlEditor.$editor.session.getUndoManager().$undoStack.length === 0) {
+          val = undefined;
+        }
+        else {
+          val = 1;
+        }
 
-            var val;
-            if (page.$at.ignoreChange) {
-                val = undefined;
-                page.$at.ignoreChange = false;
-            }
-            else if(this.undolength === 0 && !this.undo_ptr) {
-                val = undefined;
-            }
-            else {
-                val = (this.$undostack[this.$undostack.length - 1] !== this.undo_ptr)
-                    ? 1
-                    : undefined;
-            }
+        if (Number(model.queryValue("@changed")) !== Number(val)) {
+          model.setQueryValue("@changed", (val ? "1" : "0"));
 
-            if (Number(model.queryValue("@changed")) !== Number(val)) {
-                model.setQueryValue("@changed", (val ? "1" : "0"));
-
-                var node = page.$model.data;
-                ide.dispatchEvent("updatefile", {
-                    changed : val ? 1 : 0,
-                    xmlNode : node,
-                    newPath: e.newPath
-                });
-            }
-        });
+          var node = page.$model.data;
+          ide.dispatchEvent("updatefile", {
+            changed : val ? 1 : 0,
+            xmlNode : node,
+            newPath: e.newPath
+          });
+        }
+      });
     },
 
     resizeTabs : function(cancel){
@@ -582,15 +571,6 @@ module.exports = ext.register("ext/editors/editors", {
 
         //If there are no more pages left, reset location
         if (tabEditors.getPages().length == 1) {
-            /*if (window.history.pushState) {
-                var p = location.pathname.split("/");
-                window.history.pushState(path, path, "/" + (p[1] || "") + "/" + (p[2] || ""));
-            }
-            else {
-                apf.history.setHash("");
-            }*/
-            //apf.history.setHash("");
-
             editor.clear && editor.clear();
             require("ext/editors/editors").currentEditor = null;
 
