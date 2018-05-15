@@ -199,16 +199,9 @@ module.exports = ext.register("ext/save/save", {
         );
 
         ide.addEventListener("afterreload", function(e){
-          // Are we ever coming here?
-            var doc = e.doc;
-            var at = doc.$page.$at;
-
-            doc.$page.addEventListener("afterchange", function onAfterChange() {
-                doc.$page.removeEventListener("afterchange", onAfterChange);
-                
-                at.undo_ptr = at.$undoStack[at.$undoStack.length-1];
-                doc.$page.dispatchEvent("afterchange");
-            });
+          // Triggered when remote file change is detected and the file is reloaded, we reset the undostack
+          e.doc.$page.$editor.amlEditor.$editor.session.getUndoManager().reset();
+          e.doc.$page.dispatchEvent("afterchange");
         });
 
         // when we're going offline we'll disable the UI
