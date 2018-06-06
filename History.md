@@ -1,3 +1,11 @@
+V2.2.1
+======
+* Improvements to UndoManager and APF ActionTracker usage (File editing status is correctly shown) #40 
+* Fix for possible server crash when refreshing browser with terminals open #42 
+* Dependency updates
+* Gemnasium badge removal
+* Includes ACE v1.3.3
+
 V2.2.0
 ======
 * Drop support for legacy node version v0.10, v0.11, v0.12, io.js
