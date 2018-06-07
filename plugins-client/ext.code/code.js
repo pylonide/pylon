@@ -29,27 +29,12 @@ var UndoManager = require("ace/undomanager").UndoManager;
 
 require("ace/config").setDefaultValue("renderer", "vScrollBarAlwaysVisible", true);
 
-apf.actiontracker.actions.aceupdate = function(undoObj, undo){
-    var q = undoObj.args;
-
-    if (!undoObj.initial) {
-        undoObj.initial = true;
-        return;
-    }
-
-    if (undo)
-        q[1].undoChanges(q[0]);
-    else
-        q[1].redoChanges(q[0]);
-};
-
 var modes = require("./modes");
 var SupportedModes = modes.all;
 
 var fileExtensions = modes.extensions;
 var ModesCaption = modes.captions;
 var contentTypes = modes.types;
-
 
 module.exports = ext.register("ext/code/code", {
     name    : "Code Editor",
@@ -219,7 +204,7 @@ module.exports = ext.register("ext/code/code", {
             doc.acesession.c9doc = doc;
 
             doc.acesession.setUndoManager(new UndoManager());
-
+            
             if (doc.isInited && doc.state)
                  _self.setState(doc, doc.state);
 
@@ -293,6 +278,14 @@ module.exports = ext.register("ext/code/code", {
                     doc = null;
                     //??? call doc.$page.destroy()
                 });
+            });
+            
+            doc.acesession.addEventListener("change", function(e) {
+              if(doc.isInited) {
+                doc.$page.dispatchEvent("afterchange", {
+                  action   : "do"
+                });
+              }
             });
 
             doc.dispatchEvent("init");

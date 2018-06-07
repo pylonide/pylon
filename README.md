@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/exsilium/cloud9.svg?branch=master)](https://travis-ci.org/exsilium/cloud9)
-[![Master Dependency Status](https://beta.gemnasium.com/badges/github.com/exsilium/cloud9.svg)](https://beta.gemnasium.com/projects/github.com/exsilium/cloud9)
-[![Development Dependency Status](https://beta.gemnasium.com/badges/bitbucket.org/c9dev/cloud9-development.svg)](https://beta.gemnasium.com/projects/bitbucket.org/c9dev/cloud9-development)
+[![Master Dependency Status](https://snyk.io/test/github/exsilium/cloud9/badge.svg)](https://snyk.io/test/github/exsilium/cloud9)
+[![Development Dependency Status](https://snyk.io/test/github/exsilium/cloud9/development/badge.svg)](https://snyk.io/test/github/exsilium/cloud9)
 [![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://www.coinbase.com/checkouts/9f4183a5164f2c4bd53d6afc74068ec4 "One-time donation to keep this fork alive")
 
 # Cloud9 IDE v2

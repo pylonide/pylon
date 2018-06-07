@@ -1649,7 +1649,7 @@
             color         : #cecece;
             height        : 20px;
             padding       : 4px 2px 0 2px;
-            margin        : 0 5px;
+            margin        : 1px 5px;
             text-shadow   : rgba(41, 42, 43, 1) 0px 1px 0px;
         }
 

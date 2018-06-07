@@ -53709,8 +53709,10 @@ apf.vbox = function(struct, tagName){
             
             this.$int.style.display = apf.CSSPREFIX2 + "-box";
             this.$int.style[apf.CSSPREFIX + "BoxOrient"] = this.localName == "hbox" ? "horizontal" : "vertical";
-            if (apf.isGecko) //!webkit
+            if (apf.isGecko)  { //!webkit
                 this.$int.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
+                this.$int.style.verticalAlign = "top";
+            }
             this.$int.style[apf.CSSPREFIX + "BoxAlign"]  = "stretch";
             
             this.addEventListener("prop.visible", myVisibleHandler);

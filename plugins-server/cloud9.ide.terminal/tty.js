@@ -80,7 +80,9 @@ Server.prototype.handleConnection = function(socket) {
       return session.handleMove(data.id, data.left, data.top);
     }
     if (data.cmd == 'resize') {
-      return session.handleResize(data.id, data.cols, data.rows);
+      if(data.cols > 0 && data.rows > 0) {
+        return session.handleResize(data.id, data.cols, data.rows);
+      }
     }
     if (data.cmd == 'process') {
       return session.handleProcess(data.id);
@@ -212,8 +214,8 @@ Session.prototype.sync = function() {
 
   Object.keys(self.terms).forEach(function(key) {
     var term = self.terms[key]
-      , cols = term._cols
-      , rows = term._rows;
+      , cols = term.cols
+      , rows = term.rows;
 
     // A tricky way to get processes to redraw.
     // Some programs won't redraw unless the
