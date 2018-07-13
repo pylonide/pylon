@@ -89,8 +89,12 @@ module.exports = ext.register("ext/save/save", {
 
         ide.addEventListener("init.ext/editors/editors", function() {
           tabEditors.addEventListener("close", _self.$close = function(e) {
-            var um = e.page.$editor.amlEditor.$editor.session.getUndoManager();
+            var um;
             var node = e.page.$doc.getNode();
+            
+            if(e.page.$editor.extName === "ext/code/code") {
+              um = e.page.$editor.amlEditor.$editor.session.getUndoManager();
+            }
 
             if (node && node.getAttribute("deleted")) {
               return;
