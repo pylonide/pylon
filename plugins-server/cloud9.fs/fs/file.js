@@ -1,9 +1,9 @@
 "use strict";
 
 var jsDAV_FS_Node = require("./node");
-var jsDAV_File = require("jsDAV/lib/DAV/file");
-var Exc = require("jsDAV/lib/shared/exceptions");
-var Util = require("jsDAV/lib/shared/util");
+var jsDAV_File = require("cozy-jsdav-fork/lib/DAV/file");
+var Exc = require("cozy-jsdav-fork/lib/shared/exceptions");
+var Util = require("cozy-jsdav-fork/lib/shared/util");
 
 var jsDAV_FS_File = module.exports = jsDAV_FS_Node.extend(jsDAV_File, {
   initialize: function(vfs, path, stat) {

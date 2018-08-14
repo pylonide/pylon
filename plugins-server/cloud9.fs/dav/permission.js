@@ -1,4 +1,4 @@
-var jsDAV_ServerPlugin = require("jsDAV/lib/DAV/plugin");
+var jsDAV_ServerPlugin = require("cozy-jsdav-fork/lib/DAV/plugin");
 var util = require("util");
 
 var Permission = module.exports = jsDAV_ServerPlugin.extend({
