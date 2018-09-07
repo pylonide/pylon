@@ -1,4 +1,10 @@
-V2.2.1
+v2.2.2
+======
+* Fix to be able to close tabs with image view #46
+* Should compile now also on Ubuntu 16.04 and Node 10 by removing indirect dependency to gnu-tools #49
+* Last release from exsilium/cloud9 repo as explained in issue #48
+
+v2.2.1
 ======
 * Improvements to UndoManager and APF ActionTracker usage (File editing status is correctly shown) #40 
 * Fix for possible server crash when refreshing browser with terminals open #42 
@@ -6,7 +12,7 @@ V2.2.1
 * Gemnasium badge removal
 * Includes ACE v1.3.3
 
-V2.2.0
+v2.2.0
 ======
 * Drop support for legacy node version v0.10, v0.11, v0.12, io.js
 * Engine.io stack upgraded to v3.x
@@ -17,7 +23,7 @@ V2.2.0
 * Overall fixes and dependency updates
 * Includes ACE 1.3.1
 
-V2.1.6
+v2.1.6
 ======
 * Dependency updates: async, engine.io, body-parser, connect, qs, serve-favicon
 * TTY reconnects automatically when disconnection occurs
@@ -31,7 +37,7 @@ V2.1.6
   project will try to align with the [nodejs/LTS](https://github.com/nodejs/LTS)
   calendar. Minor version bump will occur whenever any node versions are being dropped.
 
-V2.1.5
+v2.1.5
 ======
 * Now works with Node.js v6.x branch
 * Dependency updates: async 2.x, ace 1.2.x, engine.io 2.0
