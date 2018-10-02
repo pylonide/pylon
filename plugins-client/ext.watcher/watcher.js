@@ -85,17 +85,13 @@ module.exports = ext.register("ext/watcher/watcher", {
                 file + " has been deleted, or is no longer available.",
                 "Do you wish to keep the file open in the editor?",
                 function() { // Yes
+                  // When you keep the file open and re-save, it might get deleted again in the background
+                  // as of now, that second time deletion is not detected FIXME
                     delete _self.removedPaths[path];
-                    page.$at.undo_ptr = {}; // set undo pointer to non existing change
-                    page.$at.dispatchEvent("afterchange");
                     winQuestion.hide();
                 },
                 function() { // Yes to all
                     _self.removedPaths = {};
-                    tabEditors.getPages().forEach(function (page) {
-                        page.$at.undo_ptr = {}; // set undo pointer to non existing change
-                        page.$at.dispatchEvent("afterchange");
-                    });                    
                     winQuestion.hide();
                 },
                 function() { // No
