@@ -9,11 +9,11 @@
 
 var jsDAV_FS_Node     = require("./node");
 var jsDAV_FS_File     = require("./file");
-var jsDAV_Collection   = require("jsDAV/lib/DAV/collection");
-var jsDAV_iQuota      = require("jsDAV/lib/DAV/interfaces/iQuota");
+var jsDAV_Collection  = require("cozy-jsdav-fork/lib/DAV/collection");
+var jsDAV_iQuota      = require("cozy-jsdav-fork/lib/DAV/interfaces/iQuota");
 
 var Path              = require("path");
-var Exc               = require("jsDAV/lib/shared/exceptions");
+var Exc               = require("cozy-jsdav-fork/lib/shared/exceptions");
 var Stream            = require('stream').Stream;
 
 var jsDAV_FS_Directory = module.exports = jsDAV_FS_Node.extend(jsDAV_Collection, jsDAV_iQuota, {

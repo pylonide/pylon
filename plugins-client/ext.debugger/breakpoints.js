@@ -171,21 +171,19 @@ module.exports = {
         session.$breakpointListener = function(e) {
             if (!this.c9doc || !this.c9doc.isInited || !this.$breakpoints.length)
                 return;
-            var delta = e.data;
-            var range = delta.range;
-            if (range.end.row == range.start.row)
+            if (e.end.row == e.start.row)
                 return;
 
             var len, firstRow;
-            len = range.end.row - range.start.row;
-            if (delta.action == "insertText") {
-                firstRow = range.start.column ? range.start.row + 1 : range.start.row;
+            len = e.end.row - e.start.row;
+            if (e.action == "insertText") {
+                firstRow = e.start.column ? e.start.row + 1 : e.start.row;
             }
             else {
-                firstRow = range.start.row;
+                firstRow = e.start.row;
             }
 
-            if (delta.action[0] == "i") {
+            if (e.action[0] == "i") {
                 var args = Array(len);
                 args.unshift(firstRow, 0);
                 this.$breakpoints.splice.apply(this.$breakpoints, args);

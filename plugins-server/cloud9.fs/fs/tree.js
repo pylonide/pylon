@@ -5,11 +5,11 @@
  */
 "use strict";
 
-var jsDAV_Tree = require("jsDAV/lib/DAV/tree");
+var jsDAV_Tree = require("cozy-jsdav-fork/lib/DAV/tree");
 var jsDAV_FS_Directory = require("./directory");
 var jsDAV_FS_File = require("./file");
 
-var Exc = require("jsDAV/lib/shared/exceptions");
+var Exc = require("cozy-jsdav-fork/lib/shared/exceptions");
 var Path = require("path");
 
 

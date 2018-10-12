@@ -1,10 +1,10 @@
 {
     "name": "cloud9",
     "description": "Cloud9 IDE",
-    "version": "2.2.1",
+    "version": "2.2.2",
     "homepage": "http://github.com/exsilium/cloud9",
     "engines": {
-        "node": ">= 4.8.5"
+        "node": ">= 4.9.1"
     },
     "author": "Ajax.org B.V. <info@ajax.org>",
     "contributors": [
@@ -38,7 +38,7 @@
         "http-error": "~0.0.6",
         "simple-template": "~0.0.1",
         "netutil": "~0.0.2",
-        "jsDAV": "~0.3.4",
+        "cozy-jsdav-fork": "~0.3.17",
         "architect": "~0.1.13",
         "node-pty": "~0.7.4",
         "xterm": "~3.1.0",
