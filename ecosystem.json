@@ -1,8 +1,8 @@
 {
   "apps" : [{
-    "name"        : "cloud9",
+    "name"        : "pylon",
     "script"      : "server.js",
-    "args"        : ["-l", "0.0.0.0", "-p", "8181", "--username", process.env.C9_USERNAME, "--password", process.env.C9_PASSWORD],
+    "args"        : ["-l", "0.0.0.0", "-p", "8181", "--username", process.env.PLN_USERNAME, "--password", process.env.PLN_PASSWORD],
     "node_args"   : "",
     "merge_logs"  : true
   }],
@@ -11,14 +11,14 @@
       "staging" : {
           "user" : process.env.PM2_DEPLOY_STAGING_USER,
           "host" : process.env.PM2_DEPLOY_STAGING_HOST,
-          "repo" : "https://github.com/exsilium/cloud9.git",
+          "repo" : "https://github.com/pylonide/pylon.git",
           "ref"  : "origin/development",
-          "path" : "/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/www/cloud9",
+          "path" : "/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/www/pylon",
           "ssh-options" : ["StrictHostKeyChecking=no", "PasswordAuthentication=no"],
           "pre-setup" : "mkdir /home/" + process.env.PM2_DEPLOY_STAGING_USER + "/workspace",
-          "post-setup" : "echo 'export C9_USERNAME=" + process.env.PM2_DEPLOY_STAGING_USERNAME + "' >> ~/.bashrc && " +
-                         "echo 'export C9_PASSWORD=" + process.env.PM2_DEPLOY_STAGING_PASSWORD + "' >> ~/.bashrc && " +
-                         "echo 'export C9_WORKSPACE=/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/workspace' >> ~/.bashrc",
+          "post-setup" : "echo 'export PLN_USERNAME=" + process.env.PM2_DEPLOY_STAGING_USERNAME + "' >> ~/.bashrc && " +
+                         "echo 'export PLN_PASSWORD=" + process.env.PM2_DEPLOY_STAGING_PASSWORD + "' >> ~/.bashrc && " +
+                         "echo 'export PLN_WORKSPACE=/home/" + process.env.PM2_DEPLOY_STAGING_USER + "/workspace' >> ~/.bashrc",
           "pre-deploy" : "pm2 stop all; rm -rf node_modules",
           "post-deploy" : "npm install && pm2 start ecosystem.json",
           "env" : {
