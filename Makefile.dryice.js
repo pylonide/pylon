@@ -25,7 +25,7 @@ function main(args) {
     var project = {
         roots: [
             ACE_HOME + "/lib",
-            "/tmp/c9_worker_build",
+            "/tmp/pln_worker_build",
             __dirname + "/node_modules/treehugger/lib"
         ],
         textPluginPattern: /^ace\/requirejs\/text!/
