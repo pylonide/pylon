@@ -1,7 +1,7 @@
 {
     "name": "pln",
     "description": "Pylon IDE",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "homepage": "http://github.com/pylonide/pylon",
     "engines": {
         "node": ">= 4.9.1"
@@ -65,6 +65,7 @@
     "scripts": {
         "start": "./bin/pylon.sh",
         "test": "./test/run-tests.sh",
-        "postinstall": "cd node_modules/ace; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker"
+        "preinstall": "if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal;",
+        "postinstall": "make worker; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi"
     }
 }
