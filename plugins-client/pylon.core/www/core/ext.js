@@ -1,36 +1,12 @@
 /**
- * Extension manager for the Ajax.org Cloud IDE
+ * Extension manager for the Pylon IDE
  *
- * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {
 
 var ide = require("core/ide");
 var util = require("core/util");
-
-//Prevent the introduction of globals
-//apf.AmlElement.prototype.$propHandlers.id = function(value){
-//    if (this.name == value)
-//        return;
-//
-//    if (this.name) {
-//        //#ifdef __WITH_NAMESERVER
-//        apf.nameserver.remove(this.localName, this);
-//        apf.nameserver.remove("all", this);
-//        //#endif
-//    }
-//
-//    if (apf.nameserver.get("all", value))
-//        console.warn("ID collision of APF element: '" + value + "'");
-//
-//    //#ifdef __WITH_NAMESERVER
-//    apf.nameserver.register(this.localName, value, this);
-//    apf.nameserver.register("all", value, this);
-//    //#endif
-//
-//    this.name = value;
-//};
 
 // used for local
 const OFFLINE = 1 << 2;

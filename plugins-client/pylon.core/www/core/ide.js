@@ -1,7 +1,6 @@
 /**
- * Main IDE object for the Ajax.org Cloud IDE
+ * Main IDE object for the Pylon IDE
  *
- * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 var ide; //Global on purpose!!!!

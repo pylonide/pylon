@@ -1,7 +1,6 @@
 /**
- * Document object for the Cloud9 IDE
- *
- * @copyright 2010, Ajax.org B.V.
+ * Document object for the Pylon IDE
+ * 
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 define(function(require, exports, module) {

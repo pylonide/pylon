@@ -15,7 +15,7 @@
             "hub",
             "connect",
             "static",
-            "client.cloud9",
+            "client.pylon",
             "workspace-permissions",
             "sandbox",
             "process-manager"

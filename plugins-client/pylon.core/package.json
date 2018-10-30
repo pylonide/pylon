@@ -1,14 +1,14 @@
 {
-    "name": "cloud9.client.core",
+    "name": "pylon.client.core",
     "version": "0.0.1",
-    "main": "cloud9-lib.js",
+    "main": "pylon-lib.js",
     "private": true,
 
     "dependencies": {
     },
 
     "plugin": {
-        "provides": ["client.cloud9"],
+        "provides": ["client.pylon"],
         "consumes": [
             "static",
             "client.apf",

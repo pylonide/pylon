@@ -1,6 +1,8 @@
 /*global require process module __dirname*/
 /**
- * Default/vanilla Cloud9 ("OS") configuration.
+ * Default/vanilla Pylon configuration.
+ *
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 "use strict";
 
@@ -43,7 +45,7 @@ var config = [
     "./cloud9.debug",
 
     // Client libraries
-    "./../plugins-client/cloud9.core",
+    "./../plugins-client/pylon.core",
     "./../plugins-client/lib.ace",
     "./../plugins-client/lib.apf",
     "./../plugins-client/lib.treehugger",

@@ -10,8 +10,8 @@ module.exports = function setup(options, imports, register) {
     }]);
 
     imports.static.favicon(__dirname + "/www/favicon.ico");
-    
+
     register(null, {
-        "client.cloud9": {}
+        "client.pylon": {}
     });
 };
