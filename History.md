@@ -1,3 +1,7 @@
+v2.3.1
+======
+* Make it possible to install Pylon via NPM (intended for further testing)
+
 v2.3.0
 ======
 * Renaming the project to Pylon IDE - Minimum set of changes #48
