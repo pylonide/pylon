@@ -12,7 +12,7 @@ module.exports = function startup(options, imports, register) {
         fs.mkdir(path.dirname(options.sessionsPath), 0755);
     }
     if (!exists(options.sessionsPath)) {
-        fs.mkdir(options.sessionsPath, 0755);
+        fs.mkdirSync(options.sessionsPath, 0755);
     }
 
     var sessionStore = new FileStore({
