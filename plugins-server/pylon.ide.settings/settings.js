@@ -1,13 +1,12 @@
 /**
- * Settings Module for the Cloud9 IDE
+ * Settings Module for the Pylon IDE
  *
- * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
 "use strict";
 
-var Plugin = require("../cloud9.core/plugin");
+var Plugin = require("../pylon.core/plugin");
 var fsnode = require("vfs-nodefs-adapter");
 var util = require("util");
 var assert = require("assert");

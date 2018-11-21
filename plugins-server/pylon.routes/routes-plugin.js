@@ -1,4 +1,4 @@
-var middleware = require("../cloud9.core/middleware");
+var middleware = require("../pylon.core/middleware");
 
 module.exports = function startup(options, imports, register) {
 

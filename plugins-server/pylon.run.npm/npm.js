@@ -1,8 +1,8 @@
 "use strict";
 
 var util = require("util");
-var ShellRunner = require("../cloud9.run.shell/shell").Runner;
-var c9util = require("../cloud9.core/util");
+var ShellRunner = require("../pylon.run.shell/shell").Runner;
+var c9util = require("../pylon.core/util");
 
 /**
  * Run node scripts with restricted user rights

@@ -1,7 +1,6 @@
 /**
- * Shell Module for the Cloud9 IDE
+ * Shell Module for the Pylon IDE
  *
- * @copyright 2010, Ajax.org B.V.
  */
 
 "use strict";
@@ -10,8 +9,8 @@ var util = require("util");
 var Path = require("path");
 var Async = require("asyncjs");
 
-var Plugin = require("../cloud9.core/plugin");
-var c9util = require("../cloud9.core/util");
+var Plugin = require("../pylon.core/plugin");
+var c9util = require("../pylon.core/util");
 
 var name = "shell";
 var ProcessManager;

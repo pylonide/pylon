@@ -1,7 +1,7 @@
 "use strict";
 
 var util = require("util");
-var c9util = require("../cloud9.core/util");
+var c9util = require("../pylon.core/util");
 var NodeDebugProxy = require("./nodedebugproxy");
 
 /**

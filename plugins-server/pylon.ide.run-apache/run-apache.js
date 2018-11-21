@@ -1,11 +1,10 @@
 /**
- * Apache Runtime Module for the Cloud9 IDE
+ * Apache Runtime Module for the Pylon IDE
  *
- * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
-var Plugin = require("../cloud9.core/plugin");
+var Plugin = require("../pylon.core/plugin");
 var util = require("util");
 
 var name = "apache-runtime";

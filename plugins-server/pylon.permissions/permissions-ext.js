@@ -1,4 +1,4 @@
-var User = require("../cloud9.core/user");
+var User = require("../pylon.core/user");
 
 module.exports = function startup(options, imports, register) {
 

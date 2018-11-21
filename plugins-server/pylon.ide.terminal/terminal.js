@@ -2,7 +2,7 @@
 "use strict";
 
 var util = require("util");
-var Plugin = require("../cloud9.core/plugin");
+var Plugin = require("../pylon.core/plugin");
 var assert = require("assert");
 
 var name = "terminal";

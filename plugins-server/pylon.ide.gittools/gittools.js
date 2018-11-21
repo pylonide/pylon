@@ -1,13 +1,12 @@
 /**
- * Git Tools for the Cloud9 IDE
+ * Git Tools for the Pylon IDE
  *
- * @copyright 2011, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
 "use strict";
 
-var Plugin = require("../cloud9.core/plugin");
+var Plugin = require("../pylon.core/plugin");
 var util = require("util");
 
 var name = "gittools";

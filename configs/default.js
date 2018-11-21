@@ -41,8 +41,8 @@ var config = [
         packagePath: "./connect.static",
         prefix: "/static"
     },
-    "./cloud9.alive",
-    "./cloud9.debug",
+    "./pylon.alive",
+    "./pylon.debug",
 
     // Client libraries
     "./../plugins-client/pylon.core",
@@ -52,21 +52,21 @@ var config = [
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
     "./../plugins-client/lib.xterm",
-    "./c9.smith.io",
+    "./pylon.smith.io",
     {
-        packagePath: "./c9.smith.io.ide",
+        packagePath: "./pylon.ide.smith.io",
         messageRegex: /(\/smith.io-ide)/
     },
     // server plugins
     {
-        packagePath: "./cloud9.sandbox",
+        packagePath: "./pylon.sandbox",
         projectDir: projectDir,
-        workspaceId: "Cloud9",
+        workspaceId: "Pylon",
         userDir: null, // is this always there??
         unixId: null,
         host: host
     }, {
-        packagePath: "./cloud9.core",
+        packagePath: "./pylon.core",
         version: require('../package.json').version,
         c9debug: false,
         fsUrl: fsUrl,
@@ -165,11 +165,11 @@ var config = [
         mount: vfsUrl,
         httpRoot: "http://localhost:" + port + vfsUrl
     }, {
-        packagePath: "./cloud9.fs",
+        packagePath: "./pylon.fs",
         urlPrefix: fsUrl
     },
     {
-        packagePath: "./cloud9.socket",
+        packagePath: "./pylon.socket",
         socketPath: "/smith.io-ide"
     },
     {
@@ -183,65 +183,65 @@ var config = [
         sessionsPath: __dirname + "/../.sessions",
         maxAge: 7 * 24 * 60 * 60 * 1000
     },
-    "./cloud9.permissions",
+    "./pylon.permissions",
     {
-        packagePath: "./cloud9.client-plugins",
+        packagePath: "./pylon.client-plugins",
         plugins: clientExtensions
     },
-    "./cloud9.eventbus",
-    "./cloud9.process-manager",
-    "./cloud9.routes",
-    "./cloud9.run.shell",
+    "./pylon.eventbus",
+    "./pylon.process-manager",
+    "./pylon.routes",
+    "./pylon.run.shell",
     {
-        packagePath: "./cloud9.run.node",
+        packagePath: "./pylon.run.node",
         listenHint: "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host."
     },
     {
-        packagePath: "./cloud9.run.node-debug",
+        packagePath: "./pylon.run.node-debug",
         listenHint: "Important: in your scripts, use 'process.env.PORT' as port and '0.0.0.0' as host.",
         debugPort: debugPort
     },
-    "./cloud9.run.npm",
-    "./cloud9.run.npmnode",
-    "./cloud9.run.ruby",
-    "./cloud9.run.python",
-    "./cloud9.run.apache",
-    "./cloud9.run.php",
+    "./pylon.run.npm",
+    "./pylon.run.npmnode",
+    "./pylon.run.ruby",
+    "./pylon.run.python",
+    "./pylon.run.apache",
+    "./pylon.run.php",
     "architect/plugins/architect.log",
-    "./cloud9.ide.auth",
-    "./cloud9.ide.git",
-    "./cloud9.ide.gittools",
-    "./cloud9.ide.hg",
-    "./cloud9.ide.npm",
-    "./cloud9.ide.filelist",
-    "./cloud9.ide.search",
-    "./cloud9.ide.run-node",
+    "./pylon.ide.auth",
+    "./pylon.ide.git",
+    "./pylon.ide.gittools",
+    "./pylon.ide.hg",
+    "./pylon.ide.npm",
+    "./pylon.ide.filelist",
+    "./pylon.ide.search",
+    "./pylon.ide.run-node",
     {
-        packagePath: "./cloud9.ide.run-npm-module",
+        packagePath: "./pylon.ide.run-npm-module",
         allowShell: true
     },
-    "./cloud9.ide.run-python",
-    "./cloud9.ide.run-apache",
-    "./cloud9.ide.run-ruby",
-    "./cloud9.ide.run-php",
-    "./cloud9.run.python",
-    "./cloud9.ide.revisions",
+    "./pylon.ide.run-python",
+    "./pylon.ide.run-apache",
+    "./pylon.ide.run-ruby",
+    "./pylon.ide.run-php",
+    "./pylon.run.python",
+    "./pylon.ide.revisions",
     {
-        packagePath: "./cloud9.ide.settings",
+        packagePath: "./pylon.ide.settings",
         settingsPath: ".settings"
     },
-    "./cloud9.ide.shell",
-    "./cloud9.ide.state",
-    "./cloud9.ide.watcher",
+    "./pylon.ide.shell",
+    "./pylon.ide.state",
+    "./pylon.ide.watcher",
     {
-        packagePath: "./cloud9.ide.terminal",
+        packagePath: "./pylon.ide.terminal",
         localOnly: termLocal
     }
 ];
 
 if (useAuth) {
     config.push({
-        packagePath: "./cloud9.connect.basic-auth",
+        packagePath: "./pylon.connect.basic-auth",
         username: argv.username,
         password: argv.password
     });

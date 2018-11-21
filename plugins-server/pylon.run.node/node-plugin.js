@@ -1,5 +1,5 @@
 var NodeRunner = require("./node-runner");
-var ShellRunner = require("../cloud9.run.shell/shell").Runner;
+var ShellRunner = require("../pylon.run.shell/shell").Runner;
 var assert = require("assert");
 
 module.exports = function setup(options, imports, register) {

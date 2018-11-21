@@ -1,7 +1,7 @@
 "use strict";
 
 var nodefs = require("vfs-nodefs-adapter");
-var c9util = require("../cloud9.core/util");
+var c9util = require("../pylon.core/util");
 
 /**
  * Run shell commands

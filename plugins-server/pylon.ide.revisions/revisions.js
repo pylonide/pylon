@@ -1,12 +1,11 @@
 /**
- * Revisions Server module for Cloud9 IDE
+ * Revisions Server module for Pylon IDE
  *
- * @author Sergi Mansilla <sergi@c9.io>
  * @copyright 2012, Ajax.org B.V.
  */
 
 require("amd-loader");
-var Plugin = require("../cloud9.core/plugin");
+var Plugin = require("../pylon.core/plugin");
 var Diff_Match_Patch = require("./diff_match_patch");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");

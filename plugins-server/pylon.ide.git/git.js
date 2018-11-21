@@ -2,8 +2,8 @@
 
 var util = require("util");
 
-var Plugin = require("../cloud9.core/plugin");
-var c9util = require("../cloud9.core/util");
+var Plugin = require("../pylon.core/plugin");
+var c9util = require("../pylon.core/util");
 
 var name = "git";
 var ProcessManager;

@@ -1,8 +1,8 @@
 "use strict";
 
 var util = require("util");
-var c9util = require("../cloud9.core/util");
-var ShellRunner = require("../cloud9.run.shell/shell").Runner;
+var c9util = require("../pylon.core/util");
+var ShellRunner = require("../pylon.run.shell/shell").Runner;
 
 var exports = module.exports = function setup(options, imports, register) {
    var pm = imports["process-manager"];

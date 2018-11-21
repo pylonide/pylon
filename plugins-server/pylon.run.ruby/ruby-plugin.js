@@ -1,5 +1,5 @@
 var RubyRunner = require("./ruby-runner");
-var ShellRunner = require("../cloud9.run.shell/shell").Runner;
+var ShellRunner = require("../pylon.run.shell/shell").Runner;
 
 module.exports = function setup(options, imports, register) {
     var pm = imports["process-manager"];
