@@ -235,8 +235,8 @@ VERSION:'3.0beta',
      * @private
      */
     ns : {
-        apf    : "http://ajax.org/2005/aml",
-        aml    : "http://ajax.org/2005/aml",
+        apf    : "https://github.com/pylonide/pylon",
+        aml    : "https://github.com/pylonide/pylon",
         xsd    : "http://www.w3.org/2001/XMLSchema",
         xhtml  : "http://www.w3.org/1999/xhtml",
         xslt   : "http://www.w3.org/1999/XSL/Transform",
@@ -15535,7 +15535,7 @@ apf.AmlNamespace.prototype = {
  *
  */
 apf.aml = new apf.AmlNamespace();
-apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
+apf.setNamespace("https://github.com/pylonide/pylon", apf.aml);
 
 
 

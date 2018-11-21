@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:appsettings name="ide" debug="false"
       disable-space             = "true"
       auto-hide-loading         = "true"

@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:model id="mdlDocs" src="ext/docs/example.xml" />
     
     <a:window id="winDocViewer" skin="dockwin" title="Documentation" modal="false" flex="1" buttons="close" visible="false">

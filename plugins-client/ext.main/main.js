@@ -17,7 +17,7 @@ document.body.style.display = "block"; //might wanna make this variable based on
 
 //Start APF
 apf.config.resize = cloud9config.debug ? true : false;
-apf.initialize('<a:application xmlns:a="http://ajax.org/2005/aml" />');
+apf.initialize('<a:application xmlns:a="https://github.com/pylonide/pylon" />');
 
 // OVerscroll is a complex problem. This doesn't solve it. Preferences remain unscrollable
 document.body.addEventListener('touchmove',function(e) {

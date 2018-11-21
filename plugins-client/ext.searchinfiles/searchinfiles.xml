@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:label id="tooltipSearchInFiles" skin="tooltipLabel" visible="false" />
     <a:bar id="winSearchInFiles" skin="basic" skinset="searchreplace" focussable="container" zindex="1000" minheight="0" visible="false" height="0">
         <a:vbox class="find-and-replace" padding="5" edge="5" model="{require('core/settings').model}">

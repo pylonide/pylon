@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">    
+<a:application xmlns:a="https://github.com/pylonide/pylon">    
     <a:window
         id = "quickStartDialog"
         title     = "Here are a few pointers to get you started!"

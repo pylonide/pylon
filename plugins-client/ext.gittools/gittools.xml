@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:tab id="tabGitTools" skin="docktab" visible="false">
         <a:page caption="Git Tools">
             <a:vbox flex="1" anchors="0 0 0 0">

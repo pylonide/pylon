@@ -1,4 +1,4 @@
-<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:skin xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">
     <a:list name="revisions-list">
         <a:style><![CDATA[
             /* ------------------------------------------------------------------------------------------

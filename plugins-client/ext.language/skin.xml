@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:skin xmlns:a="https://github.com/pylonide/pylon">
     <a:bar name="codecomplete">
         <a:style><![CDATA[
             .code_complete_bar {

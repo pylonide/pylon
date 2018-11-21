@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:checkbox position="1000" class="underlined" label="Auto-pair Brackets, Quotes, etc." value="[editors/code/@behaviors]" skin="checkbox_grey" />
     <a:checkbox position="1001" class="underlined" label="Wrap Selection with Brackets, Quotes, etc." value="[editors/code/@wrapbehaviors]" skin="checkbox_grey" />
     <a:checkbox position="2000" class="underlined" label="Code  Folding" value="[editors/code/@folding]" skin="checkbox_grey" />

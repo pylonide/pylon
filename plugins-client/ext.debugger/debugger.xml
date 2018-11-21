@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:tab id="tabDebugButtons" skin="dockbar" visible="false">
         <a:page id="pgDebugNav" render="runtime">
             <a:hbox padding="3" edge="4 3 5">

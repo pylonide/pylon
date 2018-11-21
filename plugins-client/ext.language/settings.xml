@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:checkbox class="underlined" label="Enable Hints and Warnings"
         value="[language/@jshint]" skin="checkbox_grey" position="1000"/>
     <a:checkbox class="underlined" label="Highlight Variable Instances"

@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:window
       id        = "winKeyBindings"
       title     = "Default Keybindings"
