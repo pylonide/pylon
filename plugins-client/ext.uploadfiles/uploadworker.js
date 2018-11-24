@@ -72,9 +72,10 @@ self.onmessage = function (e) {
 // uploading file in chunks
 self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
     var http = new XMLHttpRequest();
+    var url = filepath;
     if (self._csrf)
-        filepath += (filepath.indexOf("?") > -1 ? "&" : "?") + "_csrf=" + self._csrf;
-    http.open("PUT", filepath, true);
+        url += (url.indexOf("?") > -1 ? "&" : "?") + "_csrf=" + self._csrf;
+    http.open("PUT", url, true);
     http.onreadystatechange = function(){
         if (http.readyState != 4)
             return;
