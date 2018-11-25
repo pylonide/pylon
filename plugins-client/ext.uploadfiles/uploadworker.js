@@ -63,6 +63,19 @@ self.onmessage = function (e) {
                 }
 
                 break;
+            case 'cancelall':
+                self.cancel = function () {
+                    if (connections.length > 0)
+                        return;
+                    self.cancel = undefined;
+                    self.postMessage({type: "canceled"});
+                }
+                for (var filepath in connections) {
+                    if (connections.hasOwnProperty(filepath)) {
+                        connections[filepath].http.abort();
+                    }
+                }
+                break;
             default:
                 self.postMessage({value: "unknown cmd"});
         }
@@ -80,11 +93,22 @@ self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
         if (http.readyState != 4)
             return;
 
-        if (end == blobsize) {
+        if (end == blobsize || self.cancel) {
             // file upload complete
             delete connections[filepath];
             connections.length--;
-            return self.postMessage({type: "complete"});
+            self.postMessage({type: "complete"});
+            if (self.cancel) {
+                if (end != blobsize) {
+                    // end chunk streaming
+                    http = new XMLHttpRequest();
+                    http.open("PUT", url, true);
+                    http.setRequestHeader("x-file-size", end);
+                    http.send();
+                }
+                self.cancel();
+            }
+            return;
         }
 
         self.postMessage({type: "progress", value: end/blobsize});
@@ -99,6 +123,7 @@ self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
     */
     http.setRequestHeader("x-file-size", blobsize);
     http.send(chunk);
+    connections[filepath].http = http;
 };
 
 if (!ArrayBuffer.prototype.slice) {
