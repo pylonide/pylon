@@ -61,12 +61,19 @@ var jsDAV_FS_Directory = module.exports = jsDAV_FS_Node.extend(jsDAV_Collection,
     var filename = handler.httpRequest.headers["x-file-name"];
     var path = this.path + "/" + filename;
 
+    var mode = handler.httpRequest.headers["x-file-mode"];
+
     var track = handler.server.chunkedUploads[path];
-    if (track) {
+    if (track && (!mode || mode == "append")) {
       upload(track);
     }
     else {
-      this.vfs.mkfile(path, {}, function(err, meta) {
+      if (track) {
+        delete handler.server.chunkedUploads[path];
+        //track.stream.emit("error", "Upload overwriting");
+        track.stream.end();
+      }
+      this.vfs.mkfile(path, {start:0}, function(err, meta) {
         if (err) return callback(err);
 
         meta.stream.on("error", function(err) {
