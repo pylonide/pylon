@@ -1,7 +1,6 @@
 /**
  * Adds a menu item with a submenu that lists all recently opened files
  *
- * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -24,7 +23,7 @@ var fs   = require("ext/filesystem/filesystem");
 var menus = require("ext/menus/menus");
 var settings = require("ext/settings/settings");
 
-var MAX_UPLOAD_SIZE_FILE = 52428800; // max size accepted for one file
+var MAX_UPLOAD_SIZE_FILE = 1610612736; // max size accepted for one file (1.5GB)
 var MAX_OPENFILE_SIZE = 2097152; // max size of file that is openen in the editor on drop
 var MAX_VISIBLE_UPLOADS = 20; // max number of files added to upload activity list
 var MAX_OPEN_FILES_EDITOR = 5; // max number of files that can be opened in the editor
@@ -370,14 +369,14 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     showFilesTooBigDialog: function(files) {
         if (files.length == 1) {
             util.alert(
-                "Maximum file-size exceeded", "A file exceeds our upload limit of 50MB per file.",
+                "Maximum file-size exceeded", "A file exceeds our upload limit of 1.5GB per file.",
                 "Please remove the file '" + files[0] + "' from the list to continue."
             );
         }
         else {
             util.alert(
-                "Maximum file-size exceeded", "Some files exceed our upload limit of 50MB per file.",
-                "Please remove all files larger than 50MB from the list to continue."
+                "Maximum file-size exceeded", "Some files exceed our upload limit of 1.5GB per file.",
+                "Please remove all files larger than 1.5GB from the list to continue."
             );
         }
     },
