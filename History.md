@@ -1,3 +1,11 @@
+v2.4.0
+======
+* Further namespace changes to Pylon
+* appCache capability check #57
+  * appCache has been disabled on non-secure connections in modern browsers
+* Fix for startup directory creation #59
+* Fix for memory leak and improvements to file upload cancellation #61
+
 v2.3.1
 ======
 * Make it possible to install Pylon via NPM (intended for further testing)
