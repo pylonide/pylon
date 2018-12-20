@@ -135,7 +135,6 @@
     border-right: 1px dashed rgba(0, 0, 0, 0.1);
 
     -webkit-box-shadow: 0px 0px 1px 0px #cccccc;
-    -moz-box-shadow: 0px 0px 1px 0px #cccccc;
     box-shadow: 0px 0px 1px 0px #cccccc;
     
     -webkit-transform: rotate(-2deg) skew(0,0) translate(0%,-5px);
@@ -151,7 +150,6 @@
     z-index: -6;
     display: inline-block;
     -webkit-box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.4);
-    -moz-box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.4);
     box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.4);
     -moz-transform: scale(1) rotate(274deg) translate(20px, 25px) skew(9deg, 0deg);
     -webkit-transform: scale(1) rotate(274deg) translate(20px, 25px) skew(9deg, 0deg);
@@ -167,7 +165,6 @@
     z-index: -6;
     display: inline-block;
     -webkit-box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.4);
-    -moz-box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.4);
     box-shadow: -10px -10px 10px rgba(0, 0, 0, 0.4);
     -moz-transform: scale(1) rotate(184deg) translate(20px, 25px) skew(9deg, 0deg);
     -webkit-transform: scale(1) rotate(184deg) translate(20px, 25px) skew(9deg, 0deg);
@@ -241,7 +238,6 @@ THE SOFTWARE.
     border-radius: 25px;
     background: rgba(0, 0, 0, 0.07);
     /* Give it the inset look by adding some shadows and highlights */
-    -moz-box-shadow: inset 0px 1px 2px 0px rgba(0, 0, 0, 0.5), 0px 1px 0px 0px white;
     -webkit-box-shadow: inset 0px 1px 2px 0px rgba(0, 0, 0, 0.5), 0px 1px 0px 0px white;
     box-shadow: inset 0px 1px 2px 0px rgba(0, 0, 0, 0.5), 0px 1px 0px 0px white;
 }
@@ -292,7 +288,6 @@ THE SOFTWARE.
     -webkit-background-size: 44px 44px;
     -moz-background-size: 36px 36px;
     
-    -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4), inset 0px -1px 1px rgba(0, 0, 0, 0.2);
     -webkit-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4), inset 0px -1px 1px rgba(0, 0, 0, 0.2);
     box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.4), inset 0px -1px 1px rgba(0, 0, 0, 0.2);
     /* Give it a higher contrast outline */

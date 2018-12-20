@@ -1116,7 +1116,6 @@
 
                 border             : 1px solid #000101;
 
-                -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
                 -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
                 box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.3) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.5);
 
@@ -1516,7 +1515,6 @@
         .toolbar .subbar .toolbarbuttonOver {
             border: 1px solid #b3b3b3;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
             -webkit-border-radius: 4px;
             -moz-border-radius: 4px;
@@ -1555,7 +1553,6 @@
         .toolbar .subbar .toolbarbuttonDown {
             border: 1px solid #b3b3b3;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
             -webkit-border-radius: 4px;
             -moz-border-radius: 4px;
@@ -1571,7 +1568,6 @@
         .toolbar .subbar .toolbarbuttonChecked {
             border: 1px solid #b3b3b3;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
             -webkit-border-radius: 4px;
             -moz-border-radius: 4px;
@@ -1858,7 +1854,6 @@
             border-radius : 5px;
             border:1px solid #1c1c1c;
 
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
 
@@ -1918,7 +1913,6 @@
             border-radius : 5px;
             border:1px solid #1c1c1c;
 
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
 
@@ -2131,7 +2125,6 @@
             border-radius : 5px;
             border:1px solid #1c1c1c;
 
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
 
@@ -2170,7 +2163,6 @@
             border-radius : 5px;
             border:1px solid #1c1c1c;
 
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
 
@@ -2766,7 +2758,6 @@
             font-size: 14px;
 
             -webkit-box-shadow: 0 0px 3px 0 #000000;
-            -moz-box-shadow: 0 0px 3px 0 #000000;
             box-shadow: 0 0px 3px 0 #000000;
 
             position: relative;
@@ -3479,7 +3470,6 @@
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ace_smooth_loading {
-            -moz-box-sizing: border-box;
             box-sizing: border-box;
             height: 100%;
         }
@@ -4935,7 +4925,6 @@
             border-radius         : 5px;
             border                : 1px solid #1c1c1c;
 
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
 
@@ -4984,7 +4973,6 @@
             border              : 1px solid #00040A;
             padding             : 0 3px 0;
 
-            -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
 
@@ -5311,7 +5299,6 @@
             -moz-border-radius: 2px;
             border-radius: 2px;
             -webkit-box-shadow: 0px 1px 1px #9fa0a3;
-            -moz-box-shadow: 0px 1px 1px #9fa0a3;
             box-shadow: 0px 1px 1px #9fa0a3;
             border-top: 1px solid #dddddd;
             border-bottom: 1px solid #fafafa;
@@ -5422,7 +5409,6 @@
             -moz-border-radius: 4px;
             border-radius: 4px;
             -webkit-box-shadow: 0 2px 8px #8A8A8A;
-            -moz-box-shadow: 0 2px 8px #8A8A8A;
             box-shadow: 0 2px 8px #8A8A8A;
             background: #ffffff;
             z-index: 1000;
@@ -5522,7 +5508,6 @@
             cursor : default;
             margin : 0;
             -webkit-box-shadow: 0px 1px 0px #EDEDED;
-            -moz-box-shadow: 0px 1px 0px #EDEDED;
             box-shadow: 0px 1px 0px #EDEDED, inset 0px 1px 0px 0px #ededed;
             padding-bottom: 5px;
             padding-left: 6px;
@@ -6049,7 +6034,6 @@
             display : none;
             border:1px solid #00040a;
 
-            -moz-box-shadow    : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             -webkit-box-shadow : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
             box-shadow         : 0px 3px 15px 0px rgba(0, 0, 0, 0.65);
 
@@ -6165,7 +6149,6 @@
             -moz-border-radius    : 9px;
             -webkit-border-radius : 9px;
             border-radius         : 9px;
-            -moz-box-shadow       : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
             -webkit-box-shadow    : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.21);
             box-shadow            : 0 1px 5px rgba(0,0,0,0.7), inset 0 1px 0px rgba(255,255,255,0.18);
             border: 1px solid #000000;
@@ -6385,7 +6368,6 @@
             border : 1px solid #000;
 
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
-            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -6477,7 +6459,6 @@
             );
 
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
-            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
 
             bottom: -2px;
@@ -6522,7 +6503,6 @@
             margin-top : 10px;
             border-top : 3px solid #333;
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
-            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -7172,7 +7152,6 @@
             border-radius         : 6px 6px 6px 6px;
 
             -webkit-box-shadow: 0 2px 10px 1px #000000;
-            -moz-box-shadow: 0 2px 10px 1px #000000;
             box-shadow: 0 2px 10px 1px #000000;
         }
 
@@ -7392,7 +7371,6 @@
             border : 1px solid #000;
 
             -webkit-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
-            -moz-box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
             box-shadow: -3px 3px 8px rgba(0, 0, 0, 0.2);
         }
 
@@ -7418,7 +7396,6 @@
             border-radius         : 8px 8px 0 0;
 
             -webkit-box-shadow: inset 0px 1px 0px 0px #424242;
-            -moz-box-shadow: inset 0px 1px 0px 0px #424242;
             box-shadow: inset 0px 1px 0px 0px #424242;
         }
 
@@ -7649,7 +7626,6 @@
             font-size:11px;
             position:relative;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
             text-shadow  : rgba(17, 92, 158, .71) 0px 1px 0px;
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(71,73,77)),color-stop(1, rgb(49,52,55)));
@@ -8455,7 +8431,6 @@
 
             border:1px solid #1c1c1c;
 
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
 
@@ -8506,7 +8481,6 @@
             background : -webkit-gradient(linear, left top, left bottom, from(#393939), color-stop(1, #333333));
             background : -moz-linear-gradient(center bottom, #333333 0%, #393939 100%) repeat scroll 0 0 transparent;
 
-            -moz-box-shadow    : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
             -webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
             box-shadow         : 0px 1px 0px rgba(255, 255, 255, 0.15) inset, 0px 1px 0px 0px rgba(255, 255, 255, 0.15);
 
@@ -8824,7 +8798,6 @@
             z-index  : 90000;
             background-color: #e8e8e8;
 
-            display  : -moz-box;
             display  : -webkit-box;
             display  : -ms-box;
         }
@@ -9252,8 +9225,7 @@
             background-color: #191818;
             border: 1px solid #111010;
             -webkit-box-shadow: 0 1px 0 0 #474748;
-           -moz-box-shadow: 0 1px 0 0 #474748;
-                box-shadow: 0 1px 0 0 #474748;
+              box-shadow: 0 1px 0 0 #474748;
 
             border-radius : 3px;
             -moz-border-radius: 3px;
@@ -9333,7 +9305,6 @@
         margin : 0 auto;
         overflow: hidden;
         position:relative;
-        -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
         -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
         box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
     }
@@ -9363,7 +9334,6 @@
 
         clip: rect(0px 4000px 30px 0px);
         display : -webkit-box;
-        display : -moz-box;
     }
 
     .tab_console .btncontainer > .btntab {
@@ -9372,7 +9342,6 @@
         min-width : 17px;
         max-width : 70px;
         -webkit-box-flex : 1;
-        -moz-box-flex : 1;
         position : relative;
         width : 0;
 
@@ -9518,8 +9487,7 @@
         background-image:    -moz-linear-gradient(top,#1e1e1e 0%, #2a2a2a 8px, #303030 13px, transparent 13px);
         background-image:         linear-gradient(top,#1e1e1e 0%, #2a2a2a 8px, #303030 13px, transparent 13px);
         -webkit-box-shadow: 0 -1px 0 0 #000;
-           -moz-box-shadow: 0 -1px 0 0 #000;
-                box-shadow: 0 -1px 0 0 #000;
+        box-shadow: 0 -1px 0 0 #000;
     }
 
     .tab_console .page.curpage{
@@ -9591,15 +9559,10 @@
         position : relative;
         z-index : 100;
 
-        /*-webkit-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-           -moz-box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;
-                box-shadow : 0px 1px 0px rgba(255, 255, 255, 0.05) inset;*/
-
         /*box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;*/
         margin-bottom: 1px;
 
         display : -webkit-box;
-        display : -moz-box;
     }
 
     .editor_tab .btnsesssioncontainer.morepadding{
@@ -9618,7 +9581,6 @@
         min-width : 17px;
         max-width : 150px;
         -webkit-box-flex : 1;
-        -moz-box-flex : 1;
         position : relative;
         width : 0;
         line-height : 1.2em;
@@ -10221,7 +10183,6 @@
         background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(237,237,237)),color-stop(1, rgb(255,255,255)));
         background: -moz-linear-gradient(center bottom,rgb(237,237,237) 0%,rgb(255,255,255) 100%);
         -webkit-box-shadow: 1px 1px 3px #aaaaaa;
-        -moz-box-shadow: 1px 1px 3px #aaaaaa;
         box-shadow: 1px 1px 1px #aaaaaa;
         padding: 15px 20px;
         margin-top: 21px;
@@ -10741,7 +10702,6 @@
             background: -webkit-gradient(linear,left bottom,left top,color-stop(0, rgb(209,209,209)),color-stop(1, rgb(227,227,227)));
             background: -moz-linear-gradient(center bottom,rgb(209,209,209) 0%,rgb(227,227,227) 100%);
             -webkit-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2) inset;
-            -moz-box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.2) inset;
         }
 
         .extensions_tab .scale .btntab .tab_middle {
@@ -10879,7 +10839,6 @@
 
             clip: rect(0px 3000px 30px 0px);
             display : -webkit-box;
-            display : -moz-box;
         }
 
         .dockcol .docktab .btncontainer{
@@ -10903,7 +10862,6 @@
             min-width : 17px;
             max-width : 100px;
             -webkit-box-flex : 1;
-            -moz-box-flex : 1;
             width : 0;
 
             padding       : 3px 2px 4px;
@@ -10912,7 +10870,6 @@
             border-right  : 1px solid #464646;
             border-bottom : 1px solid #464646;
 
-            -moz-box-shadow: 0 1px 0 rgba(100, 100, 100, 0.26) inset;
             -webkit-box-shadow: 0 1px 0 rgba(100, 100, 100, 0.26) inset;
 
             background: url(images/black-tab_btn_bg.png) 0 0;
@@ -11362,7 +11319,6 @@
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
         }
 
@@ -11411,7 +11367,6 @@
         .btextbox {
             position : relative;
             -webkit-box-shadow: 0px 1px 0px #424242;
-            -moz-box-shadow: 0px 1px 0px #424242;
             box-shadow: 0px 1px 0px #424242;
             background-image: linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
             background-image: -o-linear-gradient(bottom, rgb(92,92,92) 0%, rgb(105,105,105) 75%, rgb(92,92,92) 100%);
@@ -11493,7 +11448,6 @@
             font-size: 12px;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
         }
 
@@ -11624,7 +11578,6 @@
             margin: 0;
             text-overflow: ellipsis;
             -webkit-box-shadow: 0px 1px 0px #ffffff;
-            -moz-box-shadow: 0px 1px 0px #ffffff;
             box-shadow: 0px 1px 0px #ffffff;
 
             font-size: 12px;
@@ -11725,7 +11678,6 @@
             background-color: #ffffff;
 
             -webkit-box-shadow: inset 0px 1px 1px 0px #cccccc;
-            -moz-box-shadow: inset 0px 1px 1px 0px #cccccc;
             box-shadow: inset 0px 1px 1px 0px #cccccc;
 
             border-width: 1px;
@@ -12240,7 +12192,6 @@
             display: inline-block;
             background-color: #EAF1F7;
             border: 1px solid #90C3EF;
-            -moz-box-shadow: 0px 0px 6px #76839A;
             -webkit-box-shadow: 0px 0px 6px #76839A;
             box-shadow: 0px 0px 6px #76839A;
         }
@@ -12611,15 +12562,11 @@
             .img div {
                 width : 100%;
                 height : 100%;
-                display: -moz-box;
                 display: -webkit-box;
-                -moz-box-orient: horizontal;
                 -webkit-box-orient: horizontal;
                 box-orient: horizontal;
-                -moz-box-pack: center;
                 -webkit-box-pack: center;
                 box-pack: center;
-                -moz-box-align: center;
                 -webkit-box-align: center;
                 box-align: center;
             }

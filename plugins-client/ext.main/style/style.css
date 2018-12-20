@@ -98,7 +98,6 @@ BODY {
     border-radius: 10px;
 
     -webkit-box-shadow: 0px 3px 5px 0px #000000;
-    -moz-box-shadow: 0px 3px 5px 0px #000000;
     box-shadow: 0px 3px 5px 0px #000000;
 
     height: 11px;
@@ -158,10 +157,6 @@ BODY {
 }
 
 .dockcol, .hboxdockpanel {
-/*    border-left : 1px solid #333;*/
-/*    -moz-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;
-    -webkit-box-shadow: 1px 0 0 rgba(255, 255, 255, 0.8) inset;*/
-
     background: -webkit-gradient(linear,left bottom,left top,color-stop(0, #202020),color-stop(1, #2f2f2f));
     background: -moz-linear-gradient(center bottom,#202020 0%, #2f2f2f 100%);
 }

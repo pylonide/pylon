@@ -12,7 +12,7 @@
                 border-radius: 6px;
 
                 -webkit-transition: background-color 0.2s linear, border 0.2s linear, box-shadow 0.2s linear;
-                -moz-transition: background-color 0.2s linear, border 0.2s linear, -moz-box-shadow 0.2s linear;
+                transition: background-color 0.2s linear, border 0.2s linear, box-shadow 0.2s linear;
 
                 background: transparent url('images/editor_bar_bg.png') 0px 30px repeat-x;
                 right: 18px;
@@ -20,15 +20,11 @@
 
             .bar-status:hover {
                 border: 1px solid rgba(0, 0, 0, 0.12);
-
-                -moz-box-shadow: inset 0px 1px 0px 0px #f5f5f5;
                 box-shadow: inset 0px 1px 0px 0px #f5f5f5;
-
                 background-color: transparent;
             }
 
             .dark .bar-status:hover {
-                -moz-box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
                 box-shadow: inset 0px 1px 0px 0px rgba(255, 255, 255, 0.1);
             }
 

@@ -78,7 +78,6 @@
                 border-bottom-right-radius: 8px;
                 border-bottom-left-radius: 0px;
                 -webkit-box-shadow: 1px 1px 4px #666666;
-                -moz-box-shadow: 1px 1px 4px #666666;
                 box-shadow: 1px 1px 4px #666666;
                 width : 20px;
                 left : -100px;
@@ -142,7 +141,6 @@
                 border-radius: 2px;
 
                 -webkit-box-shadow: 0px 1px 0px #ffffff;
-                -moz-box-shadow: 0px 1px 0px #ffffff;
                 box-shadow: 0px 1px 0px #ffffff;
             }
 
