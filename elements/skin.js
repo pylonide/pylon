@@ -163,7 +163,7 @@ apf.aml.setElement("skin", apf.skin);
 
             var newPart = apf.getXml(xmlString.substr(0, 8) == "<a:skin "
                 ? xmlString
-                : '<a:skin xmlns:a="http://ajax.org/2005/aml">' + xmlString + '</a:skin>');
+                : '<a:skin xmlns:a="https://github.com/pylonide/pylon">' + xmlString + '</a:skin>');
             apf.mergeXml(newPart, xmlNode, {beforeNode: includeNode});
             includeNode.parentNode.removeChild(includeNode);
             

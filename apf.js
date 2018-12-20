@@ -233,8 +233,8 @@
      * @private
      */
     ns : {
-        apf    : "http://ajax.org/2005/aml",
-        aml    : "http://ajax.org/2005/aml",
+        apf    : "https://github.com/pylonide/pylon",
+        aml    : "https://github.com/pylonide/pylon",
         xsd    : "http://www.w3.org/2001/XMLSchema",
         xhtml  : "http://www.w3.org/1999/xhtml",
         xslt   : "http://www.w3.org/1999/XSL/Transform",

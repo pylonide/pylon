@@ -36,5 +36,5 @@
  *
  */
 apf.aml = new apf.AmlNamespace();
-apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
+apf.setNamespace("https://github.com/pylonide/pylon", apf.aml);
 //#endif
