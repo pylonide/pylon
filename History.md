@@ -6,6 +6,8 @@ v2.4.0
 * Fix for startup directory creation #59
 * Fix for memory leak and improvements to file upload cancellation #61
 * Support upload of large files (< 1.5GB) #63
+* Upgrade to ACE v1.4.2
+* Drop Firefox Quantum starting from v64.0 due to broken experience #65
 
 v2.3.1
 ======
