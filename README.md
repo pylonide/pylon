@@ -26,7 +26,7 @@ Pylon is built entirely on a web stack, making it the most hacker-friendly IDE t
 
 ## Browser Support
 
-We support the newer versions of Chrome, Firefox and Safari.
+Moderns versions of Chrome and Safari are supported. Firefox, altough functional, no longer works as intended as of version 64.0 - future efforts will be made to restore compatibility.
 
 ### Basic iPad Pro support with keyboard
 
