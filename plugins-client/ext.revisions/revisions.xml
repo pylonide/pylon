@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:skin id="revisions"
         src = "{require('ext/revisions/revisions').skin}"
         media-path = "{ide.staticPrefix}/ext/revisions/images/" />

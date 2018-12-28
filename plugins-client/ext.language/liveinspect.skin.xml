@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:skin xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">
     <a:bar name="bar-liveinspect">
         <a:style><![CDATA[
             .bar-liveinspect {
@@ -7,7 +7,6 @@
                 border                : 1px solid rgba(0,0,0,0.31);
                 padding               : 5px 4px 4px;
                 -webkit-box-shadow: rgba(0, 0, 0, 0.308594) 0px 0px 4px 1px;
-                -moz-box-shadow: rgba(0, 0, 0, 0.308594) 0px 0px 4px 1px;
                 box-shadow: rgba(0, 0, 0, 0.308594) 0px 0px 4px 1px;
             }
             

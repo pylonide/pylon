@@ -1,0 +1,24 @@
+{
+    "name": "cloud9.core",
+    "version": "0.0.1",
+    "main": "ide-plugin.js",
+    "private": true,
+
+    "dependencies": {
+        "connect": "1.8.x"
+    },
+
+    "plugin": {
+        "provides": ["ide"],
+        "consumes": [
+            "log",
+            "hub",
+            "connect",
+            "static",
+            "client.pylon",
+            "workspace-permissions",
+            "sandbox",
+            "process-manager"
+        ]
+    }
+}

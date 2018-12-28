@@ -41,43 +41,50 @@ var Offline = module.exports = function(namespace, detectUrl){
     var cache = window.applicationCache;
     
     //@todo this is non-ie for now
-    
-    cache.addEventListener("offline", function(e){
+
+    // appCache is being deprecated and is only available via secure endpoints
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Using_the_application_cache
+    if (cache !== undefined) {
+      cache.addEventListener("offline", function(e){
         //console.log(e.type);
-    }, false);
-    
-    cache.addEventListener("online", function(e){
+      }, false);
+
+      cache.addEventListener("online", function(e){
         //console.log(e.type);
-    }, false);
-    
-    cache.addEventListener("checking", function(e){
+      }, false);
+
+      cache.addEventListener("checking", function(e){
         //console.log(e.type);
-    }, false);
-    
-    cache.addEventListener("downloading", function(e){
+      }, false);
+
+      cache.addEventListener("downloading", function(e){
         //console.log(e.type);
-    }, false);
-    
-    cache.addEventListener("progress", function(e){
+      }, false);
+
+      cache.addEventListener("progress", function(e){
         //console.log(e.type);
-    }, false);
-    
-    cache.addEventListener("cached", function(e){
+      }, false);
+
+      cache.addEventListener("cached", function(e){
         //console.log(e.type);
-    }, false);
-    
-    cache.addEventListener("noupdate", function(e){
+      }, false);
+
+      cache.addEventListener("noupdate", function(e){
         //console.log(e.type);
-    }, false);
-    
-    cache.addEventListener("updateready", function(e){
+      }, false);
+
+      cache.addEventListener("updateready", function(e){
         //console.log(e.type);
         cache.swapCache();
-    }, false);
-    
-    cache.addEventListener("error", function(e){
+      }, false);
+
+      cache.addEventListener("error", function(e){
         //console.log(e.type);
-    }, false);
+      }, false);
+    }
+    else {
+      console.info("appCache not available - not supported or using insecure context.")
+    }
 };
 
 (function(){

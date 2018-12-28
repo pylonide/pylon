@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:skin xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">
     <a:bar name="bar-preferences">
         <a:style><![CDATA[
             .bar-preferences {
@@ -32,7 +32,6 @@
                 border-radius: 3px;
                 
                 -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
-                   -moz-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
                         box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
             }
             
@@ -65,7 +64,6 @@
                 border-bottom : 1px solid #b9b9b9;
                 
                 -webkit-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
-                   -moz-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
                         box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
             }
 

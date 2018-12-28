@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:skin xmlns:a="https://github.com/pylonide/pylon">
     <a:bar name="codecomplete">
         <a:style><![CDATA[
             .code_complete_bar {
@@ -18,7 +18,6 @@
                 background: rgba(255, 255, 255, 0.4);
                 border-bottom: 1px solid rgba(0, 0, 0, 0.1);
                 border-top: 1px solid rgba(255, 255, 255, 0.8);
-                -moz-box-sizing: border-box;
                 box-sizing: border-box;
                 cursor: default;
                 overflow: hidden;

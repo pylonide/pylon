@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:hbox edge="2 5 2 5" align="center" position="20000" class="underlined">
         <a:label flex="1">Keybindings: </a:label>
         <a:dropdown id="ddKeyBind"

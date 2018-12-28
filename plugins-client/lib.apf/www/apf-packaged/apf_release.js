@@ -235,8 +235,8 @@ VERSION:'3.0beta',
      * @private
      */
     ns : {
-        apf    : "http://ajax.org/2005/aml",
-        aml    : "http://ajax.org/2005/aml",
+        apf    : "https://github.com/pylonide/pylon",
+        aml    : "https://github.com/pylonide/pylon",
         xsd    : "http://www.w3.org/2001/XMLSchema",
         xhtml  : "http://www.w3.org/1999/xhtml",
         xslt   : "http://www.w3.org/1999/XSL/Transform",
@@ -15535,7 +15535,7 @@ apf.AmlNamespace.prototype = {
  *
  */
 apf.aml = new apf.AmlNamespace();
-apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
+apf.setNamespace("https://github.com/pylonide/pylon", apf.aml);
 
 
 
@@ -53292,21 +53292,6 @@ apf.vbox = function(struct, tagName){
                             if (!this.preventforcezero)
                                 this.$altExt.style[size] = "0px";
                         }
-                        else if (apf.isGecko) {
-                            this.$altExt.style[size] = "0px";
-                            
-                            //Possible hack to not do this for $box elements 
-                            if (!this.$box)
-                                this.$altExt.style.overflow = "hidden"; //Gecko
-                            if (apf.getStyle(this.$ext, "overflow") == "visible")
-                                this.$ext.style.overflow = "hidden"; //Gecko
-                            this.$ext.style[size] = "1px";
-                        
-                            this.$altExt.style.minHeight = this.$ext.style.minHeight;
-                            this.$altExt.style.maxHeight = this.$ext.style.maxHeight;
-                            this.$altExt.style.minWidth = this.$ext.style.minWidth;
-                            this.$altExt.style.maxWidth = this.$ext.style.maxWidth;
-                        }
                     }
                     
                     (this.$altExt || this.$ext).style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
@@ -53696,6 +53681,7 @@ apf.vbox = function(struct, tagName){
           && "hbox|vbox".indexOf(this.parentNode.localName) > -1)) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
+            this.$int.style.display = "-webkit-box";
         }
         else if (!apf.hasFlexibleBox && this.$vbox) {
             this.$int.style.display = apf.INLINE;

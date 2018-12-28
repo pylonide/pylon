@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:img id="imgEditor"
       flex              = "1"
       anchors           = "0 0 0 0"

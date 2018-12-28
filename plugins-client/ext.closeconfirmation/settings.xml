@@ -1,3 +1,3 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:checkbox class="underlined" label="Warn Before Exiting" value="[general/@confirmexit]" skin="checkbox_grey" position="18000" />
 </a:application>

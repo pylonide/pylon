@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml">
+<a:skin xmlns:a="https://github.com/pylonide/pylon">
 <a:window name="qsImage">
         <a:style><![CDATA[
             .qsProjectBar {

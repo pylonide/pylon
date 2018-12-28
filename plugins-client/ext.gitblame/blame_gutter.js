@@ -49,7 +49,6 @@ dom.importCssString("\
     word-wrap: break-word;\
     white-space: pre-wrap;\
     box-sizing: border-box;\
-    -moz-box-sizing: border-box;\
     overflow: hidden !important;\
     padding: 0 8px;\
 }\

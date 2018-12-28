@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:bar id="winDbgConsole" height="0" zindex="1000">
         <a:vsplitbox anchors="0 0 0 0">
             <a:tab id="tabConsole" skin="tab_console" visible="false" render2="runtime" buttons="scale,order"

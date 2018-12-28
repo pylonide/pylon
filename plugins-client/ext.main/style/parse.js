@@ -15,5 +15,5 @@ for (var i = 0; i < nodes.length; i++) {
 var str = [];
 for (var prop in list) {
     fs.writeFileSync(__dirname + "/skins/" + prop + ".xml", 
-        "<a:skin xmlns:a=\"http://ajax.org/2005/aml\">" + list[prop].join("\n") + "</a:skin>");
+        "<a:skin xmlns:a=\"https://github.com/pylonide/pylon\">" + list[prop].join("\n") + "</a:skin>");
 }

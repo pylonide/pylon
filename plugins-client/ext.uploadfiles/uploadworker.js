@@ -24,6 +24,8 @@ self.onmessage = function (e) {
                         return;
                     }
 
+                    self.canceled = false;
+
                     self.postMessage({value: data.id + " has connected on port #" + connections.length + "."});
                     self.postMessage({value: "Starting...", filename: data.file.name});
 
@@ -47,7 +49,7 @@ self.onmessage = function (e) {
 
                         var chunk = blob.slice(start, end);
 
-                        self.uploadChunk(chunk, filepath, end, blobsize, next);
+                        self.uploadChunk(chunk, filepath, start, end, blobsize, next);
 
                         start = end;
                         end = start + BYTES_PER_CHUNK;
@@ -63,6 +65,18 @@ self.onmessage = function (e) {
                 }
 
                 break;
+            case 'cancelall':
+                self.canceled = true;
+                for (var filepath in connections) {
+                    if (connections.hasOwnProperty(filepath)) {
+                        connections[filepath].http.abort();
+                        delete connections[filepath];
+                        connections.length--;
+                        self.postMessage({type: "complete"});
+                    }
+                }
+                self.postMessage({type: "canceled"});
+                break;
             default:
                 self.postMessage({value: "unknown cmd"});
         }
@@ -70,13 +84,14 @@ self.onmessage = function (e) {
 };
 
 // uploading file in chunks
-self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
+self.uploadChunk = function(chunk, filepath, start, end, blobsize, next) {
     var http = new XMLHttpRequest();
+    var url = filepath;
     if (self._csrf)
-        filepath += (filepath.indexOf("?") > -1 ? "&" : "?") + "_csrf=" + self._csrf;
-    http.open("PUT", filepath, true);
+        url += (url.indexOf("?") > -1 ? "&" : "?") + "_csrf=" + self._csrf;
+    http.open("PUT", url, true);
     http.onreadystatechange = function(){
-        if (http.readyState != 4)
+        if (http.readyState != 4 || self.canceled)
             return;
 
         if (end == blobsize) {
@@ -96,8 +111,10 @@ self.uploadChunk = function(chunk, filepath, end, blobsize, next) {
     http.setRequestHeader("X-File-Size", filesize);
     http.setRequestHeader("Content-Type", "application/octet-stream");
     */
+    http.setRequestHeader("x-file-mode", start == 0? "create" : "append");
     http.setRequestHeader("x-file-size", blobsize);
     http.send(chunk);
+    connections[filepath].http = http;
 };
 
 if (!ArrayBuffer.prototype.slice) {

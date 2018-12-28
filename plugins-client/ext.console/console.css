@@ -15,7 +15,6 @@
     margin: 0;
     overflow: hidden;
     border-top: 1px solid #1f1f1f;
-    -moz-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
     -webkit-box-shadow: 0 1px 0 rgba(255, 255, 255, 0.06) inset;
     position: relative;
     z-index: 999;

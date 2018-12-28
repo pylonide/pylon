@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:tab skin="docktab" visible="false">
         <a:page id="pgPreview" caption="Preview">
             <a:bar border="0 0 0 0">

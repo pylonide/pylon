@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:skin xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">
     <a:list name="list">
         <a:style><![CDATA[
             .gotolinelist{
@@ -78,7 +78,6 @@
                 border-bottom-right-radius: 8px;
                 border-bottom-left-radius: 0px;
                 -webkit-box-shadow: 1px 1px 4px #666666;
-                -moz-box-shadow: 1px 1px 4px #666666;
                 box-shadow: 1px 1px 4px #666666;
                 width : 20px;
                 left : -100px;
@@ -142,7 +141,6 @@
                 border-radius: 2px;
 
                 -webkit-box-shadow: 0px 1px 0px #ffffff;
-                -moz-box-shadow: 0px 1px 0px #ffffff;
                 box-shadow: 0px 1px 0px #ffffff;
             }
 

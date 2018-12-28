@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:checkbox class="underlined" label="Preserve Empty Lines" value="[beautify/jsbeautify/@preserveempty]" skin="checkbox_grey" position="1000"/>
     <a:checkbox class="underlined" label="Keep Array Indentation" value="[beautify/jsbeautify/@keeparrayindentation]" skin="checkbox_grey" position="2000"/>
     <a:checkbox class="underlined" label="JSLint Strict Whitespace" value="[beautify/jsbeautify/@jslinthappy]" skin="checkbox_grey" position="3000"/>
