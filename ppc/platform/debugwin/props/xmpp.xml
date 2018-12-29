@@ -1,0 +1,29 @@
+<props><xmpp><group caption="General"><prop caption="type" editor="dropdown" value="[@type]" description="The type of method used to connect
+to the server. Defaults to 'binding'"><item value="poll">poll</item><item value="binding">binding</item></prop><prop caption="poll-timeout" editor="textbox" value="[@poll-timeout]" description="The number of milliseconds between
+each poll-request"/><prop caption="resource" editor="textbox" value="[@resource]" description="Name that will identify this client as it
+logs on the the Jabber network.
+Defaults to the application name."/><prop caption="auto-register" editor="checkbox" value="[@auto-register]" description="Specifies if an entered username
+should be registered on the Jabber
+network automatically. Defaults to 'false'." values="true|false"/><prop caption="auto-accept" editor="textbox" value="[@auto-accept]" description="Specifies if an icoming presence
+subscription request should be accepted
+automatically. Defaults to 'true'"/><prop caption="auto-deny" editor="textbox" value="[@auto-deny]" description="Specifies if an icoming presence
+subscription request should be denied
+automatically. Defaults to 'false'"/><prop caption="model" editor="textbox" value="[@model]" description="Name of the model where roster and
+(chat) messages will be synchronized to."/><prop caption="model-contents" editor="dropdown" value="[@model-contents]" description="Specifies the items that will be
+stored inside the model. Defaults to 'all'"><item value="all">all</item><item value="roster">roster</item><item value="chat">chat</item><item value="typing">typing</item><item value="roster|typing">roster|typing</item><item value="roster|chat">roster|chat</item><item value="chat|typing">chat|typing</item></prop><prop caption="muc-host" editor="textbox" value="[@muc-host]" description="Domain name of the Multi User Chat
+service of an XMPP server. Defaults
+to the domain that is parsed from
+{@link element.xmpp.url}."/><prop caption="muc-model" editor="textbox" value="[@muc-model]" description="Name of the model where chat messages
+sent and received from Multi User
+Chats will be synchronized to."/><prop caption="rdb-host" editor="textbox" value="[@rdb-host]" description="Domain name of the Remote
+DataBindingservice of an XMPP server.
+Defaults to the domain that is parsed
+from {@link element.xmpp.url}."/><prop caption="rdb-model" editor="textbox" value="[@rdb-model]" description="Name of the model where Remote
+DataBinding messages will be
+synchronized to."/><prop caption="rdb-bot" editor="checkbox" value="[@rdb-bot]" description="Specifies if the this client will
+connect to the XMPP server as a bot" values="true|false"/></group><group caption="Teleport"><prop caption="url" editor="textbox" value="[@url]" description="the location of the server that is
+recipient of the rpc messages."/><prop caption="route-server" editor="textbox" value="[@route-server]" description="String specifying the url to the route script."/><prop caption="autoroute" editor="checkbox" value="[@autoroute]" description="whether the call should be routed
+through a proxy when a permission
+error occurs due to the same domein policy." values="true|false"/><prop caption="timeout" editor="textbox" value="[@timeout]" description="the number of milliseconds after
+which the call is considered timed out.
+"/></group><events caption="Events"><prop caption="authfailure" editor="textbox" value="[@authfailure]" type="event" description="Fires when the authentication process failed or halted."/><prop caption="connectionerror" editor="textbox" value="[@connectionerror]" type="event" description="Fires when the connection with the XMPP server dropped."/><prop caption="connected" editor="textbox" value="[@connected]" type="event" description="Fires when a login attempt has succeeded, and a session has been setup."/><prop caption="receivechat" editor="textbox" value="[@receivechat]" type="event" description="Fires when the user received a chat message from a contact."/><prop caption="datachange" editor="textbox" value="[@datachange]" type="event" description="Fires when a data-change message is received from one of the contacts."/><prop caption="propertychange" editor="textbox" value="[@propertychange]" type="event" description="Fires when a property changes."/><prop caption="error" editor="textbox" value="[@error]" type="event" description="Fires when a communication error occurs."/><prop caption="DOMNodeInserted" editor="textbox" value="[@domnodeinserted]" type="event"/><prop caption="DOMNodeInsertedIntoDocument" editor="textbox" value="[@domnodeinsertedintodocument]" type="event"/><prop caption="DOMNodeRemoved" editor="textbox" value="[@domnoderemoved]" type="event"/><prop caption="DOMNodeRemovedFromDocument" editor="textbox" value="[@domnoderemovedfromdocument]" type="event"/></events></xmpp></props>

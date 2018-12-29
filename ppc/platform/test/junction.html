@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Junction</title>
+        <script src="../apf.js"></script>
+        
+    </head>
+    <body style="margin:0;">
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+        <a:button id="btn1" state="true" visible="false" caption="[@test]">Test</a:button>
+        
+        <a:model id="mdl1"><data test="Hi There" /></a:model>
+        <a:model id="mdl2"><data test="Something completely different" /></a:model>
+        
+        <a:tab>
+            <a:page caption="page 1" model="mdl1">
+                <a:junction for="btn1" />
+            </a:page>
+            <a:page caption="page 2" model="mdl2">
+                <a:junction for="btn1" />
+            </a:page>
+        </a:tab>
+    </body>
+</html>

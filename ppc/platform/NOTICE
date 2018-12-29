@@ -1,0 +1,88 @@
+﻿Ajax.org Platform (APF)
+Copyright 2000-2010 Ajax.org B.V.
+
+This product includes software developed by
+Ajax.org B.V. (http://www.ajax.org/).
+
+The Javascript URI parser is open source software from Steven Levithan
+(http://stevenlevithan.com/) and licensed under the MIT License.
+
+Some Javascript Array prototype extensions and the Event Native class have been
+generously borrowed from the excellent Mootools library (http://mootools.net)
+and is licensed under the MIT license.
+
+The Url and Storage libraries have been generously templated from the
+excellent Dojo Toolkit (http://dojotoolkit.org), Copyright (c) 2005-2008,
+The Dojo Foundation, and is licensed under the BSD license.
+
+The Javascript Base64 encode / decode library is copyrighted by
+http://www.webtoolkit.info/. License type unknown.
+
+The JavaScript implementation of the RSA Data Security, Inc. MD4 Message Digest
+Algorithm, version 2.1, is copyrighted by Jerrad Pierce, Paul Johnston 1999 -
+2002 (http://pajhome.org.uk/crypt/md5/) and licensed under the BSD license.
+
+The JavaScript implementation of the RSA Data Security, Inc. MD5 Message Digest
+Algorithm, version 2.1, is copyrighted by Paul Johnston 1999 - 2002
+(http://pajhome.org.uk/crypt/md5/) and licensed under the BSD license.
+
+The Base64, MD5 and SHA1 libraries contain improvements made by the authors of
+the excellent open source php.js library, version 2.68, copyright 2009 Kevin
+van Zonneveld et al. (http://phpjs.org) and licensed under the MIT license.
+
+The JavaScript implementation of the Secure Hash Algorithm, SHA-1, version 2.1a,
+is copyrighted by Paul Johnston 2000 - 2002 (http://pajhome.org.uk/crypt/md5)
+and licensed under the BSD license.
+
+The Flow library is based on the js-graph-it library, which is open source
+software from Luca Zenti (http://js-graph-it.sourceforge.net/) and is licensed
+under the BSD license
+
+The Date Format library is open source software from Steven Levithan
+(http://stevenlevithan.com/) and is licensed under the MIT license.
+
+Quicktime is a registered trademark of Apple Inc.
+The AC_Quicktime library, version 1.2, is open source software from Apple Inc.,
+copyright (c) 2006-2007 Apple Computer, Inc., All Rights Reserved.
+
+The FAVideo library, version 1.7, is open source software from Adobe Systems,
+copyright (c) 2007. Adobe Systems Incorporated, and licensed under the BSD
+license.
+
+The Silverlight.js library, version 2.0.30523.6, is open source software from
+Microsoft Corporation, copyright (c) Microsoft Corporation, and licensed under
+the Microsoft Public License.
+
+The SoundManager2 library, version 2.78a.20080901, is copyrighted by Scott
+Schiller 2008 (http://schillmania.com/projects/soundmanager2/) and licensed
+under the BSD license.
+
+The Supersleight library, is copyrighted by 24ways.org, Drew McLellan 2007
+(http://24ways.org/2007/supersleight-transparent-png-in-ie6). License type 
+unknown.
+
+The Math.uuid.js library, version 1.4, is copyrighted by Robert Kieffer 2008
+(http://www.broofa.com/blog/?p=151) and licensed under a permissive,
+non-standard license.
+
+The JSON parser is a modified version of the json-sans-eval JSON parser, rev. 8,
+copyighted by Google Inc. 2008 (http://code.google.com/p/json-sans-eval/) and
+licensed under the Apache License, Version 2.0.
+
+The Easing Equations, version 2.0, is copyrighted by 2003 Robert Penner
+(http://www.robertpenner.com/easing_terms_of_use.html) and licensed under a
+permissive, non-standard license.
+
+The node-XMLHttpRequest library is copyrighted by Dan DeFelippi
+<dan@driverdan.com> 2010. We use the fork by Mark Hansen
+<http://github.com/chihchun/node-XMLHttpRequest>. Licensed under the MIT 
+license.
+
+Portions of the geo-location-javascript library, version 0.4.3, are used, which
+is copyrighted by Stan Wiechers 2009
+<http://code.google.com/p/geo-location-javascript/>.
+Licensed under the MIT license.
+
+Other libraries used in this product require their respective headers with
+copyright and license notices to remain unchanged in the file(s) containing the
+source code.

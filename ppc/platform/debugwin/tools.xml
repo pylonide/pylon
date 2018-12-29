@@ -1,0 +1,108 @@
+<category name="Elements" xmlns:a="http://ajax.org/2005/aml" >
+    <!--subcat name="Default">
+        <item name="Arrow" icon="Actions.png" />
+        <item name="Selection" icon="selection.gif" />
+    </subcat-->
+    <subcat name="Containers">
+        <item name="Accordion" value="elements.accordion" icon="ui-accordion.png">
+            <a:accordion width="150">
+                <a:bar />
+                <a:bar />
+            </a:accordion>
+        </item>
+        <item name="Bar" value="elements.bar" icon="layout-select.png">
+            <a:bar width="150" height="100" />
+        </item>
+        <item name="Frame" value="elements.frame" icon="ui-group-box.png">
+            <a:frame width="150" />
+        </item>
+        <item name="Modalwindow" value="elements.modalwindow" icon="application-blue.png">
+            <a:modalwindow width="200" visible="true" />
+        </item>
+        <!-- add panel demo -->
+        <item name="Statusbar" value="elements.statusbar" icon="layout-select-footer.png">
+            <a:statusbar width="150">
+                <a:section />
+            </a:statusbar>
+        </item>
+        <item name="Tab" value="elements.tab" icon="ui-tab-content.png">
+            <a:tab width="200" height="100">
+                <a:page />
+                <a:page />
+            </a:tab>
+        </item>
+        <item name="Toolbar" value="elements.toolbar" icon="ui-toolbar.png">
+            <a:toolbar width="150">
+                <a:bar />
+            </a:toolbar>
+        </item>
+    </subcat>
+    <subcat name="Form elements">
+        <item name="Button" value="elements.button" icon="ui-button.png">
+            <a:button width="100" />
+        </item>
+        <item name="Caldropdown" value="elements.caldropdown" icon="ui-combo-box-calendar.png">
+            <a:caldropdown width="150" />
+        </item>
+        <item name="Calendar" value="elements.calendar" icon="data.png">
+            <a:calendar output-format="mm-dd-yyyy HH:MM:ss" width="150" />
+        </item>
+        <item name="Colorpicker" value="elements.colorpicker" icon="color-swatch.png" />
+        <item name="Checkbox" value="elements.checkbox" icon="ui-check-box.png" />
+        <item name="Dropdown" value="elements.dropdown" icon="ui-combo-box.png" />
+        <item name="Editor" value="elements.editor" icon="ui-editor.png">
+            <a:editor width="550" />
+        </item>
+        <item name="Errorbox" value="elements.errorbox" icon="ui-text-errorbox.png" />
+        <item name="Label" value="elements.label" icon="ui-label.png" />
+        <item name="Palette" value="elements.palette" icon="palette.png" />
+        <item name="Progressbar" value="elements.progressbar" icon="ui-progress-bar.png" />
+        <item name="Radiobutton" value="elements.radiobutton" icon="ui-radio-button.png" />
+        <item name="Slider" value="elements.slider" icon="ui-slider.png">
+            <a:slider width="150" />
+        </item>
+        <item name="Spinner" value="elements.spinner" icon="ui-spin.png">
+            <a:spinner width="75" />
+        </item>
+        <item name="Text" value="elements.text" icon="ui-textarea.png">
+            <a:text width="150" height="100" />
+        </item>
+        <item name="Textarea" value="elements.textarea" icon="ui-textarea.png" />
+        <item name="Textbox" value="elements.textbox" icon="ui-text-field.png" />
+        <!--<item name="Upload" value="elements.upload"/>-->
+    </subcat>
+    <subcat name="Selection elements">
+        <item name="Datagrid" value="elements.datagrid" icon="table-fugue.png">
+            <a:datagrid width="300" height="150" />
+        </item>
+        <item name="List" value="elements.list" icon="text_list_bullets.png">
+            <a:list width="150" height="150" />
+        </item>
+        <item name="Tree" value="elements.tree" icon="tree.png">
+            <a:tree width="150" height="150" />
+        </item>
+        <!--item name="Property editor" value="elements.propedit" icon="table.png" /-->
+        <item name="Menu" value="elements.menu" icon="ui-menu.png">
+            <a:toolbar width="150">
+                <a:menu id="menu1">
+                    <a:item>Option 1</a:item>
+                </a:menu>
+                <a:menubar>
+                    <a:button submenu="menu1">Menu 1</a:button>
+                </a:menubar>
+            </a:toolbar>
+        </item>
+        <item name="Pager" value="elements.pager" icon="pager.png">
+            <a:pager total="3" current="1" />
+        </item>
+        <!--item name="Toc" value="elements.toc"/-->
+    </subcat>
+    <subcat name="Media">
+        <item name="Browser" value="elements.browser" icon="application-browser.png">
+            <a:browser width="200" height="200" />
+        </item>
+        <item name="Img" value="elements.img" icon="image.png">
+            <a:img width="150" height="150" />
+        </item>
+    </subcat>
+</category>

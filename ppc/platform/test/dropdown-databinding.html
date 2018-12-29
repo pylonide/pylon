@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:dropdown>
+            <a:bindings> 
+                <a:caption match="[@name]" />
+                <a:each match="[person]" />
+            </a:bindings> 
+            <a:model> 
+                <data> 
+                    <person disabled="false" name="test 5"/> 
+                    <person disabled="true" name="test 3"/> 
+                    <person name="test 4"/> 
+                    <person disabled="true" name="test 2"/> 
+                    <person disabled="false" name="test 1"/> 
+                </data> 
+            </a:model> 
+        </a:dropdown>
+
+        <br />
+
+        <a:textbox id="txtTest" value="suppliers"/><br />
+        <a:textbox value="{txtTest.value}"/>
+
+        <a:dropdown 
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          value     = "[mdlCat::category]"
+          eachvalue = "[@name]" />
+        
+        <a:dropdown 
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          default   = "suppliers"
+          eachvalue = "[@name]" />
+        
+        <a:dropdown 
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          value     = "{txtTest.value}"
+          eachvalue = "[@name]" />
+        
+        <!-- This will give a nice error
+        <a:dropdown 
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          value     = "[category[@default='true']]"
+          eachvalue = "[@name]" />
+        -->
+        
+        <a:dropdown id="ddTreeBound"
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          value     = "[{tree.selected}::@name]"
+          eachvalue = "[@name]" />
+        
+        <a:dropdown id="ddSelBound"
+          model     = "mdlSearchCats"
+          each      = "[category]"
+          caption   = "[text()]"
+          selected  = "[category[@default='true']]"
+          eachvalue = "[@name]" />
+        
+        <a:model id="mdlCat">
+            <data>
+                <category default="true">bestekcad</category>
+            </data>
+        </a:model>
+        
+        <a:model id="mdlSearchCats">
+            <categories>
+                <category name="products">Producten</category>
+                <category name="suppliers">Leveranciers</category>
+                <category name="news" default="true">Productnieuws</category>
+                <category name="bestekcad">Bestekken &amp; CAD</category>
+                <!--category name="whitepapers">Whitepapers</category>
+                <category name="themes">Thema's</category>
+                <category name="wholesite">Hele Website</category-->
+            </categories>
+        </a:model>
+        
+        <a:tree id="tree" each="[category]" model="mdlSearchCats" caption="[text()]" />
+    </body>
+</html>

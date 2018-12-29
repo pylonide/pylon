@@ -1,0 +1,29 @@
+include ../common_layout
+include lib
+
+mixin doctype
+
+html(xmlns="http://www.w3.org/1999/xhtml")
+  head
+    mixin head
+  
+  body
+    #nonFooter
+      #wrapper
+        .content
+          .row.centerpiece
+            .span3#sidebarContainer
+              #sidebar
+                include apf_menu
+            .span9#mainContent
+              #documentation
+              div.title
+                  h1.pageTitle #{pageTitle}
+              
+              #content!= content
+
+              div(id="disqus_thread")
+      .push
+    mixin footer
+  
+    mixin endingScripts

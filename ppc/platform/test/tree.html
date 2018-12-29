@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:tree model="filesystem.xml" height="200"> 
+            <a:bindings> 
+                <a:caption match="[@caption|@filename]" /> 
+                <a:icon match="[drive]" value="icoContact.png" /> 
+                <a:icon match="[file]" value="icoFolder.png" /> 
+                <a:empty match="[folder]" value="Drag a contact to this group." /> 
+                <a:each match="[drive|folder|file]" /> 
+            </a:bindings> 
+        </a:tree>
+
+        <a:tree
+          each          = "[category]"
+          caption       = "[@name]"
+          model         = "mdlCategories"
+          autoselect    = "false"
+          prerender     = "false"
+          openonadd     = "true"
+          canrename     = "false"
+          height        = "200">
+        </a:tree>
+
+        <a:tree
+          each          = "[category]"
+          model         = "mdlCategories"
+          autoselect    = "false"
+          prerender     = "false"
+          openonadd     = "true"
+          canrename     = "false"
+          height        = "200">
+            <a:caption><?lm [@name] ?></a:caption>
+        </a:tree>
+
+        <a:tree
+          each          = "[category]"
+          model         = "mdlCategories"
+          autoselect    = "false"
+          prerender     = "false"
+          openonadd     = "true"
+          canrename     = "false">
+            <a:caption><?lm [@name] ?></a:caption>
+            <a:insert match="[category[not(@leaf)]]" get="categories.xml" />
+        </a:tree>
+
+        <a:model id="mdlCategories">
+            <categories>
+                <category id="556" name="Constructies en materiaal" />
+                <category id="833" name="Gevels" />
+                <category id="382" name="Binnenwanden/plafonds" />
+                <category id="2090" name="Vloeren en trappen" />
+                <category id="580" name="Daken" />
+                <category id="1547" name="Ramen en deuren" />
+                <category id="1181" name="Transport" />
+                <category id="971" name="Inrichting" />
+                <category id="123120" name="W-installaties" />
+                <category id="982" name="E-installaties" />
+                <category id="485" name="Buitenruimte" />
+            </categories>
+        </a:model>
+    </body>
+</html>

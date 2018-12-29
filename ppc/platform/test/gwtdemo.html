@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <style>
+            html{overflow:hidden}
+            .white{background:white;border:1px solid #c3c3c3;}
+            .info {
+                color : gray;
+                text-align : center;
+                padding : 2px;
+            }
+        </style>
+        
+        <!--
+            Known issues:
+            - Disabled state of dropdown is not entirely set
+            - Because of disabled state selection isnt executed
+            - Add new Right bugs / A new group without rights, doesnt work
+        -->
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" undokeys="true" />
+        
+        <a:model id="mdlRights">
+            <rights>
+                <right>Read</right>
+                <right>Write</right>
+                <right>Execute</right>
+            </rights>
+        </a:model>
+        
+        <a:model id="mdlContacts">
+            <contacts>
+                <group caption="Friends">
+                    <right>Read</right>
+                    <right>Write</right>
+                    <right>Execute</right>
+                    <contact firstname="Rik" lastname="Arends" inherit="1" country="-" />
+                </group>
+                <group caption="Family">
+                    <right>Read</right>
+                    <right>Execute</right>
+                    <contact firstname="Arnold" lastname="Daniels" inherit="1" country="nl"/>
+                    <contact firstname="Nancy" lastname="Daniels" inherit="1" />
+                </group>
+                <group caption="Business Contacts">
+                    <right>Read</right>
+                    <contact firstname="Hans" lastname="Speijer" inherit="1" />
+                </group>
+            </contacts>
+        </a:model>
+        
+        <a:script>//<!--
+            function filterContacts(value, key){
+                if (!value) {
+                    trContacts.setAttribute("each", "[group|contact]");
+                }
+                else {
+                    var fields = ["firstname", "lastname"];
+                    var words  = value.trim().toLowerCase().splitSafe(" ");
+                    var subquery, query = [];
+                
+                    for (var j = 0; j < words.length; j++) {
+                        subquery = [];
+                        for (var i = 0; i < fields.length; i++) {
+                            subquery.push("contains(translate(@" + fields[i] + ", 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + words[j] + "')");
+                        }
+                        query.push("(" + subquery.join(" or ") + ")");
+                    }
+                
+                    var q = query.join(" and ");
+                    trContacts.setAttribute("each", "[group[.//contact[" + q + "]]|contact[" + q + "]]");
+                }
+            }
+        //--></a:script>
+
+        <a:menu id="mnuAdd">
+            <a:item onclick="trContacts.add('contact')">Contact</a:item>
+            <a:item onclick="trContacts.add('group')">Group</a:item>
+        </a:menu>
+        
+        <a:window 
+          width     = "500" 
+          height    = "350" 
+          minwidth  = "400" 
+          minheight = "300" 
+          center    = "true" 
+          visible   = "true" 
+          icon      = "status_online.png" 
+          title     = "Contacts" 
+          resizable = "true" 
+          actiontracker = "atContacts"
+          model     = "{trContacts.selected}">
+            <a:toolbar height="25" align="top">
+                <a:bar>
+                    <a:button submenu="mnuAdd">Add</a:button>
+                    <a:button tooltip="DEL" onclick="trContacts.remove()">Remove</a:button>
+                    <a:divider />
+                    <a:button tooltip="Ctrl-Z" onclick="atContacts.undo()" disabled="{!atContacts.undolength}">Undo</a:button>
+                    <a:button tooltip="Ctrl-Y" onclick="atContacts.redo()" disabled="{!atContacts.redolength}">Redo</a:button>
+                    <a:button onclick="alert('Check out the features:\n- Undo/Redo\n- Drag-Drop\n- Search\n- Rename (F2)\n- Add-Remove-Edit\n- Rights inheritance')" style="float:right">About</a:button>
+                </a:bar>
+            </a:toolbar>
+            
+            <a:table columns="*" width="33%" align="left-splitter" class="white">
+                <a:textbox skin="tbempty" 
+                  realtime = "true" 
+                  onclear  = "filterContacts('')" 
+                  onkeyup  = "filterContacts(this.value, event.keyCode)" />
+
+                <a:tree id="trContacts" 
+                  model  = "mdlContacts"
+                  height = "*" 
+                  each   = "[group|contact]"
+                  startcollapsed = "false"
+                  onbeforeremove = "return confirm('Are you sure you want to remove this item?')">
+                    <a:caption match="[group/@caption]" />
+                    <a:caption value="[@firstname] [@lastname]" />
+                    <a:icon match="[group]" value="Famfolder.gif" />
+                    <a:icon value="status_online.png" />
+                    <a:rename match="[group]" />
+                    <a:remove />
+                    <a:add type="contact" parent="[group|contact/..]">
+                        <contact firstname="New contact" inherit="1" />
+                    </a:add>
+                    <a:add type="group" parent="[group|contact/..]">
+                        <group caption="New group">
+                            <right>Read</right>
+                        </group>
+                    </a:add>
+                    <a:move />
+                    <a:copy />
+                    <a:drag match="[group|contact]" />
+                    <a:drop match="[group]" target="[contacts]" action="tree-append"/>
+                    <a:drop match="[group]" target="[group]" action="insert-before"/>
+                    <a:drop match="[group]" target="[contact]" action="list-append"/>
+                    <a:drop match="[contact]" target="[group|contacts]" action="tree-append" />
+                    <a:drop match="[contact]" target="[contact]" action="insert-before" />
+                </a:tree>
+            </a:table>
+
+            <a:table id="tbl"
+              columns  = "60, *" 
+              align    = "middle-splitter" 
+              disabled = "{trContacts.selected and trContacts.selected.tagName != 'group' ? false : true}"
+              class    = "white"
+              margin   = "10 10 10 10" 
+              padding  = "5" 
+              realtime = "true">
+                <a:label>First name</a:label>
+                <a:textbox value="[@firstname]" />
+                    
+                <a:label>Last name</a:label>
+                <a:textbox value="[@lastname]" />
+                    
+                <a:label>Age</a:label>
+                <a:dropdown fill="I am not telling you,18-99" 
+                            value="[{trContacts.selected}::@age]" />
+                    
+                <a:label>Address</a:label>
+                <a:textarea value="[@address]" height="50" />
+                    
+                <a:label>Country</a:label>
+                <a:dropdown value="[@country]" id="ddCountry">
+                    <a:item value="nl">The Netherlands</a:item>
+                    <a:item value="-">Somewhere else, test</a:item>
+                </a:dropdown>
+            </a:table>
+
+            <a:list id="lstRights"
+              class     = "white"
+              width     = "100"
+              mode      = "check" 
+              more      = "caption:Add new right" 
+              skin      = "checklist"
+              align     = "right" 
+              model     = "mdlRights"
+              each      = "[right]"
+              caption   = "[text()]"
+              icon      = "Baseclasses.png"
+              selection = "*[{trContacts.selected}::self::contact[@inherit=1]/../right|right]"
+              onbeforeselect = "
+                if ([{trContacts.selected}::@inherit] == 1) {
+                    if (confirm('These rights are currently inherited. Do you want to set custom rights?')) {
+                        var sel = trContacts.selected;
+                        each(*[{sel.parentNode}::right]) {
+                            sel.appendChild(%[.].cloneNode(true));
+                        }
+                        apf.xmldb.setAttribute(sel, 'inherit', '0');
+                        trContacts.select(sel);
+                    }
+                    else
+                        return false;
+                }
+              ">
+                <a:rename match="[right[@custom='1']]" />
+                <a:remove match="[right[@custom='1']]" />
+                <a:add>
+                    <right custom="1">New Right</right>
+                </a:add>
+            </a:list>
+            <a:label id="lbl" 
+              right  = "0" 
+              width  = "100" 
+              bottom = "20" 
+              height = "20" 
+              class  = "info"
+              value  = "{[@inherit] == 1 ? 'Inherited' : ''}" />
+            
+            <a:statusbar align="bottom" height="20" style="border:0">
+                <a:section><?lm localName().uCaseFirst() + ": " + ([@caption] || "[@firstname] [@lastname]") ?></a:section>
+            </a:statusbar>
+        </a:window>
+    </body>
+</html>

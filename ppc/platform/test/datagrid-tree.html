@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:model src="filesystem.xml" id="mdlFs" />
+        
+        <a:datagrid id="dg"
+          model     = "[mdlFs::drive/folder]" 
+          prerender = "false"
+          anchors   = "10 10 10 10"> 
+            <a:each match="[file|folder|drive]">
+                <a:column width="200" value="[@caption|@filename]" editor="textbox" caption="Name" tree="true" icon="{[@icon] || 'Famfolder.gif'}"/> 
+                <a:column width="100%" value="[@value]" caption="Value" editor="slider" /> 
+                <a:column width="100" value="[@date]" caption="Date" editor="textbox" /> 
+            </a:each> 
+        </a:datagrid> 
+    </body>
+</html>

@@ -1,0 +1,1 @@
+<props><http><events caption="Events"><prop caption="error" editor="textbox" value="[@error]" type="event" description="Fires when a communication error occurs."/></events></http></props>

@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Unit test</title>
+    <style>	
+		#dbgLog{
+			width:100%;
+			height:auto;
+			padding:10px 10px 10px 10px;
+			white-space:break-word;
+			background-color:black;
+			color:gray;
+			font-family:courier;
+			font-size:8pt;
+		}
+		#testLog a{
+			color:red;
+		}
+		#testLog .error{
+			color:red;
+		}
+		#testLog .ok{
+			color:green;
+		}
+		#testLog pre{
+			float:left;
+			margin: 0 0 0 0;
+		}
+		#testLog span{
+			float:left;
+			width:100px;
+			margin-right: 50px;
+		}
+    </style>
+	<script src="lm_test.js" ></script>
+	<script>//<![CDATA[
+        window.onload = function(){
+			var t = location.href.split('?')[1];
+			if(t)
+				doTest.apply(0,t.split('-'));
+			else
+				doTest();
+		}
+		// APF stub
+		Array.prototype.dataType = 1;
+		apf = {
+			ARRAY:1,
+			SUCCESS:1,
+			xmldb:{
+				removeNode:function(xmlNode){
+					if(xmlNode.nodeType==2)
+						(xmlNode.ownerElement || xmlNode.selectSingleNode("..")).removeAttribute(xmlNode.nodeName);
+					else xmlNode.parentNode.removeChild(xmlNode);
+				},
+				removeNodeList:function(list){
+					for(var i = 0,j;i<list.length;i++){
+						if((j = list[i]).nodeType==2)
+							(j.ownerElement || j.selectSingleNode("..")).removeAttribute(j.nodeName);
+						else j.parentNode.removeChild(j);
+					}
+				},
+				replaceNode:function(newNode, oldNode){
+					oldNode.parentNode.replaceChild(newNode, oldNode);
+				},
+				removeAttribute:function(xmlNode,attribute){
+					xmlNode.removeAttribute(attribute);
+				},
+				setAttribute:function(xmlNode,attribute){
+					xmlNode.setAttribute(attribute);
+				}
+			},	
+			language:{words:{}},
+			console:{error:logw, warn:logw},
+			testmodel:function(xmlStr){
+				var xmlData = apf.getXml( xmlStr ); 
+				return {
+					data : xmlData,
+					copy : xmlData.cloneNode(true),
+					reset : function(){
+						this.data = this.copy.cloneNode(true);
+						
+					},
+					queryValue : function(xpath) {
+						n = this.data.selectSingleNode(xpath);
+						return n.nodeType == 1 && n.firstChild && n.firstChild.nodeValue || n.nodeValue || "";
+					},
+					queryNode : function(xpath){
+						return this.data.selectSingleNode(xpath);
+					},
+					queryNodes : function(xpath){
+						return this.data.selectNodes(xpath);
+					},
+					$isModel : 1
+				};
+			},
+			getXml:function(str){
+					return apf.getXmlDom(str).documentElement;
+			},
+			getXmlDom:function(str){
+				var p;
+				if (document.all) {
+					p = new ActiveXObject("microsoft.XMLDOM");
+					p.setProperty("SelectionLanguage", "XPath");
+					p.loadXML(str);
+				}
+				else{
+					p = new DOMParser();
+					if (str)
+						p = p.parseFromString(str, "text/xml");
+				}
+				return p;
+			},
+			formatErrorString:function(a,b,s0,s1){
+				return s0+s1;
+			},
+			createNodeFromXpath:function(a,b){ return {};},
+			nameserver:{lookup:{model:{}}},
+			dump:function( o, s, d ){
+			  if(!s)s = [], d = 0; var k, t, u, l = s.length;
+			  switch(typeof(o)){
+				  case 'object': if(o!==null){
+					  t = Array(d+2).join('   '), u  =Array(d+1).join('   ');
+					  if(o.constructor == Array){
+						  s[l++]="[\n";
+						  for(k = 0;k<o.length;k++)s[l++]=t,apf.dump(o[k],s,d+1),l=s.length,s[l++]=",\n";
+						  s[l]="\n", s[l++]=u, s[l++]="]";
+					  }else{
+						  s[l++]="{\n";
+						  for(k in o)s[l++]=t,s[l++]=k.match(/[^a-zA-Z0-9_]/)?'"'+k+'"':k,
+							 s[l++]=':',apf.dump(o[k],s,d+1),l=s.length,l=s.length,s[l++]=",\n";
+						  s[l]="\n", s[l++]=u, s[l++]="}";
+					  }
+				  }else s[l++] = 'null';break;
+				  case 'string':s[l++]='"',s[l++]=o.replace(/(["\\])/g, '\\$1').replace(/\r?\n/g,"\\n"),s[l++] ='"';break;
+				  default:s.push(o);break;
+			  }
+			  return d?0:s.join('');
+			}
+		};
+		
+		function escape(t){
+			return (t+'').replace(/ /g, "&nbsp;").replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\n/g, "<br/>").replace(/\t/g, "&nbsp;&nbsp;&nbsp;");
+		}
+		
+		function httpOut(id,t){
+			var e = document.getElementById(id);
+			if(!e){
+				window.setTimeout(function(){httpOut(id,t);},100);
+				return t;
+			}
+			e.style.visibility='visible';
+			if(e.insertAdjacentHTML)
+				e.insertAdjacentHTML("beforeend",t);
+			else
+				e.innerHTML += t;
+			e.scrollTop = e.scrollHeight;
+			return t;
+		}
+		
+		function logw(t){
+			httpOut( "dbgLog", escape(t)+"<br/>" );
+			return t;
+		}
+		
+		function error(id, num, err, inp, exp, cod){
+				httpOut('testLog',"<br/><a href='?"+id+'-'+num+"'><b class='error'>("+id+"-"+num+":EXCEPTION)</b></a><br clear='all'/>"+
+						"<span>Error:</span><pre>"+escape(err)+"</pre><br clear='all'/>"+
+						"<span>Input:</span><pre>"+escape(inp)+"</pre><br clear='all'/>"+
+						"<span>Expected:</span><pre>"+escape(exp)+"</pre><br clear='all'/>"+
+						"<span>Code:</span><pre>"+escape(cod)+"</pre><br clear='all'/><br/>");
+						
+		}
+		function equals(id, num, out, inp, exp,cod){
+			if(parseInt(exp)==exp && parseInt(out)==out)
+					exp = parseInt(exp), out = parseInt(out);
+				if(parseFloat(exp)==exp && parseFloat(out)==out)
+				exp = parseFloat(exp), out = parseFloat(out);
+			
+			if(typeof(out) != typeof(exp))
+				httpOut('testLog',"<br/><a href='?"+id+'-'+num+"'><b class='error'>("+id+"-"+num+":INVALID TYPE)</b></a><br clear='all'/>"+
+						"<span>Input:</span><pre>"+escape(inp)+"</pre><br clear='all'/>"+
+						"<span>Expected:</span><pre>"+typeof(exp)+"</pre><br clear='all'/>"+
+						"<span>Output</span><pre>"+typeof(out)+"</pre><br clear='all'/>"+
+						"<span>Code:</span><pre>"+escape(cod)+"</pre><br clear='all'/><br/>");
+			
+			else if(out != exp)
+				httpOut('testLog',"<br/><a href='?"+id+'-'+num+"'><b class='error'>("+id+"-"+num+":NOTEQUAL)</b></a><br clear='all'/>"+
+						"<span>Input:</span><pre>"+escape(inp)+"</pre><br clear='all'/>"+
+						"<span>Expected:</span><pre>"+escape(exp)+"</pre><br clear='all'/>"+
+						"<span>Output</span><pre>"+escape(out)+"</pre><br clear='all'/>"+
+						"<span>Code:</span><pre>"+escape(cod)+"</pre><br clear='all'/><br/>");
+			else
+				httpOut('testLog',"("+id+"-"+num+": <b class='ok'>OK</b>)    ");
+		}
+		
+        //]]>
+		</script>
+		<script src='../core/parsers/livemarkup.js'></script>
+  </head>
+  <body>
+	<h3>Live Markup Unittests</h3>
+    <div id='dbgLog' style='visibility:hidden'>
+    </div>
+	<div id='testLog'>
+	
+	</div>
+   </body>
+</html>

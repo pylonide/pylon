@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+
+        <a:list id="lst" each="[mail|test]" width="200" height="100" border="1" skin2="simplelist" canrename="false">
+            <a:caption match="[mail]">
+                <a:button>value: [@name]</a:button> [@name]
+            </a:caption>
+            <a:caption match="[test]">
+                <a:slider width="150"/>
+            </a:caption>
+            <a:model>
+                <data>
+                    <mail name="Mail 1"></mail>
+                    <test name="Mail 2"></test>
+                    <mail name="Mail 3"></mail>
+                </data>
+            </a:model>
+        </a:list>
+        
+        <a:button 
+          width   = "100"
+          onclick = "apf.console.dir(lst.selected);apf.xmldb.setAttribute(lst.selected, 'name', new Date().getTime())">
+            Test
+        </a:button>
+        
+        <a:tree id="tree" each="[mail|test]" width="200" height="100" border="1" skin2="simplelist" canrename="false">
+            <a:caption match="[mail]">
+                <a:button>value: [@name]</a:button> [@name]
+            </a:caption>
+            <a:caption match="[test]">
+                <a:slider width="150"/>
+            </a:caption>
+            <a:model>
+                <data>
+                    <mail name="Mail 1"></mail>
+                    <test name="Mail 2"></test>
+                    <mail name="Mail 3"></mail>
+                </data>
+            </a:model>
+        </a:tree>
+    </body>
+</html>

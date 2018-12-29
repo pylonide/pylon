@@ -1,0 +1,28 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:rpc id="comm" protocol="cgi"> 
+            <a:method name="addProduct" url="remove.php"> 
+                <a:param name="xmlNode" /> 
+            </a:method> 
+        </a:rpc>
+        
+        <a:list id="myList"> 
+            <a:actions> 
+                <a:add set="{comm.addProduct([.])}" /> 
+            </a:actions> 
+        </a:list> 
+        <a:script>//<!--
+            apf.onload = function(){
+                myList.add('<product name="USB drive" type="storage" />'); 
+            }
+        //--></a:script>
+    </body>
+</html>

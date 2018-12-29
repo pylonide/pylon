@@ -1,0 +1,32 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Splitter</title>
+        
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+
+        <a:vbox padding="25" anchors="0 0 0 0" edge="10" height2="330" width2="400">
+            <a:tree id="v1" flex="1" />
+            <a:splitter />
+            <a:tree id="v1" height="50" />
+            <a:splitter />
+            <a:tree id="v1" height="50" />
+            <a:splitter />
+            <a:hbox id="v2" padding="5" flex="1">
+                <a:tree width="100" />
+                <a:splitter />
+                <a:tree flex="1" />
+                <a:splitter />
+                <a:list flex="1" />
+            </a:hbox>
+            <a:splitter />
+            <a:tree id="v3" flex="1" />
+        </a:vbox>
+    </body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <style>
+            html{
+                overflow: auto;
+            }
+            body{
+                background : #f1f1f1;
+            }
+        </style>
+    </head>
+    <body>
+        Ajax.org Platform
+        
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <![CDATA[
+            <test />
+        ]]>
+        
+        <!--
+            <a:appsettings debug="1" />
+        -->
+        
+        <?lm
+            foreach([mdl:://folder]) {
+                [@caption]<br />
+            }
+        ?>
+    
+        <div style='display : none'>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer viverra condimentum dictum. Proin pellentesque faucibus magna ullamcorper ullamcorper. Praesent condimentum interdum tellus pellentesque eleifend. Aliquam non lorem vel mi malesuada mattis sodales at nibh. Nulla dignissim auctor nisl, in fermentum ligula cursus at. Nunc sodales leo molestie neque ullamcorper scelerisque. Sed ac nibh urna. Integer tempus metus mattis nunc pretium vulputate. Integer congue leo quis libero rutrum ut gravida erat tempus. Nunc ac leo mauris, vitae gravida purus. Fusce suscipit, augue ut cursus semper, lectus sem egestas diam, eu molestie orci risus nec enim. Nulla non mi nec sapien cursus bibendum in ut mi. Nullam urna massa, volutpat vitae lobortis eu, commodo non nunc. Sed ante diam, porttitor viverra dictum eu, pharetra id est. Vestibulum libero neque, venenatis sit amet sagittis vitae, viverra quis est. Proin tempus aliquet risus, quis fringilla lorem malesuada in. Fusce interdum interdum diam, at ultricies libero eleifend at. In ante odio, tincidunt ac dignissim a, ullamcorper et ante. Suspendisse potenti.
+        </div>
+        
+        <a:appsettings debug="1" />
+        
+        <a:model id="mdlTools" nomk="true">
+            <category name="Elements">
+                <subcat name="Default">
+                    <item name="Arrow" icon="Actions.png" />
+                </subcat>
+                <subcat name="Containers">
+                    <item name="Accordion" value="elements.accordion" icon="ui-accordion.png" />
+                    <item name="Bar" value="elements.bar" icon="layout-select.png" />
+                    <item name="Frame" value="elements.frame" icon="ui-group-box.png" />
+                    <item name="Modalwindow" value="elements.modalwindow" icon="application-blue.png" />
+                    <item name="Section" value="elements.section" icon="section.png"/>
+                    <!-- add panel demo -->
+                    <item name="Statusbar" value="elements.statusbar" icon="layout-select-footer.png"/>
+                    <item name="Tab" value="elements.tab" icon="ui-tab-content.png"/>
+                    <item name="Toolbar" value="elements.toolbar" icon="ui-toolbar.png"/>
+                </subcat>
+                <subcat name="Form elements">
+                    <item name="Button" value="elements.button" icon="ui-button.png" />
+                    <item name="Caldropdown" value="elements.caldropdown" icon="ui-combo-box-calendar.png"/>
+                    <item name="Calendar" value="elements.calendar" icon="data.png" />
+                    <item name="Colorpicker" value="elements.colorpicker" icon="color-swatch.png" />
+                    <item name="Checkbox" value="elements.checkbox" icon="ui-check-box.png"/>
+                    <item name="Dropdown" value="elements.dropdown" icon="ui-combo-box.png" />
+                    <item name="Editor" value="elements.editor" icon="ui-editor.png" />
+                    <item name="Errorbox" value="elements.errorbox" icon="ui-text-errorbox.png" />
+                    <item name="Label" value="elements.label" icon="ui-label.png"/>
+                    <item name="Palette" value="elements.palette" icon="palette.png"/>
+                    <item name="Progressbar" value="elements.progressbar" icon="ui-progress-bar.png" />
+                    <item name="Radiobutton" value="elements.radiobutton" icon="ui-radio-button.png" />
+                    <item name="Slider" value="elements.slider" icon="ui-slider.png" />
+                    <item name="Spinner" value="elements.spinner" icon="ui-spin.png" />
+                    <item name="Text" value="elements.text" icon="ui-textarea.png" />
+                    <item name="Textarea" value="elements.textarea" icon="ui-textarea.png" />
+                    <item name="Textbox" value="elements.textbox" icon="ui-text-field.png" />
+                    <!--<item name="Upload" value="elements.upload"/>-->
+                </subcat>
+                <subcat name="Selection elements">
+                    <item name="Datagrid" value="elements.datagrid" icon="table-fugue.png" />
+                    <item name="List" value="elements.list" icon="text_list_bullets.png"/>
+                    <item name="Tree" value="elements.tree" icon="tree.png" />
+                    <!--item name="Property editor" value="elements.propedit" icon="table.png" /-->
+                    <item name="Menu" value="elements.menu" icon="ui-menu.png" />
+                    <item name="Pager" value="elements.pager" icon="pager.png" />
+                    <!--item name="Toc" value="elements.toc"/-->
+                </subcat>
+                <subcat name="Media">
+                    <item name="Browser" value="elements.browser" icon="application-browser.png"/>
+                    <item name="Img" value="elements.img" icon="image.png" />
+                </subcat>
+            </category>
+        </a:model>
+        
+        <!--a:menu id="mnuContentEditable" nomk="true">
+            <a:item onclick="apf.ContentEditable.execCommand('cut')">Cut</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('copy')">Copy</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('remove')">Remove</a:item>
+            <a:divider />
+            <a:item onclick="apf.ContentEditable.execCommand('duplicate')">Duplicate</a:item>
+            <a:divider />
+            <a:item submenu="mnuArrange">Arrange</a:item>
+            <a:item submenu="mnuAlign">Align</a:item>
+            <a:item submenu="mnuFill">Fill</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('defposition')">Default position</a:item>
+            <a:divider />
+            <a:item submenu="mnuLayout">Convert</a:item>
+            <a:divider />
+            <a:item onclick="apf.ContentEditable.execCommand('lock')">Lock</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('remove')">Remove</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuArrange" nomk="true">
+            <a:item onclick="apf.ContentEditable.execCommand('front')" icon="ide/shape_move_front.png">Bring to Front</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('forward')" icon="ide/shape_move_forwards.png">Bring Forward</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('backward')" icon="ide/shape_move_backwards.png">Send Backward</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('back')" icon="ide/shape_move_back.png">Send to Back</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuAlign" nomk="true">
+            <a:item onclick="apf.ContentEditable.execCommand('forward')">Top</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('front')">Left</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('backward')">Middle</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('backward')">Right</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('back')">Bottom</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuFill" nomk="true">
+            <a:item onclick="apf.ContentEditable.execCommand('forward')">Width</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('front')">Height</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('backward')">Both</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuLayout" nomk="true">
+            <a:item onclick="apf.ContentEditable.execCommand('forward')">Table</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('front')">Vertical Box</a:item>
+            <a:item onclick="apf.ContentEditable.execCommand('backward')">Horizontal Box</a:item>
+        </a:menu-->
+        
+        <!--a:window id="toolbox" nomk="true" title="Toolbox" icon="cog.png" width="150" visible="false" left="10" top="10" bottom="10" resizable="vertical">
+            <a:toolbar>
+                <a:bar>
+                    <a:button icon="delete.png" onclick="apf.ContentEditable.execCommand('remove')" />
+                    <a:divider />
+                    <a:button onclick="apf.ContentEditable.execCommand('undo')">Undo</a:button>
+                    <a:button onclick="apf.ContentEditable.execCommand('redo')">Redo</a:button>
+                </a:bar>
+            </a:toolbar>
+            <a:tree id="trTools" skin="doctree"
+              anchors = "23 0 0 0" 
+              value   = "Arrow"
+              eachvalue = "[@name]"
+              startcollapsed = "false"
+              caption = "[@name]"
+              each    = "subcat|item"
+              icon    = "[@icon]"
+              onafterselect = "
+                if (this.value == 'Arrow' || !this.value) {
+                    apf.ContentEditable.setMode('cursor')
+                }
+                else {
+                    apf.ContentEditable.setMode('add', this.value.toLowerCase());
+                }
+              " />
+        </a:window-->
+        
+        <a:window id="app" title="Application" icon="application.png" visible="true" width="400" height="300" center="true" resizable="true">
+            <a:tab id="t" left="5" top="5" right="5" bottom="5">
+                <a:page caption="General">
+                    <a:checkbox id="cb1" left="10" top="10">I love FOWA</a:checkbox>
+                    Test
+                    <a:checkbox left="10" top="30">Panda's are beautiful</a:checkbox>
+                    Test
+                    
+                    <a:button
+                        default = "true"
+                        caption = "Click me"
+                        right   = "10"
+                        bottom  = "10"
+                        width   = "120"
+                        onclick = "
+                            alert(2);
+                        "></a:button>
+                    <a:button
+                        caption = "Don't click me"
+                        right   = "135"
+                        bottom  = "10"
+                        width   = "120"
+                        onclick = "
+                            alert(1);
+                        "></a:button>
+                </a:page>
+                <a:page caption="Advanced">
+                    <a:checkbox>Test checkbox</a:checkbox>
+                    <a:checkbox>Test checkbox</a:checkbox>
+                    <a:checkbox>Test checkbox</a:checkbox>
+                    
+                    <a:button width="100" height="30" right="10" bottom="10">Test</a:button>
+                </a:page>
+                <a:page caption="Ajax.org">
+                    <a:tree 
+                      anchors = "5 5 5 5"
+                      model   = "mdl"
+                      each    = "[drive|folder]"
+                      caption = "[@caption]" 
+                      drag    = "true"
+                      drop    = "true" />
+                </a:page>
+            </a:tab>
+        </a:window>
+        
+        <a:model id="mdl" src="filesystem.xml" />
+    </body>
+</html>

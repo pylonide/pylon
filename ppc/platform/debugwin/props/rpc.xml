@@ -1,0 +1,18 @@
+<props><rpc><group caption="General"><prop caption="protocol" editor="textbox" value="[@protocol]" description="the name of the plugin that is used
+to provide the messages."/><prop caption="multicall" editor="checkbox" value="[@multicall]" description="whether the call is stacked until
+purge() is called." values="true|false"/><prop caption="route-server" editor="textbox" value="[@route-server]" description="the location of the proxy script that
+allows for cross domain communication."/><prop caption="http-method" editor="dropdown" value="[@http-method]" description="the http method used to send the data.
+This attribute is only used by the cgi protocol."><item value="post">post</item><item value="get">get</item><item value="delete">delete</item><item value="head">head</item><item value="put">put</item></prop><prop caption="method-name" editor="textbox" value="[@method-name]" description="the variable name used to sent the
+name of the method called to the
+server. This attribute is only used
+by the cgi protocol."/><prop caption="soap-xmlns" editor="textbox" value="[@soap-xmlns]" description="the url that uniquely identifies the
+xml namespace for the message. This
+attribute is only used by the soap
+protocol."/><prop caption="soap-prefix" editor="textbox" value="[@soap-prefix]" description="the prefix that is paired with the
+message xml namespace. This attribute
+is only used by the soap protocol."/></group><group caption="Teleport"><prop caption="url" editor="textbox" value="[@url]" description="the location of the server that is
+recipient of the rpc messages."/><prop caption="route-server" editor="textbox" value="[@route-server]" description="String specifying the url to the route script."/><prop caption="autoroute" editor="checkbox" value="[@autoroute]" description="whether the call should be routed
+through a proxy when a permission
+error occurs due to the same domein policy." values="true|false"/><prop caption="timeout" editor="textbox" value="[@timeout]" description="the number of milliseconds after
+which the call is considered timed out.
+"/></group><events caption="Events"><prop caption="DOMNodeInserted" editor="textbox" value="[@domnodeinserted]" type="event"/><prop caption="DOMNodeInsertedIntoDocument" editor="textbox" value="[@domnodeinsertedintodocument]" type="event"/><prop caption="DOMNodeRemoved" editor="textbox" value="[@domnoderemoved]" type="event"/><prop caption="DOMNodeRemovedFromDocument" editor="textbox" value="[@domnoderemovedfromdocument]" type="event"/><prop caption="propertychange" editor="textbox" value="[@propertychange]" type="event" description="Fires when a property changes."/></events></rpc></props>

@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:tab activepage="{myDropdown.value}" id="tab"> 
+            <a:page caption="Page 1" /> 
+            <a:page caption="Page 2" /> 
+        </a:tab> 
+        <a:dropdown id="myDropdown" value="{tab.activepagenr}"> 
+            <a:item value="0">Page 1</a:item> 
+            <a:item value="1">Page 2</a:item> 
+        </a:dropdown>
+
+        <a:table columns="300, 200" cellheight="150" padding="10">
+            <a:datagrid>
+                <a:each match="[watch]">
+                    <a:column 
+                      caption = "Company" 
+                      value   = "[@company]" 
+                      width   = "50%">
+                    </a:column>
+                    <a:column 
+                      caption = "Type" 
+                      value   = "[@type]" 
+                      width   = "50%">
+                    </a:column>
+        
+                    <a:drag match="[watch]" />
+                    <a:drop 
+                      match  = "[watch]" 
+                      target = "[watch]" 
+                      action = "insert-before" />
+                    <a:drop 
+                      match  = "[watch]" 
+                      target = "[data]" 
+                      action = "list-append" />
+                </a:each>
+                <a:model>
+                    <data>
+                        <watch company="Alfex" type="man's" />
+                        <watch company="Anonimo" type="woman's" />
+                        <watch company="Atlantic" type="man's" />
+                        <watch company="Axcent" type="woman's" />
+                        <watch company="Aviator" type="man's" />
+                        <watch company="Bulova" type="man's" />
+                        <watch company="Candino" type="man's" />
+                        <watch company="Citizen" type="man's" />
+                        <watch company="Diesel" type="man's" />
+                        <watch company="Jaguar" type="man's" />
+                        <watch company="Lotus" type="man's" />
+                        <watch company="Seiko" type="man's" />
+                    </data>
+                </a:model>
+            </a:datagrid>
+            <a:list drag="true" drop="true">
+                <a:each match="[watch]">
+                    <a:caption match="[@company]"></a:caption>
+                    <a:icon value="clock.png"></a:icon>
+                </a:each>
+                <a:model>
+                    <data>
+                        <watch company="Casio" type="GShock" />
+                        <watch company="Casio" type="Edifice" />
+                    </data>
+                </a:model>
+            </a:list>
+        </a:table>
+        
+        <a:textbox id="tb3"></a:textbox>
+        <a:window
+            id      = "uir_windowEvents"
+            title   = "Events"
+            buttons = "min"
+            height  = "400"
+            width   = "100%"
+            visible = "true"
+            bottom  = "0"
+        >
+            <a:tree 
+                id              = "uir_treeEvents" 
+                model           = "uir_mdlEvents"
+                startcollapsed  = "false"
+                anchors         = "0 0 0 0"
+            >
+
+                <a:caption value="[@caption]" />
+                <a:each match="[element|event]" />
+
+            </a:tree>
+
+        </a:window>
+        <a:model 
+            id="uir_mdlEvents" />
+        
+        <a:button onclick="record()">Record</a:button>   
+        <a:button onclick="stop()">Stop</a:button>   
+        <a:button onclick="showEvents()">Get Events</a:button>   
+        <a:script>//<!--
+            function record() {
+                apf.uirecorder.record();
+            }
+            function stop() {
+                setTimeout(function() {
+                    apf.uirecorder.stop();
+                }, 500);
+            }
+            function showEvents() {
+                var resultXml = apf.getXml("<results />");
+                var detailTypes = {"events": "event"};
+                for (var test, ti = 0, tl = apf.uirecorder.testListXml.childNodes.length; ti < tl; ti++) {
+                    test = apf.uirecorder.testListXml.childNodes[ti];
+                    
+                    // loop through actions
+                    for (var action, ai = 0, al = test.childNodes.length; ai < al; ai++) {
+                        action = test.childNodes[ai];
+                        
+                        if (action.childNodes && action.childNodes.length) {
+                            for (var elNode, element, ei = 0, el = action.childNodes.length; ei < el; ei++) {
+                                element = action.childNodes[ei];
+                                elNode = apf.uirecorder.testListXml.ownerDocument.createElement("element");
+                                elNode.setAttribute("caption", element.getAttribute("name"));
+                                
+                                var details;
+                                for (var type in detailTypes) {
+                                    if (element.selectSingleNode(type) && element.selectSingleNode(type).childNodes && element.selectSingleNode(type).childNodes.length) {
+                                        for (var node, detail, di = 0, dl = element.selectSingleNode(type).childNodes.length; di < dl; di++) {
+                                            detail = element.selectSingleNode(type).childNodes[di];
+            
+                                            if (["focus","blur"].indexOf(detail.getAttribute("name")) == -1) continue;
+                                            node = apf.uirecorder.testListXml.ownerDocument.createElement("event");
+                                            node.setAttribute("caption", detail.getAttribute("caption"));
+                                            elNode.appendChild(node);
+                                        }                                    
+                                    }
+                                }
+                                
+                                if (elNode.childNodes.length)
+                                    resultXml.appendChild(elNode);
+                            }
+                        }
+                    }
+                }
+        
+                uir_mdlEvents.load(resultXml.xml);
+            }
+        //--></a:script>
+    </body>
+</html>

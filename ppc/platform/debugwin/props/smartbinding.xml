@@ -1,0 +1,8 @@
+<props><smartbinding><group caption="General"><prop caption="bindings" editor="textbox" value="[@bindings]" description="the id of the bindings element that contains
+the {@link term.binding binding rules} for all elements connected to
+this smartbinding element"/><prop caption="actions" editor="textbox" value="[@actions]" description="the id of the actions element that provides
+the {@link term.action action rules} for all elements connected to
+this smartbinding element"/><prop caption="dragdrop" editor="textbox" value="[@dragdrop]" description="the id of the dragdrop element that provides
+the drag and drop rules for all elements connected to this smartbinding
+element"/><prop caption="model" editor="textbox" value="[@model]" description="the id of the model element that provides
+the data for all elements connected to this smartbinding element."/></group><events caption="Events"><prop caption="DOMNodeInserted" editor="textbox" value="[@domnodeinserted]" type="event"/><prop caption="DOMNodeInsertedIntoDocument" editor="textbox" value="[@domnodeinsertedintodocument]" type="event"/><prop caption="DOMNodeRemoved" editor="textbox" value="[@domnoderemoved]" type="event"/><prop caption="DOMNodeRemovedFromDocument" editor="textbox" value="[@domnoderemovedfromdocument]" type="event"/><prop caption="propertychange" editor="textbox" value="[@propertychange]" type="event" description="Fires when a property changes."/></events></smartbinding></props>

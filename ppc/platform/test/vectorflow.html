@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" 
+  xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Vector Flowchart</title>
+        <script src="apf.js"></script>
+        <script src="loader.js"></script>
+        <style type="text/css">
+            * {
+                padding: 0;
+                margin: 0;
+            }
+        </style> 
+	</head>
+	<body>
+	    <a:skin src="skins.xml" />
+        
+        <a:model id="mdlGraph">
+            <data>
+                <block id="start" type="circle" top="120" left="120" width="40" height="40">
+                    <connection ref="decision" output="right" input="left" type="arrow"/>
+                </block>
+                
+                <block id="decision" type="decision" top="120" left="360" width="100" height="100">
+                    <connection ref="block1a" output="right" input="left" type="arrow"/>
+                    <connection ref="block2a" output="bottom" input="top" type="arrow"/>
+                </block>
+                
+                <block id="block1a" type="rect" top="120" left="600" width="120" height="80">
+                    <connection ref="block1b" output="bottom" input="top" type="arrow"/>
+                </block>
+                <block id="block1b" type="rect" top="400" left="600" width="120" height="80">
+                    <connection ref="block2d" output="bottom" input="left" type="arrow"/>
+                </block>
+        
+                <block id="block2a" type="rect" top="300" left="360" width="120" height="80">
+                    <connection ref="block2b" output="left" input="right" type="arrow"/>
+                </block>
+                <block id="block2b" type="rect" top="300" left="120" width="120" height="80">
+                    <connection ref="block2c" output="bottom" input="top" type="arrow"/>
+                </block>
+                <block id="block2c" type="rect" top="480" left="120" width="120" height="80">
+                    <connection ref="block2d" output="bottom" input="left" type="arrow"/>
+                </block>
+                <block id="block2d" type="rect" top="660" left="360" width="120" height="80">
+                    <connection ref="end" output="right" input="top" type="arrow"/>
+                </block>
+        
+                <block id="end" type="circle" top="720" left="600" width="40" height="40"/>            
+            </data>
+        </a:model>
+        
+        <a:vectorflow id="vg" width="800" height="800" model="mdlGraph">
+            <a:each match="[block]">
+                <a:id value="[@id]" />
+                <a:caption value="[@caption]" />
+                <a:type value="[@type]" />
+                <a:top value="[@top]" />
+                <a:left value="[@left]" />
+                <a:width value="[@width]" />
+                <a:height value="[@height]" />
+            </a:each>
+        </a:vectorflow>
+        
+        <input type="text" id="status" />
+	</body>
+</html>

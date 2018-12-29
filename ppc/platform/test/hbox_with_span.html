@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>HBOX with SPAN</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <style>
+            .redborder{
+                border : 1px solid red;
+            }
+            .boxtest{
+                border : 1px solid green;
+                font-family : Arial;
+                padding : 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+        <!--a:hbox class="redborder" flex="1" align="start" pack="start">
+            <a:bar skin="basic" class="boxtest">Me</a:bar>
+            <span>or</span>
+            <a:bar skin="basic" class="boxtest">We</a:bar>
+        </a:hbox>
+        
+        <a:hbox edge="5 40 0 0" padding="10" align="center">
+            <span margin="7 0 0 0" style="border:1px solid red">Meet us at:</span>
+            <a:button>b1</a:button>
+            <a:button>b2</a:button>
+            <a:button>b3</a:button>
+        </a:hbox>
+        
+        <a:hbox padding="30" edge="0 0 0 38" class="redborder" >
+            <div id="sec4" class="redborder">
+                fdfd
+            </div>
+            <div id="sec5" class="redborder" >
+               aaa
+            </div>
+        </a:hbox-->
+        
+        <h3>SPAN and DIV with MARGIN attribute in Firefox</h3>
+        <a:hbox width="400" class="redborder">
+            <span>Some text without margin</span>
+            <a:filler />
+            <span margin="15 6 0 0">and text with margin</span>
+        </a:hbox>
+        
+        <h3>Another problem with SPAN</h3>
+        <div style="width:400px;overflow:hidden;background-color:#f1f1f1;">
+            <a:vbox padding="3" edge="8 0 0 0"> 
+                <a:hbox id="test" class="redborder">
+                    <h4>Password</h4>
+                    <a:filler />
+                    <span class="link" margin="4 6 0 0">forgot your password?</span>
+                </a:hbox>
+                <a:secret type="password" class="padlock"
+                  required="true" invalidmsg="A Password is required to sign in"></a:secret>
+                <a:hbox edge="10 0 0 0" class="hblue" pack="end">
+                    <a:button 
+                      skin    = "hp_button" 
+                      width   = "108" 
+                      >Sign in</a:button>
+                </a:hbox>
+            </a:vbox>
+        </div>
+    </body>
+</html>

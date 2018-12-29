@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:list id="myList" each="[inbox/message|sent/message]" caption="[@caption]" width="200" height="200" model="mdlDashboard" /> 
+            
+        <a:model id="mdlDashboard">
+            <data>
+                <inbox>
+                    <message caption="test" />
+                    <message caption="test" />
+                    <message caption="test" />
+                    <message caption="test" />
+                    <message caption="test" />
+                </inbox>
+                <sent>
+                    <message caption="test" />
+                    <message caption="test" />
+                    <message caption="test" />
+                    <message caption="test" />
+                    <message caption="test" />
+                </sent>
+            </data>
+        </a:model>
+        
+        <a:model id="mdlMessages">
+            <sent>
+                <message caption="abcde" />
+                <message caption="abcde" />
+                <message caption="abcde" />
+                <message caption="abcde" />
+                <message caption="abcde" />
+            </sent>
+        </a:model>
+        
+        <a:button width="80" onclick="apf.xmldb.replaceNode(mdlMessages.data, mdlDashboard.queryNode('sent'))">click</a:button>
+    </body>
+</html>

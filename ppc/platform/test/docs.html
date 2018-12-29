@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../debugwin/skins.xml" media-path="../debugwin/resources/" icon-path="../debugwin/resources/"/>
+        
+        <a:appsettings debug="0" />
+            
+        <a:rpc id="comm"
+          protocol     = "cgi" 
+          baseurl      = "http://www.ajax.org/"
+          route-server = "rpcproxy.php"
+          autoroute    = "true">
+            <a:method name="search" url="data.php">
+                <a:param name="search" />
+                <a:param name="limit" default="3" />
+                <a:param name="page" default="1" />
+                <a:param name="index" />
+            </a:method>
+            <a:method name="fetch" url="data.php">
+                <a:param name="f" />
+                <a:param name="page" />
+                <a:param name="limit" />
+            </a:method>
+            <a:method name="getComments" url="data.php">
+                <a:param name="c" />
+            </a:method>
+            <a:method name="getDownloads" url="data.php?m=downloads" />
+            <a:method name="getNightlies" url="data.php?m=nightlies">
+                <a:param name="date" />
+            </a:method>
+            <a:method name="getBlogs" url="data.php?f=BLOGS" />
+            <a:method name="getPlanet" url="data.php?f=AJAXORG" />
+            <a:method name="subscribe" url="http://lists.ajax.org/wwsympa.fcgi/subscribe/platform/wwsympa.fcgi"
+              receive="app.checkSubscribe">
+                <a:param name="list" value="platform" />
+                <a:param name="action" value="subrequest" />
+                <a:param name="email" />
+            </a:method>
+            <a:method name="getDemos" url="data.php" receive="loadDemos">
+                <a:param name="demo" value="1" />
+                <a:param name="name" />
+            </a:method>
+            <a:method name="loginCheck" url="data.php">
+                <a:param name="login" value="check" />
+                <a:param name="username" />
+            </a:method>
+            <a:method name="loginRegister" url="data.php">
+                <a:param name="login" value="register" />
+                <a:param name="username" />
+                <a:param name="password" />
+                <a:param name="email" />
+            </a:method>
+            <!--a:method name="loginUpdate" url="http://development.ajax.org/data.php">
+                <a:param name="login" value="update" />
+                <a:param name="username" />
+            </a:method-->
+        </a:rpc>
+
+        <a:bar id="bar" skin="basic" anchors="100 10 100 10" style="border:1px solid red">
+            <a:include src="../debugwin/docs.xml" />
+        </a:bar>
+    </body>
+</html>

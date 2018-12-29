@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <style>
+            .even{
+                background : red;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:list id="myList">
+            <a:bindings> 
+                <a:caption match="[@name]" />
+                <a:each match="[person]" />
+                <a:css value="{index(*[../{myList.each}]) % 2 ? 'even' : 'odd'}" />
+            </a:bindings> 
+            <a:model> 
+                <data> 
+                    <person disabled="false" name="test 5"/> 
+                    <person disabled="true" name="test 3"/> 
+                    <person name="test 4"/> 
+                    <person disabled="true" name="test 2"/> 
+                    <person disabled="false" name="test 1"/> 
+                </data> 
+            </a:model> 
+        </a:list>
+    </body>
+</html>

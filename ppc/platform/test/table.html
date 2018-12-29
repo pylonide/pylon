@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:window id="winMail" 
+          modal       = "false"
+          buttons     = "min|max|close" 
+          left        = "200"  top      = "200" 
+          width       = "300" height    = "380" 
+          minwidth    = "300" minheight = "290"
+          visible     = "true" 
+          resizable   = "true" 
+          title       = "Mail message" 
+          icon        = "icoXPContacts.gif" >
+            <a:table id="tableTest" columns="60, 120, 60, *" cellheight="19" margin="10 10 10 10" padding="8" bottom="35" top="0">
+                <a:label>Subject</a:label>
+                <a:textbox id="txtSubject" />
+                <a:label>Subject</a:label>
+                <a:textbox id="txtSubject" />
+                <a:label>Subject</a:label>
+                <a:textbox id="txtSubject" />
+                
+                <a:label span="*">Message</a:label>
+                <a:textarea id="txtMessage" 
+                    height = "*" 
+                    span   = "*"/>
+            </a:table>
+            
+            <a:button 
+                caption = "Two Colum"
+                id      = "btnTest"
+                right   = "115"
+                bottom  = "10"
+                width   = "100" 
+                onclick = "tableTest.setAttribute('columns', '80, *');"/>
+                
+            <a:button 
+                default = "true"
+                caption = "Four Colum"
+                right   = "10"
+                bottom  = "10"
+                width   = "100" 
+                onclick = "tableTest.setAttribute('columns', '60, 120, 60, *');"/>
+        </a:window>
+    </body>
+</html>

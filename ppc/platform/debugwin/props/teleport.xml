@@ -1,0 +1,6 @@
+<props><teleport><group caption="General"><prop caption="url" editor="textbox" value="[@url]" description="the location of the server that is
+recipient of the rpc messages."/><prop caption="route-server" editor="textbox" value="[@route-server]" description="String specifying the url to the route script."/><prop caption="autoroute" editor="checkbox" value="[@autoroute]" description="whether the call should be routed
+through a proxy when a permission
+error occurs due to the same domein policy." values="true|false"/><prop caption="timeout" editor="textbox" value="[@timeout]" description="the number of milliseconds after
+which the call is considered timed out.
+"/></group><events caption="Events"><prop caption="DOMNodeInserted" editor="textbox" value="[@domnodeinserted]" type="event"/><prop caption="DOMNodeInsertedIntoDocument" editor="textbox" value="[@domnodeinsertedintodocument]" type="event"/><prop caption="DOMNodeRemoved" editor="textbox" value="[@domnoderemoved]" type="event"/><prop caption="DOMNodeRemovedFromDocument" editor="textbox" value="[@domnoderemovedfromdocument]" type="event"/><prop caption="propertychange" editor="textbox" value="[@propertychange]" type="event" description="Fires when a property changes."/></events></teleport></props>

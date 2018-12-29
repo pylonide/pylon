@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:list id="lstActions" skin="actionlist" caching="false"
+          multiselect="false" model="testReq" class="onlyImage"
+          autoselect="false" bindings="bdn1" />
+    
+        <a:model id="testReq">
+            <requests>
+                <request />
+                <request />
+                <request />
+                <request />
+                <request />
+                <request />
+            </requests>
+        </a:model>
+    
+        <a:bindings id="bdn1"> 
+            <a:each match="request" /> 
+            <a:caption><![CDATA[ 
+                <img width="40" height="40" src="[image]" alt="Carmen Popescu"class="visual">
+                <h2>Carmen Popescu</h2>
+            ]]></a:caption>
+        </a:bindings>
+        
+        <a:bindings id="bdn2">
+            <a:each match="request" />
+            <a:caption><![CDATA[
+                <img class="visual" alt="" src="[image]" />
+                test bn2
+            ]]></a:caption>
+        </a:bindings>
+    </body>
+</html>

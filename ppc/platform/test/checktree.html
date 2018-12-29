@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml"
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../icons/" />
+          
+        <a:appsettings debug="1" />
+        
+        <a:tree id="t1"
+          left   = "100"
+          top    = "100"
+          height = "300"
+          width  = "200"
+          mode   = "check"    
+          skin   = "checktree"
+          startcollapsed = "false">
+            <a:model id="mdlFolders">
+                <data>
+                    <folder caption="Folder 1">
+                        <file caption="File 1" ></file>
+                        <file caption="File 2" checked="true"></file>
+                        <file caption="File 3"></file>
+                    </folder>
+                    <folder caption="Folder 2">
+                        <file caption="File 2 1" checked="true"></file>
+                        <file caption="File 2 2"></file>
+                        <file caption="File 2 3"></file>
+                    </folder>
+                </data>
+            </a:model>
+            <a:each match="[folder|file]">
+                <a:caption match="[@caption]" />
+                <a:checked value="[@checked]" />
+            </a:each>
+            <a:actions>
+                <a:check set="{alert([@caption])}" />
+            </a:actions>
+        </a:tree>
+        
+        <a:button action="undo" target="t1">Undo</a:button>
+        <a:button action="redo" target="t1">Redo</a:button>
+        <a:button action="remove" target="t1">Remove</a:button>
+    </body>
+</html>

@@ -1,0 +1,11 @@
+<props><method><group caption="General"><prop caption="name" editor="textbox" value="[@name]" description="the name of the method. This name will
+be available on the rpc object as a
+javascript method."/><prop caption="callback" editor="textbox" value="[@callback]" description="the name of the method that handles
+the return of the call."/><prop caption="async" editor="checkbox" value="[@async]" description="whether the call is executed in the
+backround. Default is true. When set
+to false the application hangs while
+this call is executed." values="true|false"/><prop caption="caching" editor="checkbox" value="[@caching]" description="whether the call is cached. Default
+is false. When set to true any call
+with the same data will return immediately
+with the cached result." values="true|false"/><prop caption="ignore-offline" editor="checkbox" value="[@ignore-offline]" description="whether the method should not be stored
+for later execution when offline." values="true|false"/><prop caption="method-name" editor="checkbox" value="[@method-name]" description="the name sent to the server." values="true|false"/><prop caption="type" editor="dropdown" value="[@type]" description="the type of the returned data"><item value="xml">xml</item></prop></group><events caption="Events"><prop caption="DOMNodeInserted" editor="textbox" value="[@domnodeinserted]" type="event"/><prop caption="DOMNodeInsertedIntoDocument" editor="textbox" value="[@domnodeinsertedintodocument]" type="event"/><prop caption="DOMNodeRemoved" editor="textbox" value="[@domnoderemoved]" type="event"/><prop caption="DOMNodeRemovedFromDocument" editor="textbox" value="[@domnoderemovedfromdocument]" type="event"/><prop caption="propertychange" editor="textbox" value="[@propertychange]" type="event" description="Fires when a property changes."/></events></method></props>

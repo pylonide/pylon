@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="skins/platform/trunk/xml/_index.xml" media-path="skins/platform/trunk/images/" icons="../icons/" />
+
+        <a:appsettings debug="0" />
+
+        <a:tab id="tab" left="10" top="10" width="600" height="200" resizable="true" onbeforeswitch="setFakeTab(event)" onafterswitch="showFakeTab(event)">
+            <a:page caption="Page 1">
+                Click buttons to add different types...
+            </a:page>
+        </a:tab>
+
+        <a:button onclick="addFakeTab('write')" bottom="10" left="10" width="80">Add</a:button>
+
+        <a:script><![CDATA[
+            var fakes   = {},
+                counter = 0,
+                app     = '<a:application xmlns:a="' + apf.ns.aml + '"/>';
+            function addFakeTab(type, content) {
+                var fake;
+                if (!(fake = fakes[type])) {
+                    fake = fakes[type] = tab.ownerDocument.createElementNS(apf.ns.aml, "page");
+                    fake.setAttribute("visible", false);
+                    fake.setAttribute("id", type);
+                    tab.appendChild(fake);
+                    tab.insertMarkup(app);
+                }
+
+                if (!content)
+                    content = "Tab nr. " + ++counter;
+
+                var t = tab.add(content, type + counter, type, fake);
+                t.content = content;
+            }
+
+            function setFakeTab(e) {
+                console.log('setFakeTab', e);
+                var fake, page = e.nextPage;
+                if (fake = fakes[page.type]) {
+                    fake.$ext.innerHTML = page.content;
+                }
+            }
+
+            function showFakeTab(e) {
+                console.log('showFakeTab', e);
+                var fake, page = e.nextPage;
+                if (fake = fakes[page.type]) {
+                    //page.setAttribute("visible", false);
+                    //fake.setAttribute("visible", true);
+                }
+            }
+        ]]></a:script>
+    </body>
+</html>

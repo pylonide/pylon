@@ -1,0 +1,97 @@
+<html>
+ <head>
+     <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
+    <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="box2d.js"></script>
+       
+    <script LANGUAGE="JavaScript" type="text/javascript">
+        var world = createWorld();
+        var ctx;
+        var canvasWidth;
+        var canvasHeight;
+        var canvasTop;
+        var canvasLeft;
+
+        function createWorld() {
+            var worldAABB = new b2AABB();
+            worldAABB.minVertex.Set(-1000, -1000);
+            worldAABB.maxVertex.Set(1000, 1000);
+            var gravity = new b2Vec2(0, 300);
+            var doSleep = true;
+            var world = new b2World(worldAABB, gravity, doSleep); 
+        }
+    
+    function createRect(world, x, y, width, height, fixed) {
+        if (typeof(fixed) == 'undefined') fixed = true;
+        var boxSd = new box2d.b2BoxDef();
+        if (!fixed) boxSd.density = 1.0;
+        boxSd.extents.Set(width, height);
+        
+        var boxBd = new box2d.b2BodyDef();
+        boxBd.AddShape(boxSd);
+        boxBd.position.Set(x,y);
+        return world.CreateBody(boxBd)
+    }
+
+    function draw(){
+        var ctx = new apf.vector.vml('drawnode',800,600,0,0,'red');
+        // lets add a new group to to our root group
+        var g = ctx.group({x:0,y:0,w:800,h:600});
+        var r = [];
+        var i ; 
+        var xw = 32, yw = 32, xs = 16, ys = 16, zd = 12;
+        var col = [];
+        for(var c, i = 0, j= 255/zd;i<zd;i++){
+            c = parseInt(i*j); c = (c<<16)+(c<<8)+c;
+            col[i] = '#'+('000000'+parseInt(c).toString(16)).slice(-6);
+            
+        }
+        col[i] = 'red';
+        
+        apf.profile_loop(1,function(){  
+        for(var y=0,i=0;y<yw;y++)
+            for(var x=0;x<xw;x++,i++)
+                r[i] = ctx.rect({x:x*xs,y:y*ys,w:xs,h:ys,o:1,f:col[Math.round((Math.sin((x+y)/2 )*0.5+0.5)*zd)]},g);
+            ctx.repaint();
+        });
+        var t = 0;
+        window.setInterval(function(){
+       // apf.profile_loop(1,function(){  
+//        document.onkeydown=function(){
+        t++;
+        //for(t = 0;t<32;t++){
+        for(var y = 0,i=0;y<yw;y++)
+            for(var x = 0;x<xw;x++,i++){
+                var c = Math.round((Math.sin(((Math.sqrt(x*x+y*y))-t/5)/2 )*0.5+0.5)*zd);
+                if(c>=zd)c = zd-1; if(c<0)c = 0;
+                //if(t==31 && x==6 && y==2){c = 16;
+                //apf.logw((((((Math.sqrt((x-1)*(x-1)+y*y))+t/10)/2 )*0.5+0.5)));
+                //}//c=16;//debugger;
+                //if((x+t)&1)c = 'rgb('+((255/xs)*(x+t))%255+',0,1)';
+                r[i].style({o2:(t/10)%1,s:col[c],f:col[c]});
+            }
+            ctx.repaint();
+         //for(i=0,d = g.$vmlnodes,j=d.length;i<j;i++)
+         //   d[i].$vmlnode.style.display='none';
+            
+         //   d[j-10].$vmlnode.style.display='block';
+         //   document.title = g.$vmlnodes.length;
+       // }
+        //},1);
+       },50);
+    
+    }
+  </script>
+
+ </head>
+ <body onload="draw()" style="background:red">
+    <div id="drawnode" style2="width:300px;height:300px;background-color:black">
+    </div>
+ </body>
+ 
+	
+
+ </html>

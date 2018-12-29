@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <style>
+            .vbox, .hbox{
+                border : 1px dotted gray;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+        
+        <a:hbox edge="10" padding="5" stretch="true" height="30%" resizable="true"> 
+            <a:vbox padding="5" width="130" stretch="true" pack="start"> 
+                <a:button>Button 1</a:button> 
+                <a:button>Button 2</a:button> 
+                <a:button>Button 3</a:button> 
+            </a:vbox> 
+            <a:vbox padding="15" pack="middle" stretch="true" width="100%"> 
+                <a:button>Button 1</a:button> 
+                <a:button>Button 2</a:button> 
+                <a:button>Button 3</a:button> 
+            </a:vbox>
+            <a:vbox padding="5" pack="end" stretch="true" > 
+                <a:button>Button 1</a:button> 
+                <a:button>Button 2</a:button> 
+                <a:button>Button 3</a:button> 
+            </a:vbox> 
+        </a:hbox> 
+        
+        <a:hbox edge="10" padding="5" stretch="true" pack="middle"> 
+            <a:button>Button 1</a:button> 
+            <a:button>Button 2</a:button> 
+            <a:button>Button 3</a:button> 
+        </a:hbox> 
+        
+        <a:vbox edge="10" padding="5" stretch="true" height="400" resizable="true"> 
+            <a:hbox padding="5" height="130" stretch="true" pack="start"> 
+                <a:frame>frame 1</a:frame> 
+                <a:frame>frame 2</a:frame> 
+                <a:frame>frame 3</a:frame> 
+            </a:hbox> 
+            <a:hbox padding="15" pack="middle" stretch="true" height="100%"> 
+                <a:frame>frame 1</a:frame> 
+                <a:frame>frame 2</a:frame> 
+                <a:frame>frame 3</a:frame> 
+            </a:hbox>
+            <a:hbox padding="5" pack="end" stretch="true"> 
+                <a:frame>frame 1</a:frame> 
+                <a:frame>frame 2</a:frame> 
+                <a:frame>frame 3</a:frame> 
+            </a:hbox> 
+        </a:vbox> 
+    </body>
+</html>

@@ -1,0 +1,231 @@
+<html>
+ <head>
+     <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
+    <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
+    
+    <script LANGUAGE="JavaScript" type="text/javascript">
+    var ctx, g;
+    
+    var gravity     = 0;
+    var friction    = 0.99;
+    var bounce      = .6;
+    var framerate   = 50;
+    
+    function $(id) {
+        return document.getElementById(id);
+    }
+    
+    // [framerate, numRects]
+    var tests = [
+        [50, 100, "waterfall"],
+        [50, 100, "bounce"],
+        [50, 200, "waterfall"],
+        [50, 200, "bounce"],
+        [50, 300, "waterfall"],
+        [50, 300, "bounce"],
+        [50, 400, "waterfall"],
+        [50, 400, "bounce"],
+        [50, 500, "waterfall"],
+        [50, 500, "bounce"],
+        [50, 600, "waterfall"],
+        [50, 600, "bounce"],
+        [50, 700, "waterfall"],
+        [50, 700, "bounce"],
+        [50, 800, "waterfall"],
+        [50, 800, "bounce"],
+        [50, 900, "waterfall"],
+        [50, 900, "bounce"],
+        [50, 1000, "waterfall"],
+        [50, 1000, "bounce"]
+    ]
+    
+    var curTestIdx = 0;
+    var rects = [];
+    function init(testIdx){
+        var testIdx = testIdx || 0;
+        ctx = new apf.vector.vml('drawnode',1500,900,0,0,'white');
+        g = ctx.group({x:0,y:0,w:800,h:600});
+        
+        draw(curTestIdx);
+    }
+    
+    function draw(testIdx) {
+        var framerate = tests[curTestIdx][0];
+        var numRects = tests[curTestIdx][1];
+        var anim = tests[curTestIdx][2] || "waterfall";
+//        $("testIdx").innerHTML = testIdx;
+
+        for (var i = 0; i < numRects; i++) {
+            if (!rects[i])
+                rects.push(new Rect());
+            else
+                rects[i].reset();
+        }
+
+        var lastTime = new Date().getTime();
+        var startTime = new Date().getTime();
+        var __floor = Math.floor;
+        var cnt = 0;
+        var ignored = 0;
+        var interval = window.setInterval(function(){
+            if (ignored == rects.length || new Date().getTime() - startTime >= 4000) {
+                clearInterval(interval);
+                $('stats').innerHTML += "\
+                    <div class='statBox'>\
+                        <div><span>Test #: " + curTestIdx + "</span></div>\
+                        <div><span>Framerate: " + framerate + "</span></div>\
+                        <div><span>Num rects: " + numRects + "</span></div>\
+                        <div><span>Animation: " + anim + "</span></div>\
+                        <div><span><b>Avg fps: " + __floor(1000/((new Date().getTime() - startTime)/cnt)) + "</b></span></div>\
+                    </div>";
+                if (tests[curTestIdx+1])
+                    draw(++curTestIdx);
+                return;
+            }
+            cnt++;
+
+            var timeDiff = new Date().getTime() - lastTime;
+            lastTime += timeDiff;
+            var right = 1470;
+            var bottom = 864;
+            var newColor;
+            var newAlpha = (4000-(new Date().getTime() - startTime)) / 4000 || 0;
+            for (var i = 0, r, l = rects.length; i < l; i++) {
+                newColor = null;
+                if ((r=rects[i]).ignore) continue;
+                
+                var newX = __floor(r.x + timeDiff*r.dx),
+                    newY = __floor(r.y + timeDiff*r.dy);
+                
+                if (anim == "waterfall") {
+                    if (newX > 0 && newX <= right && newY > 0 && newY <= bottom) {
+                        r.dy += gravity * timeDiff;
+                        newX = r.x + timeDiff*r.dx;
+                        newY = r.y + timeDiff*r.dy;
+                    }
+                    else {
+                        r.dx = r.startDx;
+                        r.dy = r.startDy;
+                        newX = r.startX;
+                        newY = r.startY;
+                    }
+                }
+
+                //bounce against borders
+                else if (anim == "bounce") {
+                    r.dy += gravity * timeDiff;
+                    if (newY < 0 || newY > bottom) {
+                        r.dy *= -bounce;
+                        newY = (newY >= bottom) ? bottom : 0;
+                        newColor = colors[Math.floor(colors.length*Math.random())]
+                    }
+                    if (newX < 0 || newX > right) {
+                        r.dx *= -bounce;
+                        newX = (newX >= right) ? right : 0;
+                        newColor = colors[Math.floor(colors.length*Math.random())]
+                    }
+                    else {
+                        r.dx *= friction;
+                    }
+                    /*
+                    if (newY >= bottom && r.dx > -.2 && r.dx < .2 && r.dy > -.2 && r.dy < .2) {
+                        r.dy = 0;
+                        r.dx = 0;
+                        newY = bottom;
+                        r.ignore = true;
+                        ignored++;
+                    }
+                    */
+                }
+                
+                r.shape.style(newColor?{x: r.x=newX, y: r.y=newY, f: newColor, o: newAlpha}:{x: r.x=newX, y: r.y=newY, o: newAlpha});
+            }
+            ctx.repaint();
+            
+            /*
+            if (cnt%framerate==0)
+                $("fps").innerHTML = "";
+            $("fps").innerHTML += ", " + __floor(1000/timeDiff);
+            if (__floor(1000/timeDiff) > $("maxfps").innerHTML)
+                $("maxfps").innerHTML = __floor(1000/timeDiff);
+            if (__floor(1000/timeDiff) < $("minfps").innerHTML || !$("minfps").innerHTML && __floor(1000/timeDiff) > 0)
+                $("minfps").innerHTML = __floor(1000/timeDiff);
+            $("avgfps").innerHTML = __floor(1000/((new Date().getTime() - startTime)/cnt));
+            */
+        },1000/framerate);
+    }
+    
+    var colors = ["blue", "red", "green", "yellow"];
+    function Rect() {
+        this.ignore = false;  // flag for ignoring calculating this shape
+        
+        this.startX  = Math.ceil(725 + 20*Math.random());
+        this.startY  = Math.ceil(422 + 20*Math.random());
+        this.x  = this.startX;
+        this.y  = this.startY;
+
+        this.startDx = -2 + 4*Math.random();
+        this.startDy = -.5 + 1*Math.random();
+        this.dx = this.startDx;
+        this.dy = this.startDy;
+
+        this.shape = ctx.rect({
+            x: this.x,
+            y: this.y,
+            w: 20,
+            h: 20,
+            //f: colors[1]
+            f: colors[Math.floor(colors.length*Math.random())]
+        }, g)
+        
+        this.reset = function() {
+            this.ignore = false;
+            this.x = this.startX;
+            this.y = this.startY;
+            this.dx = this.startDx;
+            this.dy = this.startDy;
+        }
+        
+        return this;
+    }
+    
+    function saveStats(stats) {
+        
+    }
+  </script>
+    <style type="text/css">
+        #stats {
+            position: absolute;
+            top     : 0;
+            right   : 0;
+            width   : 350px;
+            height  : 100%;
+            border  : 1px solid black;
+        }
+        .statBox {
+            font-size: 12px;
+            border-bottom: 1px solid black;
+        }
+    </style>
+ </head>
+ <body onload="init()">
+    <div id="drawnode">
+    </div>
+    <!--
+    <div>Test #: <span id="testIdx"></span></div>
+    <div>Cur: <span id="fps"></span> fps</div>
+    <div>Max: <span id="maxfps"></span> fps</div>
+    <div>Min: <span id="minfps"></span> fps</div>
+    <div>Avg: <span id="avgfps"></span> fps</div>
+    -->
+    <div id="stats">
+        
+    </div>
+ </body>
+ 
+	
+
+ </html>

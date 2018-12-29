@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml"  xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+  <head>
+    <!--?import namespace="v" implementation="#default#VML" ?-->
+  	<meta http-equiv="Content-Type" content="text/html; utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />    
+  	<title>Javeline Chart</title>  	
+	<script src="../apf.js"></script>
+	<script>//<![CDATA[
+		var ts=[],ti;
+		function logw(txt){
+			var e = document.getElementById('dbgLog');
+			if(!e){
+			  if(txt===undefined)return txt;
+			  ts.push(txt);ts.push('\n');
+			  window.setTimeout("logw()",100);
+			  return txt;
+			}
+			if(txt===undefined){if(!ts)return txt;txt = ts.join('');ts=null;}
+			var t = txt+'';
+			e.insertAdjacentHTML("beforeend", t.replace(/\n/g, "<br/>").replace(/\t/g, "&nbsp;&nbsp;&nbsp;")+"<br/>");
+			e.scrollTop = e.scrollHeight;
+			return txt;
+		}
+	//]]>
+   </script>
+	<link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body mode="xml" style="background-color:silver;display:block;cursor:default;">  	
+  	<a:appsettings create-model="true" debug="true" allow-select="true"></a:appsettings>
+	<a:loader>
+		<div id="loadscreen" style="color:#555555;">Loading...</div>
+	</a:loader>	
+	<a:skin src="chart_test_skin.xml" name="win"/>
+    <!--a:chart id="barChart" width="720" height="230" >
+		<a:axis mode="2D" x1="0" y1="-0.1" x2="31" y2="1.5">
+			<a:style type="text/chartcss">
+				plane{
+					fill:black;
+					stroke:gray;
+				}
+				tiles{
+					fill:null;
+					stroke:gray;
+				}
+			</a:style>
+            <a:graph mode="bar" dataslice="1X"
+                     series="0.1#a 0.4#b 0.3#c 0.7#d 0.1#a 0.6#b 0.2#c 0.6#d 0.5#a 0.9#b 1#c 0.9#d 0.4#a 0.3#b 0.7#c 0.3#d 0.6#a 0.2#b 0.8#c 0.5#d 0.9#a 1#b 0.1#c 0.4#d 0.3#a 0.7#b 0.1#c 0.6#d 0.2#a 0.1#b 0.5#c 0.9#d 1#a">
+				<a:style type="text/chartcss">
+					 graph.a{fill:#FFD900}
+					 graph.b{fill:#FFE240}
+					 graph.c{fill:#FFEA73}
+					 graph.d{fill:#A86D00}
+					 graph{fill:yellow;notransit:1;stroke:black;}
+					 graph:hoverin{
+						speed:4;
+						fill:yellow;
+						stroke:yellow;
+						weight:t;
+						strokeopacity:0.7*t;
+						overlay:base;
+						opacity:easein(t);
+						scale:1+easein(nt),1+easein(nt);
+					 }
+					 graph:hover{
+						fill:yellow;
+						weight:1;
+						stroke:yellow;
+						strokeopacity:0.9;
+					 }
+					 graph:hoverout{
+						speed:1;
+						stroke:#ffc54f;
+						fill:yellow;
+						overlay:base;
+						opacity:0.5;
+						offset:0,t;
+						scale:nt,nt;
+					 }
+				</a:style>
+            </a:graph>
+        </a:axis>        
+ 	</a:chart>
+
+        <a:chart width="300" height="150" anim="10">
+                <a:axis
+                  mode       = "3D"
+                  x1         = "-3"
+                  y1         = "-1"
+                  x2         = "3"
+                  y2         = "0.5"
+                  z1         = "-3"
+                  z2         = "3"
+                  x3d        = "2"
+                  y3d        = "0.5"
+                  z3d        = "2"
+                  lockyzoom  = "1"
+                  orbity     = "0.2"
+                  distance   = "3.3"
+                  orbitxanim = "0.01">
+                    <a:style type="text/chartcss">
+                        bar{fill:null;stroke:null;}
+                        label{color:#333333;};
+                        plane{fill:null;}
+                        tick{stroke:white}
+                        axis{stroke:white;side1:1;side2:1;}
+                        planexz{stroke:white;fill:gray;fillopacity:0.2;oneside:1;side:0}
+                        hbarxz{oneside:1;side:0;stroke:white;opacity:0.5}
+                        vbarxz{oneside:1;side:0;stroke:white;opacity:0.5}
+                    </a:style>
+                <a:graph
+                  mode      = "height"
+                  dataslice = "1XZ"
+                  steps     = "15"
+                  formula   = "(abs(4*sin((__e=sqrt(x*x+z*z))-2*n)/(__e+1))-1)
+                  *a+(1-a)*sin((__e=sqrt(x*x+z*z)*3)-2*n)/(__e+0.3)">
+                    <a:style type="text/chartcss">
+                        graph {
+                          fill:#f1d309;
+                          single:1;
+                          fillopacity:0.3;
+                          strokeopacity:0.5;
+                          stroke:#f1d309;
+                        }
+                    </a:style>
+                </a:graph>
+            </a:axis>
+        </a:chart-->
+	
+     <a:chart id="heightMap" width="500" height="230" anim="10" style="background-color:white">
+		<a:axis mode="3D" 
+                x1="-3" y1="-1" x2="3" y2="0.5" z1="-3" z2="3" x3d='2' y3d='0.5' z3d='2'
+                lockyzoom='1'
+                orbity = "0.2"
+                orbitxanim='0.01'
+                style="
+                    bar\{
+						fill:null;
+						line:null;
+					\}
+                    label\{
+						color:red;
+					};
+                    plane\{
+						fill:null;
+					\}
+                    tick\{
+						line:white
+					\}
+                    axis\{
+						line:white;
+						side1:1;
+						side2:1;
+					\}
+                    planexz\{
+						line:white;
+						fill:#2f2f6f;
+						fillalpha:0.4;
+						oneside:1;
+						side:0
+					\}
+                    hbarxz\{
+						oneside:1;
+						side:0;
+						line:white;
+						alpha:0.5
+					\}
+                    vbarxz\{
+						oneside:1;
+						side:0;
+						line:white;
+						alpha:0.5
+					\}
+                "
+                >
+            <a:graph id="graph2" mode="height" dataslice="1XZ"
+                     steps='15' formula="sin((__e=sqrt(x*x+z*z)*3)-2*n)/(__e+0.3)"
+                     style="
+						graph\{
+							fill:green;
+							single:1;
+							fillalpha:0.5;
+							linealpha:0.4;
+							line:#00ff5f;
+						\}
+						" 
+                     ></a:graph>
+                     
+        </a:axis>        
+                  
+ 	</a:chart>
+	
+	
+        
+    
+  <div id='dbgLog' style="width:100%;height:500px;overflow-y:scroll;overflow-x:scroll;white-space:break-word;background-color:black;color:gray;font-family:courier;font-size:8pt;">
+  </div>
+  </body>
+</html>

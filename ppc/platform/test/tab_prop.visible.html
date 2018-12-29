@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+        <a:appsettings name   = "nbd" debug="false"
+          disable-right-click = "false"
+          disable-space       = "true"
+          disable-f5          = "false"
+          auto-hide-loading   = "true"
+          allow-select        = "true"
+          allow-blur          = "true"
+          initdelay           = "false"
+          loading-message     = "Laden..."
+          empty-message       = "Laden..."
+          ></a:appsettings>
+
+        
+        
+        <a:model id="mdlSlideshow1">
+            <data>
+                <picture name="img13" title="Landscape"></picture>
+                <picture name="img14" title="Flower"></picture>
+            </data>
+        </a:model>
+         <div>
+             <a:tab id="tabProduct" anchors="10 10 10 10" onafterswitch="something()"> 
+                <a:page id="pgPrdBesc" caption="General" render="runtime"> 
+                    <a:include src="tab_prop_page1.xml" />
+                </a:page> 
+                <a:page id="pgPrdBesc2" caption="Advanced" render="runtime"> 
+                    <a:include src="tab_prop_page2.xml" />
+                </a:page> 
+                <a:page id="pgPrdBesc3" caption="Ajax.org" render="runtime"> 
+                    <a:checkbox>This ok?</a:checkbox> 
+                    <a:checkbox>This better?</a:checkbox> 
+                </a:page> 
+            </a:tab> 
+         </div>
+         
+        <a:script>
+            function something(pageEl) {
+                if(pageEl) {
+                    tabProduct.set(pageEl);
+                    pageEl = tabProduct.getPage(pageEl);
+                }
+                else
+                    pageEl = tabProduct.getPage(tabProduct.activepagenr);
+    
+                /*var pagenr = tabProduct.activepagenr;
+                nbdApp.navigateTo("product" + l1 + mdlProduct.data.getAttribute('id') + l2 + 0 + l1 + pagenr + l1 + prdImgId);
+    
+                if(!pageEl.getAttribute('rendered')) {
+                    var pagePath = pageEl.getAttribute('src');
+                    pageEl.insertMarkup(pagePath, {
+                        callback : function(options){
+                            pageEl.setAttribute('rendered', true);
+                        }
+                    });
+                }*/
+
+            }
+        </a:script>
+    </body>
+</html>

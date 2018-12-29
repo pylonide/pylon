@@ -1,0 +1,21 @@
+<html>
+ <head>
+  <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+  <script LANGUAGE="JavaScript" type="text/javascript">//<![CDATA[
+  function bench(){
+  var i  = 1.6;
+    var round = Math.floor;
+    apf.profile_loop(100000,function(){
+        round(i);
+    });
+   }
+  //]]>
+  </script>
+  
+ </head>
+ <body onload="bench()">
+	<div id="drawnode" style="width:300px;height:300px;background-color:red">
+	</div>
+	
+ </body>
+</html>

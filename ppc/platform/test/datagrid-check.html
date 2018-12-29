@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <!-- Option 1 -->
+        <!--a:datagrid id="dg" skin="dgnoscroll"
+          model  = "mdlDG" 
+          left   = "100"
+          top    = "100"
+          width  = "400" 
+          height = "160"> 
+            <a:each match="[element]"> 
+                <a:column width="40%" caption="Full name"><?lm
+                    <a:checkbox value="[@check]" label="[@name]" />
+                ?></a:column>
+                <a:column width="30%" value="[@user]" caption="Username" /> 
+                <a:column width="30%" value="[@org]" caption="Organisation" /> 
+            </a:each>
+        </a:datagrid>
+        
+        <a:scrollbar for="dg" left="478" top="105" height="150" /> 
+            
+        <a:button left="100" top="265" onclick="alert(#[mdlDG::element[@check=1]])">Count Selected Items</a:button-->
+        
+        <!-- Option 2 -->
+        
+        <a:datagrid id="dg2" skin="dgcheck" mode="check"
+          model  = "mdlDG" 
+          left   = "600"
+          top    = "100"
+          width  = "400" 
+          height = "160"> 
+            <a:each match="[element]"> 
+                <a:column width="40%" caption="Full name" value="[@name]" check="true" />
+                <a:column width="30%" value="[@user]" caption="Username" /> 
+                <a:column width="30%" value="[@org]" caption="Organisation" /> 
+            </a:each>
+        </a:datagrid>
+        
+        <a:scrollbar for="dg2" left="978" top="105" height="150" /> 
+            
+        <a:button left="600" top="265" onclick="alert(dg2.getChecked().length)">Count Selected Items</a:button>
+        
+        <a:model id="mdlDG"> 
+            <data> 
+                <element name="David van ballegooijen" check="1" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" check="1" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" check="1" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+                <element name="David van ballegooijen" user="davidvb" org="Ajax.org" /> 
+            </data> 
+        </a:model> 
+    </body>
+</html>

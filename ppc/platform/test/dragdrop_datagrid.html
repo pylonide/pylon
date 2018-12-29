@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <script src="trunk/apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="skins.xml" media-path="images/" icon-path="icns/" />
+
+        <a:table columns="300, 200" cellheight="150" padding="10">
+            <a:datagrid>
+                <a:each match="[watch]">
+                    <a:column 
+                      caption = "Company" 
+                      value   = "[@company]" 
+                      width   = "50%">
+                    </a:column>
+                    <a:column 
+                      caption = "Type" 
+                      value   = "[@type]" 
+                      width   = "50%">
+                    </a:column>
+        
+                    <a:drag match="[watch]" />
+                    <a:drop 
+                      match  = "[watch]" 
+                      target = "[watch]" 
+                      action = "insert-before" />
+                    <a:drop 
+                      match  = "[watch]" 
+                      target = "[data]" 
+                      action = "list-append" />
+                </a:each>
+                <a:model>
+                    <data>
+                        <wacht company="Alfex" type="man's" />
+                        <watch company="Anonimo" type="woman's" />
+                        <watch company="Atlantic" type="man's" />
+                        <watch company="Axcent" type="woman's" />
+                        <watch company="Aviator" type="man's" />
+                        <watch company="Bulova" type="man's" />
+                        <watch company="Candino" type="man's" />
+                        <watch company="Citizen" type="man's" />
+                        <watch company="Diesel" type="man's" />
+                        <watch company="Jaguar" type="man's" />
+                        <watch company="Lotus" type="man's" />
+                        <watch company="Seiko" type="man's" />
+                    </data>
+                </a:model>
+            </a:datagrid>
+            <a:list drag="true" drop="true">
+                <a:each match="[watch]">
+                    <a:caption match="[@company]"></a:caption>
+                    <a:icon value="clock.png"></a:icon>
+                </a:each>
+                <a:model>
+                    <data>
+                        <watch company="Casio" type="GShock" />
+                        <watch company="Casio" type="Edifice" />
+                    </data>
+                </a:model>
+            </a:list>
+        </a:table>
+    </body>
+</html>

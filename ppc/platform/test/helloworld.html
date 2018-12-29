@@ -1,0 +1,37 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml" editable='true'>
+    <head>
+        <script src="../apf.js"></script>
+        <style>
+            html{
+                overflow : hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+        
+        <a:appsettings debug="0" />
+        
+        <div style="border:1px solid red;cursor:default;">This is an html element</div>
+        
+        <a:label>Hello</a:label>
+        <a:button width="100">World</a:button>
+        <a:textbox initial-message="Goodbye everyone!" />
+        
+        <a:model id="mdlFs" src="filesystem.xml" />
+        <a:label id="lbl" model="mdlFs" caption="[drive/folder/@caption]" />
+            
+        <a:window id="app" title="Application" icon="application.png" visible="true" 
+          width="400" height="200" left="160" top="68" resizable="true">
+            <a:button left="30" top="30">test</a:button>
+            <a:button left="30" top="60">test</a:button>
+                
+            <a:bar id="bar" left="100" right="10" top="10" height2="50%-15" bottom="50"/>
+            <a:hbox left="100" right="10" bottom="10" height2="50%-15" id="hb">
+                <a:button>test</a:button>
+                <a:button />
+            </a:hbox>
+        </a:window>
+    </body>
+</html>

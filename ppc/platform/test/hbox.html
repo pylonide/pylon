@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>HBOX</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <style>
+            .redborder{
+                border : 1px solid red;
+            }
+            .boxtest{
+                border : 1px solid green;
+                font-family : Arial;
+                padding : 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+        
+        <a:vbox left="0" top="0" right="0" bottom="100" padding="2" edge="20" align="stretch">
+            <a:hbox class="redborder" flex="1" align="start" pack="start">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:hbox>
+
+            <a:hbox class="redborder" flex="1" align="start" pack="start">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+                <!-- -->
+            </a:hbox>
+    
+            <a:hbox id="test2" class="redborder" flex="1" align="center" pack="center">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar id="test1" skin="basic" class="boxtest" width="200">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:hbox>
+            
+            <a:hbox class="redborder" flex="1" align="end" pack="end">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:hbox>
+            
+            <a:hbox class="redborder" flex="1" align="stretch" pack="center">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:hbox>
+            
+            <a:hbox class="redborder" flex="1" edge="1">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest" flex="1">Small</a:bar>
+                <a:bar id="test" skin="basic" class="boxtest" flex="1" margin="10">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:hbox>
+            
+            <a:hbox class="redborder" flex="1" align="end" edge="1" padding="10">
+                <a:bar skin="basic" class="boxtest">Mark as Read</a:bar>
+                <a:bar skin="basic" class="boxtest" flex="1">Small</a:bar>
+                <a:bar id="test" skin="basic" class="boxtest" flex="2" margin="10">Mark as Unread</a:bar>
+                <a:bar skin="basic" class="boxtest">Right</a:bar>
+            </a:hbox>
+        </a:vbox>
+        
+        <a:button onclick="test1.setProperty('visible', !test1.visible)" left="10" bottom="10">toggle</a:button>
+        <a:button onclick="test2.setProperty('visible', !test2.visible)" left="60" bottom="10">toggle</a:button>
+    </body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>How to get attribute from selected element in other component - Live Markup </title>
+        
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+          <a:model id="mdl01">
+             <data>
+                <member name="Thomas" position="1" />
+                <member name="Marcus" position="1" />
+                <member name="David"  position="2" />
+                <member name="Simon"  position="3" />
+             </data>
+          </a:model>
+          
+          <a:tree id="tm" model="mdl01" height="150" width="150">
+              <a:each match="[member]">
+                  <a:caption match="[@name]" />
+              </a:each>
+          </a:tree>
+    
+          <a:model id="mdl02">
+              <data>
+                  <position idc="1" desc="Front" />
+                  <position idc="2" desc="Middle" />
+                  <position idc="3" desc="Rear" />
+              </data>
+          </a:model>
+          <!-- value="[{tm.selected}::@position]" -->
+          <!-- value="{tm.selected.getAttribute('position')}" -->
+          <a:dropdown id="dd" selected="[{tm.selected}::@position]">
+             <a:item value="1">Front</a:item>
+             <a:item value="2">Middle</a:item>
+             <a:item value="3">Rear</a:item>
+          </a:dropdown>
+          <!--a:dropdown id="dd" model="mdl02" value="[{tm.selected}]">
+             <a:each match="[position]">
+                 <a:caption match="[@desc]" />
+                 <a:value match="[@idc]" />
+             </a:each>
+          </a:dropdown-->
+       
+        
+    </body>
+</html>
