@@ -1,1 +1,0 @@
-[![Build Status](https://travis-ci.org/exsilium/apf-packager.svg?branch=master)](https://travis-ci.org/exsilium/apf-packager)
