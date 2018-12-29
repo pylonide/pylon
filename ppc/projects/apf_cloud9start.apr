@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<p:project name="Ajax.org PlatForm" xmlns:p="http://ajax.org/2008/project">
+    <p:settings
+      buildnr  = "{String(parseInt(Fs.readFileSync(__dirname + '/../buildnr', 'utf8').toString())+1).pad('0', 4) || ''}"
+      verbose  = "2"
+      version  = "3.0.{buildnr}.Beta"
+      name     = "apf_{version.replace(/\./g, '_')}"
+      cwd      = "{__dirname}/.."
+      tmp      = "/tmp"
+      platform = "{__dirname}/../support/apf"
+      release  = "~">
+    </p:settings>
+
+    <p:process>
+        <!--p:vcs
+          type       = "svn"
+          cmd        = "update"
+          repository = "{platform}" /-->
+
+        <p:combine
+          type     = "script"
+          defines  = "1"
+          group    = "apf"
+          out      = "{cwd}/build/apf_cloud9start.js"
+          filehead = "1" />
+
+        <p:compress
+          cmd      = "yuicompressor"
+          in       = "{cwd}/build/apf_cloud9start.js"
+          out      = "{cwd}/build/apf_cloud9start.js" />
+    </p:process>
+
+    <p:files>
+        <p:node path="{platform}" mask="*.js" group="apf">
+            <p:node path="jpack_begin.js" />
+            <p:node path="apf.js" />
+            <p:node path="core">
+                <p:node path="class.js" />
+                <p:node path="lib">
+                    <p:node path="util">
+                        <p:node path="color.js" />
+                    </p:node>
+                    <p:node path="history.js" />
+                    <p:node path="config.js" />
+                    <p:node path="offline.js" />
+                    <p:node path="offline">
+                        <p:node path="application.js" />
+                        <p:node path="gears.js" />
+                    </p:node>
+                </p:node>
+                <p:node path="markup">
+                    <p:node path="domparser.js" />
+                    <p:node path="aml.js" />
+                    <p:node path="aml">
+                        <p:node path="node.js" />
+                        <p:node path="element.js" />
+                        <p:node path="characterdata.js" />
+                        <p:node path="text.js" />
+                    </p:node>
+                    <p:node path="xforms" recursive="false" />
+                    <p:node path="xhtml.js" />
+                    <p:node path="xhtml">
+                        <p:node path="element.js" />
+                    </p:node>
+                    <p:node path="xsd.js" />
+                    <p:node path="xsd">
+                        <p:node path="element.js" />
+                    </p:node>
+                </p:node>
+                <p:node path="baseclasses">
+                    <p:node path="liveedit.js" />
+                    <p:node path="liveedit">
+                        <p:node path="richtext.js" />
+                    </p:node>
+                    <p:node path="anchoring.js" />
+                    <p:node path="contenteditable.js" />
+                    <p:node path="guielement.js" />
+                    <p:node path="presentation.js" />
+                    <p:node path="validation.js" />
+                    <p:node path="databinding.js" />
+                    <p:node path="databinding" />
+                    <p:node path="multiselect.js" />
+                    <p:node path="childvalue.js" />
+                    <p:node path="dataaction.js" />
+                    <p:node path="cache.js" />
+                    <p:node path="rename.js" />
+                </p:node>
+            </p:node>
+            <p:node path="debugwin" recursive="false" />
+            <p:node path="test" recursive="false" />
+            <p:node path="elements">
+                <p:node path="bindingrule.js" />
+            </p:node>
+            <p:node path="processinginstructions" />
+            <p:node path="jpack_end.js" />
+        </p:node>
+    </p:files>
+
+    <p:defines defaults="defines.xml">
+        <p:define name="__APFVERSION" value="{version}"/>
+        <p:define name="__DEBUG" value="0" />
+        <p:define name="__PACKAGED" value="1"/>
+        <p:define name="__PROCESSED" value="1"/>
+        <!-- include all available general options -->
+        <p:define name="__WITH_ABSTRACTEVENT" value="1" />
+        <p:define name="__WITH_PROPERTY_WATCH" value="1" />
+        <p:define name="__WITH_APP_DEFAULTS" value="1" />
+        <p:define name="__WITH_CONTEXTMENU" value="1" />
+        <p:define name="__WITH_CONVENIENCE_API" value="1" />
+        <p:define name="__WITH_STYLE" value="1" />
+        <p:define name="__WITH_JSON2XML" value="1" />
+        <p:define name="__WITH_JSON_API" value="1" />
+        <p:define name="__WITH_XML_UTIL" value="1" />
+        <p:define name="__WITH_DATE" value="1" />
+        <p:define name="__WITH_DATE_EXT" value="1" />
+
+        <p:define name="__WITH_DATA_INSTRUCTIONS" value="1" />
+        <p:define name="__WITH_ECMAEXT" value="1" />
+        <p:define name="__WITH_ENTITY_ENCODING" value="1" />
+        <p:define name="__WITH_EVENT_BUBBLING" value="1" />
+        <p:define name="__WITH_FOCUS" value="1" />
+        <p:define name="__WITH_WINDOW_FOCUS" value="1" />
+        <p:define name="__WITH_INCLUDES" value="1" />
+        <p:define name="__WITH_INLINE_DATABINDING" value="1" />
+        <p:define name="__WITH_AML_BINDINGS" value="1" />
+        <p:define name="__WITH_KEYBOARD" value="1" />
+
+        <p:define name="__WITH_MODEL_VALIDATION" value="1" />
+        <p:define name="__WITH_MULTISELECT_BINDINGS" value="1" />
+        <p:define name="__WITH_NAMESERVER" value="1" />
+        <p:define name="__WITH_NS_SUPPORT" value="1" />
+
+        <p:define name="__WITH_PARSE_DOC_BY_RELOADING" value="1" />
+        <p:define name="__WITH_PLANE" value="1" />
+        <p:define name="__WITH_POPUP" value="1" />
+
+        <p:define name="__WITH_PROPERTY_BINDING" value="1" />
+        <p:define name="__WITH_QUERYAPPEND" value="1" />
+        <p:define name="__WITH_REGISTRY" value="1" />
+        <p:define name="__WITH_RESIZE" value="1" />
+        <p:define name="__WITH_SORTING" value="1" />
+        <p:define name="__WITH_TWEEN" value="1" />
+        <p:define name="__WITH_UTILITIES" value="1" />
+
+        <!-- include all available AML Core objects -->
+        <p:define name="__WITH_ACTIONTRACKER" value="1" />
+        <p:define name="__ENABLE_ACTIONTRACKER_HTML5" value="1" />
+        <p:define name="__WITH_COMPONENT" value="1" />
+        <p:define name="__WITH_CLASS" value="1" />
+        <p:define name="__WITH_WINDOW" value="1" />
+
+        <p:define name="__WITH_VISIBILITYMANAGER" value="1" />
+        <p:define name="__WITH_ZMANAGER" value="1" />
+        <p:define name="__WITH_XMLDATABASE" value="1" />
+        <p:define name="__WITH_XMLMUTATION_BINDING" value="1" />
+        <p:define name="__WITH_SMARTBINDINGS" value="1" />
+        <p:define name="__WITH_SCRIPT" value="1" />
+        <p:define name="__WITH_APPSETTINGS" value="1" />
+        <p:define name="__WITH_SETTINGS" value="1" />
+        <p:define name="__WITH_MODEL" value="1" />
+
+        <!-- include all available Runtime Support objects (browsers) -->
+        <p:define name="__SUPPORT_IE" value="1" />
+        <p:define name="__SUPPORT_GECKO" value="1" />
+        <p:define name="__WITH_ELEMENT_FROM_POINT" value="1" />
+        <p:define name="__SUPPORT_WEBKIT" value="1" />
+        <p:define name="__SUPPORT_CHROME" value="1" />
+        <p:define name="__SUPPORT_OPERA" value="1" />
+        <p:define name="__SUPPORT_IE_API" value="1" />
+        <!-- include all available Language Parsers -->
+        <p:define name="__PARSE_GET_VARS" value="1" />
+        <p:define name="__PARSER_AML" value="1" />
+        <p:define name="__WITH_EXPLICIT_LOWERCASE" value="1" />
+        <p:define name="__WITH_SKIN_INCLUDES" value="1" />
+
+        <p:define name="__WITH_DOMPARSER" value="1" />
+        <p:define name="__DOMPARSER" value="1" />
+        <p:define name="__PARSER_XPATH" value="1" />
+        <p:define name="__PARSER_URL" value="1" />
+        <!-- include all available Teleport classes -->
+        <p:define name="__WITH_TELEPORT" value="1" />
+        <p:define name="__TP_HTTP" value="1" />
+        <p:define name="__TP_RPC" value="1" />
+        <p:define name="__TP_RPC_CGI" value="1" />
+        <p:define name="__TP_RPC_REST" value="1" />
+        <!-- include all available AML node types and AML features -->
+        <p:define name="__WITH_AMLNODE" value="1" />
+        <p:define name="__USE_TOSTRING" value="1" />
+        <p:define name="__WITH_AMLDOCUMENT" value="1" />
+        <p:define name="__WITH_LAYOUT" value="1" />
+        <p:define name="__AMLWINDOW" value="1" />
+        <p:define name="__AMLMODALWINDOW" value="1" />
+        <p:define name="__WITH_WINDOW_ANIMATIONS" value="1" />
+        <p:define name="__WITH_ALIGNMENT" value="1" />
+        <p:define name="__WITH_ANCHORING" value="1" />
+        <p:define name="__WITH_CACHE" value="1" />
+        <p:define name="__WITH_DATABINDING" value="1" />
+        <p:define name="__WITH_DELAYEDRENDER" value="1" />
+
+        <p:define name="__WITH_GUIELEMENT" value="1" />
+        <p:define name="__WITH_INTERACTIVE" value="1" />
+        <p:define name="__WITH_AMLDOM" value="1" />
+        <p:define name="__WITH_AMLSELECTION" value="1" />
+        <p:define name="__WITH_AMLCHARACTERDATA" value="1" />
+        <p:define name="__WITH_AMLDOM_FULL" value="1" />
+        <p:define name="__WITH_MULTIBINDING" value="1" />
+        <p:define name="__WITH_MULTISELECT" value="1" />
+        <p:define name="__WITH_PRESENTATION" value="1" />
+        <p:define name="__WITH_VALIDATION" value="1" />
+
+        <p:define name="__WITH_AMLELEMENT" value="1" />
+        <p:define name="__WITH_AMLPROCESSINGINSTRUCTION" value="1" />
+        <p:define name="__WITH_AMLNAMEDNODEMAP" value="1" />
+        <p:define name="__WITH_AMLEVENT" value="1" />
+        <p:define name="__WITH_AMLDOCUMENTFRAGMENT" value="1" />
+        <p:define name="__WITH_AMLCONFIGURATION" value="1" />
+        <p:define name="__WITH_AMLCDATASECTION" value="1" />
+        <p:define name="__WITH_AMLATTR" value="1" />
+        <p:define name="__WITH_AMLTEXT" value="1" />
+        <p:define name="__WITH_LIVEEDIT" value="1" />
+        <p:define name="__ENABLE_LIVEEDIT_RICHTEXT" value="1" />
+        <p:define name="__WITH_LIVEEDIT" value="1" />
+        <p:define name="__WITH_SELECTION" value="1" />
+        <!-- binding options -->
+
+        <!-- new defines -->
+        <p:define name="__WITH_XML_JQUERY_API" value="1" />
+        <p:define name="__WITH_PROPERTY_INHERITANCE" value="1" />
+        <p:define name="__PARSER_XHTML" value="1" />
+        <p:define name="__PARSER_HTML5" value="1" />
+        <p:define name="__WITH_XHTML" value="1" />
+        <p:define name="__WITH_CONFIG" value="1" />
+        <p:define name="__WITH_QUEUE" value="1" />
+        <p:define name="__WITH_DATA" value="1" />
+        <p:define name="__PARSER_LM" value="1" />
+        <p:define name="__AMLBASEBUTTON" value="1" />
+        <p:define name="__AMLTOOLBAR" value="1" />
+        <p:define name="__AMLBASETAB" value="1" />
+        <p:define name="__WITH_DATAACTION" value="1" />
+        <p:define name="__AMLBASESIMPLE" value="1" />
+        <p:define name="__AMLBASELIST" value="1" />
+        <p:define name="__AMLBASESTATEBUTTONS" value="1" />
+        <p:define name="__WITH_CHILDVALUE" value="1" />
+        <p:define name="__AMLITEM" value="1" />
+        <p:define name="__AMLLIST" value="1" />
+        <p:define name="__AMLERRORBOX" value="1" />
+        <p:define name="__AMLSERVICES" value="1" />
+        <p:define name="__AMLPAGER" value="1" />
+        <p:define name="__AMLCOMMENT" value="1" />
+        <p:define name="__AMLDROPDOWN" value="1" />
+        <p:define name="__AMLCONTEXTMENU" value="1" />
+        <p:define name="__AMLMENU" value="1" />
+
+        <p:define name="__AMLTEXTBOX" value="1" />
+        <p:define name="__AMLSECRET" value="1" />
+        <p:define name="__AMLTEXTAREA" value="1" />
+        <p:define name="__AMLINPUT" value="1" />
+        <p:define name="__AMLSCRIPT" value="1" />
+        <p:define name="__AMLBAR" value="1" />
+        <p:define name="__AMLRADIOBUTTON" value="1" />
+        <p:define name="__AMLPAGE" value="1" />
+        <p:define name="__ENABLE_PAGE_TRANSITIONS" value="1" />
+        <p:define name="__AMLDIVIDER" value="1" />
+        <p:define name="__AMLVBOX" value="1" />
+        <p:define name="__AMLHBOX" value="1" />
+        <p:define name="__AMLTABLE" value="1" />
+        <p:define name="__AMLTAB" value="1" />
+        <p:define name="__AMLPAGES" value="1" />
+        <p:define name="__AMLTELEPORT" value="1" />
+
+        <p:define name="__AMLLABEL" value="1" />
+        <p:define name="__AMLBUTTON" value="1" />
+
+        <p:define name="__AMLTEXT" value="1" />
+        <p:define name="__AMLCHECKBOX" value="1" />
+        <p:define name="__AMLAPPLICATION" value="1" />
+        <p:define name="__AMLLOADER" value="1" />
+        <p:define name="__LIVEMARKUP" value="1" />
+        <p:define name="__AMLCONFIG" value="1" />
+        <p:define name="__AMLEVENT" value="1" />
+        <p:define name="__AMLSOURCE" value="1" />
+        <p:define name="__AMLFILLER" value="1" />
+        <p:define name="__PARSER_XINCLUDE" value="1" />
+        <p:define name="__WITH_XIINCLUDE" value="1" />
+        <p:define name="__LAYOUT_ENABLE_SPLITTERS" value="1" />
+        <p:define name="__AMLSTATE" value="1" />
+        <p:define name="__AMLSTATEGROUP" value="1" />
+        <p:define name="__AMLFRAME" value="1" />
+        <p:define name="__WITH_LIVEMARKUP" value="1" />
+
+        <p:define name="__WITH_ZERO_TIMEOUT" value="1" />
+
+        <p:define name="__ENABLE_TEXTBOX_AUTOCOMPLETE2" value="0" />
+        <p:define name="__WITH_XFORMS" value="0" />
+        <p:define name="__WITH_EDITMODE" value="0" />
+        <p:define name="__AMLVIEWPORT" value="0" />
+        <p:define name="__SUPPORT_JAW" value="0" />
+        <p:define name="__WITH_VECTOR" value="0" />
+        <p:define name="__WITH_DRAW" value="0" />
+        <p:define name="__WITH_CDN" value="0" />
+        <p:define name="__PARSER_XFORMS" value="0" />
+        <p:define name="__ENABLED_LIVETEXT" value="0" />
+        <p:define name="__WITH_UNSAFE_XMLHTTP" value="0" />
+        <p:define name="__WITH_VISUALIZER" value="0" />
+
+        <p:define name="__WITH_MULTICHECK_TREE" value="1" />
+        <p:define name="__AMLBASETREE" value="1" />
+        <p:define name="__AMLTREE" value="1" />
+        <p:define name="__WITH_AUTH" value="1" />
+        <p:define name="__ENABLE_BUTTON_ACTIONS" value="1" />
+        <p:define name="__AMLIMG" value="1" />
+        <p:define name="__AMLDATAGRID" value="1" />
+        <p:define name="__WITH_SCROLLBAR" value="1" />
+        <p:define name="__WITH_CSS_BINDS" value="1" />
+        <p:define name="__WITH_MD5" value="1" />
+        <p:define name="__WITH_HISTORY" value="0" />
+        <p:define name="__WITH_JSLT_EVENTS" value="1" />
+        <p:define name="__WITH_MOUSESCROLL" value="1" />
+    </p:defines>
+</p:project>

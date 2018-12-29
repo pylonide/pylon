@@ -1,0 +1,971 @@
+13:09:32.460 Defines loaded from /Volumes/Docs/NetBeansProjects/worknets2/packager/projects/defines_3.0.xml
+13:09:32.463 Processing process node
+13:09:32.463 Parsing combine
+13:09:32.464 Adding file : /var/lib/platform/jpack_begin.js size: 0
+13:09:32.483 Adding file : /var/lib/platform/apf.js size: 95533
+13:09:32.484 apf.js(167) - Ignoring code by ifdef __DEBUG
+13:09:32.487 apf.js(550) - Ignoring code by ifdef __DEBUG
+13:09:32.487 apf.js(659) - Ignoring code by ifdef __DEBUG
+13:09:32.487 apf.js(674) - Ignoring code by ifdef __WITH_DEBUG_WIN
+13:09:32.488 apf.js(722) - Ignoring code by ifndef __SUPPORT_GWT
+13:09:32.488 apf.js(741) - Ignoring code by ifndef __SUPPORT_GWT
+13:09:32.489 apf.js(844) - Ignoring code by ifdef __DEBUG
+13:09:32.489 apf.js(856) - Ignoring code by ifdef __DEBUG
+13:09:32.489 apf.js(935) - Ignoring code by ifdef __DEBUG
+13:09:32.491 apf.js(1134) - Ignoring code by ifdef __DEBUG
+13:09:32.491 apf.js(1146) - Ignoring code by ifdef __DEBUG
+13:09:32.491 apf.js(1158) - Ignoring code by ifdef __DEBUG
+13:09:32.492 apf.js(1171) - Ignoring code by ifdef __DEBUG
+13:09:32.492 apf.js(1184) - Ignoring code by ifdef __DEBUG
+13:09:32.492 apf.js(1197) - Ignoring code by ifdef __DEBUG
+13:09:32.492 apf.js(1220) - Ignoring code by ifdef __DEBUG
+13:09:32.492 apf.js(1264) - Ignoring code by ifdef __DEBUG
+13:09:32.493 apf.js(1375) - Ignoring code by ifdef __DEBUG
+13:09:32.493 apf.js(1501) - Ignoring code by ifdef __DEBUG
+13:09:32.494 apf.js(1511) - Ignoring code by ifdef __DEBUG
+13:09:32.495 apf.js(1537) - Ignoring code by ifdef __DEBUG
+13:09:32.499 apf.js(1739) - Ignoring code by ifdef __DEBUG
+13:09:32.501 apf.js(1755) - Ignoring code by ifdef __DEBUG
+13:09:32.501 apf.js(1763) - Ignoring code by ifdef __WITH_PARTIAL_AML_LOADING_FROM_COMMENT
+13:09:32.502 apf.js(1829) - Ignoring code by ifdef __WITH_PARSE_AML_FROM_HTML
+13:09:32.502 apf.js(1874) - Ignoring code by ifdef __DEBUG
+13:09:32.502 apf.js(1886) - Ignoring code by ifdef __DEBUG
+13:09:32.503 apf.js(1901) - Ignoring code by ifdef __DEBUG
+13:09:32.503 apf.js(1925) - Ignoring code by ifndef __SUPPORT_GWT
+13:09:32.503 apf.js(1935) - Ignoring code by ifndef __SUPPORT_GWT
+13:09:32.503 apf.js(1971) - Ignoring code by ifdef __WITH_DEFAULT_SKIN
+13:09:32.508 apf.js(2124) - Ignoring code by ifndef __SUPPORT_GWT
+13:09:32.509 apf.js(2293) - Ignoring code by ifdef __DEBUG
+13:09:32.510 apf.js(2380) - Ignoring code by ifdef !__PACKAGED || __WITH_DEBUG_WIN
+13:09:32.510 apf.js(2414) - Ignoring code by ifndef __PACKAGED
+13:09:32.510 Adding file : /var/lib/platform/core/class.js size: 45503
+13:09:32.513 class.js(452) - Ignoring code by ifdef __DEBUG
+13:09:32.514 class.js(472) - Ignoring code by ifdef __DEBUG
+13:09:32.517 class.js(730) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:32.519 class.js(896) - Ignoring code by ifdef __DEBUG
+13:09:32.520 class.js(958) - Ignoring code by ifdef __DEBUG
+13:09:32.520 class.js(968) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:32.520 class.js(1009) - Ignoring code by ifdef __PROFILER
+13:09:32.521 class.js(1160) - Ignoring code by ifdef __DEBUG
+13:09:32.521 Adding file : /var/lib/platform/core/lib/util/color.js size: 10887
+13:09:32.522 Adding file : /var/lib/platform/core/lib/util/abstractevent.js size: 4316
+13:09:32.523 Adding file : /var/lib/platform/core/lib/util/async.js size: 3295
+13:09:32.523 async.js(23) - Ignoring code by ifdef __WITH_ASYNC
+13:09:32.523 Adding file : /var/lib/platform/core/lib/util/cookie.js size: 3073
+13:09:32.524 Adding file : /var/lib/platform/core/lib/util/ecmaext.js size: 24338
+13:09:32.524 ecmaext.js(128) - Ignoring code by ifdef __DEPRECATED
+13:09:32.525 ecmaext.js(415) - Ignoring code by ifdef __DEPRECATED
+13:09:32.525 ecmaext.js(544) - Ignoring code by ifdef __WITH_UUID
+13:09:32.526 Adding file : /var/lib/platform/core/lib/util/flash.js size: 22995
+13:09:32.529 flash.js(297) - Ignoring code by ifdef __DEBUG
+13:09:32.530 flash.js(464) - Ignoring code by ifdef __DEBUG
+13:09:32.531 Adding file : /var/lib/platform/core/lib/util/hook.js size: 9638
+13:09:32.531 hook.js(23) - Ignoring code by ifdef __WITH_WRAP
+13:09:32.533 Adding file : /var/lib/platform/core/lib/util/hotkey.js size: 3235
+13:09:32.534 hotkey.js(78) - Ignoring code by ifdef __DEBUG
+13:09:32.534 Adding file : /var/lib/platform/core/lib/util/iepngfix.js size: 3570
+13:09:32.536 Adding file : /var/lib/platform/core/lib/util/json.js size: 18148
+13:09:32.549 Adding file : /var/lib/platform/core/lib/util/nameserver.js size: 5428
+13:09:32.550 nameserver.js(34) - Ignoring code by ifdef __DEBUG
+13:09:32.550 nameserver.js(46) - Ignoring code by ifdef __DEBUG
+13:09:32.550 nameserver.js(158) - Ignoring code by ifndef __PACKAGED
+13:09:32.551 Adding file : /var/lib/platform/core/lib/util/o3.js size: 8157
+13:09:32.551 o3.js(22) - Ignoring code by ifdef __WITH_O3
+13:09:32.551 Adding file : /var/lib/platform/core/lib/util/plane.js size: 7342
+13:09:32.554 Adding file : /var/lib/platform/core/lib/util/popup.js size: 10432
+13:09:32.556 Adding file : /var/lib/platform/core/lib/util/silverlight.js size: 25659
+13:09:32.560 Adding file : /var/lib/platform/core/lib/util/style.js size: 17262
+13:09:32.561 style.js(108) - Ignoring code by ifdef __DEBUG
+13:09:32.562 Adding file : /var/lib/platform/core/lib/util/syntax.js size: 12610
+13:09:32.564 Adding file : /var/lib/platform/core/lib/util/textdiff.js size: 89290
+13:09:32.594 Adding file : /var/lib/platform/core/lib/util/utilities.js size: 19479
+13:09:32.596 utilities.js(221) - Ignoring code by ifdef __DEBUG
+13:09:32.598 utilities.js(225) - Ignoring code by ifdef __DEBUG
+13:09:32.598 utilities.js(393) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:32.599 utilities.js(520) - Ignoring code by ifdef __DEBUG
+13:09:32.599 utilities.js(546) - Ignoring code by ifdef __DEBUG
+13:09:32.599 Adding file : /var/lib/platform/core/lib/util/visibilitymanager.js size: 3602
+13:09:32.600 Adding file : /var/lib/platform/core/lib/util/xml.js size: 45269
+13:09:32.602 xml.js(501) - Ignoring code by ifdef __DEBUG
+13:09:32.605 xml.js(884) - Ignoring code by ifdef __DEBUG
+13:09:32.605 xml.js(920) - Ignoring code by ifdef __DEBUG
+13:09:32.608 Adding file : /var/lib/platform/core/lib/util/xmldiff.js size: 36580
+13:09:32.608 xmldiff.js(40) - Ignoring code by ifdef __DEBUG
+13:09:32.628 xmldiff.js(764) - Ignoring code by ifdef __DEBUG
+13:09:32.628 xmldiff.js(783) - Ignoring code by ifdef __DEBUG
+13:09:32.646 xmldiff.js(866) - Ignoring code by ifdef __DEBUG
+13:09:32.647 xmldiff.js(882) - Ignoring code by ifdef __DEBUG
+13:09:32.647 xmldiff.js(907) - Ignoring code by ifdef __DEBUG
+13:09:32.648 Adding file : /var/lib/platform/core/lib/util/zmanager.js size: 2540
+13:09:32.650 Adding file : /var/lib/platform/core/lib/history.js size: 9968
+13:09:32.653 Adding file : /var/lib/platform/core/lib/config.js size: 8551
+13:09:32.655 config.js(231) - Ignoring code by ifdef __DEBUG
+13:09:32.656 Adding file : /var/lib/platform/core/lib/offline.js size: 20264
+13:09:32.657 offline.js(159) - Ignoring code by ifdef __DEBUG
+13:09:32.657 offline.js(172) - Ignoring code by ifdef __DEBUG
+13:09:32.658 offline.js(227) - Ignoring code by ifdef __DEBUG
+13:09:32.658 offline.js(312) - Ignoring code by ifdef __DEBUG
+13:09:32.658 offline.js(336) - Ignoring code by ifdef __DEBUG
+13:09:32.660 offline.js(402) - Ignoring code by ifdef __DEBUG
+13:09:32.660 offline.js(429) - Ignoring code by ifdef __DEBUG
+13:09:32.662 offline.js(459) - Ignoring code by ifdef __DEBUG
+13:09:32.662 offline.js(465) - Ignoring code by ifdef __DEBUG
+13:09:32.662 offline.js(481) - Ignoring code by ifdef __DEBUG
+13:09:32.662 offline.js(501) - Ignoring code by ifdef __DEBUG
+13:09:32.662 offline.js(570) - Ignoring code by ifdef __DEBUG
+13:09:32.663 Adding file : /var/lib/platform/core/lib/offline/application.js size: 11733
+13:09:32.665 application.js(79) - Ignoring code by ifdef __DEBUG
+13:09:32.665 application.js(101) - Ignoring code by ifdef __DEBUG
+13:09:32.666 application.js(112) - Ignoring code by ifdef __DEBUG
+13:09:32.667 application.js(143) - Ignoring code by ifdef __DEBUG
+13:09:32.668 application.js(207) - Ignoring code by ifdef __DEBUG
+13:09:32.668 application.js(225) - Ignoring code by ifdef __DEBUG
+13:09:32.669 application.js(237) - Ignoring code by ifdef __DEBUG
+13:09:32.671 Adding file : /var/lib/platform/core/lib/offline/gears.js size: 4771
+13:09:32.672 gears.js(78) - Ignoring code by ifdef __DEBUG;
+13:09:32.674 Adding file : /var/lib/platform/core/lib/offline/detector.js size: 4827
+13:09:32.674 detector.js(116) - Ignoring code by ifdef __DEBUG
+13:09:32.674 detector.js(132) - Ignoring code by ifdef __DEBUG
+13:09:32.674 Adding file : /var/lib/platform/core/lib/offline/models.js size: 5471
+13:09:32.675 models.js(97) - Ignoring code by ifdef __DEBUG
+13:09:32.675 models.js(119) - Ignoring code by ifdef __DEBUG
+13:09:32.675 Adding file : /var/lib/platform/core/lib/offline/queue.js size: 7008
+13:09:32.676 queue.js(63) - Ignoring code by ifdef __DEBUG
+13:09:32.677 queue.js(79) - Ignoring code by ifdef __DEBUG
+13:09:32.677 queue.js(114) - Ignoring code by ifdef __DEBUG
+13:09:32.678 queue.js(185) - Ignoring code by ifdef __DEBUG
+13:09:32.678 Adding file : /var/lib/platform/core/lib/offline/state.js size: 7978
+13:09:32.678 state.js(116) - Ignoring code by ifdef __DEBUG
+13:09:32.678 state.js(131) - Ignoring code by ifdef __DEBUG
+13:09:32.679 Adding file : /var/lib/platform/core/lib/offline/transactions.js size: 9780
+13:09:32.679 transactions.js(74) - Ignoring code by ifdef __DEBUG
+13:09:32.680 transactions.js(104) - Ignoring code by ifdef __DEBUG
+13:09:32.680 transactions.js(149) - Ignoring code by ifdef __DEBUG
+13:09:32.680 transactions.js(166) - Ignoring code by ifdef __DEBUG
+13:09:32.682 Adding file : /var/lib/platform/core/lib/data.js size: 16195
+13:09:32.693 data.js(156) - Ignoring code by ifdef __DEBUG
+13:09:32.693 data.js(231) - Ignoring code by ifdef __DEBUG
+13:09:32.693 data.js(240) - Ignoring code by ifdef __DEBUG
+13:09:32.694 data.js(349) - Ignoring code by ifdef __DEBUG
+13:09:32.694 data.js(362) - Ignoring code by ifdef __DEBUG
+13:09:32.694 data.js(373) - Ignoring code by ifdef __DEBUG
+13:09:32.695 Adding file : /var/lib/platform/core/lib/date.js size: 31221
+13:09:32.701 Adding file : /var/lib/platform/core/lib/draw.js size: 66997
+13:09:32.716 Adding file : /var/lib/platform/core/lib/flow.js size: 71086
+13:09:32.736 Adding file : /var/lib/platform/core/lib/flow2.js size: 70664
+13:09:32.737 flow2.js(22) - Ignoring code by ifdef __WITH_FLOW2
+13:09:32.751 Adding file : /var/lib/platform/core/lib/geolocation.js size: 11303
+13:09:32.755 geolocation.js(210) - Ignoring code by ifdef __DEBUG
+13:09:32.756 Adding file : /var/lib/platform/core/lib/html.js size: 15348
+13:09:32.766 html.js(349) - Ignoring code by ifdef __DEBUG
+13:09:32.766 Adding file : /var/lib/platform/core/lib/language.js size: 8586
+13:09:32.766 language.js(145) - Ignoring code by ifdef __DEBUG
+13:09:32.767 Adding file : /var/lib/platform/core/lib/layout.js size: 75453
+13:09:32.768 layout.js(190) - Ignoring code by ifdef __DEBUG
+13:09:32.769 layout.js(220) - Ignoring code by ifdef __DEBUG
+13:09:32.769 layout.js(249) - Ignoring code by ifdef __DEBUG
+13:09:32.769 layout.js(297) - Ignoring code by ifdef __DEBUG
+13:09:32.769 layout.js(311) - Ignoring code by ifdef __DEBUG
+13:09:32.774 layout.js(596) - Ignoring code by ifdef __DEBUG
+13:09:32.793 Adding file : /var/lib/platform/core/lib/printer.js size: 5120
+13:09:32.795 Adding file : /var/lib/platform/core/lib/queue.js size: 3092
+13:09:32.795 Adding file : /var/lib/platform/core/lib/resize.js size: 13139
+13:09:32.799 Adding file : /var/lib/platform/core/lib/resize2.js size: 10417
+13:09:32.799 resize2.js(22) - Ignoring code by ifdef __WITH_RESIZE2
+13:09:32.801 Adding file : /var/lib/platform/core/lib/selection.js size: 32184
+13:09:32.809 Adding file : /var/lib/platform/core/lib/skins.js size: 12705
+13:09:32.811 skins.js(222) - Ignoring code by ifdef __DEBUG
+13:09:32.811 skins.js(243) - Ignoring code by ifdef __DEBUG
+13:09:32.811 skins.js(260) - Ignoring code by ifdef __DEBUG
+13:09:32.812 skins.js(368) - Ignoring code by ifdef __DEBUG
+13:09:32.812 Adding file : /var/lib/platform/core/lib/sort.js size: 8413
+13:09:32.812 sort.js(56) - Ignoring code by ifdef __DEBUG
+13:09:32.813 Adding file : /var/lib/platform/core/lib/storage.js size: 9036
+13:09:32.814 storage.js(65) - Ignoring code by ifdef __DEBUG
+13:09:32.814 storage.js(89) - Ignoring code by ifdef __DEBUG
+13:09:32.814 storage.js(97) - Ignoring code by ifdef __DEBUG
+13:09:32.814 storage.js(107) - Ignoring code by ifdef __DEBUG
+13:09:32.814 storage.js(176) - Ignoring code by ifndef __PACKAGED
+13:09:32.814 Adding file : /var/lib/platform/core/lib/tween.js size: 35155
+13:09:32.816 tween.js(356) - Ignoring code by ifdef __DEBUG
+13:09:32.818 tween.js(542) - Ignoring code by ifdef __DEBUG
+13:09:32.822 Adding file : /var/lib/platform/core/lib/uirecorder.js size: 86788
+13:09:32.822 uirecorder.js(1) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:32.854 Adding file : /var/lib/platform/core/lib/vector.js size: 46289
+13:09:32.855 vector.js(22) - Ignoring code by ifdef __WITH_VECTOR
+13:09:32.867 Adding file : /var/lib/platform/core/lib/xmldb.js size: 39920
+13:09:32.868 xmldb.js(250) - Ignoring code by ifdef __DEBUG
+13:09:32.884 xmldb.js(930) - Ignoring code by ifdef __DEBUG
+13:09:32.884 Adding file : /var/lib/platform/core/lib/draw/canvas.js size: 21818
+13:09:32.892 Adding file : /var/lib/platform/core/lib/draw/chartdraw.js size: 47182
+13:09:32.903 Adding file : /var/lib/platform/core/lib/draw/vml.js size: 20284
+13:09:32.911 Adding file : /var/lib/platform/core/lib/storage/air.file.js size: 10053
+13:09:32.912 air.file.js(58) - Ignoring code by ifdef __DEBUG
+13:09:32.921 air.file.js(68) - Ignoring code by ifdef __DEBUG
+13:09:32.922 air.file.js(90) - Ignoring code by ifdef __DEBUG
+13:09:32.924 air.file.js(103) - Ignoring code by ifdef __DEBUG
+13:09:32.924 air.file.js(113) - Ignoring code by ifdef __DEBUG
+13:09:32.925 air.file.js(148) - Ignoring code by ifdef __DEBUG
+13:09:32.925 air.file.js(169) - Ignoring code by ifdef __DEBUG
+13:09:32.926 air.file.js(185) - Ignoring code by ifdef __DEBUG
+13:09:32.926 air.file.js(198) - Ignoring code by ifdef __DEBUG
+13:09:32.927 air.file.js(211) - Ignoring code by ifdef __DEBUG
+13:09:32.927 air.file.js(224) - Ignoring code by ifdef __DEBUG
+13:09:32.927 air.file.js(236) - Ignoring code by ifdef __DEBUG
+13:09:32.927 air.file.js(246) - Ignoring code by ifdef __DEBUG
+13:09:32.927 air.file.js(261) - Ignoring code by ifdef __DEBUG
+13:09:32.927 air.file.js(271) - Ignoring code by ifdef __DEBUG
+13:09:32.927 Adding file : /var/lib/platform/core/lib/storage/air.js size: 9669
+13:09:32.928 air.js(54) - Ignoring code by ifdef __DEBUG
+13:09:32.928 air.js(63) - Ignoring code by ifdef __DEBUG
+13:09:32.928 air.js(82) - Ignoring code by ifdef __DEBUG
+13:09:32.928 air.js(94) - Ignoring code by ifdef __DEBUG
+13:09:32.928 air.js(102) - Ignoring code by ifdef __DEBUG
+13:09:32.928 air.js(125) - Ignoring code by ifdef __DEBUG
+13:09:32.928 air.js(145) - Ignoring code by ifdef __DEBUG
+13:09:32.928 air.js(167) - Ignoring code by ifdef __DEBUG
+13:09:32.928 air.js(181) - Ignoring code by ifdef __DEBUG
+13:09:32.929 air.js(194) - Ignoring code by ifdef __DEBUG
+13:09:32.929 air.js(207) - Ignoring code by ifdef __DEBUG
+13:09:32.929 air.js(219) - Ignoring code by ifdef __DEBUG
+13:09:32.929 air.js(228) - Ignoring code by ifdef __DEBUG
+13:09:32.929 air.js(243) - Ignoring code by ifdef __DEBUG
+13:09:32.929 air.js(252) - Ignoring code by ifdef __DEBUG
+13:09:32.930 Adding file : /var/lib/platform/core/lib/storage/air.sql.js size: 11835
+13:09:32.931 air.sql.js(77) - Ignoring code by ifdef __DEBUG
+13:09:32.932 air.sql.js(87) - Ignoring code by ifdef __DEBUG
+13:09:32.932 air.sql.js(111) - Ignoring code by ifdef __DEBUG
+13:09:32.932 air.sql.js(124) - Ignoring code by ifdef __DEBUG
+13:09:32.933 air.sql.js(134) - Ignoring code by ifdef __DEBUG
+13:09:32.933 air.sql.js(170) - Ignoring code by ifdef __DEBUG
+13:09:32.933 air.sql.js(193) - Ignoring code by ifdef __DEBUG
+13:09:32.933 air.sql.js(210) - Ignoring code by ifdef __DEBUG
+13:09:32.933 air.sql.js(226) - Ignoring code by ifdef __DEBUG
+13:09:32.933 air.sql.js(239) - Ignoring code by ifdef __DEBUG
+13:09:32.934 air.sql.js(267) - Ignoring code by ifdef __DEBUG
+13:09:32.934 air.sql.js(279) - Ignoring code by ifdef __DEBUG
+13:09:32.934 air.sql.js(289) - Ignoring code by ifdef __DEBUG
+13:09:32.934 air.sql.js(313) - Ignoring code by ifdef __DEBUG
+13:09:32.934 air.sql.js(323) - Ignoring code by ifdef __DEBUG
+13:09:32.934 Adding file : /var/lib/platform/core/lib/storage/cookie.js size: 10313
+13:09:32.934 cookie.js(45) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(55) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(77) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(87) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(122) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(144) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(163) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(181) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(195) - Ignoring code by ifdef __DEBUG
+13:09:32.935 cookie.js(222) - Ignoring code by ifdef __DEBUG
+13:09:32.936 cookie.js(232) - Ignoring code by ifdef __DEBUG
+13:09:32.936 cookie.js(258) - Ignoring code by ifdef __DEBUG
+13:09:32.936 cookie.js(268) - Ignoring code by ifdef __DEBUG
+13:09:32.936 Adding file : /var/lib/platform/core/lib/storage/flash.js size: 15458
+13:09:32.936 flash.js(50) - Ignoring code by ifndef __PACKAGED
+13:09:32.937 flash.js(229) - Ignoring code by ifdef __DEBUG
+13:09:32.937 flash.js(238) - Ignoring code by ifdef __DEBUG
+13:09:32.937 flash.js(248) - Ignoring code by ifdef __DEBUG
+13:09:32.937 flash.js(261) - Ignoring code by ifdef __DEBUG
+13:09:32.937 flash.js(279) - Ignoring code by ifdef __DEBUG
+13:09:32.937 flash.js(287) - Ignoring code by ifdef __DEBUG
+13:09:32.938 flash.js(301) - Ignoring code by ifdef __DEBUG
+13:09:32.938 flash.js(310) - Ignoring code by ifdef __DEBUG
+13:09:32.938 flash.js(347) - Ignoring code by ifdef __DEBUG
+13:09:32.938 flash.js(382) - Ignoring code by ifdef __DEBUG
+13:09:32.938 flash.js(395) - Ignoring code by ifdef __DEBUG
+13:09:32.938 flash.js(405) - Ignoring code by ifdef __DEBUG
+13:09:32.938 flash.js(414) - Ignoring code by ifdef __DEBUG
+13:09:32.938 Adding file : /var/lib/platform/core/lib/storage/gears.js size: 12312
+13:09:32.939 gears.js(104) - Ignoring code by ifdef __DEBUG
+13:09:32.939 gears.js(114) - Ignoring code by ifdef __DEBUG
+13:09:32.939 gears.js(133) - Ignoring code by ifdef __DEBUG
+13:09:32.939 gears.js(145) - Ignoring code by ifdef __DEBUG
+13:09:32.939 gears.js(155) - Ignoring code by ifdef __DEBUG
+13:09:32.940 gears.js(191) - Ignoring code by ifdef __DEBUG
+13:09:32.940 gears.js(213) - Ignoring code by ifdef __DEBUG
+13:09:32.940 gears.js(229) - Ignoring code by ifdef __DEBUG
+13:09:32.940 gears.js(243) - Ignoring code by ifdef __DEBUG
+13:09:32.940 gears.js(257) - Ignoring code by ifdef __DEBUG
+13:09:32.941 gears.js(280) - Ignoring code by ifdef __DEBUG
+13:09:32.941 gears.js(292) - Ignoring code by ifdef __DEBUG
+13:09:32.941 gears.js(302) - Ignoring code by ifdef __DEBUG
+13:09:32.941 gears.js(324) - Ignoring code by ifdef __DEBUG
+13:09:32.941 gears.js(333) - Ignoring code by ifdef __DEBUG
+13:09:32.941 Adding file : /var/lib/platform/core/lib/storage/html5.js size: 8228
+13:09:32.942 html5.js(52) - Ignoring code by ifdef __DEBUG
+13:09:32.942 html5.js(71) - Ignoring code by ifdef __DEBUG
+13:09:32.942 html5.js(79) - Ignoring code by ifdef __DEBUG
+13:09:32.942 html5.js(131) - Ignoring code by ifdef __DEBUG
+13:09:32.943 html5.js(164) - Ignoring code by ifdef __DEBUG
+13:09:32.943 html5.js(219) - Ignoring code by ifdef __DEBUG
+13:09:32.943 Adding file : /var/lib/platform/core/lib/storage/memory.js size: 10208
+13:09:32.943 memory.js(46) - Ignoring code by ifdef __DEBUG
+13:09:32.943 memory.js(56) - Ignoring code by ifdef __DEBUG
+13:09:32.943 memory.js(80) - Ignoring code by ifdef __DEBUG
+13:09:32.943 memory.js(90) - Ignoring code by ifdef __DEBUG
+13:09:32.944 memory.js(125) - Ignoring code by ifdef __DEBUG
+13:09:32.944 memory.js(146) - Ignoring code by ifdef __DEBUG
+13:09:32.944 memory.js(165) - Ignoring code by ifdef __DEBUG
+13:09:32.944 memory.js(183) - Ignoring code by ifdef __DEBUG
+13:09:32.944 memory.js(197) - Ignoring code by ifdef __DEBUG
+13:09:32.944 memory.js(223) - Ignoring code by ifdef __DEBUG
+13:09:32.944 memory.js(233) - Ignoring code by ifdef __DEBUG
+13:09:32.945 memory.js(258) - Ignoring code by ifdef __DEBUG
+13:09:32.945 memory.js(268) - Ignoring code by ifdef __DEBUG
+13:09:32.945 Adding file : /var/lib/platform/core/lib/teleport/http.js size: 36117
+13:09:32.946 http.js(143) - Ignoring code by ifdef __DEBUG
+13:09:32.946 http.js(150) - Ignoring code by ifdef __DEBUG
+13:09:32.946 http.js(166) - Ignoring code by ifdef __DEBUG
+13:09:32.947 http.js(264) - Ignoring code by ifdef __DEBUG
+13:09:32.950 http.js(359) - Ignoring code by ifdef __DEBUG
+13:09:32.950 http.js(377) - Ignoring code by ifdef __DEBUG
+13:09:32.951 http.js(397) - Ignoring code by ifdef __DEBUG
+13:09:32.951 http.js(413) - Ignoring code by ifdef __DEBUG
+13:09:32.951 http.js(448) - Ignoring code by ifdef __WITH_UNSAFE_XMLHTTP
+13:09:32.952 http.js(515) - Ignoring code by ifdef __DEBUG
+13:09:32.953 http.js(525) - Ignoring code by ifdef __DEBUG
+13:09:32.954 http.js(670) - Ignoring code by ifdef __DEBUG
+13:09:32.954 http.js(685) - Ignoring code by ifdef __DEBUG
+13:09:32.955 http.js(755) - Ignoring code by ifdef __DEBUG
+13:09:32.955 http.js(776) - Ignoring code by ifdef __DEBUG
+13:09:32.956 http.js(814) - Ignoring code by ifdef __DEBUG
+13:09:32.956 http.js(820) - Ignoring code by ifdef __DEBUG
+13:09:32.956 http.js(832) - Ignoring code by ifdef __DEBUG
+13:09:32.956 http.js(930) - Ignoring code by ifdef __DEBUG
+13:09:32.958 Adding file : /var/lib/platform/core/lib/teleport/iframe.js size: 5720
+13:09:32.959 Adding file : /var/lib/platform/core/lib/teleport/socket.js size: 19222
+13:09:32.960 socket.js(176) - Ignoring code by ifdef __DEBUG
+13:09:32.960 socket.js(232) - Ignoring code by ifdef __DEBUG
+13:09:32.960 socket.js(243) - Ignoring code by ifdef __DEBUG
+13:09:32.961 socket.js(302) - Ignoring code by ifdef __DEBUG
+13:09:32.962 socket.js(395) - Ignoring code by ifdef __DEBUG
+13:09:32.962 socket.js(401) - Ignoring code by ifdef __DEBUG
+13:09:32.963 socket.js(481) - Ignoring code by ifdef __DEBUG
+13:09:32.974 socket.js(562) - Ignoring code by ifdef __DEBUG
+13:09:32.975 Adding file : /var/lib/platform/core/markup/domparser.js size: 16518
+13:09:32.975 domparser.js(114) - Ignoring code by ifdef __DEBUG
+13:09:32.978 domparser.js(302) - Ignoring code by ifdef __DEBUG
+13:09:32.979 domparser.js(316) - Ignoring code by ifdef __DEBUG
+13:09:32.980 domparser.js(371) - Ignoring code by ifdef __DEBUG
+13:09:32.980 Adding file : /var/lib/platform/core/markup/aml.js size: 1478
+13:09:32.980 Adding file : /var/lib/platform/core/markup/aml/node.js size: 22247
+13:09:32.981 node.js(182) - Ignoring code by ifndef __PACKAGED
+13:09:32.982 node.js(265) - Ignoring code by ifdef __DEBUG
+13:09:32.982 node.js(305) - Ignoring code by ifdef __DEBUG
+13:09:32.983 node.js(427) - Ignoring code by ifdef __DEBUG
+13:09:32.983 node.js(438) - Ignoring code by ifdef __DEBUG
+13:09:32.983 node.js(488) - Ignoring code by ifdef __DEBUG
+13:09:32.984 Adding file : /var/lib/platform/core/markup/aml/element.js size: 21506
+13:09:32.985 element.js(138) - Ignoring code by ifdef __DEBUG
+13:09:32.985 element.js(157) - Ignoring code by ifdef __DEBUG
+13:09:32.985 element.js(162) - Ignoring code by ifdef __DEBUG
+13:09:32.986 element.js(362) - Ignoring code by ifdef __DEBUG
+13:09:32.986 element.js(410) - Ignoring code by ifdef __DEBUG
+13:09:32.988 element.js(551) - Ignoring code by ifdef __DEBUG
+13:09:32.989 Adding file : /var/lib/platform/core/markup/aml/characterdata.js size: 2018
+13:09:32.989 Adding file : /var/lib/platform/core/markup/aml/text.js size: 4137
+13:09:32.989 text.js(35) - Ignoring code by ifdef __ENABLED_LIVETEXT
+13:09:32.990 Adding file : /var/lib/platform/core/markup/aml/attr.js size: 4716
+13:09:32.990 attr.js(48) - Ignoring code by ifndef __PACKAGED
+13:09:32.990 Adding file : /var/lib/platform/core/markup/aml/cdatasection.js size: 1300
+13:09:32.990 Adding file : /var/lib/platform/core/markup/aml/comment.js size: 1509
+13:09:32.991 Adding file : /var/lib/platform/core/markup/aml/configuration.js size: 1384
+13:09:32.991 Adding file : /var/lib/platform/core/markup/aml/document.js size: 9454
+13:09:32.992 Adding file : /var/lib/platform/core/markup/aml/documentfragment.js size: 1286
+13:09:32.992 Adding file : /var/lib/platform/core/markup/aml/event.js size: 2086
+13:09:32.992 Adding file : /var/lib/platform/core/markup/aml/namednodemap.js size: 3407
+13:09:32.993 Adding file : /var/lib/platform/core/markup/aml/processinginstruction.js size: 4202
+13:09:32.993 processinginstruction.js(111) - Ignoring code by ifdef __DEBUG
+13:09:32.993 Adding file : /var/lib/platform/core/markup/aml/range.js size: 15809
+13:09:32.994 range.js(116) - Ignoring code by ifdef __DEBUG
+13:09:32.994 range.js(174) - Ignoring code by ifdef __DEBUG
+13:09:32.995 range.js(254) - Ignoring code by ifdef __DEBUG
+13:09:32.995 range.js(389) - Ignoring code by ifdef __DEBUG_ERROR
+13:09:32.996 Adding file : /var/lib/platform/core/markup/aml/selection.js size: 8861
+13:09:32.996 selection.js(126) - Ignoring code by ifdef __DEBUG
+13:09:32.996 selection.js(143) - Ignoring code by ifdef __DEBUG
+13:09:32.996 selection.js(195) - Ignoring code by ifdef __DEBUG_ERROR
+13:09:32.997 Adding file : /var/lib/platform/core/markup/aml/textrectangle.js size: 1662
+13:09:32.997 Adding file : /var/lib/platform/core/markup/xhtml.js size: 1530
+13:09:32.997 Adding file : /var/lib/platform/core/markup/xhtml/element.js size: 5015
+13:09:32.998 Adding file : /var/lib/platform/core/markup/xhtml/body.js size: 1783
+13:09:33.200 Adding file : /var/lib/platform/core/markup/xhtml/html.js size: 2657
+13:09:33.200 Adding file : /var/lib/platform/core/markup/xhtml/ignore.js size: 1360
+13:09:33.200 Adding file : /var/lib/platform/core/markup/xhtml/input.js size: 2187
+13:09:33.200 Adding file : /var/lib/platform/core/markup/xhtml/option.js size: 1537
+13:09:33.300 Adding file : /var/lib/platform/core/markup/xhtml/skipchildren.js size: 2342
+13:09:33.300 Adding file : /var/lib/platform/core/markup/xsd.js size: 12998
+13:09:33.400 xsd.js(254) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.500 Adding file : /var/lib/platform/core/markup/xsd/element.js size: 1869
+13:09:33.500 Adding file : /var/lib/platform/core/markup/xsd/enumeration.js size: 1844
+13:09:33.500 Adding file : /var/lib/platform/core/markup/xsd/fractiondigits.js size: 1620
+13:09:33.500 Adding file : /var/lib/platform/core/markup/xsd/length.js size: 1527
+13:09:33.600 Adding file : /var/lib/platform/core/markup/xsd/list.js size: 1215
+13:09:33.600 Adding file : /var/lib/platform/core/markup/xsd/maxexclusive.js size: 1553
+13:09:33.600 Adding file : /var/lib/platform/core/markup/xsd/maxinclusive.js size: 1568
+13:09:33.600 Adding file : /var/lib/platform/core/markup/xsd/maxlength.js size: 1597
+13:09:33.600 Adding file : /var/lib/platform/core/markup/xsd/maxscale.js size: 1436
+13:09:33.600 Adding file : /var/lib/platform/core/markup/xsd/minexclusive.js size: 1556
+13:09:33.700 Adding file : /var/lib/platform/core/markup/xsd/mininclusive.js size: 1567
+13:09:33.700 Adding file : /var/lib/platform/core/markup/xsd/minlength.js size: 1610
+13:09:33.700 Adding file : /var/lib/platform/core/markup/xsd/minscale.js size: 1436
+13:09:33.700 Adding file : /var/lib/platform/core/markup/xsd/pattern.js size: 1537
+13:09:33.800 Adding file : /var/lib/platform/core/markup/xsd/restriction.js size: 1644
+13:09:33.800 Adding file : /var/lib/platform/core/markup/xsd/schema.js size: 1124
+13:09:33.900 Adding file : /var/lib/platform/core/markup/xsd/simpletype.js size: 2201
+13:09:33.900 Adding file : /var/lib/platform/core/markup/xsd/totaldigits.js size: 1564
+13:09:33.100 Adding file : /var/lib/platform/core/markup/xsd/union.js size: 2331
+13:09:33.100 Adding file : /var/lib/platform/core/markup/html5.js size: 3232
+13:09:33.110 Adding file : /var/lib/platform/core/markup/xforms.js size: 4191
+13:09:33.110 xforms.js(22) - Ignoring code by ifdef __PARSER_XFORMS
+13:09:33.110 xforms.js(38) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.110 xforms.js(69) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.120 xforms.js(119) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.120 xforms.js(124) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.120 Adding file : /var/lib/platform/core/markup/xinclude.js size: 1325
+13:09:33.120 Adding file : /var/lib/platform/core/markup/xinclude/fallback.js size: 1322
+13:09:33.120 Adding file : /var/lib/platform/core/markup/xinclude/include.js size: 7032
+13:09:33.130 include.js(129) - Ignoring code by ifdef __DEBUG
+13:09:33.130 include.js(135) - Ignoring code by ifdef __DEBUG
+13:09:33.200 include.js(175) - Ignoring code by ifdef __DEBUG
+13:09:33.200 Adding file : /var/lib/platform/core/markup/xslt/xslt.js size: 13722
+13:09:33.280 Adding file : /var/lib/platform/core/baseclasses/liveedit.js size: 33433
+13:09:33.380 Adding file : /var/lib/platform/core/baseclasses/liveedit/richtext.js size: 53610
+13:09:33.440 richtext.js(767) - Ignoring code by ifdef __DEBUG
+13:09:33.440 richtext.js(779) - Ignoring code by ifdef __DEBUG;
+13:09:33.440 richtext.js(819) - Ignoring code by ifdef __DEBUG
+13:09:33.520 richtext.js(1155) - Ignoring code by ifdef __DEBUG
+13:09:33.550 Adding file : /var/lib/platform/core/baseclasses/liveedit/anchor.js size: 4565
+13:09:33.560 Adding file : /var/lib/platform/core/baseclasses/liveedit/blockquote.js size: 1594
+13:09:33.560 Adding file : /var/lib/platform/core/baseclasses/liveedit/charmap.js size: 6951
+13:09:33.580 Adding file : /var/lib/platform/core/baseclasses/liveedit/clipboard.js size: 13429
+13:09:33.610 Adding file : /var/lib/platform/core/baseclasses/liveedit/code.js size: 11899
+13:09:33.630 Adding file : /var/lib/platform/core/baseclasses/liveedit/color.js size: 7167
+13:09:33.650 Adding file : /var/lib/platform/core/baseclasses/liveedit/datetime.js size: 3585
+13:09:33.660 Adding file : /var/lib/platform/core/baseclasses/liveedit/directions.js size: 1579
+13:09:33.660 Adding file : /var/lib/platform/core/baseclasses/liveedit/emotions.js size: 4322
+13:09:33.660 Adding file : /var/lib/platform/core/baseclasses/liveedit/fontbase.js size: 8575
+13:09:33.680 Adding file : /var/lib/platform/core/baseclasses/liveedit/fontstyle.js size: 25741
+13:09:33.680 fontstyle.js(39) - Ignoring code by ifdef __DEBUG
+13:09:33.680 fontstyle.js(54) - Ignoring code by ifdef __DEBUG
+13:09:33.710 fontstyle.js(324) - Ignoring code by ifdef __DEBUG
+13:09:33.770 Adding file : /var/lib/platform/core/baseclasses/liveedit/help.js size: 1485
+13:09:33.770 Adding file : /var/lib/platform/core/baseclasses/liveedit/hr.js size: 1593
+13:09:33.770 Adding file : /var/lib/platform/core/baseclasses/liveedit/image.js size: 5033
+13:09:33.780 Adding file : /var/lib/platform/core/baseclasses/liveedit/links.js size: 7721
+13:09:33.790 Adding file : /var/lib/platform/core/baseclasses/liveedit/list.js size: 4641
+13:09:33.800 Adding file : /var/lib/platform/core/baseclasses/liveedit/media.js size: 1489
+13:09:33.800 Adding file : /var/lib/platform/core/baseclasses/liveedit/printing.js size: 2098
+13:09:33.800 Adding file : /var/lib/platform/core/baseclasses/liveedit/search.js size: 10436
+13:09:33.840 Adding file : /var/lib/platform/core/baseclasses/liveedit/spell.js size: 11849
+13:09:33.860 spell.js(41) - Ignoring code by ifndef __PACKAGED
+13:09:33.860 spell.js(46) - Ignoring code by ifdef __WITH_CDN
+13:09:33.890 Adding file : /var/lib/platform/core/baseclasses/liveedit/subsup.js size: 1935
+13:09:33.890 Adding file : /var/lib/platform/core/baseclasses/liveedit/tables.js size: 27128
+13:09:33.990 Adding file : /var/lib/platform/core/baseclasses/liveedit/visualaid.js size: 1736
+13:09:33.990 Adding file : /var/lib/platform/core/baseclasses/anchoring.js size: 19257
+13:09:33.103 Adding file : /var/lib/platform/core/baseclasses/alignment.js size: 13724
+13:09:33.106 Adding file : /var/lib/platform/core/baseclasses/contenteditable.js size: 21041
+13:09:33.111 contenteditable.js(265) - Ignoring code by ifdef __WITH_DEBUG_WIN
+13:09:33.116 Adding file : /var/lib/platform/core/baseclasses/guielement.js size: 33353
+13:09:33.119 guielement.js(398) - Ignoring code by ifdef __DEBUG
+13:09:33.120 guielement.js(491) - Ignoring code by ifdef __DEBUG
+13:09:33.121 guielement.js(526) - Ignoring code by ifdef __DEBUG
+13:09:33.123 guielement.js(680) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.123 guielement.js(703) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.123 guielement.js(831) - Ignoring code by ifdef __WITH_ALIAS
+13:09:33.130 Adding file : /var/lib/platform/core/baseclasses/presentation.js size: 20728
+13:09:33.135 presentation.js(474) - Ignoring code by ifdef __DEBUG
+13:09:33.135 presentation.js(490) - Ignoring code by ifdef __DEBUG
+13:09:33.135 presentation.js(500) - Ignoring code by ifdef __DEBUG
+13:09:33.135 presentation.js(511) - Ignoring code by ifdef __DEBUG
+13:09:33.137 Adding file : /var/lib/platform/core/baseclasses/validation.js size: 27635
+13:09:33.138 validation.js(169) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.142 validation.js(719) - Ignoring code by ifdef __DEBUG
+13:09:33.142 validation.js(726) - Ignoring code by ifdef __DEBUG
+13:09:33.143 Adding file : /var/lib/platform/core/baseclasses/databinding.js size: 59422
+13:09:33.144 databinding.js(204) - Ignoring code by ifdef __DEBUG
+13:09:33.147 databinding.js(507) - Ignoring code by ifdef __DEBUG
+13:09:33.147 databinding.js(524) - Ignoring code by ifdef __DEBUG
+13:09:33.147 databinding.js(549) - Ignoring code by ifdef __DEBUG
+13:09:33.148 databinding.js(668) - Ignoring code by ifdef __DEBUG
+13:09:33.150 databinding.js(1107) - Ignoring code by ifdef __DEBUG
+13:09:33.150 databinding.js(1132) - Ignoring code by ifdef __DEBUG
+13:09:33.154 databinding.js(1448) - Ignoring code by ifdef __DEBUG
+13:09:33.155 databinding.js(1480) - Ignoring code by ifdef __DEBUG
+13:09:33.155 Adding file : /var/lib/platform/core/baseclasses/databinding/multiselect.js size: 46299
+13:09:33.156 multiselect.js(130) - Ignoring code by ifdef __DEBUG
+13:09:33.157 multiselect.js(190) - Ignoring code by ifdef __DEBUG
+13:09:33.161 multiselect.js(727) - Ignoring code by ifdef __DEBUG
+13:09:33.162 multiselect.js(810) - Ignoring code by ifdef __DEBUG
+13:09:33.162 multiselect.js(902) - Ignoring code by ifdef __DEBUG
+13:09:33.164 multiselect.js(1036) - Ignoring code by ifdef __DEBUG
+13:09:33.164 Adding file : /var/lib/platform/core/baseclasses/databinding/standard.js size: 6499
+13:09:33.165 standard.js(106) - Ignoring code by ifdef __DEBUG
+13:09:33.166 Adding file : /var/lib/platform/core/baseclasses/multiselect.js size: 73246
+13:09:33.167 multiselect.js(267) - Ignoring code by ifdef __DEBUG
+13:09:33.168 multiselect.js(493) - Ignoring code by ifdef __DEBUG
+13:09:33.169 multiselect.js(519) - Ignoring code by ifdef __DEBUG
+13:09:33.169 multiselect.js(583) - Ignoring code by ifdef __DEBUG
+13:09:33.169 multiselect.js(677) - Ignoring code by ifdef __DEBUG
+13:09:33.171 multiselect.js(952) - Ignoring code by ifdef __DEBUG
+13:09:33.173 multiselect.js(1337) - Ignoring code by ifdef __DEBUG
+13:09:33.173 multiselect.js(1417) - Ignoring code by ifdef __DEBUG
+13:09:33.180 Adding file : /var/lib/platform/core/baseclasses/childvalue.js size: 3603
+13:09:33.180 Adding file : /var/lib/platform/core/baseclasses/dataaction.js size: 27402
+13:09:33.181 dataaction.js(160) - Ignoring code by ifdef __DEBUG
+13:09:33.181 dataaction.js(189) - Ignoring code by ifdef __DEBUG
+13:09:33.183 dataaction.js(347) - Ignoring code by ifdef __DEBUG
+13:09:33.184 dataaction.js(432) - Ignoring code by ifdef __DEBUG
+13:09:33.184 dataaction.js(451) - Ignoring code by ifdef __DEBUG
+13:09:33.185 Adding file : /var/lib/platform/core/baseclasses/cache.js size: 12760
+13:09:33.188 Adding file : /var/lib/platform/core/baseclasses/rename.js size: 14305
+13:09:33.190 Adding file : /var/lib/platform/core/baseclasses/a11y.js size: 5144
+13:09:33.190 Adding file : /var/lib/platform/core/baseclasses/basebutton.js size: 10181
+13:09:33.190 basebutton.js(73) - Ignoring code by ifdef __DEBUG
+13:09:33.192 Adding file : /var/lib/platform/core/baseclasses/baselist.js size: 38802
+13:09:33.192 baselist.js(119) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.198 baselist.js(646) - Ignoring code by ifdef __DEBUG
+13:09:33.200 baselist.js(807) - Ignoring code by ifdef __DEBUG
+13:09:33.201 baselist.js(963) - Ignoring code by ifndef __WITH_DATABINDING
+13:09:33.201 Adding file : /var/lib/platform/core/baseclasses/basesimple.js size: 1729
+13:09:33.201 Adding file : /var/lib/platform/core/baseclasses/basestatebuttons.js size: 26993
+13:09:33.212 Adding file : /var/lib/platform/core/baseclasses/basetab.js size: 56849
+13:09:33.214 basetab.js(195) - Ignoring code by ifdef __DEBUG
+13:09:33.215 basetab.js(204) - Ignoring code by ifdef __DEBUG
+13:09:33.215 basetab.js(213) - Ignoring code by ifdef __DEBUG
+13:09:33.226 Adding file : /var/lib/platform/core/baseclasses/basetree.js size: 45442
+13:09:33.226 basetree.js(55) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.235 basetree.js(1157) - Ignoring code by ifndef __WITH_DATABINDING
+13:09:33.235 Adding file : /var/lib/platform/core/baseclasses/delayedrender.js size: 5243
+13:09:33.236 Adding file : /var/lib/platform/core/baseclasses/docking.js size: 14714
+13:09:33.236 docking.js(44) - Ignoring code by ifdef __DEBUG
+13:09:33.238 Adding file : /var/lib/platform/core/baseclasses/dragdrop.js size: 54497
+13:09:33.243 dragdrop.js(519) - Ignoring code by ifdef __DEBUG
+13:09:33.248 Adding file : /var/lib/platform/core/baseclasses/focussable.js size: 3290
+13:09:33.249 Adding file : /var/lib/platform/core/baseclasses/interactive.js size: 30337
+13:09:33.256 Adding file : /var/lib/platform/core/baseclasses/media.js size: 18898
+13:09:33.257 media.js(78) - Ignoring code by ifdef __DEBUG
+13:09:33.257 media.js(158) - Ignoring code by ifdef __DEBUG
+13:09:33.257 media.js(223) - Ignoring code by ifdef __DEBUG
+13:09:33.258 media.js(263) - Ignoring code by ifdef __DEBUG
+13:09:33.258 media.js(273) - Ignoring code by ifdef __DEBUG
+13:09:33.258 media.js(306) - Ignoring code by ifdef __DEBUG
+13:09:33.259 media.js(500) - Ignoring code by ifdef __DEBUG
+13:09:33.259 Adding file : /var/lib/platform/core/baseclasses/multicheck.js size: 16543
+13:09:33.263 Adding file : /var/lib/platform/core/baseclasses/teleport.js size: 8820
+13:09:33.265 teleport.js(220) - Ignoring code by ifdef __DEBUG
+13:09:33.265 Adding file : /var/lib/platform/core/baseclasses/transaction.js size: 23494
+13:09:33.266 transaction.js(161) - Ignoring code by ifdef __DEBUG
+13:09:33.266 transaction.js(219) - Ignoring code by ifdef __DEBUG
+13:09:33.266 transaction.js(270) - Ignoring code by ifdef __DEBUG
+13:09:33.267 transaction.js(279) - Ignoring code by ifdef __DEBUG
+13:09:33.267 transaction.js(298) - Ignoring code by ifdef __DEBUG
+13:09:33.267 transaction.js(353) - Ignoring code by ifdef __DEBUG
+13:09:33.269 transaction.js(488) - Ignoring code by ifdef __DEBUG
+13:09:33.269 Adding file : /var/lib/platform/core/baseclasses/virtualviewport.js size: 28823
+13:09:33.274 virtualviewport.js(569) - Ignoring code by ifdef __DEBUG
+13:09:33.275 Adding file : /var/lib/platform/core/baseclasses/xforms.js size: 9367
+13:09:33.276 xforms.js(24) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.277 Adding file : /var/lib/platform/core/baseclasses/contenteditable/clipboard.js size: 1127
+13:09:33.277 Adding file : /var/lib/platform/core/baseclasses/contenteditable/commands.js size: 30488
+13:09:33.283 Adding file : /var/lib/platform/core/baseclasses/contenteditable/interactive.js size: 57254
+13:09:33.301 Adding file : /var/lib/platform/core/baseclasses/contenteditable/selectrect.js size: 5678
+13:09:33.302 Adding file : /var/lib/platform/core/baseclasses/contenteditable/visualconnect.js size: 36914
+13:09:33.313 Adding file : /var/lib/platform/core/baseclasses/contenteditable/visualselect.js size: 18159
+13:09:33.317 Adding file : /var/lib/platform/core/window-o3.js size: 5461
+13:09:33.317 window-o3.js(22) - Ignoring code by ifdef __WITH_O3WINDOW
+13:09:33.318 Adding file : /var/lib/platform/core/window.js size: 52567
+13:09:33.321 window.js(334) - Ignoring code by ifdef __DEBUG
+13:09:33.321 window.js(376) - Ignoring code by ifdef __DEBUG
+13:09:33.321 window.js(393) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.321 window.js(409) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.321 window.js(414) - Ignoring code by ifdef __DEBUG
+13:09:33.321 window.js(432) - Ignoring code by ifdef __DEBUG
+13:09:33.321 window.js(444) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.323 window.js(636) - Ignoring code by ifdef __DEBUG
+13:09:33.323 window.js(688) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.323 window.js(709) - Ignoring code by ifdef __DEBUG
+13:09:33.326 window.js(1209) - Ignoring code by ifdef __WITH_DEBUG_WIN
+13:09:33.328 window.js(1418) - Ignoring code by ifdef __DEBUG
+13:09:33.328 window.js(1421) - Ignoring code by ifdef __DEBUG
+13:09:33.328 window.js(1438) - Ignoring code by ifndef __SUPPORT_GWT
+13:09:33.328 window.js(1477) - Ignoring code by ifdef __DEBUG
+13:09:33.329 window.js(1481) - Ignoring code by ifdef __DEBUG
+13:09:33.329 Adding file : /var/lib/platform/core/browsers/gears.js size: 1391
+13:09:33.329 Adding file : /var/lib/platform/core/browsers/gecko.js size: 6488
+13:09:33.330 gecko.js(131) - Ignoring code by ifdef __DEBUG
+13:09:33.330 Adding file : /var/lib/platform/core/browsers/ie.js size: 14025
+13:09:33.330 ie.js(53) - Ignoring code by ifndef __PACKAGED
+13:09:33.331 ie.js(217) - Ignoring code by ifdef __DEBUG
+13:09:33.333 Adding file : /var/lib/platform/core/browsers/iphone.js size: 11827
+13:09:33.336 Adding file : /var/lib/platform/core/browsers/non_ie.js size: 24287
+13:09:33.336 non_ie.js(33) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.341 Adding file : /var/lib/platform/core/browsers/o3.js size: 9057
+13:09:33.342 o3.js(1) - Ignoring code by ifdef __SUPPORT_O3
+13:09:33.343 Adding file : /var/lib/platform/core/browsers/opera.js size: 6614
+13:09:33.343 Adding file : /var/lib/platform/core/browsers/webkit.js size: 7610
+13:09:33.344 webkit.js(61) - Ignoring code by ifdef __DEPRECATED
+13:09:33.344 Adding file : /var/lib/platform/core/browsers/node/XMLHttpRequest.js size: 6420
+13:09:33.344 XMLHttpRequest.js(1) - Ignoring code by ifdef __SUPPORT_NODE
+13:09:33.345 Adding file : /var/lib/platform/core/crypto/barrett.js size: 2650
+13:09:33.346 Adding file : /var/lib/platform/core/crypto/base64.js size: 6758
+13:09:33.347 Adding file : /var/lib/platform/core/crypto/bigint.js size: 20439
+13:09:33.350 Adding file : /var/lib/platform/core/crypto/blowfish.js size: 26046
+13:09:33.353 Adding file : /var/lib/platform/core/crypto/md4.js size: 9799
+13:09:33.354 Adding file : /var/lib/platform/core/crypto/md5.js size: 10878
+13:09:33.355 Adding file : /var/lib/platform/core/crypto/rsa.js size: 5048
+13:09:33.356 Adding file : /var/lib/platform/core/crypto/sha1.js size: 5258
+13:09:33.357 Adding file : /var/lib/platform/core/debug/debug.js size: 9811
+13:09:33.357 debug.js(22) - Ignoring code by ifdef __DEBUG
+13:09:33.358 Adding file : /var/lib/platform/core/debug/debugwin.js size: 42733
+13:09:33.358 debugwin.js(22) - Ignoring code by ifdef __WITH_DEBUG_WIN
+13:09:33.369 Adding file : /var/lib/platform/core/debug/profiler.js size: 24827
+13:09:33.369 profiler.js(1) - Ignoring code by ifdef __PROFILER
+13:09:33.374 Adding file : /var/lib/platform/core/parsers/js.js size: 9016
+13:09:33.381 Adding file : /var/lib/platform/core/parsers/livemarkup.js size: 123223
+13:09:33.438 Adding file : /var/lib/platform/core/parsers/url.js size: 4570
+13:09:33.439 Adding file : /var/lib/platform/core/parsers/xpath.js size: 22531
+13:09:33.443 xpath.js(488) - Ignoring code by ifdef __DEBUG
+13:09:33.443 Adding file : /var/lib/platform/elements/bindingrule.js size: 8931
+13:09:33.444 bindingrule.js(190) - Ignoring code by ifdef __DEBUG
+13:09:33.445 Adding file : /var/lib/platform/elements/accordion.js size: 22288
+13:09:33.451 Adding file : /var/lib/platform/elements/actionrule.js size: 4035
+13:09:33.452 Adding file : /var/lib/platform/elements/actions.js size: 3251
+13:09:33.452 Adding file : /var/lib/platform/elements/actiontracker.js size: 36306
+13:09:33.454 actiontracker.js(164) - Ignoring code by ifdef __WITH_ALIAS
+13:09:33.455 actiontracker.js(479) - Ignoring code by ifdef __DEBUG
+13:09:33.456 actiontracker.js(521) - Ignoring code by ifdef __DEBUG
+13:09:33.456 actiontracker.js(665) - Ignoring code by ifdef __DEBUG
+13:09:33.457 actiontracker.js(699) - Ignoring code by ifdef __DEBUG
+13:09:33.457 actiontracker.js(715) - Ignoring code by ifdef __DEBUG
+13:09:33.457 actiontracker.js(764) - Ignoring code by ifdef __DEBUG
+13:09:33.459 actiontracker.js(933) - Ignoring code by ifdef __DEBUG
+13:09:33.459 actiontracker.js(944) - Ignoring code by ifdef __DEBUG
+13:09:33.459 actiontracker.js(952) - Ignoring code by ifdef __DEBUG
+13:09:33.459 actiontracker.js(961) - Ignoring code by ifdef __DEBUG
+13:09:33.459 actiontracker.js(983) - Ignoring code by ifndef __WITH_DATAACTION
+13:09:33.459 Adding file : /var/lib/platform/elements/application.js size: 1834
+13:09:33.459 Adding file : /var/lib/platform/elements/appsettings.js size: 9496
+13:09:33.462 Adding file : /var/lib/platform/elements/audio.js size: 12958
+13:09:33.464 Adding file : /var/lib/platform/elements/auth.js size: 23730
+13:09:33.466 auth.js(377) - Ignoring code by ifdef __DEBUG
+13:09:33.466 auth.js(410) - Ignoring code by ifdef __DEBUG
+13:09:33.466 auth.js(442) - Ignoring code by ifdef __DEBUG
+13:09:33.467 auth.js(497) - Ignoring code by ifdef __DEBUG
+13:09:33.467 auth.js(529) - Ignoring code by ifdef __DEBUG
+13:09:33.467 Adding file : /var/lib/platform/elements/axis.js size: 14009
+13:09:33.470 Adding file : /var/lib/platform/elements/bar.js size: 4205
+13:09:33.470 Adding file : /var/lib/platform/elements/bindingcolorrule.js size: 2906
+13:09:33.471 Adding file : /var/lib/platform/elements/bindingcolumnrule.js size: 20187
+13:09:33.475 Adding file : /var/lib/platform/elements/bindingdndrule.js size: 3737
+13:09:33.476 Adding file : /var/lib/platform/elements/bindingeachrule.js size: 11314
+13:09:33.477 Adding file : /var/lib/platform/elements/bindingloadrule.js size: 1529
+13:09:33.477 Adding file : /var/lib/platform/elements/bindingquicksandrule.js size: 12333
+13:09:33.480 Adding file : /var/lib/platform/elements/bindings.js size: 8586
+13:09:33.481 Adding file : /var/lib/platform/elements/bindingseriesrule.js size: 1944
+13:09:33.482 Adding file : /var/lib/platform/elements/body.js size: 1861
+13:09:33.482 Adding file : /var/lib/platform/elements/browser.js size: 6108
+13:09:33.482 browser.js(73) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.483 Adding file : /var/lib/platform/elements/button.js size: 29602
+13:09:33.484 button.js(200) - Ignoring code by ifdef __DEBUG
+13:09:33.484 button.js(324) - Ignoring code by ifdef __DEBUG
+13:09:33.484 button.js(375) - Ignoring code by ifdef __DEBUG
+13:09:33.485 button.js(593) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.486 button.js(719) - Ignoring code by ifdef __DEBUG
+13:09:33.486 button.js(729) - Ignoring code by ifdef __DEBUG
+13:09:33.486 button.js(739) - Ignoring code by ifdef __DEBUG
+13:09:33.486 button.js(783) - Ignoring code by ifdef __DEBUG
+13:09:33.487 button.js(850) - Ignoring code by ifdef __DEBUG
+13:09:33.488 button.js(952) - Ignoring code by ifdef __DEBUG
+13:09:33.488 Adding file : /var/lib/platform/elements/caldropdown.js size: 36084
+13:09:33.489 caldropdown.js(146) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.489 caldropdown.js(233) - Ignoring code by ifdef __DEBUG
+13:09:33.496 Adding file : /var/lib/platform/elements/calendar.js size: 28154
+13:09:33.497 calendar.js(120) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.497 calendar.js(173) - Ignoring code by ifdef __DEBUG
+13:09:33.506 calendar.js(714) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.507 Adding file : /var/lib/platform/elements/calendarlist.js size: 15123
+13:09:33.509 Adding file : /var/lib/platform/elements/chart.js size: 9687
+13:09:33.511 Adding file : /var/lib/platform/elements/checkbox.js size: 7721
+13:09:33.511 checkbox.js(71) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.511 checkbox.js(250) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.512 Adding file : /var/lib/platform/elements/codeeditor.js size: 13126
+13:09:33.519 Adding file : /var/lib/platform/elements/collection.js size: 2383
+13:09:33.519 Adding file : /var/lib/platform/elements/colorpicker.js size: 12736
+13:09:33.519 colorpicker.js(75) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.521 Adding file : /var/lib/platform/elements/colorpicker2.js size: 11113
+13:09:33.523 Adding file : /var/lib/platform/elements/comment.js size: 1324
+13:09:33.523 Adding file : /var/lib/platform/elements/contextmenu.js size: 2557
+13:09:33.523 Adding file : /var/lib/platform/elements/datagrid.js size: 52022
+13:09:33.529 datagrid.js(522) - Ignoring code by ifdef __DEBUG
+13:09:33.530 datagrid.js(658) - Ignoring code by ifdef __DEBUG
+13:09:33.535 datagrid.js(1233) - Ignoring code by ifdef __WITH_CONVERTIFRAME
+13:09:33.536 Adding file : /var/lib/platform/elements/debugger.js size: 6678
+13:09:33.537 Adding file : /var/lib/platform/elements/debughost.js size: 3780
+13:09:33.538 Adding file : /var/lib/platform/elements/defaults.js size: 1838
+13:09:33.538 Adding file : /var/lib/platform/elements/divider.js size: 2918
+13:09:33.538 Adding file : /var/lib/platform/elements/dropdown.js size: 15067
+13:09:33.544 dropdown.js(437) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.544 Adding file : /var/lib/platform/elements/editor.js size: 18601
+13:09:33.544 editor.js(73) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.547 Adding file : /var/lib/platform/elements/errorbox.js size: 6072
+13:09:33.548 Adding file : /var/lib/platform/elements/event.js size: 2115
+13:09:33.548 Adding file : /var/lib/platform/elements/filler.js size: 1385
+13:09:33.548 Adding file : /var/lib/platform/elements/flashplayer.js size: 4071
+13:09:33.549 Adding file : /var/lib/platform/elements/flowchart.js size: 50799
+13:09:33.560 Adding file : /var/lib/platform/elements/flowchart2.js size: 45889
+13:09:33.561 flowchart2.js(22) - Ignoring code by ifdef __AMLFLOWCHART2
+13:09:33.571 Adding file : /var/lib/platform/elements/frame.js size: 4989
+13:09:33.571 frame.js(137) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.571 Adding file : /var/lib/platform/elements/gallery.js size: 27418
+13:09:33.577 Adding file : /var/lib/platform/elements/graph.js size: 21525
+13:09:33.584 Adding file : /var/lib/platform/elements/hbox.js size: 32746
+13:09:33.592 Adding file : /var/lib/platform/elements/iconmap.js size: 3244
+13:09:33.593 iconmap.js(68) - Ignoring code by ifdef __DEBUG
+13:09:33.593 Adding file : /var/lib/platform/elements/img.js size: 7692
+13:09:33.594 Adding file : /var/lib/platform/elements/item.js size: 22881
+13:09:33.596 item.js(453) - Ignoring code by ifdef __DEBUG
+13:09:33.599 Adding file : /var/lib/platform/elements/junction.js size: 2397
+13:09:33.599 Adding file : /var/lib/platform/elements/label.js size: 4978
+13:09:33.599 Adding file : /var/lib/platform/elements/lineselect.js size: 4747
+13:09:33.600 Adding file : /var/lib/platform/elements/list.js size: 14340
+13:09:33.602 Adding file : /var/lib/platform/elements/loader.js size: 2153
+13:09:33.602 Adding file : /var/lib/platform/elements/loadindicator.js size: 5234
+13:09:33.603 Adding file : /var/lib/platform/elements/map.js size: 21831
+13:09:33.605 map.js(84) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.608 Adding file : /var/lib/platform/elements/markupedit.js size: 57357
+13:09:33.608 markupedit.js(58) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.621 markupedit.js(1448) - Ignoring code by ifdef __DEBUG
+13:09:33.621 Adding file : /var/lib/platform/elements/menu.js size: 17995
+13:09:33.634 Adding file : /var/lib/platform/elements/method.js size: 3973
+13:09:33.636 Adding file : /var/lib/platform/elements/modalwindow.js size: 25420
+13:09:33.642 modalwindow.js(753) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.643 Adding file : /var/lib/platform/elements/model.js size: 43089
+13:09:33.644 model.js(174) - Ignoring code by ifdef __DEBUG
+13:09:33.649 model.js(942) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.649 model.js(1002) - Ignoring code by ifdef __DEBUG
+13:09:33.649 model.js(1016) - Ignoring code by ifdef __DEBUG
+13:09:33.650 model.js(1085) - Ignoring code by ifdef __DEBUG
+13:09:33.650 model.js(1141) - Ignoring code by ifdef __DEBUG
+13:09:33.651 Adding file : /var/lib/platform/elements/notifier.js size: 15296
+13:09:33.655 Adding file : /var/lib/platform/elements/page.js size: 18211
+13:09:33.657 page.js(460) - Ignoring code by ifdef __DEBUG
+13:09:33.658 page.js(516) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.658 Adding file : /var/lib/platform/elements/pager.js size: 9037
+13:09:33.659 Adding file : /var/lib/platform/elements/palette.js size: 5945
+13:09:33.659 palette.js(68) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.660 Adding file : /var/lib/platform/elements/param.js size: 1681
+13:09:33.661 Adding file : /var/lib/platform/elements/persist.js size: 17373
+13:09:33.666 persist.js(452) - Ignoring code by ifdef __DEBUG
+13:09:33.666 Adding file : /var/lib/platform/elements/portal.js size: 25076
+13:09:33.671 portal.js(646) - Ignoring code by ifndef __WITH_DATABINDING
+13:09:33.671 Adding file : /var/lib/platform/elements/progressbar.js size: 8709
+13:09:33.672 Adding file : /var/lib/platform/elements/propedit.js size: 46649
+13:09:33.673 propedit.js(188) - Ignoring code by ifdef __DEBUG
+13:09:33.677 propedit.js(836) - Ignoring code by ifdef __DEBUG
+13:09:33.680 propedit.js(1143) - Ignoring code by ifdef __WITH_CONVERTIFRAME
+13:09:33.681 Adding file : /var/lib/platform/elements/radiobutton.js size: 16818
+13:09:33.681 radiobutton.js(164) - Ignoring code by ifdef __DEBUG
+13:09:33.683 radiobutton.js(459) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.683 radiobutton.js(483) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.683 Adding file : /var/lib/platform/elements/remote.js size: 21546
+13:09:33.684 remote.js(188) - Ignoring code by ifdef __DEBUG
+13:09:33.684 remote.js(229) - Ignoring code by ifdef __DEBUG
+13:09:33.685 remote.js(348) - Ignoring code by ifdef __DEBUG
+13:09:33.685 remote.js(358) - Ignoring code by ifdef __DEBUG
+13:09:33.685 remote.js(370) - Ignoring code by ifdef __DEBUG
+13:09:33.685 remote.js(419) - Ignoring code by ifdef __DEBUG
+13:09:33.685 remote.js(453) - Ignoring code by ifdef __DEBUG
+13:09:33.685 remote.js(465) - Ignoring code by ifdef __DEBUG
+13:09:33.685 remote.js(480) - Ignoring code by ifdef __DEBUG
+13:09:33.686 remote.js(542) - Ignoring code by ifdef __DEBUG
+13:09:33.686 remote.js(568) - Ignoring code by ifdef __DEBUG
+13:09:33.686 Adding file : /var/lib/platform/elements/rpc.js size: 21108
+13:09:33.688 rpc.js(274) - Ignoring code by ifdef __DEBUG
+13:09:33.688 rpc.js(304) - Ignoring code by ifdef __DEBUG
+13:09:33.688 rpc.js(325) - Ignoring code by ifdef __DEBUG
+13:09:33.689 rpc.js(464) - Ignoring code by ifdef __DEBUG
+13:09:33.689 rpc.js(513) - Ignoring code by ifdef __DEBUG
+13:09:33.689 rpc.js(584) - Ignoring code by ifdef __DEBUG
+13:09:33.690 Adding file : /var/lib/platform/elements/script.js size: 3679
+13:09:33.690 Adding file : /var/lib/platform/elements/scrollbar.js size: 27591
+13:09:33.692 scrollbar.js(331) - Ignoring code by ifdef __DEBUG
+13:09:33.696 Adding file : /var/lib/platform/elements/services.js size: 1488
+13:09:33.696 Adding file : /var/lib/platform/elements/skin.js size: 9809
+13:09:33.697 skin.js(79) - Ignoring code by ifdef __DEBUG
+13:09:33.697 skin.js(124) - Ignoring code by ifdef __DEBUG
+13:09:33.697 skin.js(156) - Ignoring code by ifdef __DEBUG
+13:09:33.697 skin.js(168) - Ignoring code by ifdef __DEBUG
+13:09:33.697 skin.js(179) - Ignoring code by ifdef __DEBUG
+13:09:33.698 skin.js(215) - Ignoring code by ifdef __DEBUG
+13:09:33.698 skin.js(240) - Ignoring code by ifdef __DEBUG
+13:09:33.698 Adding file : /var/lib/platform/elements/slider.js size: 32197
+13:09:33.698 slider.js(123) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.704 slider.js(910) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.705 Adding file : /var/lib/platform/elements/slideshow.js size: 47089
+13:09:33.718 Adding file : /var/lib/platform/elements/smartbinding.js size: 33619
+13:09:33.721 smartbinding.js(722) - Ignoring code by ifdef __DEBUG
+13:09:33.721 smartbinding.js(849) - Ignoring code by ifdef __DEBUG
+13:09:33.722 Adding file : /var/lib/platform/elements/source.js size: 1566
+13:09:33.722 Adding file : /var/lib/platform/elements/spinner.js size: 17516
+13:09:33.722 spinner.js(95) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.725 spinner.js(536) - Ignoring code by ifdef __WITH_UIRECORDER
+13:09:33.725 Adding file : /var/lib/platform/elements/splitter.js size: 18375
+13:09:33.730 Adding file : /var/lib/platform/elements/state-group.js size: 3131
+13:09:33.731 Adding file : /var/lib/platform/elements/state.js size: 11152
+13:09:33.732 state.js(205) - Ignoring code by ifdef __DEBUG
+13:09:33.732 state.js(233) - Ignoring code by ifdef __DEBUG
+13:09:33.732 state.js(243) - Ignoring code by ifdef __DEBUG
+13:09:33.733 Adding file : /var/lib/platform/elements/statusbar.js size: 3824
+13:09:33.733 Adding file : /var/lib/platform/elements/style.js size: 1888
+13:09:33.733 Adding file : /var/lib/platform/elements/submitform.js size: 30092
+13:09:33.738 Adding file : /var/lib/platform/elements/tab.js size: 2990
+13:09:33.739 Adding file : /var/lib/platform/elements/table.js size: 17446
+13:09:33.739 table.js(115) - Ignoring code by ifdef __DEBUG
+13:09:33.741 Adding file : /var/lib/platform/elements/teleport.js size: 1019
+13:09:33.741 Adding file : /var/lib/platform/elements/template.js size: 2498
+13:09:33.742 Adding file : /var/lib/platform/elements/text.js size: 11598
+13:09:33.744 Adding file : /var/lib/platform/elements/textbox.js size: 27233
+13:09:33.744 textbox.js(107) - Ignoring code by ifdef __WITH_XFORMS
+13:09:33.750 Adding file : /var/lib/platform/elements/toc.js size: 8342
+13:09:33.751 toc.js(174) - Ignoring code by ifdef __DEBUG
+13:09:33.751 toc.js(217) - Ignoring code by ifdef __DEBUG
+13:09:33.752 Adding file : /var/lib/platform/elements/toolbar.js size: 2787
+13:09:33.752 Adding file : /var/lib/platform/elements/tree.js size: 17659
+13:09:33.753 tree.js(217) - Ignoring code by ifdef __DEBUG
+13:09:33.755 Adding file : /var/lib/platform/elements/upload.js size: 30021
+13:09:33.756 upload.js(264) - Ignoring code by ifdef __DEBUG
+13:09:33.756 upload.js(296) - Ignoring code by ifdef __DEBUG
+13:09:33.758 upload.js(632) - Ignoring code by ifdef __DEBUG
+13:09:33.758 upload.js(673) - Ignoring code by ifdef __DEBUG
+13:09:33.759 Adding file : /var/lib/platform/elements/upload_old.js size: 31612
+13:09:33.759 upload_old.js(81) - Ignoring code by ifndef __PACKAGED
+13:09:33.766 upload_old.js(450) - Ignoring code by ifdef __DEBUG
+13:09:33.769 Adding file : /var/lib/platform/elements/vectorflow.js size: 65716
+13:09:33.769 vectorflow.js(22) - Ignoring code by ifdef __AMLVECTORFLOW
+13:09:33.793 Adding file : /var/lib/platform/elements/video.js size: 20319
+13:09:33.797 Adding file : /var/lib/platform/elements/viewport.js size: 1796
+13:09:33.797 Adding file : /var/lib/platform/elements/webdav.js size: 44766
+13:09:33.798 webdav.js(277) - Ignoring code by ifdef __DEBUG
+13:09:33.799 webdav.js(309) - Ignoring code by ifdef __DEBUG
+13:09:33.802 webdav.js(886) - Ignoring code by ifdef __DEBUG
+13:09:33.803 webdav.js(1117) - Ignoring code by ifdef __DEBUG
+13:09:33.803 Adding file : /var/lib/platform/elements/xmpp.js size: 101265
+13:09:33.808 xmpp.js(283) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.808 xmpp.js(295) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.808 xmpp.js(363) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.810 xmpp.js(661) - Ignoring code by ifdef __DEBUG
+13:09:33.810 xmpp.js(675) - Ignoring code by ifdef __DEBUG
+13:09:33.811 xmpp.js(772) - Ignoring code by ifdef __DEBUG
+13:09:33.812 xmpp.js(797) - Ignoring code by ifdef __DEBUG
+13:09:33.812 xmpp.js(834) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.812 xmpp.js(880) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.813 xmpp.js(946) - Ignoring code by ifdef __DEBUG
+13:09:33.813 xmpp.js(975) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.813 xmpp.js(1000) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.814 xmpp.js(1073) - Ignoring code by ifdef __DEBUG
+13:09:33.815 xmpp.js(1123) - Ignoring code by ifdef __DEBUG
+13:09:33.817 xmpp.js(1216) - Ignoring code by ifdef __DEBUG
+13:09:33.817 xmpp.js(1253) - Ignoring code by ifdef __DEBUG
+13:09:33.817 xmpp.js(1270) - Ignoring code by ifdef __DEBUG
+13:09:33.818 xmpp.js(1327) - Ignoring code by ifdef __DEBUG
+13:09:33.819 xmpp.js(1394) - Ignoring code by ifdef __DEBUG
+13:09:33.820 xmpp.js(1615) - Ignoring code by ifdef __DEBUG
+13:09:33.821 xmpp.js(1703) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.821 xmpp.js(1727) - Ignoring code by ifdef __DEBUG
+13:09:33.821 xmpp.js(1790) - Ignoring code by ifdef __DEBUG
+13:09:33.822 xmpp.js(1839) - Ignoring code by ifdef __DEBUG
+13:09:33.822 xmpp.js(1863) - Ignoring code by ifdef __DEBUG
+13:09:33.823 xmpp.js(1904) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.823 xmpp.js(1936) - Ignoring code by ifdef __DEBUG
+13:09:33.830 xmpp.js(2334) - Ignoring code by ifdef __DEBUG
+13:09:33.830 xmpp.js(2351) - Ignoring code by ifdef __DEBUG
+13:09:33.830 xmpp.js(2411) - Ignoring code by ifdef __DEBUG
+13:09:33.831 xmpp.js(2550) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.832 xmpp.js(2586) - Ignoring code by ifdef __DEBUG
+13:09:33.832 Adding file : /var/lib/platform/elements/actiontracker/undodata.js size: 11842
+13:09:33.833 undodata.js(127) - Ignoring code by ifdef __DEBUG
+13:09:33.834 undodata.js(245) - Ignoring code by ifdef __DEBUG
+13:09:33.834 undodata.js(349) - Ignoring code by ifndef __WITH_DATAACTION
+13:09:33.834 Adding file : /var/lib/platform/elements/actiontracker/xmlactions.js size: 8812
+13:09:33.836 Adding file : /var/lib/platform/elements/audio/type_flash.js size: 12951
+13:09:33.836 type_flash.js(41) - Ignoring code by ifndef __PACKAGED
+13:09:33.836 type_flash.js(50) - Ignoring code by ifdef __WITH_CDN
+13:09:33.838 Adding file : /var/lib/platform/elements/audio/type_native.js size: 11013
+13:09:33.842 Adding file : /var/lib/platform/elements/dbg/chromedebughost.js size: 3452
+13:09:33.842 Adding file : /var/lib/platform/elements/dbg/v8debugger.js size: 9840
+13:09:33.844 Adding file : /var/lib/platform/elements/dbg/v8debughost.js size: 2173
+13:09:33.845 Adding file : /var/lib/platform/elements/modalwindow/widget.js size: 7077
+13:09:33.846 Adding file : /var/lib/platform/elements/rpc/cgi.js size: 7168
+13:09:33.847 Adding file : /var/lib/platform/elements/rpc/header.js size: 3062
+13:09:33.847 header.js(87) - Ignoring code by ifdef __DEBUG
+13:09:33.848 Adding file : /var/lib/platform/elements/rpc/jphp.js size: 5874
+13:09:33.848 Adding file : /var/lib/platform/elements/rpc/jsonrpc.js size: 3125
+13:09:33.849 Adding file : /var/lib/platform/elements/rpc/rdb.js size: 8293
+13:09:33.850 rdb.js(156) - Ignoring code by ifdef __DEBUG
+13:09:33.850 rdb.js(166) - Ignoring code by ifdef __DEBUG
+13:09:33.850 rdb.js(188) - Ignoring code by ifdef __DEBUG
+13:09:33.851 Adding file : /var/lib/platform/elements/rpc/rest.js size: 3951
+13:09:33.851 rest.js(96) - Ignoring code by ifdef __DEBUG
+13:09:33.851 Adding file : /var/lib/platform/elements/rpc/soap.js size: 10943
+13:09:33.853 Adding file : /var/lib/platform/elements/rpc/xmlrpc.js size: 11154
+13:09:33.855 Adding file : /var/lib/platform/elements/rpc/yql.js size: 3962
+13:09:33.856 Adding file : /var/lib/platform/elements/textbox/autocomplete.js size: 7030
+13:09:33.857 Adding file : /var/lib/platform/elements/textbox/autocomplete2.js size: 14483
+13:09:33.857 autocomplete2.js(1) - Ignoring code by ifdef __ENABLE_TEXTBOX_AUTOCOMPLETE2
+13:09:33.862 Adding file : /var/lib/platform/elements/textbox/masking.js size: 13238
+13:09:33.865 Adding file : /var/lib/platform/elements/upload/flash.js size: 9508
+13:09:33.865 flash.js(39) - Ignoring code by ifndef __PACKAGED
+13:09:33.865 flash.js(80) - Ignoring code by ifdef __DEBUG
+13:09:33.866 Adding file : /var/lib/platform/elements/upload/html4.js size: 8675
+13:09:33.868 Adding file : /var/lib/platform/elements/upload/html5.js size: 8555
+13:09:33.870 Adding file : /var/lib/platform/elements/video/type_flv.js size: 17057
+13:09:33.870 type_flv.js(38) - Ignoring code by ifndef __PACKAGED
+13:09:33.870 type_flv.js(43) - Ignoring code by ifdef __WITH_CDN
+13:09:33.871 type_flv.js(353) - Ignoring code by ifdef __DEBUG
+13:09:33.872 type_flv.js(429) - Ignoring code by ifdef __WITH_CDN
+13:09:33.872 Adding file : /var/lib/platform/elements/video/type_native.js size: 10825
+13:09:33.881 Adding file : /var/lib/platform/elements/video/type_qt.js size: 23357
+13:09:33.885 Adding file : /var/lib/platform/elements/video/type_silverlight.js size: 15347
+13:09:33.885 type_silverlight.js(44) - Ignoring code by ifndef __PACKAGED
+13:09:33.885 type_silverlight.js(49) - Ignoring code by ifdef __WITH_CDN
+13:09:33.887 Adding file : /var/lib/platform/elements/video/type_vlc.js size: 12493
+13:09:33.887 type_vlc.js(22) - Ignoring code by ifdef __WITH_VIDEO_VLC && (__AMLVIDEO || __INC_ALL)
+13:09:33.888 Adding file : /var/lib/platform/elements/video/type_wmp.js size: 12632
+13:09:33.890 Adding file : /var/lib/platform/elements/xmpp/muc.js size: 18991
+13:09:33.893 Adding file : /var/lib/platform/elements/xmpp/rdb.js size: 21319
+13:09:33.893 rdb.js(22) - Ignoring code by ifdef __TP_XMPP_RDB
+13:09:33.898 Adding file : /var/lib/platform/elements/xmpp/roster.js size: 13725
+13:09:33.900 Adding file : /var/lib/platform/processinginstructions/livemarkup.js size: 4487
+13:09:33.901 Adding file : /var/lib/platform/processinginstructions/livetext.js size: 1637
+13:09:33.901 Adding file : /var/lib/platform/jpack_end.js size: 801
+13:09:33.901 jpack_end.js(1) - Ignoring code by ifndef __SUPPORT_GWT
+13:09:33.901 Adding file : /var/lib/platform/apf-node.js size: 1235
+13:09:33.901 apf-node.js(21) - Ignoring code by ifndef __PACKAGED
+13:09:33.901 Adding file : /var/lib/platform/apf-o3.js size: 14014
+13:09:33.901 apf-o3.js(22) - Ignoring code by ifdef __SUPPORT_O3
+13:09:33.903 Adding file : /var/lib/platform/loader-o3.js size: 7470
+13:09:33.903 loader-o3.js(22) - Ignoring code by ifndef __PACKAGED
+13:09:33.904 Adding file : /var/lib/platform/loader.js size: 16001
+13:09:33.904 loader.js(29) - Ignoring code by ifndef __PACKAGED
+13:09:33.905 Adding file : /var/lib/platform/loader2.js size: 18174
+13:09:33.905 loader2.js(29) - Ignoring code by ifndef __PACKAGED
+13:09:33.907 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/app.js size: 19004
+13:09:33.910 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/connections.js size: 11110
+13:09:33.912 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/create.js size: 4389
+13:09:33.914 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/editmode.js size: 4619
+13:09:33.918 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/feed.js size: 3911
+13:09:33.919 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/geo.js size: 3166
+13:09:33.919 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/messages.js size: 1848
+13:09:33.919 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/scrollfixed.js size: 8618
+13:09:33.921 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/search.js size: 3965
+13:09:33.922 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/security.js size: 1522
+13:09:33.922 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/session.js size: 10364
+13:09:33.924 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/spinner.js size: 292
+13:09:33.924 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/loader.js size: 474
+13:09:33.924 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/util.js size: 7724
+13:09:33.925 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/widgetpanel.js size: 3985
+13:09:33.926 Adding file : /Volumes/Docs/NetBeansProjects/worknets2/www/js/feedbackbtn.js size: 217
+13:09:33.967 Combine done. Written to /Volumes/Docs/NetBeansProjects/worknets2/www/js/apf_release.js
