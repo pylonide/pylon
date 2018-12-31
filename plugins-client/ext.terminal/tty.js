@@ -630,7 +630,8 @@ define(function(require) {
         rows: rows,
         cursorBlink: false,
         tabStopWidth: 4,
-        fontSize: 12
+        fontSize: 12,
+        rendererType: "dom"
       });
 
       var button = document.createElement('div');
@@ -773,6 +774,7 @@ define(function(require) {
         win.destroy();
       }
 
+      this.dispose(); // Dispose the xterm terminal, release resources
       this.__destroy();
     };
 
