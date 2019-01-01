@@ -54,9 +54,10 @@
         "treehugger": "https://github.com/pylonide/treehugger/tarball/65876760a809d93f627d5f9834c8bfc56f142a7e"
     },
     "devDependencies": {
-        "apf-packager": "https://github.com/pylonide/apf-packager/tarball/master",
         "nodeunit": "~0.11.2",
-        "rimraf": "~2.6.2"
+        "rimraf": "~2.6.2",
+        "xmldom": "~0.1.27",
+        "xpath": "~0.0.27"
     },
     "repository": {
         "type": "git",
@@ -65,6 +66,7 @@
     "scripts": {
         "start": "./bin/pylon.sh",
         "test": "./test/run-tests.sh",
+        "build": "cd ppc && mkdir -p build && node ppc-package.js projects/default.ppp && cat ./build/ppc_release.js | sed 's/\\(\\/\\*FILEHEAD(\\).*//g' > ../plugins-client/lib.apf/www/apf-packaged/apf_release.js & cd ..",
         "postinstall": "if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi"
     }
 }
