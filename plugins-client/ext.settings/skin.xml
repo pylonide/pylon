@@ -6,11 +6,10 @@
                 position         : relative;
                 overflow-y       : hidden;
                 overflow-x       : hidden;
-                /*background-image : url(images/panelbg.png);*/
                 color            : #202020;
                 font-family      : Tahoma, Arial;
                 font-size        : 12px;
-                text-shadow : rgba(255, 255, 255, 0.8) 0px 1px 0px;
+                text-shadow : rgba(48, 48, 48, 0.8) 0px 1px 0px;
             }
             
             .bar-preferences .header {
@@ -24,15 +23,15 @@
                 overflow         : visible;
                 font-family      : Arial;
                 font-size        : 11.3px;
-                color            : #3b3b3b;
+                color            : #cecece;
                 margin           : 5px 4px 10px 4px;
                 text-transform   : uppercase;
-                text-shadow      : 0 1px 0 rgba(255,255,255,.35);
+                text-shadow      : 0 1px 0 rgba(48,48,48,.35);
                 
                 border-radius: 3px;
                 
-                -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
-                        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(255,255,255,.7);
+                -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(128,128,128,.7);
+                        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 1px 0 0 rgba(128,128,128,.7);
             }
             
             .bar-preferences .header SPAN {
@@ -61,7 +60,7 @@
 
             .bar-preferences .underlined:not(:last-child),
             .bar-preferences .underlined2:not(:last-child) {
-                border-bottom : 1px solid #b9b9b9;
+                border-bottom : 1px solid #383838;
                 
                 -webkit-box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
                         box-shadow : 0 1px 0 0 rgba(255, 255, 255, 0.3);
