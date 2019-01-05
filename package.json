@@ -42,7 +42,7 @@
         "cozy-jsdav-fork": "~0.3.17",
         "architect": "~0.1.13",
         "node-pty": "~0.8.0",
-        "xterm": "~3.9.1",
+        "xterm": "~3.10.0",
         "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.2",
         "smith": "https://github.com/pylonide/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
         "architect-build": "https://github.com/pylonide/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
@@ -55,7 +55,7 @@
     },
     "devDependencies": {
         "nodeunit": "~0.11.2",
-        "rimraf": "~2.6.2",
+        "rimraf": "~2.6.3",
         "xmldom": "~0.1.27",
         "xpath": "~0.0.27"
     },
