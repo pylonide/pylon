@@ -27,7 +27,7 @@
                 </p>
             </div>
             <div class="c9MaintainersHeader">
-                <p>Kept alive by:</p>
+                <p>Pylon IDE fork:</p>
             </div>
             <div class="c9Maintainers">
                 <p>
@@ -36,7 +36,7 @@
             </div>
             <div class="c9Copyright">
                 <p>&#169; 2010 — 2013 Cloud9 IDE Inc. All rights reserved<br />
-                   &#169; 2013 — 2017 Sten Feldman</p>
+                   &#169; 2013 — 2019 Sten Feldman</p>
             </div>
         </div>
     </a:window>

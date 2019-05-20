@@ -1,7 +1,6 @@
 /**
- * Code Editor for the Cloud9 IDE
+ * Code Editor for the Pylon IDE
  *
- * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -106,9 +105,9 @@ module.exports = ext.register("ext/menus/menus", {
         });
 
         this.addItemByPath("File/~", new apf.divider(), 1000000);
-        this.addItemByPath("File/Quit Cloud9 IDE", new apf.item({
+        this.addItemByPath("File/Quit Pylon IDE", new apf.item({
             onclick : function(){
-                location.href = "https://github.com/exsilium/cloud9";
+                location.href = "https://github.com/pylonide/pylon";
             }
         }), 2000000);
 
