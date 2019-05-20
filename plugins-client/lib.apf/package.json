@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.client.apf",
+    "name": "pylon.client.apf",
     "version": "0.0.1",
     "main": "apf-lib.js",
     "private": true,

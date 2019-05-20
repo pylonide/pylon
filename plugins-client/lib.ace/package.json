@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.client.ace",
+    "name": "pylon.client.ace",
     "version": "0.0.1",
     "main": "ace-lib.js",
     "private": true,

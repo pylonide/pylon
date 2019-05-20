@@ -46,7 +46,7 @@ define (require, exports, module) ->
           apf.console.error 'Unable to request local file system'
           callback 'Unable to request local file system'
         else
-          @fs = localStorage['cloud9']
+          @fs = localStorage['pylon']
       else
         window.requestFileSystem type, size,
           (fileSystem) =>
