@@ -33,7 +33,7 @@
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
         "engine.io": "~3.2.0",
-        "engine.io-client": "~3.2.1",
+        "engine.io-client": "~3.3.2",
         "dryice": "0.4.11",
         "amd-loader": "~0.0.8",
         "http-error": "~0.0.6",
