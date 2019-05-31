@@ -43,7 +43,7 @@
         "cozy-jsdav-fork": "~0.3.17",
         "architect": "~0.1.13",
         "node-pty": "~0.8.0",
-        "xterm": "~3.10.0",
+        "xterm": "~3.14.0",
         "vary": "^1.1.2",
         "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.2",
         "smith": "https://github.com/pylonide/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
