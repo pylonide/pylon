@@ -1,0 +1,162 @@
+/* source-sans-pro-300 - latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 300;
+  src: local('Source Sans Pro Light'), local('SourceSansPro-Light'),
+       url('./source-sans-pro-v12-latin-300.woff2') format('woff2'); /* Chrome 26+, Opera 23+, Firefox 39+ */
+}
+/* source-sans-pro-regular - latin */
+@font-face {
+  font-family: 'Source Sans Pro';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Source Sans Pro Regular'), local('SourceSansPro-Regular'),
+       url('./source-sans-pro-v12-latin-regular.woff2') format('woff2'); /* Chrome 26+, Opera 23+, Firefox 39+ */
+}
+
+html { 
+  background: url("./login.jpg") no-repeat bottom center fixed; 
+  background-color: rgb(234,238,239);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+body {
+  font-family: 'Source Sans Pro', Helvetica, Arial, Verdana, sans-serif;
+  font-weight: 400;
+  font-size: 12px;
+  margin: 0em;
+  padding: 0em;
+  color: #FFFFFF;
+  min-width: 600px;
+}
+
+input {
+  font-family: 'Source Sans Pro', Helvetica, Arial, Verdana, sans-serif;
+  font-weight: 400;
+  background-color: #FFFFFF;
+  color: #121212;
+  font-size: 1.2em;
+  border: 0.1em solid #B3B3B3;
+  border-radius: 0.2em;
+  padding: 0.6em;
+  margin: 0em 0em 1.2em 0em;
+  width: 100%;
+  border: 0.1em solid #A3A3A3;
+  box-sizing: border-box;
+  box-shadow: 0.1em 0.1em 0.3em rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+input:focus {
+  border: 0.1em solid #363636;
+}
+
+button {
+  font-family: 'Source Sans Pro', Helvetica, Arial, Verdana, sans-serif; /* Font style needs to be set explicitly as done here since for input elements it is not inherited from above */
+  font-weight: 300;
+  background-color: #DBDBDB;
+  color: #2E2E2E;
+  font-size: 1.2em;
+  padding: 0.6em;
+  margin: 0em 0em 0.6em 0em;
+  border-radius: 0.2em;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0.1em solid #A3A3A3;
+  box-shadow: 0.1em 0.1em 0.3em rgba(0, 0, 0, 0.1);
+  outline: none;
+}
+
+button:hover {
+  background-color: #E3E3E3;
+}
+
+button:focus {
+  border: 0.1em solid #363636;
+  background-color: #E3E3E3;
+}
+
+button:active {
+  background-color: #EEEEEE;
+}
+
+#holderbox {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: auto;
+  height: 25em;
+  width: 25em;
+  padding: 7.5em 0em 0em 0em;
+  text-align: center;
+}
+
+#canvaslogin {
+  padding: 0em;
+  margin: 0em;
+  display: block;
+}
+
+.login_messagebox_off {
+  display: none;
+}
+
+.login_messagebox_on {
+  display: block;
+}
+
+#login_messagebox {
+  position: relative;
+}
+
+#login_message {
+  background-color: #FFCA6E;
+  padding: 0.6em;
+  margin: 1em 0em 0em 0em;
+  border: 0.1em solid #6E6E6E;
+  border-radius: 0.2em;
+  box-sizing: border-box;
+  color: #000000;
+  font-size: 1em;
+  box-shadow: 0.1em 0.1em 0.3em rgba(0, 0, 0, 0.1);
+  opacity: 0.8;
+  animation-name: login_messagebox_appear;
+  animation-duration: 0.2s;
+  animation-iteration-count: 1;
+  animation-timing-function: cubic-bezier(0.4, 0.2, 0.5, 1.4);
+  transform-origin: 50% 0%;
+}
+
+@keyframes login_messagebox_appear {
+  0% {
+    transform: scale(0);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+#login_message:before { /* this creates the arrow at the top of the message box */
+  content: "";
+  position: absolute;
+  top: -0.43em;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: 0.01em;
+  height: 0.01em;
+  padding: 0.4em;
+  background-color: inherit;
+  border: inherit;
+  border-right: 0;
+  border-bottom: 0;
+  transform: rotate(45deg);
+  z-index: -1;
+}
