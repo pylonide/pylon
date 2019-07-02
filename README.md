@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/pylonide/pylon.svg?branch=master)](https://travis-ci.org/pylonide/pylon)
 [![Master Dependency Status](https://snyk.io/test/github/pylonide/pylon/badge.svg)](https://snyk.io/test/github/pylonide/pylon)
 [![Development Dependency Status](https://snyk.io/test/github/pylonide/pylon/development/badge.svg)](https://snyk.io/test/github/pylonide/pylon/development)
-[![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://www.coinbase.com/checkouts/9f4183a5164f2c4bd53d6afc74068ec4 "One-time donation to keep this fork alive")
+[![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://commerce.coinbase.com/checkout/5f3b0455-32ba-4b85-b299-00fe739d8b10 "One-time donation to keep this project alive")
 
 # Pylon IDE
 
@@ -109,7 +109,7 @@ To update to the latest version (if this doesn't work, just make a fresh clone):
 
 Pylon functionality is all created around server and client-side plugins.
 However, there is hardly any documentation about the APIs to create your own
-plugins. To get you started, please see [exsilium/cloud9-plugin-ungit](https://github.com/exsilium/cloud9-plugin-ungit)
+plugins. To get you started, please see [pylonide/pylon-plugin-mungit](https://github.com/pylonide/pylon-plugin-mungit)
 to see how to get started for a client-side only plugin.
 
 Going forward, there will be efforts made to sort out the documentation and
