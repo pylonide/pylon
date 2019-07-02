@@ -21,7 +21,7 @@
         "connect": "~3.6.6",
         "express-session": "~1.15.6",
         "cookie-parser": "~1.4.3",
-        "body-parser": "~1.18.3",
+        "body-parser": "~1.19.0",
         "serve-static": "~1.13.2",
         "serve-favicon": "~2.5.0",
         "csurf": "~1.9.0",
