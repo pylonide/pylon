@@ -1,70 +1,74 @@
 {
-    "name": "pln",
-    "description": "Pylon IDE",
-    "version": "2.4.0",
-    "homepage": "http://github.com/pylonide/pylon",
-    "engines": {
-        "node": ">= 4.9.1"
-    },
-    "author": "Sten Feldman <exile@chamber.ee>",
-    "contributors": [
-        "Ajax.org B.V. <info@ajax.org>",
-        "Sten Feldman <exile@chamber.ee> (http://sten.feldman.eesti.ee/)"
-    ],
-    "license": "GPL-3.0",
-    "help": {
-        "web": "https://github.com/pylonide/pylon/blob/master/README.md"
-    },
-    "dependencies": {
-        "async": "~2.6.1",
-        "colors": "~1.3.0",
-        "connect": "~3.6.6",
-        "express-session": "~1.15.6",
-        "cookie-parser": "~1.4.3",
-        "body-parser": "~1.18.3",
-        "serve-static": "~1.13.2",
-        "serve-favicon": "~2.5.0",
-        "csurf": "~1.9.0",
-        "urlrouter": "~0.5.4",
-        "qs": "~6.5.2",
-        "parseurl": "~1.3.2",
-        "passport": "~0.4.0",
-        "passport-http": "~0.3.0",
-        "optimist": "~0.6.1",
-        "msgpack-js-browser": "~0.1.4",
-        "engine.io": "~3.2.0",
-        "engine.io-client": "~3.2.1",
-        "dryice": "0.4.11",
-        "amd-loader": "~0.0.8",
-        "http-error": "~0.0.6",
-        "simple-template": "~0.0.1",
-        "netutil": "~0.0.2",
-        "cozy-jsdav-fork": "~0.3.17",
-        "architect": "~0.1.13",
-        "node-pty": "~0.7.4",
-        "xterm": "~3.1.0",
-        "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.2",
-        "smith": "https://github.com/pylonide/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
-        "architect-build": "https://github.com/pylonide/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
-        "vfs-architect": "https://github.com/pylonide/vfs-architect/tarball/6a729efb9ba8241aab0c354f098caf1b0f7c18db",
-        "vfs-nodefs-adapter": "https://github.com/pylonide/vfs-nodefs-adapter/tarball/7ce86b0242aa0941aad68cc8ecca3d82308dd276",
-        "vfs-local": "https://github.com/pylonide/vfs-local/tarball/890b96c73747a677d3a46ce7f97ae3c78d9f0f5c",
-        "asyncjs": "https://github.com/pylonide/async.js/tarball/be2c5b9195312c9c4aa8c3e29932b0b9784bcae7",
-        "v8debug": "https://github.com/pylonide/lib-v8debug/tarball/863c0ce1e39a4f100457d306e1d2cc2b0283fa2a",
-        "treehugger": "https://github.com/pylonide/treehugger/tarball/65876760a809d93f627d5f9834c8bfc56f142a7e"
-    },
-    "devDependencies": {
-        "apf-packager": "https://github.com/pylonide/apf-packager/tarball/master",
-        "nodeunit": "~0.11.2",
-        "rimraf": "~2.6.2"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/pylonide/pylon.git"
-    },
-    "scripts": {
-        "start": "./bin/pylon.sh",
-        "test": "./test/run-tests.sh",
-        "postinstall": "if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi"
-    }
+  "name": "pln",
+  "description": "Pylon IDE",
+  "version": "2.4.0",
+  "homepage": "http://github.com/pylonide/pylon",
+  "engines": {
+    "node": ">= 4.9.1"
+  },
+  "author": "Sten Feldman <exile@chamber.ee>",
+  "contributors": [
+    "Ajax.org B.V. <info@ajax.org>",
+    "Sten Feldman <exile@chamber.ee> (http://sten.feldman.eesti.ee/)"
+  ],
+  "license": "GPL-3.0",
+  "help": {
+    "web": "https://github.com/pylonide/pylon/blob/master/README.md"
+  },
+  "dependencies": {
+    "async": "~2.6.1",
+    "colors": "~1.3.0",
+    "connect": "~3.6.6",
+    "express-session": "~1.15.6",
+    "cookie-parser": "~1.4.3",
+    "body-parser": "~1.18.3",
+    "serve-static": "~1.13.2",
+    "serve-favicon": "~2.5.0",
+    "csurf": "~1.9.0",
+    "urlrouter": "~0.5.4",
+    "qs": "~6.5.2",
+    "parseurl": "~1.3.2",
+    "passport": "~0.4.0",
+    "passport-http": "~0.3.0",
+    "optimist": "~0.6.1",
+    "msgpack-js-browser": "~0.1.4",
+    "engine.io": "~3.2.0",
+    "engine.io-client": "~3.2.1",
+    "dryice": "0.4.11",
+    "amd-loader": "~0.0.8",
+    "http-error": "~0.0.6",
+    "simple-template": "~0.0.1",
+    "netutil": "~0.0.2",
+    "cozy-jsdav-fork": "~0.3.17",
+    "architect": "~0.1.13",
+    "node-pty": "~0.7.4",
+    "xterm": "~3.1.0",
+    "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.2",
+    "smith": "https://github.com/pylonide/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
+    "architect-build": "https://github.com/pylonide/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
+    "vfs-architect": "https://github.com/pylonide/vfs-architect/tarball/6a729efb9ba8241aab0c354f098caf1b0f7c18db",
+    "vfs-nodefs-adapter": "https://github.com/pylonide/vfs-nodefs-adapter/tarball/7ce86b0242aa0941aad68cc8ecca3d82308dd276",
+    "vfs-local": "https://github.com/pylonide/vfs-local/tarball/890b96c73747a677d3a46ce7f97ae3c78d9f0f5c",
+    "asyncjs": "https://github.com/pylonide/async.js/tarball/be2c5b9195312c9c4aa8c3e29932b0b9784bcae7",
+    "v8debug": "https://github.com/pylonide/lib-v8debug/tarball/863c0ce1e39a4f100457d306e1d2cc2b0283fa2a",
+    "treehugger": "https://github.com/pylonide/treehugger/tarball/65876760a809d93f627d5f9834c8bfc56f142a7e",
+    "snyk": "^1.189.0"
+  },
+  "devDependencies": {
+    "apf-packager": "https://github.com/pylonide/apf-packager/tarball/master",
+    "nodeunit": "~0.11.2",
+    "rimraf": "~2.6.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pylonide/pylon.git"
+  },
+  "scripts": {
+    "start": "./bin/pylon.sh",
+    "test": "./test/run-tests.sh",
+    "postinstall": "if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
+  },
+  "snyk": true
 }
