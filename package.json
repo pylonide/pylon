@@ -48,7 +48,7 @@
         "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.2",
         "smith": "https://github.com/pylonide/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
         "architect-build": "https://github.com/pylonide/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
-        "vfs-architect": "https://github.com/pylonide/vfs-architect/tarball/635e786df96bf3f46a16a9bbc6871bb9d1c6014a",
+        "vfs-architect": "https://github.com/pylonide/vfs-architect/tarball/365835e99b8dbeee93faac8bf3671869b67596b3",
         "vfs-nodefs-adapter": "https://github.com/pylonide/vfs-nodefs-adapter/tarball/7ce86b0242aa0941aad68cc8ecca3d82308dd276",
         "vfs-local": "https://github.com/pylonide/vfs-local/tarball/66d1fb254f5086f03170890905b28ea9709e45f1",
         "asyncjs": "https://github.com/pylonide/async.js/tarball/be2c5b9195312c9c4aa8c3e29932b0b9784bcae7",
