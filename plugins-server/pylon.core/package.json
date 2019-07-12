@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.core",
+    "name": "pylon.core",
     "version": "0.0.1",
     "main": "ide-plugin.js",
     "private": true,

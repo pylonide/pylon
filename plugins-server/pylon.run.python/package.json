@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.run.python",
+    "name": "pylon.run.python",
     "version": "0.0.1",
 
     "main": "./python-plugin.js",

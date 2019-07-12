@@ -6,13 +6,13 @@ var fs = require("fs");
 
 var EventEmitter = require("events").EventEmitter;
  // wire up the NodeRunner with appropriate createChild version
-require("../cloud9.run.node/node-plugin");
-var node_runner = require("../cloud9.run.node/node-runner");
+require("../pylon.run.node/node-plugin");
+var node_runner = require("../pylon.run.node/node-runner");
 var node_debug = require("./node_debug-runner");
 
 var V8Debugger = require("v8debug").V8Debugger;
 var WSV8DebuggerService = require("v8debug").WSV8DebuggerService;
-var ProcessManager = require("../cloud9.process-manager/process_manager");
+var ProcessManager = require("../pylon.process-manager/process_manager");
 var vfsLocal = require("vfs-local");
 var fsnode = require("vfs-nodefs-adapter");
 

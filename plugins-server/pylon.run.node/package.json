@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.run.node",
+    "name": "pylon.run.node",
     "version": "0.0.1",
 
     "main": "./node-plugin.js",

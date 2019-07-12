@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.run.apache",
+    "name": "pylon.run.apache",
     "version": "0.0.1",
 
     "main": "./apache-plugin.js",

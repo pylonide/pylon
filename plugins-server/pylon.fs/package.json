@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.filesystem",
+    "name": "pylon.filesystem",
     "version": "0.0.1",
     "main": "fs-plugin.js",
     "private": true,

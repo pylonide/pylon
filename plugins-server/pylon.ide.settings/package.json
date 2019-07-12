@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.ide.settings",
+    "name": "pylon.ide.settings",
     "version": "0.0.1",
 
     "main": "./settings.js",

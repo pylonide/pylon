@@ -51,7 +51,7 @@ module.exports = function setup(options, imports, register) {
             if (!req.session || !(req.session.uid || req.session.anonid))
                 return next(new error.Unauthorized());
 
-            permissions.getPermissions(req.session.uid, workspaceId, "cloud9.fs.fs-plugin", function(err, permissions) {
+            permissions.getPermissions(req.session.uid, workspaceId, "pylon.fs.fs-plugin", function(err, permissions) {
                 if (err) {
                     next(err);
                     return;

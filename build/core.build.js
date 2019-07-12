@@ -4,14 +4,14 @@
     baseUrl: "../",
     paths: {
         "text" : "build/text", // plugin for pulling in text! files
-        "core" : "plugins-client/cloud9.core/www/core",
+        "core" : "plugins-client/pylon.core/www/core",
         "treehugger" : "node_modules/treehugger/lib/treehugger",
         "v8debug": "node_modules/v8debug/lib/v8debug",
         "ext/main": "plugins-client/ext.main",
         "apf-packaged": "plugins-client/lib.apf/www/apf-packaged",
 
         // Needed because `r.js` has a bug based on packages config below:
-        //   `Error evaluating module "undefined" at location "~/cloud9infra/node_modules/cloud9/events-amd.js"`
+        //   `Error evaluating module "undefined" at location "~/pyloninfra/node_modules/cloud9/events-amd.js"`
         "events-amd": "empty:"
     },
     packages: [

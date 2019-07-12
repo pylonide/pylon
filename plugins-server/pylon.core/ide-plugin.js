@@ -36,7 +36,7 @@ module.exports = function setup(options, imports, register) {
     });
 
     function initUserAndProceed(uid, workspaceId, callback) {
-        permissions.getPermissions(uid, workspaceId, "cloud9.core.ide-plugin", function(err, perm) {
+        permissions.getPermissions(uid, workspaceId, "pylon.core.ide-plugin", function(err, perm) {
             if (err) {
                 callback(err);
                 return;

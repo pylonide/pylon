@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.ide.hg",
+    "name": "pylon.ide.hg",
     "version": "0.0.1",
 
     "main": "./hg.js",

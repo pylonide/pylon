@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.ide.run-php",
+    "name": "pylon.ide.run-php",
     "version": "0.0.1",
 
     "main": "./run-php.js",

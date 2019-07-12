@@ -30,7 +30,7 @@ module.exports = function setup(options, imports, register) {
 
                     message.session = session;
                     var uid = session.uid || session.anonid;
-                    PERMISSIONS.getPermissions(uid, message.workspaceId, "cloud9.socket", function(err, userPermissions) {
+                    PERMISSIONS.getPermissions(uid, message.workspaceId, "pylon.socket", function(err, userPermissions) {
                         if (err) {
                             connection.send(err.toJSON ? err.toJSON() : {
                                 "type": "error",

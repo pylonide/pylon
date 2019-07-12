@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.ide.terminal",
+    "name": "pylon.ide.terminal",
     "version": "0.0.1",
 
     "main": "./terminal.js",

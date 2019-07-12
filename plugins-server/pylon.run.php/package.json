@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.run.php",
+    "name": "pylon.run.php",
     "version": "0.0.1",
 
     "main": "./php-plugin.js",
