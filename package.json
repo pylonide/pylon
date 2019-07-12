@@ -45,7 +45,7 @@
         "node-pty": "0.9.0-beta19",
         "xterm": "~3.14.5",
         "vary": "^1.1.2",
-        "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.2",
+        "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.5",
         "smith": "https://github.com/pylonide/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
         "architect-build": "https://github.com/pylonide/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
         "vfs-architect": "https://github.com/pylonide/vfs-architect/tarball/15bab6a21c3d3e164d5e557ef178ec71144ae8f7",
