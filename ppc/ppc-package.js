@@ -2,14 +2,12 @@
 XPath = require('xpath');
 DOMParser = require('xmldom').DOMParser;
 
-require("apf");
-
 var Fs = require("fs");
 
 boot();
 
 function boot() {
-    require("apf/apf-node");
+    require("./platform/apf-node");
 
     require("./lib/proc");
     require("./lib/files");

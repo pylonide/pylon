@@ -1,0 +1,14 @@
+{
+    "name": "pylon.client.ppc",
+    "version": "0.0.1",
+    "main": "ppc-lib.js",
+    "private": true,
+
+    "dependencies": {
+    },
+
+    "plugin": {
+        "provides": ["client.ppc"],
+        "consumes": ["static"]
+    }
+}
