@@ -94,7 +94,7 @@ apf.process.handler.combine = function(x){
             + s.version.replace(/(\d+\.\d+)\.\d*\./, "$1").toLowerCase() + "',");
     }
 
-    Fs.writeFile(output, result, "utf8");
+    Fs.writeFileSync(output, result, "utf8");
 
     apf.console.info("Combine done. Written to " + output);
 };
