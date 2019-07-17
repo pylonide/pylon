@@ -5,6 +5,7 @@
 .idea/
 plugins-client/lib.packed/www/
 plugins-client/lib.ace/www/worker/
+plugins-client/lib.ppc/www/ppc/ppc.js
 node_modules/
 ppc/build/
 

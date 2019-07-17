@@ -195,7 +195,7 @@ apf = {
                      + dt.getMinutes().toPrettyDigit() + ":"
                      + dt.getSeconds().toPrettyDigit() + "." + ms;
 
-            util.puts((nodate ? "" : date) + " " + msg + (data ? "Extra information:\n" + data : ""));
+            console.log((nodate ? "" : date) + " " + msg + (data ? "Extra information:\n" + data : ""));
         },
         //#endif
 
