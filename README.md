@@ -20,9 +20,17 @@ Pylon is built entirely on a web stack, making it the most hacker-friendly IDE t
 
 ### Screenshot
 
+#### The main user interface
+
 ![ScreenShot](doc/screenshot01.png)
 
+Browser used: Safari 12.1.1
+
+#### Additional plugin dockpanel view
+
 ![ScreenShot](doc/screenshot02.png)
+
+Browser: Chromium 75. Check out [pylonide/pylon-plugin-mungit](https://github.com/pylonide/pylon-plugin-mungit) for the Git plugin.
 
 ## Browser Support
 
@@ -95,8 +103,7 @@ Install [NVM](https://github.com/creationix/nvm) to manage node versions. Instal
 Clone the Pylon repo to your machine and run npm:
 
     npm install
-    make worker
-    node server.js -w ./ -l 0.0.0.0 -a x-www-browser
+    bin/pylon.sh -w . -l 0.0.0.0
 
 ## Updating
 
