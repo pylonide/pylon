@@ -2,9 +2,9 @@ var assert = require("assert");
 var path = require("path");
 var error = require("http-error");
 
-var jsDAV = require("cozy-jsdav-fork");
+var jsDAV = require("@pylonide/jsdav");
 var jsDAV_Tree_Filesystem = require("./fs/tree");
-var BrowserPlugin = require("cozy-jsdav-fork/lib/DAV/plugins/browser");
+var BrowserPlugin = require("@pylonide/jsdav/lib/DAV/plugins/browser");
 var DavFilewatch = require("./dav/filewatch");
 var DavPermission = require("./dav/permission");
 
