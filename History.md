@@ -6,6 +6,7 @@ v2.5.0
 * Support for Forms authentication #69
 * Removal of apf-packager and apf dependencies #87
 * cozy-jsdav-fork dependency changed to @pylonide/jsdav for enhanced security
+* dryice dependency changed to @pylonide/dryice for enhanced security
 * Pylon namespace changes
 * Upgrade to ACE v1.4.5
 * Dependency upgrades and security enhancements

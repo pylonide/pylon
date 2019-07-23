@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var copy = require('dryice').copy;
+var copy = require('@pylonide/dryice').copy;
 
 var ACE_HOME = __dirname + "/node_modules/ace"
 
