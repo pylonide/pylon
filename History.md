@@ -1,5 +1,6 @@
 v2.5.0
 ======
+* Dark themed file browser, ui enhancements
 * Further namespace changes to Pylon #48
 * APF Merged into Pylon IDE as PPC #66
 * Connect middleware gets redirect() support #67
