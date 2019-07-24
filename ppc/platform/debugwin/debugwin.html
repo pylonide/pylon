@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <!--script src="apf_debugwin.js"></script-->
+        <script src="o3.js"></script>
+        <!--link rel="stylesheet" href="http://www.ajax.org/css/style.css" type="text/css" /-->
+        <link rel="stylesheet" href="debugwin.css" type="text/css" />
+        <link rel="stylesheet" href="docs.css" type="text/css" />
+        
+        <!-- docparser files -->
+        <script src="docparser/JsParser.js"></script>
+        <script src="docparser/docparser.js"></script>
+        <script src="docparser/docparser_objects.js"></script>
+		<script src="docparser/docparser_refguide_xml.js"></script>
+        <script src="docparser/docparser_xmlschema.js"></script>
+    </head>
+    <body>
+        <a:skin src="skins.xml" media-path="resources/" icon-path="resources/" />
+        
+        <a:appsettings debug="0" undokeys="true" />
+
+        <a:rpc id="comm"
+          protocol     = "cgi" 
+          baseurl      = "http://www.ajax.org/"
+          route-server = "rpcproxy.php"
+          autoroute    = "true">
+            <a:method name="search" url="data.php">
+                <a:param name="search" />
+                <a:param name="limit" default="3" />
+                <a:param name="page" default="1" />
+                <a:param name="index" />
+            </a:method>
+            <a:method name="fetch" url="data.php">
+                <a:param name="f" />
+                <a:param name="page" />
+                <a:param name="limit" />
+            </a:method>
+            <a:method name="getComments" url="data.php">
+                <a:param name="c" />
+            </a:method>
+            <a:method name="getDownloads" url="data.php?m=downloads" />
+            <a:method name="getNightlies" url="data.php?m=nightlies">
+                <a:param name="date" />
+            </a:method>
+            <a:method name="getBlogs" url="data.php?f=BLOGS" />
+            <a:method name="getPlanet" url="data.php?f=AJAXORG" />
+            <a:method name="subscribe" url="http://lists.ajax.org/wwsympa.fcgi/subscribe/platform/wwsympa.fcgi"
+              receive="app.checkSubscribe">
+                <a:param name="list" value="platform" />
+                <a:param name="action" value="subrequest" />
+                <a:param name="email" />
+            </a:method>
+            <a:method name="getDemos" url="data.php" receive="loadDemos">
+                <a:param name="demo" value="1" />
+                <a:param name="name" />
+            </a:method>
+            <a:method name="loginCheck" url="data.php">
+                <a:param name="login" value="check" />
+                <a:param name="username" />
+            </a:method>
+            <a:method name="loginRegister" url="data.php">
+                <a:param name="login" value="register" />
+                <a:param name="username" />
+                <a:param name="password" />
+                <a:param name="email" />
+            </a:method>
+            <!--a:method name="loginUpdate" url="http://development.ajax.org/data.php">
+                <a:param name="login" value="update" />
+                <a:param name="username" />
+            </a:method-->
+        </a:rpc>
+        
+        <a:model id="$apf_ide_mdlProps">
+            <props />
+        </a:model>
+       
+        <a:model id="$apf_ide_mdlTeleport" onafterload="apf.$debugwin.apf.console.setTeleportModel(this);">
+            <teleport />
+        </a:model>
+       
+        <a:model id="$apf_ide_mdlData">
+            <folder caption="My Documents" priority="4" align="left-splitter-3" />
+        </a:model>
+        
+        <a:model id="$apf_ide_mdlTools" src="tools.xml" />
+        
+        <a:menu id="mnuOptions">
+            <!--a:item visible="false">Search in docs</a:item>
+            <a:divider /-->
+            <a:item type="check" id="itmShowtime" onclick="apf.$debugwin.setShowTime(this.checked);">Show time</a:item>
+            <a:item type="check" id="itmDebug" onclick="apf.$debugwin.setNativeDebug(this.checked);">Use browser debugger</a:item>
+            <a:divider />
+            <a:item onclick="apf.$debugwin.apf.console.clear();apf_console.clear()" >Clear Log</a:item>
+            <!--a:item disabled="true">Copy Log</a:item-->
+        </a:menu>
+        
+        <a:menu id="mnuBrowse">
+            <a:item type="check" id="cbHighlightHover" onclick="apf.$debugwin.setHighlightHover(this.checked);">Highlight when hovering</a:item>
+            <a:item type="check" id="cbSelectEditable" onclick="apf.$debugwin.setSelectEditable(this.checked);">Select editable element</a:item>
+            <a:divider />
+            <a:item type="radio" group="grSelect" value="markup" selected="true">Select inspects markup</a:item>
+            <a:item type="radio" group="grSelect" value="data">Select inspects data</a:item>
+            <a:item type="radio" group="grSelect" value="prop">Select inspects properties</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuData" anim="false">
+            <a:item value="doc">Find in documentation</a:item>
+            <a:item id="itRemove" value="remove">Remove</a:item>
+            <a:divider />
+            <a:item id="itInspAml" value="aml">Inspect as AML</a:item>
+            <a:item id="itInspData" value="data">Inspect as Data</a:item>    
+            <a:item id="itInspObj" value="obj">Inspect as Object</a:item>
+            <a:divider id="div2" />
+            <a:item id="itInspModel" value="model-data">Inspect data</a:item>
+            <a:item id="itInspRoot" value="root-data">Inspect root data</a:item>
+            <a:item id="itInspSel" value="sel-data">Inspect selected item</a:item>
+        </a:menu>
+        
+        <a:errorbox id="errBox" left="310" top="33" />
+    
+        <a:divider skin="divider_tab" top="11" left="147" />
+        <a:button skin="button_edit" top="9" left="160" state="true" tooltip="Edit"
+            onclick="apf.$debugwin.setEditable(this.value);" focussable="0" />
+        <a:button skin="button_select" top="9" left="203" state="true" tooltip="Select"
+            onclick="apf.$debugwin.apf.$debugwin.toggleHighlight(apf.$debugwin, this, grSelect)"
+            focussable="0"/>
+        <a:button skin="button_save" top="9" left="246" tooltip="Save" focussable="0" />
+        <a:divider skin="divider_tab" top="11" left="291" />
+        <a:button skin="button_close" top="6" right="5" focussable="0" 
+            onclick="apf.$debugwin.apf.$debugwin.hide();" />
+            
+        <!-- removing this first bar bugs the layout engine -->
+        <a:tab id="tabDebug" anchors="0 0 0 0" skin="debugger_tab" activepage2="docs">
+            <a:page caption="Console">
+                <a:toolbar align="left" width="70%" height="25" border="0 1 0 0">
+                    <a:bar style="padding-left:3px">
+                        <a:button id="btnLog" onclick="apf.$debugwin.updateLog()" 
+                            skin="toolbar_radio"
+                            state="true">Logs</a:button>
+                        <a:button id="btnWarn" onclick="apf.$debugwin.updateLog()"  
+                            skin="toolbar_radio"
+                            state="true" value="true">Warnings</a:button>
+                        <a:button id="btnError" onclick="apf.$debugwin.updateLog()" 
+                            skin="toolbar_radio"
+                            state="true" value="true">Errors</a:button>
+                        <a:divider />
+                        <a:button submenu="mnuOptions">Options</a:button>
+                    </a:bar>
+                </a:toolbar>
+                <a:text id="apf_console" align="left-splitter" scrolldown="true" 
+                    behavior   = "addonly" oncontextmenu="return apf.$debugwin.$handleDataContext(event);"
+                    focussable = "true" class="apf_console"
+                    border     = "1 1 0 0" />
+                <a:bar skin="basic" align="right" height="30" visible="{codetype.value == 'Live Markup'}">
+                    <a:hbox flex="true">
+                        <a:label>Datasource:</a:label>
+                        <a:textbox id="txtModel" flex="1" onkeydown="return apf.$debugwin.consoleTextHandler(event)" realtime="true" />
+                    </a:hbox>
+                </a:bar>
+                <a:textarea id="txtCode" realtime="true" align="right" 
+                    onkeydown = "return apf.$debugwin.consoleTextHandler(event)" 
+                    border    = "1 0 1 1" />
+                <!--a:codeeditor id="txtCode" realtime="true" align="right" 
+                    onkeydown = "return apf.$debugwin.consoleTextHandler(event)" 
+                    border    = "1 1 1 1" caching="false" showinvisibles="false" 
+                    activeline = "false" syntax="js" selectstyle="{apf.isMac ? 'line' : 'text'}" /-->
+                <a:toolbar align="right" height="25" border="0 0 0 1">
+                    <a:bar>
+                        <a:hbox edge="2 0 0 2">
+                            <a:button skin="toolbarbutton" onclick="apf.$debugwin.jRunCode(txtCode.value, codetype.value, txtModel.value);" tooltip="Run the code (Ctrl-Enter)">
+                                Execute
+                            </a:button>
+                            <a:dropdown id="codetype" width="100" fill="Live Markup, Javascript" margin="1 0 1 0" align="right" />
+                        </a:hbox>
+                    </a:bar>
+                </a:toolbar>
+            </a:page>
+            <a:page caption="Inspect" id="browse" render="runtime">
+                <a:toolbar>
+                    <a:bar>
+                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 0}" value="0">AML</a:radiobutton>
+                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 1}" value="1">Data</a:radiobutton>
+                        <a:radiobutton group="rgBrowse" skin="radiotab" checked="{pgBrowse.activepagenr == 2}" value="2">Objects</a:radiobutton>
+                        <a:divider />
+                        <a:button disabled="{!apf.$debugwin.apf.window.undoManager.undolength}" onclick="apf.$debugwin.apf.window.undoManager.undo()">Undo</a:button>
+                        <a:button disabled="{!apf.$debugwin.apf.window.undoManager.redolength}" onclick="apf.$debugwin.apf.window.undoManager.redo()">Redo</a:button>
+                        <a:divider />
+                        <a:button submenu="mnuBrowse">Options</a:button>
+                    </a:bar>
+                    <a:bar id="tbEdit" render3="runtime" visible="false" style="background:#f2f2f2;" height="36">
+                        <a:hbox id="hboxTools" padding="5" edge="8">
+                            <a:label id="lblX">X:</a:label>
+                            <a:textbox id="elX" value="100" width="30" prop="left"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'width', value: this.value});" /> 
+                            <a:label id="lblY">Y:</a:label>
+                            <a:textbox id="elY" value="100" width="30" prop="top"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'height', value: this.value});" />
+                            <a:label id="lblW">W:</a:label>
+                            <a:textbox id="elW" value="100" width="30" prop="width"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'width', value: this.value});" /> 
+                            <a:label id="lblH">H:</a:label>
+                            <a:textbox id="elH" value="100" width="30" prop="height"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'height', value: this.value});" />
+                            
+                            <a:divider id="divBaseFeat" />    
+                                
+                            <a:label id="lblCols">Columns:</a:label>
+                            <a:textbox id="tbCols" value="100,100" width="80" prop="columns"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'columns', value: this.value});" />
+                                
+                            <a:label id="lblEdge">Edge:</a:label>
+                            <a:slider id="tbEdge" skin="tslider" mask="#" value="5" min="0" max="50" prop="edge"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'edge', value: this.value});" />
+                            <a:label id="lblPadding">Padding:</a:label>
+                            <a:slider id="tbPadding" skin="tslider" mask="#" value="2" min="0" max="50" prop="padding" 
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'padding', value: this.value});" />
+                            
+                            <a:label id="lblPack">Pack:</a:label>
+                            <a:dropdown id="ddPack" width="50" prop="pack"
+                              onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'pack', value: this.value});">
+                                <a:item value="start">Start</a:item>
+                                <a:item value="middle">Middle</a:item>
+                                <a:item value="end">End</a:item>
+                            </a:dropdown>
+                            
+                            <a:checkbox id="elStretch" prop="stretch" values="true|false" margin="0 0 0 3"
+                              onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'stretch', value: this.value});"> 
+                                Stretch
+                            </a:checkbox>
+                            
+                            <a:divider id="divMoreFeat" />
+                            
+                            <a:label id="lblMargin">Margin:</a:label>
+                            <a:slider id="elMargin" skin="tslider" mask="#" value="5" min="0" max="50" prop="margin"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'margin', value: this.value});" />
+                            <a:label id="lblSpan">Span:</a:label>
+                            <a:spinner id="elSpan" value="1" prop="span" min="1" max="20"
+                                onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'span', value: this.value});" />
+                            <a:label id="lblAlign">Align:</a:label>
+                            <a:dropdown id="ddAlign" width="50" prop="align"
+                              onafterchange="apf.$debugwin.apf.document.execCommand('property', null, {name: 'align', value: this.value});">
+                                <a:item value="">None</a:item>
+                                <a:item value="start">Start</a:item>
+                                <a:item value="end">End</a:item>
+                            </a:dropdown>
+                            
+                            <a:divider id="divActions" />
+                            
+                            <a:hbox id="btnBar" edge="0" padding="1" class="buttonbar" margin="-1 0 0 0">
+                                <a:button id="btnVBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'vbox'})" icon="ide/vbox.gif" tooltip="Convert Selection to a Vertical Box" />
+                                <a:button id="btnHBox" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'hbox'})" icon="ide/hbox.gif" tooltip="Convert Selection to a Horizontal Box" />
+                                <a:button id="btnTable" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('surround', false, {to: 'table'})" icon="ide/table.gif" tooltip="Convert Selection to a Table" />
+                                <a:divider id="div1" margin="2 2 0 2" />
+                                <a:button id="btnEraser" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('resetgeo')" icon="ide/eraser.gif" tooltip="Default layout" />
+                                <a:divider id="div2" margin="2 2 0 2" />
+                                <a:button id="btnFront" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('front')" icon="ide/shape_move_front.png" tooltip="Bring to Front" />
+                                <a:button id="btnForward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('forward')" icon="ide/shape_move_forwards.png" tooltip="Bring Forward" />
+                                <a:button id="btnBackward" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('backward')" icon="ide/shape_move_backwards.png" tooltip="Send Backward" />
+                                <a:button id="btnBack" skin="toolbarbutton" onclick="apf.$debugwin.apf.document.execCommand('back')" icon="ide/shape_move_back.png" tooltip="Send to Back" />
+                            </a:hbox>
+                        </a:hbox>
+                        
+                        <a:script >//<![CDATA[
+                            var layout    = ["vbox", "hbox", "table"];
+                            var lastList  = [], lastSel, timer;
+                            var selection = apf.$debugwin.apf.document.getSelection();
+                            selection.addEventListener("update", function(e){
+                                clearTimeout(timer);
+                                timer = apf.setTimeout(function(){
+                                    var sel = selection.$getNodeList();//e.value;
+                                    var multiple = sel.length > 1;
+                                    var newList = [];
+                
+                                    btnBar.show();
+                
+                                    //Multiple
+                                    if (multiple) {
+                                        newList.push(btnVBox, btnHBox, btnTable, div1, btnEraser, div2, btnFront, btnForward, btnBackward, btnBack);
+                                    }
+                                    else if (sel.length) {
+                                        sel = sel[0];
+                                        
+                                        if (lastSel != sel) {
+                                            var isLayout   = layout.indexOf(sel.localName) > -1;
+                                            var isTable    = sel.localName == "table";
+                                            var isInLayout = layout.indexOf(sel.parentNode.localName) > -1;
+                
+                                            if (isLayout)
+                                                newList.push(divMoreFeat, btnEraser, divBaseFeat, lblEdge, tbEdge, lblPadding, tbPadding, lblPack, ddPack, elStretch);
+                                            else //if (sel != app)
+                                                newList.push(btnEraser, divActions, div2, btnFront, btnForward, btnBackward, btnBack);
+                                            
+                                            if (isTable) {
+                                                newList.push(lblCols);
+                                                newList.push(tbCols);
+                                            }
+                                            
+                                            if (isInLayout) {
+                                                newList.push(lblW, elW);
+                                                if (sel.parentNode.localName != "table")
+                                                    newList.push(lblH, elH, lblAlign, ddAlign);
+                                                else
+                                                    newList.push(lblSpan, elSpan);
+                    
+                                                newList.push(divMoreFeat, lblMargin, elMargin);
+                                            }
+                                            else
+                                                newList.push(/*lblX, elX, lblY, elY,*/ lblW, elW, lblH, elH /*, lblAlign, ddAlign */);
+                                        }
+                                    }
+                
+                                    if (lastSel != sel) {
+                                        for (var i = 0, il = lastList.length; i < il; i++) {
+                                            lastList[i].setProperty("visible", false);
+                                        }
+                                        lastList = newList;
+                                    }
+                                    
+                                    for (var prop, item, i = 0, il = newList.length; i < il; i++) {
+                                        prop = (item = newList[i]).prop;
+                                        
+                                        if (lastSel != sel) {
+                                            if (prop == "height" && sel.top && sel.bottom) {
+                                                lblH.setProperty("visible", false);
+                                                continue;
+                                            }
+                                            if (prop == "width" && sel.left && sel.right) {
+                                                hidWidth = true;
+                                                lblW.setProperty("visible", false);
+                                                continue;
+                                            }
+                                            item.setProperty("visible", true);
+                                        }
+                                        
+                                        if (prop) //@todo check this
+                                            item.setProperty("value", sel[prop]);    
+                                    }
+
+                                    if (!lblH.visible && !lblW.visible)
+                                        divActions.hide();
+                
+                                    lastSel  = sel;
+                
+                                    if (apf.$debugwin.apf.activeElement && cbSelectEditable.checked)
+                                        mrkAml.expandAndSelect(apf.$debugwin.apf.activeElement);
+                
+                                    apf.layout.processQueue();
+                                }, 100);
+                            });
+                            
+                            selection.addEventListener("update-content", function(e){
+                                var newList = lastList;
+                                var sel     = e.sel;
+                
+                                if (lastSel != sel)
+                                    return;
+                                
+                                for (var prop, item, i = 0, il = newList.length; i < il; i++) {
+                                    prop = (item = newList[i]).prop;
+                                    
+                                    if (lastSel != sel) {
+                                        if (prop == "height" && sel.top && sel.bottom) {
+                                            lblH.setProperty("visible", false);
+                                            continue;
+                                        }
+                                        if (prop == "width" && sel.left && sel.right) {
+                                            lblW.setProperty("visible", false);
+                                            continue;
+                                        }
+                                        //item.setProperty("visible", true);
+                                    }
+                
+                                    if (prop) //@todo check this
+                                        item.setProperty("value", sel[prop]);    
+                                }
+                                
+                                if (!lblH.visible && !lblW.visible)
+                                    divActions.hide();
+                                
+                                apf.layout.processQueue();
+                            })
+                            
+                            var nodes = hboxTools.childNodes;
+                            for (var i = 0, il = nodes.length; i < il; i++) {
+                                if (nodes[i].hide)
+                                    nodes[i].hide();
+                            }
+                            var nodes = btnBar.childNodes;
+                            for (var i = 0, il = nodes.length; i < il; i++) {
+                                if (nodes[i].hide)
+                                    nodes[i].hide();
+                            }
+                            
+                            if (apf.isIE)
+                                apf.mouseEventBuffer = 30; //@todo - this should auto-adjust based on the system performance
+                        //]]></a:script>
+                    </a:bar>
+                </a:toolbar>
+
+                <a:pages anchors="25 0 0 0" id="pgBrowse" activepagenr="{rgBrowse.value}" actiontracker="{apf.$debugwin.apf.window.undoManager}">
+                    <a:page caption="AML" render="runtime">
+                        <a:tree id="trTools" skin="doctree" 
+                          width     = "150"
+                          align     = "left-splitter"
+                          value     = "Arrow"
+                          zindex    = "1000001"
+                          border    = "1 1 0 0"
+                          startcollapsed = "false"
+                          model     = "$apf_ide_mdlTools"
+                          eachvalue = "[@name]"
+                          caption   = "[@name]"
+                          each      = "[subcat|item]"
+                          icon      = "[@icon]"
+                          drag      = "[item]"
+                          ondragout = "
+                            apf.$debugwin.apf.document.execCommand('mode', null, {
+                                mode       : 'add',
+                                reappend   : true,
+                                dragserver : apf.DragServer,
+                                value      : this.selected.childNodes.length
+                                  ? apf.getFirstElement(this.selected)
+                                  : this.value.toLowerCase(), 
+                                ev         : event
+                            });
+                          ">
+                            <a:actions />
+                        </a:tree>
+                        <a:markupedit id="mrkAml" 
+                          onmouseover="apf.$debugwin.$mmouseover.apply(this, arguments)" 
+                          onmouseout="apf.$debugwin.$mmouseout.apply(this, arguments)" 
+                          oncontextmenu="return apf.$debugwin.$handleDataContext(event, this.selected);"
+                          model="$apf_ide_mdl" render-root="true" align="middle-splitter"
+                          border="1 1 0 0">
+                            <a:expanded match="[html]" />
+                        </a:markupedit>
+                        <a:bar skin="basic" align="right" width="30%" height="26" border="1 0 0 1" style="border:1px solid #c3c3c3;background:#f1f1f1;overflow:hidden;">
+                            <a:textbox id="tbFilter" skin="tbempty" anchors="3 3 3 3" initial-message="Filter" realtime="true" />
+                        </a:bar>
+                        <a:propedit id="pe" columns="35%,65%" model="{mrkAml.selected}" 
+                            properties="{$apf_ide_mdlProps.getProperty(%[.] and %[.].localName)}" 
+                            align="right" filter="{tbFilter.value}"
+                            style="border-width:1px 0 1px 1px"/>
+                        <a:bar skin="basic" align="right" edge="2" height="60" 
+                          class="prop_desc" model="{pe.selected}"><?lm
+                            if (![@caption]) return;
+                            <strong>[@caption]: </strong>
+                            {[@description].uCaseFirst()}
+                        ?></a:bar>
+                    </a:page>
+                    <a:page caption="Data" render="runtime">
+                        <a:markupedit id="mrkData" render-root="true" border="1 1 0 0"
+                            anchors="0 0 0 0" empty-message="No data loaded"
+                            oncontextmenu="return apf.$debugwin.$handleDataContext(event, this.selected);" />
+                    </a:page>
+                    <a:page caption="Objects" margin="5 5 5 5" render="runtime" style="border-top:1px solid #c3c3c3">
+                        <a:model id="$apf_ide_mdlObject" />
+                            
+                        <a:textbox id="txtCurObject" skin="tbempty" edge="5" 
+                            align="left" height="19" realtime="true"
+                            initial-message="Enter an expression"
+                            onclear   = "
+                                trObject.clear();
+                            "
+                            onkeydown = "
+                                if (event.keyCode == 13) {
+                                    if (!this.value.trim())
+                                        return trObject.clear();
+                                
+                                    try {
+                                        var obj = self.parent.eval('0,' + this.value);
+                                    }catch(e){
+                                        obj = e.message;
+                                    }
+                                    apf.$debugwin.showObject(obj, null, this.value);
+                                    trObject.focus();
+                                }
+                            "/>
+                        
+                        <a:datagrid id="trObject"
+                          align      = "left" 
+                          options    = "size|move"
+                          caching    = "false"
+                          prerender  = "false"
+                          model      = "$apf_ide_mdlObject"
+                          empty-message   = "Inspect an object by typing a javascript expression above and pressing enter."
+                          loading-message = "Calculating..."
+                          onafterselect = "
+                            if (this.selected)
+                                txtCurObject.setValue(apf.$debugwin.calcName(this.selected, true));
+                          "
+                          onbeforechange = "
+                            return apf.$debugwin.checkChange(event.args[0]);
+                          ">
+                            <a:insert match="[method[not(@value)]|item[@numtype &gt; 3 and not(node())]]" 
+                                get="{apf.$debugwin.analyze(%[.])}" />
+                            <a:expanded match="[node()[@expand]]" />
+                            <a:column caption="Property" value="[@name]" width="200" icon="{localName() == 'item' ? 'property.gif' : 'method.gif'}" tree="true" />
+                            <a:column caption="Value" value="[@value]" width="100%" editor="textbox" />
+                            <a:column caption="Type" value="[@type]" width="150"/>
+                            <a:each match="[item|method]" sort="[@name]" />
+                            <a:change set="{apf.$debugwin.applyChange(xmlNode);}" />
+                        </a:datagrid>
+                    </a:page>
+                </a:pages>
+            </a:page>
+            <a:page caption="Net" id="net" render="runtime">
+                <a:toolbar align="top" height="25" border="0 0 1 0">
+                    <a:bar style="padding-left:5px">
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Markup</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Skin</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Rpc</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Xmpp</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">WebDav</a:button>
+                        <a:button skin="toolbar_radio" state="true" value="true" onclick="apf.$debugwin.updateTeleportFilter(this)">Http</a:button>
+                    </a:bar>
+                </a:toolbar>
+                
+                <a:list id="tlist" 
+                  align = "left-splitter" 
+                  width = "200" 
+                  skin  = "macro_list"
+                  class = "biglist"
+                  model = "$apf_ide_mdlTeleport"
+                  each  = "http|markup|skin|rpc|webdav|xmpp"
+                  border = "1 1 0 1">
+                    <a:caption>{
+                        var url;
+                        <span class="size">{
+                            prettySize(
+                                [response].length - [response].split("\n\n", 1)[0].length - 2
+                            )
+                        }</span>
+                        <span class="status">{[response].split(" ")[1] || ""}</span>
+                        apf.getFilename(url = [request].split("\n", 1)[0].split(" ")[1])
+                        <span class="localname">\[{localName()}\]</span>
+                        <span class="url">{url}</span>
+                    }</a:caption>
+                    <a:css value="{index(*[../node()[local-name()]]) % 2 ? 'even' : 'odd'}" />
+                    <a:actions />
+                </a:list>
+                
+                <a:script type="application/livemarkup">//<!--
+                    function showNetInfo(type, uId){
+                        var body = [text()];
+                        if (!body)
+                            return;
+
+                        type = type.toLowerCase();
+                        if (type != "headers") {
+                            var o = apf.all[uId];
+                            if (o.$force)
+                                delete o.$force;
+                            else if (body.length > 50000)
+                                return "Too big to preview (<a href='javascript:void(0)' 
+                                    onclick='var o = apf.all\[{uId}\];o.$force = true;o.reload()'>force</a>)";
+                        }
+                        
+                        switch(type) {
+                            case "headers":
+                                var h = body.split("\n\n")[0];
+                                var hs = h.split("\n"); var p = hs.shift();
+                                for (var t, i = 0; i < hs.length; i++) {
+                                    p = hs[i].split(":"), t = p.shift();
+                                    <div class="head"><strong>{t}: </strong><span>{
+                                        if (t == "Cookie"){
+                                            <br />
+                                            var aCookie = p.join(":").splitSafe(";");
+                                            for (var j = 0; j < aCookie.length; j++) {
+                                                var aCrumb = aCookie[j].split("=");
+                                                <div class="head cookie">
+                                                    <strong>{aCrumb.shift()}: </strong>
+                                                    <span>{unescape(aCrumb.join("=")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>")}</span>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                            unescape(p.join(":")).replace(/(http:\/\/[^\s]*)/g, "<a href='$1' target='_blank'>$1</a>");
+                                    }</span></div>
+                                }
+                            break;
+                            case "raw":
+                                <div class="raw">{
+                                    body.replace(/ /g, "&nbsp;")
+                                        .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                                        .replace(/</g, "&lt;")
+                                        .replace(/(http:\/\/[^\s"']*)/g, "<a href='$1' target='_blank'>$1</a>")
+                                        .replace(/\n/g, "<br />");
+                                }</div>
+                            break;
+                            case "textview":
+                                <div class="textview">{
+                                    body.match(/\n\n([\s\S]*)/)[1].replace(/ /g, "&nbsp;")
+                                        .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
+                                        .replace(/</g, "&lt;")
+                                        .replace(/(http:\/\/[^\s"']*)/g, "<a href='$1' target='_blank'>$1</a>")
+                                        .replace(/\n/g, "<br />");
+                                }</div>
+                            break;
+                            case "webforms":
+                                var h = body.match(/\n\n([\s\S]*)/)[1];
+                                var hs = h.split("&"); var p = hs.shift();
+                                for (var t, i = 0; i < hs.length; i++) {
+                                    p = hs[i].split("=");
+                                    <div class="head"><strong>{p.shift()}: </strong><span>{
+                                        unescape(p.join("=")).replace(/(http:\/\/[^\s"']*)/g, "<a href='$1' target='_blank'>$1</a>");
+                                    }</span></div>
+                                }
+                                
+                                if (!hs.length)
+                                    "Content is not in common gateway interface format"
+                            break;
+                            case "xml":
+                                <pre class="xmlview">{
+                                    apf.highlightXml(body.match(/\n\n([\s\S]*)/)[1])
+                                        .replace(/\n/g, "<br />") || "Content is not valid xml";
+                                }</pre>
+                            break;
+                        }
+                    }
+                //--></a:script>
+                
+                <a:bar skin="basic" border="1 1 0 1" align="middle-splitter" width="30%" class="netview" model="[{tlist.selected}::request]">
+                    <a:label left="5" top="3" right="85" tooltip="{[text()].split('\n')[0]}">
+                        <strong>Request: </strong> {[text()].split("\n")[0]}
+                    </a:label>
+                    <a:dropdown id="ddRequestView" right="3" top="3" width="80" autoselect="true">
+                        <a:item>Headers</a:item>
+                        <a:item>Raw</a:item>
+                        <a:item>Textview</a:item>
+                        <a:item>Webforms</a:item>
+                        <a:item>XML</a:item>
+                    </a:dropdown>
+                    <div class="reqview"><?lm
+                        var type = ddRequestView.value;
+                        showNetInfo(type, this.$uniqueId, %[.]);
+                    ?></div>
+                </a:bar>
+                <a:bar skin="basic" border="1 0 0 1" align="right" class="netview" model="[{tlist.selected}::response]">
+                    <a:label left="5" top="3" right="85" tooltip="{[text()].split('\n')[0]}">
+                        <strong>Response: </strong>{[text()].split("\n")[0]}
+                    </a:label>
+                    <a:dropdown id="ddResponseView" right="3" top="3" width="80" autoselect="true" maxitems="10">
+                        <a:item>Headers</a:item>
+                        <a:item>Raw</a:item>
+                        <a:item>Textview</a:item>
+                        <a:item>Imageview</a:item>
+                        <a:item>Webview</a:item>
+                        <a:item>XML</a:item>
+                    </a:dropdown>
+                    <div class="reqview"><?lm
+                        var type = ddResponseView.value;
+                        showNetInfo(type, this.$uniqueId, %[.]);
+                    ?></div>
+                </a:bar>
+            </a:page>
+            <!--a:page caption="Storage">
+            </a:page>
+            <a:page caption="Profiler">
+            </a:page-->
+            <a:page caption="Docs" id="docs" render="runtime">
+                <a:comment>this needs to be implemented using an include from ajax.org and a fallback locally</a:comment>
+                <a:include src="docs.xml" />
+            </a:page>
+            <a:divider />
+            <a:page caption="Macros" id="macro" render="runtime">
+                <a:pages anchors="0 0 0 0" id="pg2Browse" activepagenr="{rg2Browse.value}">
+                    <a:page caption="Tests" render="runtime">
+                        <a:window 
+                          id      = "winNoextension"
+                          skin    = "alert"
+                          modal   = "true"
+                          title   = "Please install the o3 browser extension"
+                          width   = "300" 
+                          height  = "{lblIE.visible ? 95: 105}"
+                          center  = "true">
+                            <a:label id="lblIE">To use this feature you need to install the o3 browser extension. <br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
+                            <a:label id="lblNoIE">This feature is not supported by your browser yet. To use this feature you need to use IE and install the o3 browser extension.<br /><br /><a href="o3extension_dbg.exe">Download the o3 browser extension</a></a:label>
+                        </a:window>
+                        
+                        <!--a:bar skin="basic" border="1 1 0 1" align="left-splitter" width="200" height="100%" class="netview"-->
+                            <a:toolbar
+                              align    = "left"
+                              height   ="25"
+                              width   = "152"
+                              border   = "0 1 1 0">
+                                <a:bar>
+                                    <a:label style="font-weight:bold;margin:3px 0 0 4px;">Recording Booth</a:label>
+                                </a:bar>
+                            </a:toolbar>
+                            <a:list
+                              actiontracker = "atPlaylist"
+                              align    = "left"
+                              id       = "lstMacro"
+                              class    = "tplist"
+                              model    = "mdlMacro"
+                              each     = "[test]"
+                              caption  = "[@name]"
+                              skin     = "macro_list"
+                              empty-message = "Press record to start">
+                                <a:drag match="[test]" copy="true" />
+                                <a:remove set="{removeMacroFromPlaylist()}" undo="atPlaylist" />
+                            </a:list>
+                            <a:toolbar
+                              align  = "left-splitter"
+                              height = "61"
+                              skin   = "macro_toolbar">
+                                <a:bar>
+                                    <a:button id="btnRec" skin="button_macro_record" width="50" onclick="recordMacro()"></a:button>
+                                    <a:button id="btnStopRecord" skin="button_macro_stoprecord" width="50" visible="false" onclick="stopRecord()"></a:button>
+                                    <a:button id="btnPlay" skin="button_macro_play" width="50" onclick="playSingleMacro()"></a:button>
+                                    <a:button id="btnStopPlay" skin="button_macro_stop" width="50" visible="false" onclick="stopPlay()"></a:button>
+                                    <!--a:button id="btnAddList" onclick="addPlaylist()">add list</a:button>
+                                    <a:button id="btnPlayList" onclick="playPlaylist()">play list</a:button-->
+                                </a:bar>
+                            </a:toolbar>
+
+                        <!--/a:bar-->
+                        <a:toolbar align="right" height="25" border = "0 0 1 1">
+                            <a:bar>
+                                <a:label style="font-weight:bold;margin:3px 10px 0 4px;">Playlist Creator</a:label>
+                                
+                                <a:divider />
+                                <a:button onclick="atPlaylist.undo()">Undo</a:button>
+                                <a:button onclick="atPlaylist.redo()">Redo</a:button>
+                            </a:bar>
+                        </a:toolbar>
+                        <a:bar onresize="updateTreeWidth(this)" skin="basic" border="1 0 0 1" align="right" class="macro_tree_bar">
+                            <a:tree
+                              style="margin-left:61px;"
+                              actiontracker = "atPlaylist"
+                              id         = "trPlaylist"
+                              class      = "trPlaylist"
+                              model      = "mdlPlaylist" 
+                              skin       = "macro_tree" 
+                              nocollapse = "true">
+                                <a:each match="[playlist|test]">
+                                    <a:caption match="[@caption|@name]" />
+                                    <a:drag match="[test]" /> 
+                                    <a:drop 
+                                      match  = "[test]" 
+                                      target = "[playlist]" 
+                                      action = "tree-append" />
+                                    <a:drop 
+                                      match  = "[test]" 
+                                      target = "[test]" 
+                                      action = "insert-before" />
+                                    <a:css match="[playlist[not(node())]]" value="new_recording" />
+                                    <a:empty match="[playlist[not(node())]]" value="Activate this Playlist by dropping a Recording here" />
+                                </a:each>
+                                <a:rename match="[playlist]" />
+                                <a:move match="[test]" />
+                                <a:copy match="[test]" />
+                                <a:remove />
+                            </a:tree>
+                            <div id="plButtons" model="mdlPlaylist" class="playlist_buttons">
+                                <?lm
+                                    var btn_top = 2;
+                                    var cbx_top = 6;
+                                    var line_top = cbx_top + 4;
+                                    
+                                    foreach([playlist]) {
+                                        <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playPlaylist(mdlPlaylist.queryNode('{apf.xmlToXpath(%[.], mdlPlaylist.data).substr(apf.xmlToXpath(%[.], mdlPlaylist.data).indexOf("/") + 1)}').getAttribute('id'))"/>
+                                        <a:checkbox top="{cbx_top}" left="11" class="macro_cbx" id="cb{mdlPlaylist.queryNode(apf.xmlToXpath(%[.], mdlPlaylist.data).substr(apf.xmlToXpath(%[.], mdlPlaylist.data).indexOf("/") + 1)).getAttribute('id')}"></a:checkbox>
+                                        btn_top += 50;
+                                        cbx_top += 50;
+                                    }
+                                    
+                                    <a:button skin="button_macro_playsmall" top="{btn_top}" left="31" onclick="playCheckedPlaylists();" />
+                                    <a:label top="{btn_top + 4}" left="72" width="150">Play checked playlists</a:label>
+                                    
+                                    <div class="vertical_line" style="top:{line_top}px; height:{btn_top - line_top + 13}px;"></div>
+                                    <div class="horizontal_line" style="top:{btn_top + 11}px;"></div>
+                                ?>
+                            </div>
+                            <a:script><![CDATA[
+                                function updateTreeWidth(htmlNode) {
+                                    var minWidth = htmlNode.$ext.offsetWidth - (apf.isOpera ? 127 : 122) - (document.documentElement.scrollLeft || document.body.scrollLeft);
+                                    trPlaylist.$ext.style.minWidth = minWidth+"px";
+                                }
+                            ]]></a:script>
+                         </a:bar>
+                    </a:page>
+                    <a:page caption="Playlist" render="runtime">
+
+                    </a:page>
+                    
+                    <a:model id="mdlMacro">
+                        <data>
+                        </data>
+                    </a:model>
+                    <a:model id="mdlPlaylist">
+                        <data>
+                            <playlist caption="playlist1" id="p1"/>
+                        </data>
+                    </a:model>
+                    
+                    <a:script src="macrorecorder.js">//<!--
+
+                    //--></a:script>
+
+                </a:pages>
+            </a:page>
+            <a:page caption="Packager" id="packager"><a:comment>
+                <a:bar skin="basic" align="left-splitter" width="70%">
+                    <a:label>Doc generator</a:label>
+                    <a:hbox>
+                        <a:label for="tbDocgenSrc">Load file</a:label>
+                        <a:textbox id="tbDocgenSrc"></a:textbox>
+                        <a:button onclick="docgenBrowseSrc()">Browse</a:button>
+                    </a:hbox>
+                    <a:vbox>
+                        <a:checkbox id="cbDocgenXml" values="XML files">XML</a:checkbox>
+                        <a:checkbox id="cbDocgenHtml" onclick="selectionChange(this)" values="HTML files">HTML</a:checkbox>
+                        <a:checkbox id="cbDocgenSchema" values="XML schema">XML schema</a:checkbox>
+                        <a:checkbox id="cbDocgenProp" values="Propedit files">Properties</a:checkbox>
+                        <a:checkbox id="cbDocgenNav" values="Navigation file">Nav</a:checkbox>
+                    </a:vbox>
+                    <a:hbox>
+                        <a:label for="tbDocgenOutput">Output location</a:label>
+                        <a:textbox id="tbDocgenOutput"></a:textbox>
+                        <a:button onclick="docgenBrowseOutput()">Browse</a:button>
+                    </a:hbox>
+                    
+                    <a:button onclick="docgenBuild()" bottom="0">Generate</a:button>
+                </a:bar>
+                <a:bar skin="basic" align="right-splitter" width="30%">
+                    <a:text id="txtDocgen" align="left-splitter" scrolldown="true" 
+                        behavior   = "addonly"
+                        focussable = "true" class="apf_console"
+                        border     = "1 1 0 0" />
+                </a:bar>
+                <a:script>//<!--
+                    var fileObj = null; 
+                    var outputFolderObj = null;
+                    var confirmed = false;
+                    
+                    var $o3 = $o3 || o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", { 
+                        // o3 browser extension not found
+                        oninstallprompt : function(){
+                            alert("o3 not installed");
+                        },
+                        product : 'O3Demo'
+                    });
+
+                    var oldSrc = "";
+                    function docgenBrowseSrc() {
+                        oldSrc = tbDocgenSrc.value;
+                        if (fileObj = $o3.openFileDialog("Javascript files (*.js) [*.js]")) {
+                            tbDocgenSrc.setValue(fileObj.fullPath);
+                        
+                            //reset docTree is source file is changed
+                            if (oldSrc != tbDocgenSrc.value)
+                                docTree = null;
+                        }
+                    }
+                    
+                    function docgenBrowseOutput() {
+                        if (outputFolderObj = $o3.selectFolder()) {
+                            if (outputFolderObj.exists)
+                                tbDocgenOutput.setValue(outputFolderObj.fullPath);
+                            else
+                                alert("It is not possible to save files to: " + outputFolderObj.fullPath);
+                        }
+                    }
+                    
+                    function docgenBuild() {
+                        // no script file selected
+                        if (!tbDocgenSrc.value) {
+                            alert("no script file selected");
+                            return;
+                        }
+                        
+                        // no checkbox checked
+                        if (!cbDocgenXml.checked && !cbDocgenHtml.checked && !cbDocgenSchema.checked && !cbDocgenProp.checked && !cbDocgenNav.checked) {
+                            alert("no output selections made");
+                            return;
+                        }
+                        
+                        // no output path specified
+                        if (!tbDocgenOutput.value) {
+                            alert("no output path specified");
+                            return;
+                        }
+                        
+                        if (!confirmed) {
+                            if (!(confirmed = confirm("You're about to start generating documentation. Processing large file of code could lead to the browser to freeze temporarily during generation. Are you sure you want to continue?")))
+                                return;
+                        }
+                        
+                        txtDocgen.setValue("Start generating documentation for " + tbDocgenSrc.value + "...<br/>");
+
+                        //var outputPath = (tbDocgenOutput.value.charAt(tbDocgenOutput.value.length-1) == "/") ? tbDocgenOutput.value : tbDocgenOutput.value + "/";
+                        var outputPath = tbDocgenOutput.value;
+                        
+                        docparser.outputXml         = (cbDocgenXml.checked) ? true : false;
+                        docparser.outputHtml        = (cbDocgenHtml.checked) ? true : false;
+                        docparser.outputXmlSchema   = (cbDocgenSchema.checked) ? true : false;
+                        docparser.outputPropedit    = (cbDocgenProp.checked) ? true : false;
+                        docparser.outputNav         = (cbDocgenNav.checked) ? true : false;
+                        
+                        apf.addEventListener("docgen_message", docgenMessage);
+                        apf.addEventListener("docgen_complete", docgenComplete);
+                        
+                        if (!docTree)
+                            apf.dispatchEvent("docgen_message", {message: "Generating docTree..."});
+
+                        docparser.generate("file:///" + fileObj.fullPath, outputFolderObj);
+                    }
+                    
+                    function docgenMessage(e) {
+                        txtDocgen.setValue(e.message + "<br/>");                    
+                    }
+                    
+                    function docgenComplete(e) {
+                        //apf.removeEventListener("docgen_message", docgenMessage);
+                        apf.removeEventListener("docgen_complete", docgenComplete);
+
+                        txtDocgen.setValue("Finished generating " + e.type + "<br/>");
+                    }
+                    
+                    function selectionChange(o) {
+                        if (o.id == "cbDocgenHtml") {
+                            if (o.checked) {
+                                cbDocgenXml.setProperty("checked", "true");
+                                cbDocgenXml.setProperty("disabled", "true");
+                            }
+                            else {
+                                cbDocgenXml.setProperty("checked", "false");
+                                cbDocgenXml.setProperty("disabled", "false");
+                            }
+                        }
+                    }
+                //--></a:script>
+                
+            </a:comment></a:page>
+            <a:page caption="Debugger">
+            </a:page>
+        </a:tab>
+        
+        <a:script>//<!--
+            apf.$debugwin.init();
+        //--></a:script>
+        
+        <!--a:model id="mdl" src="http://www.ajax.org" /-->
+        <a:model id="$apf_ide_mdl" save-original="false" />
+        <!--a:model src="http://www.example.com" /-->
+        <!--a:model src="{comm.getDemos()}" /-->
+        <!--a:model src="{comm.getDownloads()}" /-->
+    </body>
+</html>

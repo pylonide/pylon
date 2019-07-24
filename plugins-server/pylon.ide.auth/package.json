@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.ide.auth",
+    "name": "pylon.ide.auth",
     "version": "0.0.1",
 
     "main": "./auth.js",

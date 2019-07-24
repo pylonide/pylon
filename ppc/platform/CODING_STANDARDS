@@ -1,0 +1,669 @@
+  1. File Formatting
+  ==================
+
+  1.1. General
+  ============
+
+  For files that contain Javascript code, it's header must consist of a license
+block, referring to the GNU LGPL (Lesser General Public License) and a reference
+to the NOTICE file, which contains copyright information and license types of
+third party code and derivative works.
+  It's RECOMMENDED that a Javascript file starts with a compiler directive,
+telling the compiler[1] that it should be included in debug and release builds:
+
+#
+#  // #ifdef __WITH_APP
+#
+
+  If a Javascript file contains the statement above, it SHOULD also end with a
+closing statement:
+
+#
+#  // #endif
+#
+
+  1.2. Indentation
+  ================
+
+  Indentation should consist of 4 spaces. Tabs are not allowed.
+
+  1.3. Maximum Line Length
+  ========================
+
+  The target line length is 80 characters. That is to say, apf developers should
+strive keep each line of their code under 80 characters where possible and
+practical. However, longer lines are acceptable in some circumstances.
+The maximum length of any line of code is 120 characters.
+
+  1.4. Line Termination
+  =====================
+
+  Line termination follows the Unix text file convention. Lines must end with a
+single linefeed (LF) character. Linefeed characters are represented as
+ordinal 10, or hexadecimal 0x0A.
+
+  Note: Do not use carriage returns (CR) as is the convention in Apple OS's
+(0x0D) or the carriage return/linefeed combination (CRLF) as is standard for the
+Windows OS (0x0D, 0x0A).
+
+  2. Naming Conventions
+  =====================
+
+  2.1 Classes
+
+  The root level directory of the apf standard library is the "core/" directory.
+The root level directory of the apf elements is the "elements/" directory.
+The root level directory of the apf Teleport library and its modules is the
+"elements/teleport/" directory.
+
+  Class names may only contain alphanumeric characters. Numbers are permitted
+in class names but are discouraged in most cases.
+
+  If a class name is comprised of more than one word, the first letter of each
+new word must be capitalized. Successive capitalized letters are not allowed,
+e.g. a class "parserJML" is not allowed while "parserJml" is acceptable.
+
+  2.2. Filenames
+  ==============
+
+  For all other files, only alphanumeric characters, underscores, and the dash
+character ("-") are permitted. Spaces are strictly prohibited.
+
+  Any file that contains Javascript code should end with the extension ".js".
+The following examples show acceptable filenames for Ajax.org Platform classes:
+
+#
+# elements/bar.js
+# core/parsers/aml.js
+# elements/teleport/rpc/jsonrpc.js
+#
+
+  2.2. Functions and Methods
+  ==========================
+
+  Function names may only contain alphanumeric characters. The use of
+underscores is strongly discouraged, with the notable exception when
+declaring a function as pseudo-private. Numbers are permitted in function
+names but are discouraged in most cases.
+
+  Function names must always start with a lowercase letter. When a function
+name consists of more than one word, the first letter of each new word must be
+capitalized. This is commonly called "lower camelCase" formatting[2].
+
+Verbosity is generally encouraged. Function names should be as verbose as is
+practical to fully describe their purpose and behavior.
+
+These are examples of acceptable names for functions:
+
+#
+# filterInput()
+# getElementById()
+# widgetFactory()
+#
+
+  For object-oriented programming, accessors for instance variables should
+always be prefixed with "get" or "set". In implementing design patterns, such
+as the singleton or factory patterns, the name of the method should
+contain the pattern name where practical to more thoroughly describe behavior.
+
+  For methods on objects that are declared pseudo-private, following general
+Javascript scoping rules, the first character of the variable name must be an
+underscore. This is the only acceptable application of an underscore in a
+method name. Methods declared "public" should never contain an underscore.
+
+  For methods on objects that are declared pseudo-protected, the first character
+of the variable name must be a dollar-sign ($). There exists no protected scope
+in Javascript, however Ajax.org Platform recognizes the value and use of this
+pattern and implements it by using the dollar-sign convention.
+
+  Functions in the global scope (a.k.a. "floating functions") are permitted but
+discouraged in most cases. Consider wrapping these functions in the globally
+defined 'apf' namespace.
+
+  2.3. Variables
+  ==============
+
+  Variable names may only contain alphanumeric characters. Underscores are not
+permitted. Numbers are permitted in variable names but are discouraged in most
+cases.
+
+  For instance variables that are declared with as "private" or "protected",
+the first character of the variable name must be a single underscore. This is
+the only acceptable application of an underscore in a variable name. Member
+variables declared "public" should never start with an underscore.
+
+  As with function names (see section 2.2) variable names must always start
+with a lowercase letter and follow the "camelCaps" capitalization convention[2].
+
+  Verbosity is generally encouraged. Variables should always be as verbose as
+practical to describe the data that the developer intends to store in them.
+Terse variable names such as "i" and "n" are discouraged for all but the
+smallest loop contexts. If a loop contains more than 20 lines of code, the
+index variables should have more descriptive names.
+
+  The Hungarian notation[3] for variable names is generally encouraged. Since
+Javascript is an untyped language, specifying the variable type as part of the
+variable name makes the code much easier to read.
+
+  2.4. Constants
+  ==============
+
+  Constants may contain both alphanumeric characters and underscores. Numbers
+are permitted in constant names.
+
+  All letters used in a constant name must be capitalized.
+
+  Words in constant names must be separated by underscore characters. For
+example, EMBED_SUPPRESS_EMBED_EXCEPTION is permitted but
+EMBED_SUPPRESSEMBEDEXCEPTION is not.
+
+  Constants must be defined as class members within its namespace, to avoid 
+naming conflicts with other class contants. For example:
+
+#
+# apf.bar = apf.component(...);
+#
+# apf.bar.ALIGN_LEFT = 0; //constant attached to the apf.bar namespace
+#
+
+  3. Coding Style
+  ===============
+
+  3.1. Strings
+  ============
+
+  3.1.1. String Literals
+  ======================
+
+  When a string is literal (contains no variable substitutions), the quotation
+mark or "double quote" should always be used to demarcate the string:
+
+#
+# var a = "Example String";
+#
+
+  3.1.2. String Literals Containing Quotation Marks
+  =================================================
+
+  When a literal string itself contains quotation marks, it is permitted to
+demarcate the string with apostrophes or "single quotes". This is especially
+useful for blocks of HTML:
+
+#
+# var a = '<div class="button">\
+#            <a href="#" title="Click me">Click me</a>\
+#          </div>';
+#
+
+  This syntax is preferred over escaping quotation marks as it is much easier
+to read.
+
+  3.1.3. String Concatenation
+  ===========================
+
+  Strings must be concatenated using the "+" operator. A space must always be
+added before and after the "+" operator to improve readability:
+
+#
+# var sProduct = "Ajax.org" + " " + "Platform";
+#
+
+  When concatenating strings with the "+" operator, it is encouraged to break
+the statement into multiple lines to improve readability. In these cases, each
+successive line should be padded with whitespace such that the "+" operator
+is aligned under the "=" operator:
+
+#
+# var a = '<div class="button">'
+#       + '  <a href="#" title="Click me">Click me</a>'
+#       + '</div>';
+#
+
+  IMPORTANT: concatenating strings by using the "+" operator has been proven to
+be slower in most browsers today than using Arrays:
+
+#
+# var a = ['<div class="button">',
+#          '  <a href="#" title="Click me">Click me</a>',
+#          '</div>'].join('');
+#
+
+  Since the speed gain of using this Array technique is only noticable when
+concatenating larger strings, it is not recommended for smaller scale string
+operations. Using the "+" operator also improves readability of the code.
+
+  3.2. Arrays
+  ===========
+
+  3.2.1. Numerically Indexed Arrays
+  =================================
+
+  Negative numbers are not permitted as indices.
+
+  An indexed array may start with any non-negative number, however all base
+indices besides 0 are discouraged.
+
+  When declaring indexed arrays with the Array construct or "[]" shorthand, a
+trailing space must be added after each comma delimiter to improve readability:
+
+#
+# var sampleArray = [1, 2, 3, 'Ajax.org', 'Platform'];
+#
+# var sampleArray2 = new Array(1, 2, 3, 'Ajax.org', 'Platform');
+#
+
+  It is permitted to declare multiline indexed arrays using the "Array"
+construct or "[]" shorthand. In this case, each successive line must be
+padded with spaces such that beginning of each line is aligned:
+
+#
+# var sampleArray = [1, 2, 3, 'Ajax.org', 'Platform',
+#                    a, b, c,
+#                    56.44, d, 500];
+#
+
+  3.2.2. Associative Arrays
+  =========================
+
+  The Javascript language does not support arrays, but it does support simple
+objects to be used in conjuction with the HashTable pattern[4].
+  When declaring associative arrays with the "{}" shorthand for simple objects
+or collections, breaking the statement into multiple lines is encouraged. In
+this case, each successive line must be padded with whitespace such that both
+the keys and the values are aligned:
+
+#
+# var sampleHash = {
+#     'firstKey' : 'firstValue',
+#     'secondKey': 'secondValue'
+# };
+#
+
+  3.3. Classes
+  ============
+
+  3.3.1. Class Declaration
+  ========================
+
+  Classes must be named according to Ajax.org Platform's naming conventions.
+
+  Every class must be declared inside the "apf" namespace.
+
+  The brace should always be written on the line underneath the class name
+(the "one true brace" form).
+
+  Every class must have a documentation block that conforms to the Scriptdoc
+standard.
+
+  All code in a class must be indented with four spaces.
+
+  Only one class is permitted in each Javascript file.
+
+  Placing additional code in class files is permitted but discouraged. In such
+files, two blank lines must separate the class from any additional Javascript
+code in the class file.
+
+  The following is an example of an acceptable class declaration:
+
+#
+# /**
+#  * Documentation Block Here
+#  */
+# apf.sampleClass = function() {
+#     // all contents of class
+#     // must be indented four spaces
+# }
+#
+
+  3.3.2. Class Member Variables
+  =============================
+
+  Member variables must be named according to Ajax.org Platform's variable
+naming conventions.
+
+  Any variables declared in a class must be listed at the top of the class,
+above the declaration of any methods.
+
+  Giving access to member variables directly by declaring them as public is
+permitted but discouraged in favor of accessor methods (set/get).
+
+  3.4. Functions and Methods
+  ==========================
+
+  3.4.1. Function and Method Declaration
+  ======================================
+
+  Functions must be named according to the Ajax.org Platform's function naming
+conventions.
+
+  As with classes, the brace should always be written on the same line as the
+function name. Space between the function name and the opening parenthesis for
+the arguments is not permitted.
+
+  Functions in the global scope are strongly discouraged.
+
+  The following is an example of an acceptable function declaration in a class:
+
+#
+# /**
+#  * Documentation Block Here
+#  */
+# apf.foo = function() {
+#     /**
+#      * Documentation Block Here
+#      */
+#     this.bar = function() {
+#         // all contents of function
+#         // must be indented four spaces
+#     }
+# }
+#
+
+  3.4.2. Function and Method Usage
+  ================================
+
+  Function arguments should be separated by a single trailing space after the
+comma delimiter. The following is an example of an acceptable invocation of a
+function that takes three arguments:
+
+#
+# threeArguments(1, 2, 3);
+#
+
+  In passing arrays as arguments to a function, the function call may include
+the "[]" or "{}" shorthands and may be split into multiple lines to improve
+readability. In such cases, the normal guidelines for writing arrays still
+apply:
+
+#
+# threeArguments([1, 2, 3], 2, 3);
+#
+# threeArguments([1, 2, 3, 'Ajax.org', 'Platform',
+#                 a, b, c,
+#                 56.44, $d, 500], 2, 3);
+#
+
+  3.5. Control Statements
+  =======================
+
+  3.5.1. If/Else/Else If
+  ======================
+
+  Control statements based on the if and else if constructs must have a single
+space before the opening parenthesis of the conditional and a single space
+after the closing parenthesis.
+
+  Within the conditional statements between the parentheses, operators must be
+separated by spaces for readability. Inner parentheses are encouraged to improve
+logical grouping for larger conditional expressions.
+
+  The opening brace is written on the same line as the conditional statement.
+The closing brace is always written on its own line. Any content within the
+braces must be indented using four spaces.
+
+#
+# if ($a != 2) {
+#     $a = 2;
+# }
+#
+
+  For "if" statements that include "else if" or "else", the formatting
+conventions are similar to the "if" construct. The following examples
+demonstrate proper formatting for "if" statements with "else" and/or "else if"
+constructs:
+
+#
+# if (a != 2) {
+#     a = 2;
+# } else {
+#    a = 7;
+# }
+#
+
+  Note: the "else" and "else if" constructs may be written on its own line, as
+the following example demonstrates:
+
+#
+# if (a != 2) {
+#     a = 2;
+# }
+# else if (a == 3) {
+#    a = 4;
+# }
+# else {
+#    a = 7;
+# }
+#
+
+  Javascript allows statements to be written without braces in some
+circumstances. This coding standard allows the following cases:
+
+#
+# // the 'quick escape' case:
+# if (!a) return;
+#
+# // the 'oneliner' case:
+# if (!a)
+#     this.foo();
+# else
+#     this.bar();
+#
+
+  Javascript provides a shorthand statement for the "if...else" sequence. This
+coding standard allows the following formats:
+
+#
+# // On one line, if it doesn't exceed the limit of 80 characters in length
+# var a = b ? b + 10 : 200;
+#
+# // On multiple lines, to improve readability:
+# var a = (value > 20 && otherValue < 10 && boolFoo === false)
+#     ? this.foo();
+#     : this.bar();
+#
+
+  3.5.2. Switch
+  =============
+
+  Control statements written with the "switch" statement must have a single
+space before the opening parenthesis of the conditional statement and after the
+closing parenthesis.
+
+  All content within the "switch" statement must be indented using four spaces.
+Content under each "case" statement must be indented using an additional
+four spaces.
+
+#
+# switch (numPeople) {
+#     case 1:
+#         break;
+#
+#     case 2:
+#         break;
+#
+#     default:
+#         break;
+# }
+#
+
+  The construct default should never be omitted from a switch statement.
+
+  NOTE: It is sometimes useful to write a case statement which falls through
+to the next case by not including a break or return within that case. To
+distinguish these cases from bugs, any case statement where break or return are
+omitted should contain a comment indicating that the break was intentionally
+omitted.
+
+  3.5.3 For Loop
+  ==============
+
+  Control statements written with the "for" statement must have a single
+space before the opening parenthesis of the initialization clause and after the
+closing parenthesis.
+
+  Each clause of the "for" statement should be followed by one space to mark
+the end of the clause and the start of the following one.
+
+  All content within the "for" statement must be indented using four spaces.
+
+#
+# for (initialization; condition; update) {
+#     statement;
+# }
+#
+# // Example:
+# for (var i = 0; i < j; i++) {
+#     this.foo();
+# }
+#
+
+  When using the comma operator in the initialization or update clause of a
+"for" statement, avoid the complexity of using more than three variables. If
+needed, use separate statements before the for loop (for the initialization
+clause) or at the end of the loop (for the update clause).
+
+  Javascript allows statements to be written without braces in some
+circumstances. This coding standard makes no differentiation - all "for"
+statements must use braces.
+
+  3.5.4 While/Do While Loop
+  =========================
+
+  Control statements written with the "while" and "do while" statement must
+have a single space before the opening parenthesis of the condition clause
+and after the closing parenthesis.
+
+  The "while" clause of a "do while" statement must be written on its own line,
+to improve readability of the code.
+
+#
+# while (condition) {
+#     statement;
+# }
+#
+# do {
+#     statement;
+# }
+# while (condition);
+#
+# // Example:
+# var i = 10;
+# while (i >= 10) {
+#     this.foo(i);
+#     i--;
+# }
+#
+
+  3.5.5 Try Catch
+  ===============
+
+  The "try" keyword of a "try catch" statement must have a single space before
+the opening inner parenthesis.
+
+  The "catch" clause of a "try catch" statement must be written on it's own line
+and have a single space before the opening parenthesis of the initialization
+clause and after the closing parenthesis.
+
+  A "try catch" statement may also be followed by the "finally" keyword, which
+executes regardless of whether or not the try block has completed successfully.
+
+#
+# try {
+#     statements;
+# }
+# catch (e) {
+#     statements;
+# }
+# finally {
+#     statements;
+# }
+#
+
+  3.6. Inline Documentation
+  =========================
+
+  3.6.1. Documentation Format
+  ===========================
+
+  All documentation blocks ("docblocks") must be compatible with the
+Scriptdoc[5] format. Describing the Scriptdoc format is beyond the scope of
+this document. For more information, visit: http://scriptdoc.org/
+
+  All class files must contain a "file-level" docblock at the top of each file
+and a "class-level" docblock immediately above each class. Examples of such
+docblocks can be found below.
+
+  3.6.2. Files
+  ============
+
+  Every file that contains Javascript code must have a docblock at the top of
+the file, just below the license block, as described in section 1.1, that
+contains these Scriptdoc tags at a minimum:
+
+#
+# /**
+#  * Short description for file
+#  *
+#  * Long description for file (if any)...
+#  *
+#  * @copyright  2008 Ajax.org [Optional]
+#  * @version    $Id:$
+#  * @link       http://api.ajax.org/package/PackageName
+#  * @since      1.0
+#  */
+#
+
+  3.6.3. Classes
+  ==============
+
+  Every class must have a docblock that contains these Scriptdoc tags at a
+minimum:
+
+#
+# /**
+#  * Short description for class
+#  *
+#  * Long description for class (if any)...
+#  *
+#  * @copyright  2008 Ajax.org [Optional]
+#  * @version    Release: @package_version@
+#  * @link       http://api.ajax.org/package/PackageName
+#  * @since      0.8
+#  * @deprecated Class deprecated in Release 1.0
+#  */
+#
+
+  3.6.4. Functions
+  ================
+
+  Every function, including object methods, must have a docblock that contains
+at a minimum:
+
+  * A description of the function
+  * All of the arguments
+  * All of the possible return values
+
+  It is recommended to use the "@access" tag because the access level is
+not known from following the general Javascript scoping rules. Use the
+"@private" and "@protected" modifiers to document functions that are not
+publicly accessible.
+
+  If a function/ method may throw an exception, use @throws for all known
+exception types:
+
+#
+# @throws exceptionclass [description]
+#
+
+  A. Links
+  ========
+
+[1] We are using O3 as a Javascript compiler/ pre-processor.
+    See http://www.ajax.org/#o3 for more information
+[2] http://en.wikipedia.org/wiki/Camelcase#Current_usage_in_computing - Wikipedia 
+    entry for camelCase usage in computing
+[3] http://en.wikipedia.org/wiki/Hungarian_notation - Wikipedia entry for 
+    Hungarian notation
+[4] http://en.wikipedia.org/wiki/Hashmap - Wikipedia entry for Hash Table
+[5] http://scriptdoc.org/ - Scriptdoc standards home
+[6] http://www.gnu.org/software/womb/gnits/ - Gnits standards

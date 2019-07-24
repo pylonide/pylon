@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.routes",
+    "name": "pylon.routes",
     "version": "0.0.1",
 
     "main": "./routes-plugin",

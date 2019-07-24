@@ -4,6 +4,7 @@ var router = require("urlrouter");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var query = require("./middleware/query");
+var redirect = require("./middleware/redirect");
 
 module.exports = function startup(options, imports, register) {
     imports.log.info("connect plugin start");
@@ -31,6 +32,9 @@ module.exports = function startup(options, imports, register) {
          */
         query: function() {
             return query();
+        },
+        redirect: function() {
+            return redirect();
         }
     };
     hookNames.forEach(function(name) {

@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../icons/" />
+        <a:appsettings debug="false" />
+        
+        <a:dropdown onafterselect="winMail.setAttribute('skin', {this.value})">
+            <a:item value="window">Default</a:item>
+            <a:item value="iphone">Iphone</a:item>
+            <a:item value="chrome41">Chrome 4.1</a:item>
+            <a:item value="safari4">Safari 4</a:item>
+            <a:item value="opera1051">Opera 10.51</a:item>
+            <a:item value="ie8">Internet Explorer 8</a:item>
+            <a:item value="firefox36">Firefox 3.6</a:item>
+            <a:item value="firefox2">Firefox 2</a:item>
+            <a:item value="firefox15">Firefox 1.5</a:item>
+        </a:dropdown>
+        
+        <a:window id="winMail"
+             modal       = "false"
+             buttons     = "min|max|close"
+             title       = "Mail message"
+             icon        = "application_add.png"
+             visible     = "true"
+             resizable   = "true"
+             skin="ie8"
+             top="100">
+               
+           </a:window>
+
+
+    </body>
+</html>

@@ -630,7 +630,8 @@ define(function(require) {
         rows: rows,
         cursorBlink: false,
         tabStopWidth: 4,
-        fontSize: 12
+        fontSize: 12,
+        rendererType: "dom"
       });
 
       var button = document.createElement('div');
@@ -773,6 +774,7 @@ define(function(require) {
         win.destroy();
       }
 
+      this.dispose(); // Dispose the xterm terminal, release resources
       this.__destroy();
     };
 
@@ -798,7 +800,7 @@ define(function(require) {
       if(apf.isIphone) {
         self.element.addEventListener('keydown', function (ev) {
           if(ev.charCode === 0 && ev.code === "Space") {
-            self.send(" ");
+            self.handler(" ");
           }
         });
         
@@ -809,11 +811,6 @@ define(function(require) {
 
       // Alt-[jk] to quickly swap between windows.
       this.on('key', function (key, ev) {
-        // focusKeys no longer supported by xterm
-        if (Terminal.focusKeys === false) {
-          return;
-        }
-
         var offset
           , i;
 
@@ -822,6 +819,7 @@ define(function(require) {
         } else if (key === '\x1bk') {
           offset = +1;
         } else {
+          self.handler(key);
           return;
         }
 
@@ -847,7 +845,7 @@ define(function(require) {
           data = JSON.parse(data);
           if (data.cmd == 'pasteACK') {
             if (data.error) return;
-            self.send(data.stdout);
+            self.handler(data.stdout);
           }
         });
       });
@@ -876,11 +874,11 @@ define(function(require) {
 
       self.element.addEventListener('mouseup', function (ev) {
         // Left mouse button
-        if (ev.which == 1 && self.selectionManager.hasSelection) {
+        if (ev.which == 1 && self._core.selectionManager.hasSelection) {
           var termTextarea = document.getElementsByClassName('xterm-helper-textarea')[0];
 
-          apf.clipboard.put(self.selectionManager.selectionText);
-          termTextarea.value = self.selectionManager.selectionText;
+          apf.clipboard.put(self._core.selectionManager.selectionText);
+          termTextarea.value = self._core.selectionManager.selectionText;
           termTextarea.focus();
 
           document.execCommand('SelectAll');
@@ -898,7 +896,7 @@ define(function(require) {
         // Right mouse button
         else if (ev.which == 3 && !apf.clipboard.empty) {
           if (typeof apf.clipboard.store === 'string') {
-            self.send(apf.clipboard.store);
+            self.handler(apf.clipboard.store);
           }
         }
       }, false);

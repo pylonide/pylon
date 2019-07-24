@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>Worknets Homepage</title>
+        
+        <!--script src="../apf.js"></script-->
+        
+        <style>
+            html{
+                overflow : hidden;
+            }
+            
+            .cbox  {
+                width: 1000px;
+            
+            	display: -webkit-box;
+            	display: -moz-box;
+            	display: box;
+            
+            	-webkit-box-orient: vertical;
+            	-moz-box-orient: vertical;
+            	box-orient: vertical;
+            	border : 1px solid red;
+            	
+            	-webkit-box-align: stretch;
+            	-moz-box-align: stretch;
+            	box-align: stretch;
+            	
+            	-webkit-box-sizing: border-box;
+            	-moz-box-sizing: border-box;
+            	box-sizing: border-box;
+            }
+            
+            .cbox .filler {
+                -webkit-box-flex : 1;
+                -moz-box-flex : 1;
+                display: -webkit-box;
+            	display: -moz-box;
+            }
+            .cbox .filler span, .cbox .filler2 span{
+                -webkit-box-flex : 1;
+                -moz-box-flex : 1;
+                min-width : 100%;
+                width : 43px;
+                display : block;
+                position : relative;
+                
+                display: -webkit-box;
+            	display: -moz-stack;
+            	display: box;
+            
+            	-webkit-box-orient: horizontal;
+            	-moz-box-orient: horizontal;
+            	box-orient: horizontal;
+            }
+            
+            .cbox > *{
+                display: -moz-stack;
+            }
+            
+            .cbox .filler2 {
+                -webkit-box-flex : 2;
+                -moz-box-flex : 2;
+            }
+            
+            .cbox .blue{
+                margin : 2px;
+            }
+            
+            .cbox .big{
+                margin : 10px;
+                width : 200px;
+            }
+            
+            .cdi {
+                width: 1000px;
+            	border : 1px solid red;
+            	padding : 2px;
+            	text-align : left;
+            	line-height : 0;
+            }
+            .cdi div{
+                display : inline-block;
+                text-align : left;
+                line-height : 20px;
+                display : block; /* stretch */
+            }
+            /* for ie7
+            .cdi > div{
+                display : inline;
+            }*/
+            .cdi br{
+                line-height : 0;
+                display : none; /* stretch */
+            }
+            
+            .cdi .filler {
+            }
+            
+            .cdi .blue{
+                margin: 2px 0 2px 0;
+            }
+            
+            .cdi .big{
+                margin : 10px 8px 10px 8px;
+                width : 200px;
+            }
+            
+            .cdi .first{margin-top : 0;}
+            .cdi .last{margin-bottom : 0;}
+            
+            .blue {
+            	background: #357c96;
+            	font-weight: bold;
+            	padding: 20px;
+            	color: #fff;
+            	font-family: Arial, sans-serif;
+            	
+            	-webkit-box-sizing: border-box;
+            	-moz-box-sizing: border-box;
+            	box-sizing: border-box;
+            }
+            
+            .button{
+                border : 2px solid black;
+                padding : 5px;
+                background : #c3c3c3;
+                white-space : nowrap;
+                overflow : hidden;
+            }
+            .filler span .button{
+                -moz-box-flex : 1;
+                -webkit-box-flex : 1;
+            }
+            
+            .cbox .filler {
+                padding : 0;
+            }
+            
+            /*.button strong{
+                overflow : hidden;
+                display : block;
+                white-space : nowrap;
+                min-width : 100%;
+                width : 10px; 
+                -webkit-box-flex : 1;
+                -moz-box-flex : 1;
+            }*/
+        </style>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+ 
+        <a:hbox>
+            <a:button skin="agenda_silver">Mark as Read</a:button>
+            <a:button skin="agenda_silver">Mark as Unread</a:button>
+            
+            <a:button align="right" skin="agenda_silver">Right</a:button>
+        </a:hbox>
+        
+        <!-- secure by setting min-width from the top of a sorted list -->
+        
+        <div id="cbox" style="position:absolute;left:0;top:0;right:0;bottom:0;"> <!-- firefox only fix -->
+            <div class="cbox" style="width:100%;height:100%;">
+            	<div class="blue button" style="width:50px;">
+            		This is some content.
+            	</div>
+            	<div class="blue filler" style="width:400px">
+            		<span>
+            		    <div class="button">
+        		            Only there are four columns! alsj alsd jlasdj alsdja
+        		        </div>
+            		</span>
+            	</div>
+            	<div class="blue big">
+            		Four columns!
+            	</div>
+            	<div class="blue filler">
+            	    <span>filler</span>
+            	</div>
+        	    <div class="blue" style="width2:100px;">
+        		    Amazingsdasdasd
+        		</div>
+            </div>
+        </div>    
+        
+        <div id="cdi" class="cdi" style="position:absolute;left:0;top:0;right:0;bottom:0;width:auto;">
+        	<div class="blue button first" style="width:50px;">
+        		This is some content.
+        	</div><br /><div class="blue button">
+        		Only there are four columns! alsj alsd jlasdj alsdja
+        	</div><br /><div class="blue big">
+        		Four columns!
+        	</div><br /><div class="filler blue">
+        	    filler
+        	</div><br /><div class="blue last" style="width2:100px">
+    		    Amazingsdasdasd
+    		</div><br />
+        </div>
+        
+        <script>
+            if (document.all) {
+                document.getElementById("cbox").style.display = "none";
+                /*var cdi = document.getElementById("cdi");
+                var hgt = [-1,-1,100,-1,-1]
+                var flr = [0,1,0,0,0]
+                var ttl = 1;
+                cdi.onresize = function(){
+                    var nodes = cdi.childNodes;
+                    for (var i = 0; i < nodes.length; i++) {
+                        var h = hgt[i];
+                        if (h < 0) 
+                            nodes[i].style.width = "";
+                    }
+                    
+                    var pH = cdi.offsetWidth - 2 - 4;
+                    var fW = 0, vdiff = document.documentMode == 7 ? 40 : 0, hdiff = vdiff;
+                    for (var i = 0; i < nodes.length; i++) {
+                        var h = hgt[i];
+                        if (h < 0) 
+                            nodes[i].style.width = Math.max(0, pH - vdiff) + "px";
+                        if (!flr[i])
+                            fW += nodes[i].offsetWidth + 4;
+                    }
+                    
+                    var rW = cdi.offsetHeight - 2 - 4 - fW - 12;
+                    var lW = rW, done = 0;
+                    for (var i = 0; i < nodes.length; i++) {
+                        if (flr[i]) {
+                            var v = Math.round((rW / ttl) * flr[i]);
+                            done += flr[i];
+                            nodes[i].style.height = ((done == ttl ? lW : v) - 4 - hdiff) + "px";
+                            lW -= v;
+                        }
+                    }
+                }
+                cdi.onresize();
+                cdi.childNodes[2].onresize = function(){
+                    cdi.onresize();
+                }
+                
+                setTimeout(function(){
+                    cdi.childNodes[2].style.width = "100px";
+                }, 1000);
+                
+                setTimeout(function(){
+                    cdi.childNodes[2].style.width = "200px";
+                }, 2000);*/
+            }
+            else
+                document.getElementById("cdi").style.display = "none";
+        </script>
+    </body>
+</html>
+</script>
+</body>
+</html>

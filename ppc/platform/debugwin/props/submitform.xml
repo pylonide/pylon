@@ -1,0 +1,128 @@
+<props><submitform><group caption="BaseTab"><prop caption="activepagenr" editor="textbox" value="[@activepagenr]" description="the child number of the active page."/><prop caption="activepage" editor="textbox" value="[@activepage]" description="the name of the active page."/></group><group caption="DataBinding"><prop caption="render-root" editor="checkbox" value="[@render-root]" description="whether the xml element loaded into this
+element is rendered as well. Default is false." values="true|false"/><prop caption="empty-message" editor="textbox" value="[@empty-message]" description="the message displayed by this element
+when it contains no data. This property is inherited from parent nodes.
+When none is found it is looked for on the appsettings element. Otherwise
+it defaults to the string &quot;No items&quot;."/><prop caption="loading-message" editor="textbox" value="[@loading-message]" description="the message displayed by this
+element when it's loading. This property is inherited from parent nodes.
+When none is found it is looked for on the appsettings element. Otherwise
+it defaults to the string &quot;Loading...&quot;."/><prop caption="offline-message" editor="textbox" value="[@offline-message]" description="the message displayed by this
+element when it can't load data because the application is offline.
+This property is inherited from parent nodes. When none is found it is
+looked for on the appsettings element. Otherwise it defaults to the
+string &quot;You are currently offline...&quot;."/><prop caption="smartbinding" editor="textbox" value="[@smartbinding]" description="the name of the SmartBinding for this
+element. A smartbinding is a collection of rules which define how data
+is transformed into representation, how actions on the representation are
+propagated to the data and it's original source, how drag&amp;drop actions
+change the data and where the data is loaded from. Each of these are
+optionally defined in the smartbinding set and can exist independently
+of the smartbinding object."/><prop caption="actions" editor="textbox" value="[@actions]" description="the id of the actions element which
+provides the action rules for this element. Action rules are used to
+send changes on the bound data to a server."/><prop caption="bindings" editor="textbox" value="[@bindings]" description="the id of the bindings element which
+provides the binding rules for this element."/><prop caption="model" editor="textbox" value="[@model]" description="the name of the model to load data from or a
+datainstruction to load data."/><prop caption="viewport" editor="dropdown" value="[@viewport]" description="the way this element renders its data."><item value="virtual">virtual</item><item value="normal">normal</item></prop></group><group caption="Presentation"><prop caption="skinset" editor="textbox" value="[@skinset]" description="the skinset for
+this element. If none is specified the skinset attribute
+of the appsettings is used. When not defined the default skinset
+is used."/><prop caption="skin" editor="textbox" value="[@skin]" description="the name of the skin in the skinset that defines
+how this element is rendered. When a skin is changed the full state of the
+element is kept including it's selection, all the
+aml attributes, loaded data, focus and disabled state."/><prop caption="style" editor="textbox" value="[@style]" description="the css style applied to the this element. This can be a string containing one or more css rules."/><prop caption="border" editor="textbox" value="[@border]" description="turns borders on and off. Set sizes in the seq top, right, bottom, left."/><prop caption="class" editor="textbox" value="[@class]" description="the name of the css style class applied to the this element."/></group><group caption="GuiElement"><prop caption="span" editor="textbox" value="[@span]" description="the number of columns this element spans. Only used inside a table element."/><prop caption="margin" editor="textbox" value="[@margin]"/><prop caption="left" editor="textbox" value="[@left]" description="the left position of this element. Depending
+on the choosen layout method the unit can be pixels, a percentage or an
+expression."/><prop caption="top" editor="textbox" value="[@top]" description="the top position of this element. Depending
+on the choosen layout method the unit can be pixels, a percentage or an
+expression."/><prop caption="right" editor="textbox" value="[@right]" description="the right position of this element. Depending
+on the choosen layout method the unit can be pixels, a percentage or an
+expression."/><prop caption="bottom" editor="textbox" value="[@bottom]" description="the bottom position of this element. Depending
+on the choosen layout method the unit can be pixels, a percentage or an
+expression."/><prop caption="width" editor="textbox" value="[@width]" description="the different between the left edge and the
+right edge of this element. Depending on the choosen layout method the
+unit can be pixels, a percentage or an expression."/><prop caption="height" editor="textbox" value="[@height]" description="the different between the top edge and the
+bottom edge of this element. Depending on the choosen layout method the
+unit can be pixels, a percentage or an expression."/><prop caption="focussable" editor="checkbox" value="[@focussable]" description="whether this element can receive the focus.
+The focussed element receives keyboard event.s" values="true|false"/><prop caption="zindex" editor="textbox" value="[@zindex]" description="the z ordered layer in which this element is
+drawn."/><prop caption="visible" editor="checkbox" value="[@visible]" description="whether this element is shown." values="true|false"/><prop caption="disabled" editor="checkbox" value="[@disabled]" description="whether this element's functions are active.
+For elements that can contain other apf.NODE_VISIBLE elements this
+attribute applies to all it's children." values="true|false"/><prop caption="enables" editor="checkbox" value="[@enables]" description="whether this element's functions are active.
+For elements that can contain other apf.NODE_VISIBLE elements this
+attribute applies to all it's children." values="true|false"/><prop caption="disable-keyboard" editor="checkbox" value="[@disable-keyboard]" description="whether this element receives
+keyboard input. This allows you to disable keyboard independently from
+focus handling." values="true|false"/><prop caption="tooltip" editor="textbox" value="[@tooltip]" description="the text displayed when a user hovers with
+the mouse over the element."/><prop caption="contextmenu" editor="textbox" value="[@contextmenu]" description="the name of the menu element that will
+be shown when the user right clicks or uses the context menu keyboard
+shortcut."/><prop caption="actiontracker" editor="textbox" value="[@actiontracker]" description="the name of the actiontracker that
+is used for this element and it's children. If the actiontracker doesn't
+exist yet it is created."/><prop caption="aml" editor="textbox" value="[@aml]" description="the {@link term.datainstruction data instruction}
+that loads new aml as children of this element."/><prop caption="sets" editor="textbox" value="[@sets]" description="this aml element to be editable
+that loads new aml as children of this element."/><prop caption="transaction" editor="checkbox" value="[@transaction]" description="Whether this element provides transaction
+support for all it's children." values="true|false"/></group><group caption="Alignment"><prop caption="layout"><prop caption="align" editor="textbox" value="[@align]" description="the edge of the parent to which this
+element aligns. Possible values are
+a combination of: &quot;left&quot;, &quot;middle&quot;,
+&quot;right&quot;, &quot;top&quot;, &quot;bottom&quot; and &quot;slider&quot;
+and optionally a size."><prop caption="dock" editor="checkbox" value="[@dock]" default="false" description="whether this element can function as a dockable section of the layout." values="true|false"/><prop caption="dockable" editor="checkbox" value="[@dockable]" default="false" description="whether this element can be dragged to dock somewhere else" values="true|false"/><prop caption="lean" editor="dropdown" value="[@lean]" default="left" description="the position of element when it is ambiguous."><item value="left">left</item><item value="right">right</item><item value="top">top</item><item value="bottom">bottom</item></prop><prop caption="edge" editor="slider" value="[@edge]" default="4" description="the size of the edge of the space between
+this and the neighbouring element to the
+right or top. If the value of this attribute
+is smaller than that of the splitter,
+the edge will be the size of the splitter."/><prop caption="weight" editor="slider" value="[@weight]" default="1" description="the factor (between 0 and 1) this element
+takes when no width is specified. The factor
+is calculated by doing (weight/totalweight)
+* space available in parent. Based on
+the parent being a vbox or hbox this
+attribute calculates either the element's
+width or height."/><prop caption="splitter" editor="slider" value="[@splitter]" default="0" description="the size of splitter that is placed between
+this and the neighbouring element to the
+right or top. When not specified, the
+splitter is not displayed."/></prop><prop caption="minwidth" editor="slider" value="[@minwidth]" default="0" description="the minimum horizontal size of this element."/><prop caption="minheight" editor="slider" value="[@minheight]" default="0" description="the minimum vertical size of this element."/></prop></group><group caption="DelayedRender"><prop caption="render" editor="dropdown" value="[@render]" description="when the contents of this element is rendered."><item value="init">init</item><item value="runtime">runtime</item></prop><prop caption="use-render-delay" editor="checkbox" value="[@use-render-delay]" description="whether there's a short delay between showing this element and rendering it's contents." values="true|false"/></group><group caption="DragDrop"><prop caption="drag" editor="checkbox" value="[@drag]" description="whether the element allows dragging of it's items." values="true|false"/><prop caption="dragcopy" editor="checkbox" value="[@dragcopy]" description="whether dragged items are copied." values="true|false"/><prop caption="drop" editor="checkbox" value="[@drop]" description="whether the element allows items to be dropped." values="true|false"/><prop caption="dragdrop" editor="textbox" value="[@dragdrop]" description="the name of the dragdrop element for this element.
+&lt;code&gt;
+&lt;a:tree align=&quot;left&quot; width=&quot;200&quot; height=&quot;300&quot;&gt;
+&lt;a:each match=&quot;[root|account|folder|mail]&quot;&gt;
+&lt;a:caption match  = &quot;[@name]&quot; /&gt;
+&lt;a:drag    match  = &quot;[folder|mail]&quot; /&gt;
+&lt;a:drop    match  = &quot;[folder]&quot;
+target = &quot;[folder|account]&quot;
+action = &quot;tree-append&quot; /&gt;
+&lt;a:drop   match  = &quot;[mail]&quot;
+target = &quot;[folder]&quot;
+action = &quot;tree-append&quot; /&gt;
+&lt;/a:each&gt;
+&lt;a:model&gt;
+&lt;data&gt;
+&lt;root name=&quot;Root&quot;&gt;
+&lt;account name=&quot;Account 1&quot;&gt;
+&lt;folder name=&quot;Folder 1&quot;&gt;
+&lt;mail name=&quot;Mail drag drop&quot;&gt;&lt;/mail&gt;
+&lt;/folder&gt;
+&lt;/account&gt;
+&lt;/root&gt;
+&lt;/data&gt;
+&lt;/a:model&gt;
+&lt;/a:tree&gt;
+
+&lt;a:list bindings=&quot;bndDragdrop&quot; align=&quot;right&quot;&gt;
+&lt;a:model&gt;
+&lt;data&gt;
+&lt;mail name=&quot;Mail 1&quot;&gt;&lt;/mail&gt;
+&lt;mail name=&quot;Mail 2&quot;&gt;&lt;/mail&gt;
+&lt;mail name=&quot;Mail 3&quot;&gt;&lt;/mail&gt;
+&lt;/data&gt;
+&lt;/a:model&gt;
+&lt;/a:list&gt;
+
+&lt;a:bindings id=&quot;bndDragdrop&quot;&gt;
+&lt;a:caption match=&quot;[@name]&quot; /&gt;
+&lt;a:each match=&quot;[mail]&quot; /&gt;
+&lt;a:drag match = &quot;[mail]&quot; /&gt;
+&lt;a:drop
+match = &quot;[mail]&quot;
+action = &quot;list-append&quot; /&gt;
+&lt;/a:bindings&gt;
+&lt;/code&gt;"/></group><group caption="Interactive"><prop caption="draggable" editor="checkbox" value="[@draggable]" description="whether an element is draggable. The user will
+able to move the element around while holding the mouse button down on the
+element." values="true|false"/><prop caption="resizable" editor="checkbox" value="[@resizable]" description="whether an element is resizable. The user will able
+to resize the element by grabbing one of the four edges of the element and
+pulling it in either direction. Grabbing the corners allows users to
+resize horizontally and vertically at the same time. The right bottom corner
+is special, because it offers an especially big grab area. The size of this
+area can be configured in the skin of the element." values="true|false"/><prop caption="minwidth" editor="textbox" value="[@minwidth]" description="the minimum horizontal size the element can get when resizing."/><prop caption="minheight" editor="textbox" value="[@minheight]" description="the minimum vertical size the element can get when resizing."/><prop caption="maxwidth" editor="textbox" value="[@maxwidth]" description="the maximum horizontal size the element can get when resizing."/><prop caption="maxheight" editor="textbox" value="[@maxheight]" description="the maximum vertical size the element can get when resizing."/></group><group caption="Transaction"><prop caption="autoshow" editor="checkbox" value="[@autoshow]" description="whether this element is shown when a transaction begins." values="true|false"/></group><group caption="Validation"><prop caption="required" editor="checkbox" value="[@required]" description="whether a valid value for this element is required." values="true|false"/><prop caption="pattern" editor="textbox" value="[@pattern]" description="the pattern tested against the value of this element to determine it's validity."/><prop caption="datatype" editor="dropdown" value="[@datatype]" description="the datatype that the value of this element should adhere to. This can be any
+of a set of predefined types, or a simple type created by an XML Schema definition."><item value="xsd:dateTime">xsd:dateTime</item><item value="xsd:time">xsd:time</item><item value="xsd:date">xsd:date</item><item value="xsd:gYearMonth">xsd:gYearMonth</item><item value="xsd:gYear">xsd:gYear</item><item value="xsd:gMonthDay">xsd:gMonthDay</item><item value="xsd:gDay">xsd:gDay</item><item value="xsd:gMonth">xsd:gMonth</item><item value="xsd:string">xsd:string</item><item value="xsd:boolean">xsd:boolean</item><item value="xsd:base64Binary">xsd:base64Binary</item><item value="xsd:hexBinary">xsd:hexBinary</item><item value="xsd:float">xsd:float</item><item value="xsd:decimal">xsd:decimal</item><item value="xsd:double">xsd:double</item><item value="xsd:anyURI">xsd:anyURI</item><item value="xsd:integer">xsd:integer</item><item value="xsd:nonPositiveInteger">xsd:nonPositiveInteger</item><item value="xsd:negativeInteger">xsd:negativeInteger</item><item value="xsd:long">xsd:long</item><item value="xsd:int">xsd:int</item><item value="xsd:short">xsd:short</item><item value="xsd:byte">xsd:byte</item><item value="xsd:nonNegativeInteger">xsd:nonNegativeInteger</item><item value="xsd:unsignedLong">xsd:unsignedLong</item><item value="xsd:unsignedInt">xsd:unsignedInt</item><item value="xsd:unsignedShort">xsd:unsignedShort</item><item value="xsd:unsignedByte">xsd:unsignedByte</item><item value="xsd:positiveInteger">xsd:positiveInteger</item><item value="apf:url">apf:url</item><item value="apf:website">apf:website</item><item value="apf:email">apf:email</item><item value="apf:creditcard">apf:creditcard</item><item value="apf:expdate">apf:expdate</item><item value="apf:wechars">apf:wechars</item><item value="apf:phonenumber">apf:phonenumber</item><item value="apf:faxnumber">apf:faxnumber</item><item value="apf:mobile">apf:mobile</item></prop><prop caption="min" editor="textbox" value="[@min]" description="the minimal value for which the value of this element is valid."/><prop caption="max" editor="textbox" value="[@max]" description="the maximum value for which the value of this element is valid."/><prop caption="minlength" editor="textbox" value="[@minlength]" description="the minimal length allowed for the value of this element."/><prop caption="maxlength" editor="textbox" value="[@maxlength]" description="the maximum length allowed for the value of this element."/><prop caption="notnull" editor="checkbox" value="[@notnull]" description="whether the value is filled. Same as {@link baseclass.validation.attribute.required} but this rule is checked realtime when the element looses the focus, instead of at specific request (for instance when leaving a form page)." values="true|false"/><prop caption="checkequal" editor="textbox" value="[@checkequal]" description="the id of the element to check if it has the same value as this element."/><prop caption="invalidmsg" editor="textbox" value="[@invalidmsg]" description="the message displayed when this element has an invalid value. Use a ; character to seperate the title from the message."/><prop caption="validgroup" editor="textbox" value="[@validgroup]" description="the identifier for a group of items to be validated at the same time. This identifier can be new. It is inherited from a AML node upwards."/><prop caption="validtest" editor="textbox" value="[@validtest]" description="the instruction on how to test for success. This attribute is generally used to check the value on the server."/></group><events caption="Events"><prop caption="beforeswitch" editor="textbox" value="[@beforeswitch]" type="event" description="Fires before this element switches to another page."/><prop caption="afterswitch" editor="textbox" value="[@afterswitch]" type="event" description="Fires after this element has switched to another page."/><prop caption="error" editor="textbox" value="[@error]" type="event" description="Fires when a communication error has occured while
+making a request for this element."/><prop caption="beforeretrieve" editor="textbox" value="[@beforeretrieve]" type="event" description="Fires before a request is made to retrieve data."/><prop caption="afterretrieve" editor="textbox" value="[@afterretrieve]" type="event" description="Fires when the request to retrieve data returns both
+on success and failure."/><prop caption="receive" editor="textbox" value="[@receive]" type="event" description="Fires when data is successfully retrieved"/><prop caption="beforeload" editor="textbox" value="[@beforeload]" type="event" description="Fires before loading data in this element."/><prop caption="afterload" editor="textbox" value="[@afterload]" type="event" description="Fires after loading data in this element."/><prop caption="beforeinsert" editor="textbox" value="[@beforeinsert]" type="event" description="Fires before data is inserted."/><prop caption="afterinsert" editor="textbox" value="[@afterinsert]" type="event" description="Fires after data is inserted."/><prop caption="resize" editor="textbox" value="[@resize]" type="event" description="Fires when the element changes width or height."/><prop caption="contextmenu" editor="textbox" value="[@contextmenu]" type="event" description="Fires when the user requests a context menu. Either
+using the keyboard or mouse."/><prop caption="focus" editor="textbox" value="[@focus]" type="event" description="Fires when this element receives focus."/><prop caption="blur" editor="textbox" value="[@blur]" type="event" description="Fires when this element loses focus."/><prop caption="keydown" editor="textbox" value="[@keydown]" type="event" description="Fires when this element has focus and the user presses a key on the keyboard."/><prop caption="beforerender" editor="textbox" value="[@beforerender]" type="event" description="Fires before elements are rendered. Use this event to display a loader."/><prop caption="afterrender" editor="textbox" value="[@afterrender]" type="event" description="Fires after elements are rendered. User this event to hide a loader."/><prop caption="dragdata" editor="textbox" value="[@dragdata]" type="event" description="Fires before a drag&amp;drop operation is started to determine the data that is dragged."/><prop caption="dragstart" editor="textbox" value="[@dragstart]" type="event" description="Fires before a drag operation is started."/><prop caption="dragover" editor="textbox" value="[@dragover]" type="event" description="Fires when the users drags over this aml element."/><prop caption="dragout" editor="textbox" value="[@dragout]" type="event" description="Fires when the user moves away from this aml element."/><prop caption="dragdrop" editor="textbox" value="[@dragdrop]" type="event" description="Fires when the user drops an item on this aml element."/><prop caption="drag" editor="textbox" value="[@drag]" type="event" description="Fires when the widget has been dragged."/><prop caption="resizestart" editor="textbox" value="[@resizestart]" type="event" description="Fires before the widget is resized."/><prop caption="resize" editor="textbox" value="[@resize]" type="event" description="Fires when the widget has been resized."/><prop caption="transactionconflict" editor="textbox" value="[@transactionconflict]" type="event" description="Fires when data in a transaction is being updated by an external process."/><prop caption="invalid" editor="textbox" value="[@invalid]" type="event" description="Fires when this component goes into an invalid state."/><prop caption="DOMNodeInserted" editor="textbox" value="[@domnodeinserted]" type="event"/><prop caption="DOMNodeInsertedIntoDocument" editor="textbox" value="[@domnodeinsertedintodocument]" type="event"/><prop caption="DOMNodeRemoved" editor="textbox" value="[@domnoderemoved]" type="event"/><prop caption="DOMNodeRemovedFromDocument" editor="textbox" value="[@domnoderemovedfromdocument]" type="event"/><prop caption="propertychange" editor="textbox" value="[@propertychange]" type="event" description="Fires when a property changes."/></events></submitform></props>

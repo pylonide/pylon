@@ -6,7 +6,7 @@ mocha -V || :
 
 cd `dirname $0`/..
 
-npm install amd-loader
+npm install amd-loader --no-save
 which mocha 2>/dev/null || npm install -g mocha
 
 # continue on error

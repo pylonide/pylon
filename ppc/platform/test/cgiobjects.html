@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>CGI Objects</title>
+        
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+        <a:model id="mdl1">
+            <data>
+                <root>
+                    
+                </root>
+            </data>
+        </a:model>
+        
+        <a:model id="mdl2">
+            <data>
+                <root label="C:/">
+                    <dir name="Program Files">
+                        <file name="Adobe"></file>
+                        <file name="Acrobat"></file>
+                        <file name="Microsoft"></file>
+                    </dir>
+                    <div name="Windows">
+                        <dir name="System">
+                            <file name="some.dll"></file>
+                        </dir>
+                    </div>
+                </root>
+            </data>
+        </a:model>
+        <a:model id="mdl3">
+            <data>
+                <address name="Skorcz" zip="83-220"></address>
+                <address>Koszalin</address>
+                <street name="Piaskowa" number="2"></street>
+                <street name="Wladka 4" number="62/4"></street>
+            </data>
+        </a:model>
+        <a:model id="mdl4">
+            <data>
+                <address name="Skorcz" zip="83-220"></address>
+                <street name="Piaskowa" number="2"></street>
+                <street name="Wladka 4" number="62/4"></street>
+            </data>
+        </a:model>
+        <a:model id="mdl5">
+            <data>
+                <name>Ruben</name>
+                <age>29</age>
+                <address>Keizersgracht 241</address>
+            </data>
+        </a:model>
+
+        <a:button width="100" onclick="alert(apf.convertMethods.cgiobjects(mdl1.data, '', false))">Convert 1</a:button>
+        <a:button width="100" onclick="alert(apf.convertMethods.cgiobjects(mdl2.data, '', false))">Convert 2</a:button>
+        <a:button width="100" onclick="alert(apf.convertMethods.cgiobjects(mdl3.data, '', false))">Convert 3</a:button>
+        <a:button width="100" onclick="alert(apf.convertMethods.cgiobjects(mdl4.data, '', false))">Convert 4</a:button>
+        <a:button width="100" onclick="alert(apf.convertMethods.cgiobjects(mdl5.data, '', false))">Convert 5</a:button>
+    </body>
+</html>

@@ -1,11 +1,11 @@
 [![Build Status](https://travis-ci.org/pylonide/pylon.svg?branch=master)](https://travis-ci.org/pylonide/pylon)
 [![Master Dependency Status](https://snyk.io/test/github/pylonide/pylon/badge.svg)](https://snyk.io/test/github/pylonide/pylon)
 [![Development Dependency Status](https://snyk.io/test/github/pylonide/pylon/development/badge.svg)](https://snyk.io/test/github/pylonide/pylon/development)
-[![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://www.coinbase.com/checkouts/9f4183a5164f2c4bd53d6afc74068ec4 "One-time donation to keep this fork alive")
+[![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://commerce.coinbase.com/checkout/5f3b0455-32ba-4b85-b299-00fe739d8b10 "One-time donation to keep this project alive")
 
 # Pylon IDE
 
-Pylon is a web based integrated development environment built with Node.js as a backend and with a supercharged JavaScript/HTML5 licensed under [GPL version 3](LICENSE). This project originates from Cloud9 v2 project.
+Pylon is a web based integrated development environment built with Node.js as a backend and with a supercharged JavaScript/HTML5 frontend, licensed under [GPL version 3](LICENSE). This project originates from Cloud9 v2 project.
 
 ## About
 
@@ -18,15 +18,29 @@ Pylon is built entirely on a web stack, making it the most hacker-friendly IDE t
 - Up to date dependencies and compatibility fixes
 - Terminal
 
-### Screenshot
+### Screenshots
+
+Browser used: Safari 12.1.1
+
+#### Alternative forms based authentication
 
 ![ScreenShot](doc/screenshot01.png)
 
+Login picture by Annie Spratt - Fog ([Unsplash license](https://unsplash.com/license))
+
+#### The main user interface
+
 ![ScreenShot](doc/screenshot02.png)
+
+#### Additional plugin dockpanel view
+
+![ScreenShot](doc/screenshot03.png)
+
+Check out [pylonide/pylon-plugin-mungit](https://github.com/pylonide/pylon-plugin-mungit) for the Git plugin.
 
 ## Browser Support
 
-Moderns versions of Chrome and Safari are supported. Firefox, altough functional, no longer works as intended as of version 64.0 - future efforts will be made to restore compatibility.
+Modern versions of Chrome and Safari are supported. Firefox, altough functional, no longer works as intended as of version 64.0. In the future, efforts will be made to restore compatibility.
 
 ### Basic iPad Pro support with keyboard
 
@@ -35,8 +49,6 @@ As of v2.3.0 efforts have been made to make Pylon usable with iPad. However, for
 - Settings -> General -> Keyboard -> Auto-Correction -> `Off`
 - Settings -> General -> Keyboard -> Smart Punctuation -> `Off` (interferes with coding by changing quotes)
 - Settings -> General -> Keyboard -> Shortcuts -> `Off` (interferes by displaying bottom bar that hides the console prompt)
-
-![iPad ScreenShot](doc/screenshot03.png)
 
 ## Installation and Usage
 
@@ -95,8 +107,7 @@ Install [NVM](https://github.com/creationix/nvm) to manage node versions. Instal
 Clone the Pylon repo to your machine and run npm:
 
     npm install
-    make worker
-    node server.js -w ./ -l 0.0.0.0 -a x-www-browser
+    bin/pylon.sh -w . -l 0.0.0.0
 
 ## Updating
 
@@ -109,7 +120,7 @@ To update to the latest version (if this doesn't work, just make a fresh clone):
 
 Pylon functionality is all created around server and client-side plugins.
 However, there is hardly any documentation about the APIs to create your own
-plugins. To get you started, please see [exsilium/cloud9-plugin-ungit](https://github.com/exsilium/cloud9-plugin-ungit)
+plugins. To get you started, please see [pylonide/pylon-plugin-mungit](https://github.com/pylonide/pylon-plugin-mungit)
 to see how to get started for a client-side only plugin.
 
 Going forward, there will be efforts made to sort out the documentation and

@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.ide.git",
+    "name": "pylon.ide.git",
     "version": "0.0.1",
 
     "main": "./git.js",

@@ -1,0 +1,94 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Ajax.org - The real-time collaborative application platform</title>
+        
+        <!-- The line below will make the charts go a lot faster! -->
+        <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
+        
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" id="apfskin" defer="true" media-path="../images/" icon-path="../icons/" />
+
+        <a:appsettings debug="true" />
+
+        <a:rpc id="comm"
+          protocol     = "cgi" 
+          route-server = "rpcproxy.php"
+          autoroute    = "true">
+            <a:method name="search" url="http://development.ajax.org/data.php">
+                <a:param name="search" />
+                <a:param name="limit" default="3" />
+                <a:param name="page" default="1" />
+                <a:param name="index" />
+            </a:method>
+            <a:method name="fetch" url="http://development.ajax.org/data.php">
+                <a:param name="section" />
+                <a:param name="page" />
+                <a:param name="perpage" />
+            </a:method>
+            <a:method name="subscribe" url="http://lists.ajax.org/wwsympa.fcgi/subscribe/platform/wwsympa.fcgi"
+              receive="app.checkSubscribe">
+                <a:param name="list" value="platform" />
+                <a:param name="action" value="subrequest" />
+                <a:param name="email" />
+            </a:method>
+            <a:method name="getDemos" url="http://development.ajax.org/data.php" receive="loadDemos">
+                <a:param name="demo" value="1" />
+                <a:param name="name" />
+            </a:method>
+            <a:method name="loginCheck" url="http://development.ajax.org/data.php">
+                <a:param name="login" value="check" />
+                <a:param name="username" />
+            </a:method>
+            <a:method name="loginRegister" url="http://development.ajax.org/data.php">
+                <a:param name="login" value="register" />
+                <a:param name="username" />
+                <a:param name="password" />
+                <a:param name="email" />
+            </a:method>
+            <!--a:method name="loginUpdate" url="http://development.ajax.org/data.php">
+                <a:param name="login" value="update" />
+                <a:param name="username" />
+            </a:method-->
+        </a:rpc>
+
+        <div class="title">Participate</div>
+        <div class="subtitle">Get your @ajax.org login</div>
+        <div class="req">Required for the collaborative demos</div>
+        <a:model id="mdlEjab"
+            submission      = "{comm.loginRegister([username], [password], [email])}" 
+            onsubmitsuccess = "alert('success')" 
+            onsubmiterror   = "alert('fail')" />
+        <a:table columns="68,93,58" cellheight="19" padding="5" class="login" validgroup="vgEjab" model="mdlEjab">
+            <a:label>Username</a:label>
+            <a:textbox value="[username]"
+              height     = "19"
+              validtest  = "{comm.loginCheck(value) == 1}"
+              pattern    = "/^[a-zA-Z0-9_\-. ]{3,20}$/"
+              invalidmsg = "Invalid username;Please enter a valid username." />
+            <a:label margin="0 0 0 5">@ajax.org</a:label>
+            <a:label>Password</a:label>
+            <a:textbox value="[password]"
+              pattern    = "/^[a-zA-Z0-9._\-]{5,40}$/"
+              span       = "2"
+              type       = "password"
+              invalidmsg = "Invalid password;Please enter a valid password." />
+            <a:label>E-mail</a:label>
+            <a:textbox value="[email]"
+              span       = "2"
+              type       = "text"
+              datatype   = "a:email"
+              invalidmsg = "Invalid email address;Please enter a valid email address." />
+        </a:table>
+        <a:hbox height="25">
+            <a:button
+              default = "true"
+              width   = "70"
+              left    = "155"
+              style   = "margin-left:155px"
+              onclick = "if (vgEjab.isValid()) mdlEjab.submit()">Submit</a:button>
+        </a:hbox>
+    </body>
+</html>

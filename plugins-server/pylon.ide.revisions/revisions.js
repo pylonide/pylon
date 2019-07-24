@@ -1,7 +1,7 @@
 /**
  * Revisions Server module for Pylon IDE
  *
- * @copyright 2012, Ajax.org B.V.
+ * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
 require("amd-loader");

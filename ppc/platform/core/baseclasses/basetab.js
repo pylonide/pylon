@@ -1,0 +1,1684 @@
+/*
+ * See the NOTICE file distributed with this work for additional
+ * information regarding copyright ownership.
+ *
+ * This is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
+ *
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this software; if not, write to the Free
+ * Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
+ *
+ */
+
+// #ifdef __AMLBASETAB || __INC_ALL
+
+/**
+ * Baseclass of a paged element. 
+ *
+ * @class apf.BaseTab
+ * @baseclass
+ * @allowchild page
+ * @author      Ruben Daniels (ruben AT ajax DOT org)
+ * @version     %I%, %G%
+ * @since       0.8
+ * @inherits apf.Presentation
+ *
+ */
+/**
+ * @event beforeswitch  Fires before this element switches to another page.
+ * @cancelable Prevents the page to become active.
+ * @param {Object} e The standard event object. It contains the following properties:
+ *   - previous ([[String]] or [[Number]]): The name or number of the current page.
+ *   - previousId ([[Number]]): The number of the current page.
+ *   - previousPage ([[apf.page]]): The current page.
+ *   - next ([[String]] or [[Number]]): The name or number of the page the will become active.
+ *   - nextId ([[Number]]): The number of the page the will become active.
+ *   - nextPage ([[apf.page]]): The page the will become active.
+ */
+/**
+ *  @event afterswitch   Fires after this element has switched to another page.
+ *  @param {Object} e The standard event object. It contains the following properties:
+ *   - previous ([[String]] or [[Number]]): The name or number of the previous page.
+ *   - previousId ([[Number]]): The number of the previous page.
+ *   - previousPage ([[apf.page]]): The previous page.
+ *   - next ([[String]] or [[Number]]): The name or number of the current page.
+ *   - nextId ([[Number]]): The number of the the current page.
+ *   - nextPage ([[apf.page]]): The the current page.   
+ */
+apf.BaseTab = function(){
+    this.$init(true);
+};
+
+(function() {
+    this.isPaged     = true;
+    this.$focussable = apf.KEYBOARD;
+    this.length      = 0;
+    this.isLoading   = {};
+    this.inited      =
+    this.ready       = false;
+    this.$scroll     = true;
+
+    /**
+     * Sets the current page of this element.
+     * @param {String | Number}    page     The name or number of the page which is made active.
+     * @param {Function} callback The function called after setting the page. Especially handy when using the `src` attribute.
+     */
+    this.set = function(page, callback, noEvent){
+        if (noEvent || this.src && !this.$findPage(page, {})) {
+            return this.$propHandlers["activepage"].call(
+                this, page, null, null, callback, noEvent);
+        }
+        
+        if (this.activepage == (page.name || page))
+            return callback && callback(this.getPage(page));
+
+        this.$lastCallback = callback;
+        this.setProperty("activepage", page);
+    };
+
+    // *** Properties and Attributes *** //
+
+    this.$supportedProperties.push("activepage", "activepagenr", "length",
+        "src", "loading", "trans-in", "trans-out");
+
+    /**
+     * @property {Number} [SCROLL_LEFT=1] The constant representing the "scroll left" button
+     * @readonly
+     */
+    /**
+     * @property {Number} [SCROLL_RIGHT=2] The constant representing the "scroll right" button
+     * @readonly
+     */
+    /**
+     * @property {Number} [SCROLL_BOTH=4] The constant representing the "scroll left" and "scroll right" buttons
+     * @readonly
+     */
+    /**
+     * @attribute {Number} activepagenr Sets or gets the child number of the active page.
+     * 
+     * #### Example
+     *
+     * This example uses property binding to maintain consistency between a
+     * dropdown which is used as a menu, and a pages element
+     * 
+     * ```xml
+     *  <a:dropdown id="ddMenu" value="0">
+     *      <a:item value="0">Home</a:item>
+     *      <a:item value="1">General</a:item>
+     *      <a:item value="2">Advanced</a:item>
+     *  </a:dropdown>
+     * 
+     *  <a:pages activepagenr="{ddMenu.value}">
+     *      <a:page>
+     *          <h1>Home Page</h1>
+     *      </a:page>
+     *      <a:page>
+     *          <h1>General Page</h1>
+     *      </a:page>
+     *      <a:page>
+     *          <h1>Advanced Page</h1>
+     *      </a:page>
+     *  </a:pages>
+     * ```
+     */
+    this.$propHandlers["activepagenr"] =
+
+    /**
+     * @attribute {String} activepage Sets or gets the name of the active page.
+     *  
+     * #### Example
+     *
+     * ```xml
+     *  <a:tab activepage="general" width="250" height="100">
+     *      <a:page id="home" caption="Home">
+     *      ...
+     *      </a:page>
+     *      <a:page id="advanced" caption="Advanced">
+     *          ...
+     *      </a:page>
+     *      <a:page id="general" caption="General">
+     *          ...
+     *      </a:page>
+     *   </a:tab>
+     * ```
+     */
+    this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
+        if (!this.inited || apf.isNot(next) || next == -1) return;
+
+        if (!callback) {
+            callback = this.$lastCallback;
+            delete this.$lastCallback;
+        }
+
+        var page, info = {};
+        page = this.$findPage(next, info);
+
+        if (!page) {
+            if (this.src) {
+                if (this.isLoading[next])
+                    return;
+                
+                if (this.$findPage("loading", {}))
+                    this.$propHandlers["activepage"].call(this, "loading");
+                
+                this.setProperty("loading", true);
+                this.isLoading[next] = true;
+
+                page = this.ownerDocument.createElementNS(apf.ns.apf, "page");
+                page.setAttribute("id", next);
+                this.appendChild(page);
+
+                var _self = this;
+                page.insertMarkup(this.src, {
+                    page     : next,
+                    //@todo apf3.0 change callback arguments in xinclude
+                    callback : function(options){
+                        delete _self.isLoading[next];
+                    
+                        if (!options.xmlNode) {
+                            var oError = new Error(apf.formatErrorString(0, null,
+                                "Loading new page", "Could not load new page: "
+                                + _self.src));
+                                
+                            _self.setProperty("loading", false);
+                            
+                            if (this.dispatchEvent("error", apf.extend({
+                                error   : oError,
+                                bubbles : true
+                            }, options)) === false)
+                                return true;
+                            
+                            throw oError;
+                        }
+                        else {
+                            //for success
+                            _self.setProperty("activepage", next);
+                            
+                            //Needs to be after set
+                            if (callback)
+                                callback(options.amlNode);
+    
+                            _self.setProperty("loading", false);
+                        }
+                    }
+                });
+                return;
+            }
+            
+            //#ifdef __DEBUG
+            apf.console.warn("Setting tab page which doesn't exist, \
+                              referenced by name: '" + next + "'");
+            //#endif
+
+            return false;
+        }
+
+        if (page.parentNode != this) {
+            //#ifdef __DEBUG
+            apf.console.warn("Setting active page on page component which \
+                              isn't a child of this tab component. Cancelling.");
+            //#endif
+
+            return false;
+        }
+
+        if (!page.visible || page.disabled) {
+            //#ifdef __DEBUG
+            apf.console.warn("Setting active page on page component which \
+                              is not visible or disabled. Cancelling.");
+            //#endif
+
+            return false;
+        }
+
+        //If page is given as first argument, let's use its position
+        if (next.tagName) {
+            next = info.position;
+            this.activepage = page.name || next;//page.type || 
+        }
+
+        //Call the onbeforeswitch event;
+        if (!noEvent) {
+            var oEvent = {
+                previous     : this.activepage,
+                previousId   : this.activepagenr,
+                previousPage : this.$activepage,
+                next         : next,
+                nextId       : info.position,
+                nextPage     : page
+            };
+
+            if (this.dispatchEvent("beforeswitch", oEvent) === false) {
+                //Loader support
+                if (this.hideLoader)
+                    this.hideLoader();
+
+                return false;
+            }
+        }
+
+        //Maintain an activepagenr property (not reentrant)
+        this.activepagenr = info.position;
+        this.setProperty("activepagenr", info.position);
+
+        //Deactivate the current page, if any,  and activate the new one
+        if (this.$activepage)
+            this.$activepage.$deactivate();
+
+        page.$activate();
+
+        //#ifdef __ENABLE_PAGE_TRANSITIONS
+        if (page["trans-in"] || this.$activepage && this.$activepage["trans-out"])
+            this.transition(page, page["trans-in"] || "normal",
+                this.$activepage, this.$activepage && this.$activepage["trans-out"] || "normal");
+        //#endif
+
+        this.$activepage = page;
+        //#ifdef __ENABLE_TABSCROLL
+        //this.scrollIntoView(page);
+        //#endif
+
+        //Loader support
+        if (this.hideLoader) {
+            if (page.$rendered !== false) {
+                this.hideLoader();
+            }
+            else {
+                //Delayed rendering support
+                page.addEventListener("afterrender", function(){
+                    this.parentNode.hideLoader();
+                 });
+            }
+        }
+
+        if (!noEvent) {
+            if (page.$rendered !== false)
+                this.dispatchEvent("afterswitch", oEvent);
+            else {
+                //Delayed rendering support
+                page.addEventListener("afterrender", function(){ 
+                    this.parentNode.dispatchEvent("afterswitch", oEvent);
+                });
+             }
+        }
+        
+        if (typeof callback == "function") 
+            callback(page);
+
+        return true;
+    };
+    
+    /**
+     * @attribute {String} buttons Sets or gets the modifier for tab page buttons, seperated by a `|` character
+     *   
+     * Possible values include:
+     *   - `close`:   The button has a close button inside it
+     *   - `scale`:  The buttons are scaled to make room for more buttons
+     *   - `scroll`:  When the buttons take too much space, scroll buttons are displayed
+     */
+    this.$propHandlers["buttons"] = function(value){
+        //this.buttons = value;
+        this.$scale = value.indexOf("scale") > -1;
+        this.$scroll = !this.$scale;
+        this.$order = value.indexOf("order") > -1;
+        
+        //#ifdef __ENABLE_TAB_SCALE
+        //@todo skin change
+        //@todo buttons on the side
+        if (this.$scale) {
+            this.$maxBtnWidth = parseInt(this.$getOption("button", "maxwidth")) || 150;
+            this.$minBtnWidth = parseInt(this.$getOption("button", "minwidth")) || 10;
+            this.$setStyleClass(this.$buttons, "scale");
+            this.addEventListener("resize", scalersz);
+            
+            this.minwidth = this.$minBtnWidth * this.getPages().length + 10;
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        }
+        else {
+            this.$setStyleClass(this.$buttons, "", ["scale"]);
+            this.removeEventListener("resize", scalersz);
+        }
+        //#endif
+    };
+    
+    //#ifdef __ENABLE_TAB_SCALE
+    function visCheck(){
+        scalersz.call(this)
+    }
+    
+    this.anims = "add|remove|sync";
+
+    //Add an element
+    function animAddTab(tab, callback){
+        var t = tab.$button;
+
+        var animateWidth = (t.offsetWidth 
+            - apf.getWidthDiff(t)) < parseInt(apf.getStyle(t, "maxWidth"));
+        
+        if (animateWidth) {
+            var p = tab.parentNode.getPages()[0] == tab 
+                ? null 
+                : t.previousElementSibling;
+            var tb = p 
+                ? (p.offsetWidth - apf.getWidthDiff(p)) 
+                : parseInt(apf.getStyle(t, "maxWidth"));
+            t.style.maxWidth = "0px";
+        }
+
+        t.style.marginTop = (t.offsetHeight + 2) + "px";
+        
+        function animateToTop(){
+            t.style.marginTop = "0px";
+            
+            setTimeout(function(){
+                t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                t.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style.marginTop = "";
+                
+                if (animateWidth)
+                    t.style.maxWidth = "";
+                
+                callback(tab);
+            }, 150);
+        }
+        
+        setTimeout(function(){
+            t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width";
+            t.style[apf.CSSPREFIX + "TransitionDuration"] = "100ms, 50ms";
+            t.style[apf.CSSPREFIX + "TimingFunction"] = "cubic-bezier(.10, .10, .25, .90), cubic-bezier(.10, .10, .25, .90)";
+            
+            if (animateWidth) {
+                t.style.maxWidth = tb + "px";
+                setTimeout(animateToTop, 50);
+            }
+            else animateToTop();
+        });
+    }
+    
+    //Remove an element
+    function animRemoveTab(tab, isLast, isContracted, callback, isOnly){
+        var t = tab.$button;
+        var tb = t.offsetHeight;
+        
+        var diff = t.offsetWidth;
+        
+        t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width, padding";
+        t.style[apf.CSSPREFIX + "TransitionDuration"] = (isOnly ? ".2" : ".15") + "s, .1s, .1s";
+        t.style[apf.CSSPREFIX + "TimingFunction"] = "linear, ease-out, ease-out";
+        
+        t.style.marginTop = (tb + 2) + "px";
+
+        var p = t.parentNode;
+        if (apf.isGecko) p = p.parentNode;
+        
+        p.style[apf.CSSPREFIX + "TransitionProperty"] = "padding-right";
+        p.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
+        p.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
+        
+        if (isLast)
+            p.style.paddingRight = "";
+        else {
+            var cur = parseInt(apf.getStyle(p, "paddingRight"));
+            p.style.paddingRight = (cur + diff - 21) + "px";
+        }
+        
+        function end(){
+            setTimeout(function(){
+                p.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                p.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                p.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+                t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                t.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                
+                t.style.display = "none";
+                
+                callback(tab);
+            }, 150);
+        }
+        
+        if (!isLast && isContracted) {
+            t.style.minWidth = "20px"
+            t.style.maxWidth = "0px";
+            t.style.padding = 0;
+            
+            end();
+        }
+        else {
+            setTimeout(function(){
+                t.style.minWidth = "20px"
+                t.style.maxWidth = "0px";
+                t.style.padding = 0;
+                
+                end();
+            }, isOnly ? 150 : 100);
+        }
+    }
+    
+    this.$scaleinit = function(node, type, callback, force){
+        var _self = this;
+        
+        var pg = this.getPages();
+        var l  = pg.length;
+        this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
+        this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        
+        if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight
+          || this.anims.indexOf(type) == -1) {
+            scalersz.call(this);
+              
+            if (type == "add")
+                node.dispatchEvent("afteropen");
+            else if (type == "remove") {
+                if (node.dispatchEvent("afterclose") !== false)
+                    callback();
+            }
+            
+            return;
+        }
+        
+        if (!apf.window.vManager.check(this, "tabscale", visCheck))
+            return;
+        
+        if (!type)
+            return scalersz.call(this);
+        
+        function btnMoHandler(e){
+            var pos = apf.getAbsolutePosition(this);
+            if (e.clientX <= pos[0] || e.clientY <= pos[1] 
+              || e.clientX >= pos[0] + this.offsetWidth 
+              || e.clientY >= pos[1] + this.offsetHeight) {
+                apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                    delete _self.$waitForMouseOut;
+                    _self.$scaleinit(null, "sync");
+//                }
+//                else if (_self.$waitForMouseOut)
+//                    _self.$waitForMouseOut = 2;
+            }
+        }
+        
+        if (type == "add") {
+            animAddTab(node, function(){
+                node.dispatchEvent("afteropen");
+            });
+        }
+        else if (type == "sync") {
+            scalersz.call(this);
+        }
+        else if (type == "remove") {
+            var onfinish = function(){
+                if (node.dispatchEvent("afterclose") === false)
+                    return;
+                    
+                callback();
+
+                if (!isLast && isContracted) {
+                    var pages = _self.getPages();
+                    for (var i = 0, l = pages.length; i < l; i++) {
+                        var page = pages[i];
+                        page.$button.style.minWidth = "";
+                        page.$button.style.maxWidth = "";
+                    }
+                }
+                
+                if (_self.$waitForMouseOut == 2) {
+                    apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                    delete _self.$waitForMouseOut;
+                }
+                else if (isLast)
+                    delete _self.$waitForMouseOut;
+            };
+            
+            var pages = this.getPages();
+            
+            var lNode = pages[pages.length - 1];
+            while (lNode && lNode.$button.style.top) {
+                lNode = lNode.previousSibling;
+            }
+            if (!lNode) return;
+            
+            var isLast = lNode == node;
+            var isContracted = (node.$button.offsetWidth - apf.getWidthDiff(node.$button) 
+                != parseInt(apf.getStyle(node.$button, "maxWidth")));
+            
+            if (!isLast && isContracted) {
+                for (var i = 0, l = pages.length; i < l; i++) {
+                    var page = pages[i];
+                    page.$button.style.minWidth = 
+                    page.$button.style.maxWidth = (page.$button.offsetWidth 
+                        - (apf.isGecko ? 0 : apf.getWidthDiff(page.$button))) 
+                        + "px";
+                }
+            }
+            
+            var isCur = this.$activepage == node;
+                
+            //Set activetab if the current one is lost
+            if (_self.nextTabInLine) {
+                _self.set(_self.nextTabInLine);
+                delete _self.nextTabInLine;
+            }
+            else if (_self.$activepage == node) {
+                var ln = node.nextSibling;
+                while (ln && (!ln.$first || !ln.visible))
+                    ln = ln.nextSibling;
+                var rn = node.previousSibling;
+                while (rn && (!rn.$last || !rn.visible))
+                    rn = rn.previousSibling;
+                if (ln || rn)
+                    _self.set(ln || rn);
+            }
+            
+            if (isCur) {
+                apf.setStyleClass(node.$button, "curbtn");
+                node.$button.style.zIndex = 0;
+            }
+            
+            if (pages.length == 1)
+                (node.relPage || node).$ext.style.display = "none";
+            
+            animRemoveTab(node, isLast, isContracted, onfinish, pages.length == 1);
+            
+            this.$waitForMouseOut = true;
+            if (!isLast)
+                apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
+        }
+    }
+    
+    /*
+     * Update the size of the tab container
+     */
+    function scalersz(e, excl){
+        if (!this.length && !this.getPages().length || this.$waitForMouseOut)
+            return;
+        
+        var p = apf.isGecko ? this.$buttons.parentNode : this.$buttons;
+        
+        p.style[apf.CSSPREFIX + "TransitionProperty"] = "padding-right";
+        p.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
+        p.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
+        
+        if (apf.isGecko) {
+            p.style.paddingRight = apf.getWidthDiff(this.$buttons) + "px";
+        }
+        else {
+            p.style.paddingRight = "";
+        }
+        
+        setTimeout(function(){
+            p.style[apf.CSSPREFIX + "TransitionProperty"] = "";
+            p.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+            p.style[apf.CSSPREFIX + "TimingFunction"] = "";
+        }, 250);
+    }
+    //#endif
+
+    // *** Public methods *** //
+
+    //#ifdef __ENABLE_PAGE_TRANSITIONS
+    this.transition = function(pageIn, animIn, pageOut, animOut){
+        var _self = this;
+        
+        if (!this.$transInfo) {
+            this.$int.style.overflow = apf.getStyle(this.$int, 'overflow') || "hidden";
+            
+            this.$transInfo = {
+                start : function(){
+                    var h = _self.$ext;
+                    this.size = [h.style.width, h.style.height];
+                    var d = apf.getDiff(h);
+                    h.style.width  = (h.offsetWidth - d[0]) + "px";
+                    h.style.height = (h.offsetHeight - d[1]) + "px";
+                    
+                    //@todo start anims
+                    if (this["in"]) {
+                        var h = this["in"].oHtml.$ext;
+                        var d = apf.getDiff(h);
+                        h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
+                        h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
+                        h.style.display = "block";
+                        apf.tween.multi(h, this["in"]);
+                    }
+                    if (this["out"]) {
+                        var h = this["out"].oHtml.$ext;
+                        var d = apf.getDiff(h);
+                        h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
+                        h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
+                        h.style.display = "block";
+                        apf.tween.multi(h, this["out"]);
+                    }
+                },
+                
+                stop : function(){
+                    if (this["in"] && this["in"].control.stop) 
+                        this["in"].control.stop();
+                    if (this["out"] && this["out"].control.stop) 
+                        this["out"].control.stop();
+                },
+                
+                finish : function(){
+                    //@todo buffer calls with timeout
+                    var h = _self.$ext;
+                    h.style.width  = this.size[0]; //@todo possibly anim to new size
+                    h.style.height = this.size[1];
+
+                    if (this["in"]) {
+                        var h = this["in"].oHtml.$ext;
+                        h.style.width  = this["in"].size[0];
+                        h.style.height = this["in"].size[1];
+                        h.style.display = "";
+                        h.style.position = "";
+                        h.style.zIndex   = "";
+                        h.style.left     = "";
+                        h.style.top      = "";
+                        apf.setOpacity(h, 1);
+                        delete this["in"];
+                    }
+                    if (this["out"]) {
+                        var h = this["out"].oHtml.$ext;
+                        h.style.width  = this["out"].size[0];
+                        h.style.height = this["out"].size[1];
+                        h.style.display = "";
+                        h.style.position = "";
+                        h.style.zIndex   = "";
+                        h.style.left     = "";
+                        h.style.top      = "";
+                        apf.setOpacity(h, 1);
+                        delete this["out"];
+                    }
+                    
+                    _self.oPages.style.width = "";
+                    _self.oPages.style.height = "";
+                }
+            };
+        }
+        
+        //stop
+        this.$transInfo.stop();
+        
+        var d = apf.getDiff(this.oPages);
+        this.oPages.style.width = (this.oPages.offsetWidth - d[0]) + "px";
+        this.oPages.style.height = (this.oPages.offsetHeight - d[1]) + "px";
+        
+        var preventNext = this.$createAnim(pageIn, animIn, false, pageOut);
+        if (preventNext !== false && pageOut)
+            this.$createAnim(pageOut, animOut, true, pageIn);
+
+        $setTimeout(function(){
+            _self.$transInfo.start();
+        });
+    }
+    
+    this.$cube = {
+        "left"   : [-1, "offsetWidth", "left", "getHtmlInnerWidth"],
+        "right"  : [1, "offsetWidth", "left", "getHtmlInnerWidth"],
+        "top"    : [-1, "offsetHeight", "top", "getHtmlInnerHeight"],
+        "bottom" : [1, "offsetHeight", "top", "getHtmlInnerHeight"]
+    }
+    
+    this.$createAnim = function(page, animType, out, pageOut){
+        var _self = this;
+        
+        //create new anim
+        var anim = {
+            steps    : apf.isIE ? 15 : 25,
+            control  : {},
+            anim     : out ? apf.tween.EASEOUT : apf.tween.EASEOUT,
+            interval : 10,
+            tweens   : [],
+            oHtml    : page,
+            size     : [page.$ext.style.width, page.$ext.style.height],
+            onfinish : function(){
+                _self.$transInfo.finish(out);
+            }
+        };
+        this.$transInfo[out ? "out" : "in"] = anim;
+        
+        var from, to, h = page.$ext;
+        h.style.zIndex   = out ? 10 : 20;
+        h.style.position = "absolute";
+        h.style.left     = 0;
+        h.style.top      = 0;
+        h.style.display  = "block";
+
+        animType = animType.split("-");
+        switch (animType[0]) {
+            case "fade":
+                anim.anim = apf.tween.NORMAL;
+                if (out) h.style.zIndex = 30;
+                anim.tweens.push(
+                    out 
+                        ? {type: "fade", from: 1, to: 0}
+                        : {type: "fade", from: 0, to: 1}
+                );
+                break;
+            case "slide":
+                var info = this.$cube[animType[1]]
+                from     = 0;
+                to       = info[0] * h[info[1]];
+                if (!out)
+                    h.style[info[2]] = from + "px";
+                
+                anim.tweens.push({type: info[2], from: out ? from : to, to: out ? to : from});
+                //else etc
+                break;
+            case "push":
+                var info = this.$cube[animType[1]]
+                var h2   = pageOut.$ext;
+                
+                if (out) {
+                    if (this.$transInfo["in"])
+                        this.$transInfo["in"].tweens = []; //prevent in animation
+                }
+                else
+                    this.$createAnim(pageOut, "normal", true);
+
+                var hInt = apf[info[3]](this.$int);
+
+                var from1 = info[0] * hInt;//h[info[1]];
+                var to1   = 0;
+                
+                var from2 = 0;
+                var to2   = -1 * info[0] * hInt;//h2[info[1]];
+                
+                if (out)
+                    h2.style[info[2]] = to2 + "px";
+                else
+                    h.style[info[2]] = from1 + "px";
+
+                anim.tweens.push({oHtml: h,  type: [info[2]], from: out ? to1 : from1, to: out ? from1 : to1});
+                anim.tweens.push({oHtml: h2, type: [info[2]], from: out ? to2 : from2, to: out ? from2 : to2});
+                
+                return false;
+            case "normal":
+                break;
+            default:
+                throw new Error("Unknown animation type:" + animType[0]); //@todo make into proper apf3.0 error
+        }
+    };
+    //#endif
+
+    /**
+     * Retrieves an array of all the page elements of this element.
+     * @returns {Array} An array of all the {apf.page} elements
+     */
+    this.getPages = function(){
+        var r = [], nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if ("page|case".indexOf(nodes[i].localName) > -1 && nodes[i].visible !== false)
+                r.push(nodes[i]);
+        }
+        return r;
+    };
+
+    /**
+     * Retrieves a page element by its name or child number.
+     * @param {String | Number} nameOrId The name or child number of the page element to retrieve.
+     * @return {apf.page} The found page element.
+     */
+    this.getPage = function(nameOrId){
+        if (apf.isNot(nameOrId))
+            return this.$activepage;
+        else
+            return this.$findPage(nameOrId);
+    };
+
+    /**
+     * Adds a new page element
+     * @param {String} [caption] The text displayed on the button of the page
+     * @param {String} [name]    The name of the page which is can be referenced by
+     * @param {String} [type]    The type of the page
+     * @param {apf.page} [insertBefore]   The page to insert ahead of; `null` means to put it at the end
+     * @param {Function} [callback]   A callback to call and pass the new page to
+     * @return {apf.page} The created page element.
+     */
+    this.add = function(caption, name, type, before, callback){
+        var page = this.ownerDocument.createElementNS(apf.ns.aml, "page");
+        if (name)
+            page.setAttribute("id", name);
+        if (type)
+            page.setAttribute("type", type);
+        if (caption)
+            page.setAttribute("caption", caption);
+        
+        if (callback)
+            callback(page);
+            
+        this.insertBefore(page, before);
+        
+        // #ifdef __ENABLE_TABSCROLL
+        //this.scrollIntoView(page);
+        // #endif
+        return page;
+    };
+
+    /**
+     * Removes a page element from this element. This function destroys ALL children
+     * of this page. To simple remove the page from the DOM tree, use the
+     * [[apf.AmlNode.removeNode]] method.
+     *
+     * @param {Mixed} nameOrId The name or child number of the page element to remove
+     * @return {apf.page} The removed page element
+     */
+    this.remove = function(nameOrId, force, noAnimation){
+        var page = typeof nameOrId == "object" 
+            ? nameOrId 
+            : this.$findPage(nameOrId);
+        if (!page)
+            return false;
+
+        var e = {page: page};
+        if (typeof force == "object") {
+            e.htmlEvent = force;
+            force = false;
+        }
+
+        if (!force && this.dispatchEvent("close", e) === false)
+            return;
+
+        //#ifdef __ENABLE_TAB_SCALE
+        if (this.$scale && !noAnimation) {
+            this.$scaleinit(page, "remove", function(){
+                //page.removeNode();
+                page.destroy(true, true);
+            }, true);
+        }
+        else 
+        // #endif
+        {
+            //page.removeNode();
+            if (page.dispatchEvent("afterclose") !== false)
+            	page.destroy(true, true);
+            
+            // #ifdef __ENABLE_TABSCROLL
+            //@todo this is wrong, we can also use removeChild
+            //this.setScrollerState();
+            // #endif
+        }
+        
+        return page;
+    };
+
+    // #ifdef __ENABLE_TABSCROLL
+    /*
+    var SCROLLANIM = {
+            scrollOn  : false,
+            steps     : 15,
+            interval  : 10,
+            size      : 0,
+            left      : 0,
+            control   : {
+                stop  : false
+            },
+            stopHandle: function() {
+                bAnimating = false;
+            }
+        },
+        SCROLL_OFF     = 0x0001,
+        SCROLL_HOVER   = 0x0002,
+        SCROLL_DOWN    = 0x0004,
+        SCROLL_DIS     = 0x0008,
+        SCROLL_L_STATE = SCROLL_OFF,
+        SCROLL_R_STATE = SCROLL_OFF,
+        SCROLL_LEFT    = 0x0001,
+        SCROLL_RIGHT   = 0x0002,
+        SCROLL_BOTH    = 0x0004,
+        bAnimating     = false,
+        scrollTimer    = null,
+        keepScrolling  = false,
+        globalDir      = SCROLL_LEFT;
+*/
+    function getButtonsWidth() {
+        var cId = "cache_" + this.$buttons.childNodes.length;
+        if (SCROLLANIM[cId])
+            return SCROLLANIM[cId];
+
+        var iWidth = 0;
+        for (var i = 0, l = this.$buttons.childNodes.length; i < l; i++) {
+            if (typeof this.$buttons.childNodes[i].offsetWidth != "undefined")
+                iWidth += this.$buttons.childNodes[i].offsetWidth;
+        }
+
+        return SCROLLANIM[cId] = iWidth;
+    }
+
+    function setButtonState(dir, state) {
+        var bBoth = dir & SCROLL_BOTH;
+        if (bBoth)
+            dir = SCROLL_LEFT;
+        var oBtn = this[dir & SCROLL_LEFT ? "oLeftScroll" : "oRightScroll"];
+        if (!(state & SCROLL_DIS)) {
+            if (dir & SCROLL_LEFT)
+                SCROLL_L_STATE = state;
+            else
+                SCROLL_R_STATE = state;
+        }
+        
+        if (state & SCROLL_OFF)
+            apf.setStyleClass(oBtn,  "", ["disabled", "hover", "down"]);
+        else if (state & SCROLL_HOVER)
+            apf.setStyleClass(oBtn,  "hover", ["disabled", "down"]);
+        else if (state & SCROLL_DOWN)
+            apf.setStyleClass(oBtn,  "down", ["disabled", "hover"]);
+        else if (state & SCROLL_DIS)
+            apf.setStyleClass(oBtn,  "disabled", ["hover", "down"]);
+
+        if (bBoth)
+            setButtonState(SCROLL_RIGHT, state);
+    }
+
+    /**
+     * Sets the state scroller buttons: `enabled`, `disabled` or completely `hidden`,
+     * depending on the state of the tab buttons
+     *
+     * @param {Boolean} [bOn]   Indicates whether to turn the scroll buttons on or off
+     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be [[apf.BaseTab.SCROLL_LEFT]], [[apf.BaseTab.SCROLL_RIGHT]] or [[apf.BaseTab.SCROLL_BOTH]]
+     * 
+     */
+    this.setScrollerState = function(bOn, iBtns) {
+        if (!this.ready || !this.$hasButtons || !this.oScroller) return;
+
+        if (typeof bOn == "undefined") {
+            var scrollerWidth = this.oScroller.offsetWidth
+                || parseInt(apf.getStyle(this.oScroller, "width").replace(/(px|em|%)/, ""));
+            bOn   = ((getButtonsWidth.call(this) + scrollerWidth) > this.$ext.offsetWidth);
+            iBtns = SCROLL_BOTH;
+        }
+
+        if (iBtns & SCROLL_BOTH && bOn !== SCROLLANIM.scrollOn) {
+            // in case of HIDING the scroller: check if the anim stuff has reverted
+            SCROLLANIM.scrollOn = bOn;
+            if (!bOn) {
+                this.$buttons.style.left = SCROLLANIM.left + "px";
+                this.oScroller.style.display = "none";
+            }
+            //else
+            //    TODO: scroll active tab into view if it becomes hidden beneath scroller node(s)
+        }
+        else {
+            this.oScroller.style.display = "";
+        }
+
+        this.oScroller.style.display = (iBtns & SCROLL_BOTH && !bOn)
+            ? "none"
+            : "";
+        if (typeof iBtns == "undefined")
+            iBtns = SCROLL_BOTH;
+        if (!bOn) {
+            if ((iBtns & SCROLL_LEFT) || (iBtns & SCROLL_BOTH))
+                setButtonState.call(this, SCROLL_LEFT, SCROLL_DIS);
+            if ((iBtns & SCROLL_RIGHT) || (iBtns & SCROLL_BOTH))
+                setButtonState.call(this, SCROLL_RIGHT, SCROLL_DIS);
+        }
+    };
+
+    /**
+     * Corrects the state of the scroller buttons when the state of external
+     * components change, like on a resize event of a window.
+     *
+     */
+    this.correctScrollState = function() {
+        if (!this.ready || !this.$hasButtons || !this.oScroller) return;
+        this.setScrollerState();
+    };
+
+    /**
+     * Retrieves the utmost left or right boundaries of the tab buttons strip that
+     * can be scrolled to. The tabs cannot scroll any further than these boundaries
+     *
+     * @param {Number} dir        Determines which boundary side to look at, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
+     * @param {Boolean} [useCache] Used only when tabs are draggable. Not implemented.
+     * @returns  {Number}
+     */
+    function getAnimationBoundary(dir, useCache) {
+        if (SCROLLANIM.size <= 0) {
+            SCROLLANIM.left = this.$buttons.offsetLeft;
+            SCROLLANIM.size = Math.round(this.firstChild.$button.offsetWidth);
+        }
+        if (dir & SCROLL_LEFT) {
+            return SCROLLANIM.left;
+        }
+        else if (dir & SCROLL_RIGHT) {
+            // TODO: support Drag n Drop of tabs...
+            //if (typeof useCache == "undefined") useCache = false;
+            //if (!tabcontrol.drag) tabcontrol.drag = {};
+            //if (useCache && tabcontrol.drag.boundCache)
+            //    return tabcontrol.drag.boundCache;
+            var oNode = this.$buttons.childNodes[this.$buttons.childNodes.length - 1];
+
+            return this.$ext.offsetWidth - (oNode.offsetLeft + oNode.offsetWidth
+                + (this.oScroller.offsetWidth + 4));// used to be tabcontrol.drag.boundCache;
+        }
+    }
+
+    /**
+     * @event scroll Executed when the user presses one of the two scroll buttons
+     * (left or right). 
+     * 
+     * If the tab-buttons strip can be scrolled, the
+     * respective behavior is called.
+     *
+     * @param {Event}  e   An event object, usually a mousedown event from a scroller-button
+     * @param {Number} dir The direction of the scroll, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
+     *
+     */
+    this.scroll = function(e, dir) {
+        if (!this.ready || !this.$hasButtons || !this.oScroller) return;
+        if (!e)
+            e = window.event;
+        if (typeof e["type"] == "unknown") //scope expired (prolly GC'ed)
+            e = {type: "click"};
+        if (bAnimating && e.type != "dblclick") return;
+        var bAnimating = true;
+
+        if (typeof dir == "undefined")
+            dir = SCROLL_LEFT;
+
+        //apf.tween.clearQueue(this.$buttons, true);
+        var iCurrentLeft = this.$buttons.offsetLeft,
+            size         = e["delta"] ? Math.round(e.delta * 36) : SCROLLANIM.size,
+            //get maximum left offset for either direction
+            iBoundary = getAnimationBoundary.call(this, dir),
+            _self     = this;
+        if (dir & SCROLL_LEFT) {
+            setButtonState(SCROLL_LEFT,  SCROLL_DOWN);
+            setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+            if (iCurrentLeft === iBoundary) {
+                this.setScrollerState(false, SCROLL_LEFT);
+                return apf.tween.single(this.$buttons, {
+                    steps   : SCROLLANIM.steps,
+                    interval: 20,
+                    from    : iCurrentLeft,
+                    to      : iCurrentLeft + 12,
+                    type    : "left",
+                    anim    : apf.tween.EASEOUT,
+                    onstop  : SCROLLANIM.stopHandle,
+                    onfinish: function(oNode) {
+                        apf.tween.single(oNode, {
+                            steps   : SCROLLANIM.steps,
+                            interval: SCROLLANIM.interval,
+                            from    : iCurrentLeft + 12,
+                            to      : iCurrentLeft,
+                            type    : "left",
+                            anim    : apf.tween.EASEIN,
+                            onstop  : SCROLLANIM.stopHandle,
+                            onfinish: function() {
+                                bAnimating = false;
+                                if (e.name == "mousescroll")
+                                    setButtonState(SCROLL_LEFT, SCROLL_OFF);
+                            }
+                        });
+                    }
+                });
+            }
+            //one scroll animation scrolls by a SCROLLANIM.size px.
+            var iTargetLeft = iCurrentLeft + (e.type == "dblclick" ? size * 3 : size);
+            if (iTargetLeft > iBoundary)
+                iTargetLeft = iBoundary;
+
+            if (iTargetLeft === iBoundary)
+                this.setScrollerState(false, SCROLL_LEFT);
+            this.setScrollerState(true, SCROLL_RIGHT);
+
+            //start animated scroll to the left
+            apf.tween.single(this.$buttons, {
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
+                control : SCROLLANIM.control,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : apf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
+                onfinish: function() {
+                    bAnimating = false;
+                    if (e.name == "mousescroll")
+                        setButtonState(SCROLL_LEFT, SCROLL_OFF);
+                    if (keepScrolling)
+                        _self.scroll(e, globalDir);
+                }
+            });
+        }
+        else if (dir & SCROLL_RIGHT) {
+            this.setScrollerState(true);
+            setButtonState(SCROLL_RIGHT, SCROLL_DOWN);
+            setButtonState(SCROLL_LEFT,  SCROLL_OFF);
+            if (iCurrentLeft === iBoundary) {
+                this.setScrollerState(false, SCROLL_RIGHT);
+                return apf.tween.single(this.$buttons, {
+                    steps   : SCROLLANIM.steps,
+                    interval: 20,
+                    from    : iCurrentLeft,
+                    to      : iCurrentLeft - 24,
+                    type    : "left",
+                    anim    : apf.tween.EASEOUT,
+                    onstop  : SCROLLANIM.stopHandle,
+                    onfinish: function(oNode, options) {
+                        apf.tween.single(oNode, {
+                            steps   : SCROLLANIM.steps,
+                            interval: SCROLLANIM.interval,
+                            from    : iCurrentLeft - 24,
+                            to      : iCurrentLeft,
+                            type    : "left",
+                            anim    : apf.tween.EASEIN,
+                            onstop  : SCROLLANIM.stopHandle,
+                            onfinish: function() {
+                                bAnimating = false;
+                                if (e.name == "mousescroll")
+                                    setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                            }
+                        });
+                    }
+                });
+            }
+            //one scroll animation scrolls by a SCROLLANIM.size px.
+            var iTargetLeft = iCurrentLeft - (e.type == "dblclick" ? size * 3 : size);
+            //make sure we don't scroll more to the right than the
+            //maximum left:
+            if (iTargetLeft < iBoundary)
+                iTargetLeft = iBoundary;
+            //start animated scroll to the right
+            apf.tween.single(this.$buttons, {
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
+                control : SCROLLANIM.control,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : apf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
+                onfinish: function() {
+                    bAnimating = false;
+                    if (e.name == "mousescroll")
+                        setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                    if (keepScrolling)
+                        _self.scroll(e, globalDir);
+                }
+            });
+        }
+    };
+
+    /**
+     * If a tab page is outside of the user's view, this function scrolls that
+     * tabpage into view smoothly.
+     *
+     * @param {apf.page} oPage The page to scroll into view
+     * 
+     */
+    this.scrollIntoView = function(oPage) {
+        bAnimating = false;
+        if (!this.ready || !this.$hasButtons || !this.oScroller || !oPage.$drawn)
+            return;
+        bAnimating = true;
+        if (this.$buttons.offsetWidth < this.$ext.offsetWidth)
+            return this.setScrollerState(false);
+
+        var iTabLeft     = oPage.$button.offsetLeft,
+            iTabWidth    = oPage.$button.offsetWidth,
+            iCurrentLeft = this.$buttons.offsetLeft;
+
+        if (SCROLLANIM.size <= 0) {
+            SCROLLANIM.left = this.$buttons.offsetLeft;
+            var p = this.firstChild;
+            while (!p.$button)
+                p = p.nextSibling;
+            SCROLLANIM.size = Math.round(p.$button.offsetWidth);
+        }
+        this.$buttons.style.left = iCurrentLeft;
+
+        var iRealWidth  = this.$ext.offsetWidth,
+            iScrollCorr = this.oScroller.offsetWidth + 4,
+            iTargetLeft = null,
+            dir;
+
+        if ((iTabLeft + iTabWidth) > ((iRealWidth - iScrollCorr) - iCurrentLeft)) { //scroll to the right
+            iTargetLeft = (-(iTabLeft - SCROLLANIM.left)
+                + (iRealWidth - iTabWidth - iScrollCorr));
+            dir         = SCROLL_RIGHT;
+        }
+        else if ((iCurrentLeft + iTabLeft) < SCROLLANIM.left) { //sroll to the left
+            iTargetLeft = SCROLLANIM.left - iTabLeft;
+            dir         = SCROLL_LEFT;
+        }
+
+        if (iTargetLeft !== null) {
+            this.setScrollerState(true);
+            setButtonState(SCROLL_RIGHT, dir & SCROLL_RIGHT ? SCROLL_DOWN : SCROLL_OFF);
+            setButtonState(SCROLL_LEFT,  dir & SCROLL_LEFT  ? SCROLL_DOWN : SCROLL_OFF);
+            apf.tween.clearQueue(this.$buttons, true);
+
+            apf.tween.single(this.$buttons, {
+                steps   : SCROLLANIM.steps,
+                interval: SCROLLANIM.interval,
+                from    : iCurrentLeft,
+                to      : iTargetLeft,
+                type    : "left",
+                anim    : apf.tween.NORMAL,
+                onstop  : SCROLLANIM.stopHandle,
+                onfinish: function() {
+                    bAnimating = false;
+                    setButtonState(SCROLL_RIGHT, SCROLL_OFF);
+                    setButtonState(SCROLL_LEFT,  SCROLL_OFF);
+                }
+            });
+        }
+        else
+            bAnimating = false;
+    };
+
+    // #endif
+
+    // *** DOM Hooks *** //
+
+    this.addEventListener("DOMNodeRemoved", function(e){
+        var amlNode = e.currentTarget;
+        if (e.$doOnlyAdmin || e.relatedNode != this 
+          || amlNode.localName != "page")
+            return;
+        
+        if ((this.activepage || this.activepage == 0) && this.activepage != -1) {
+            if (!this.getPage(this.nextTabInLine))
+                this.nextTabInLine = null;
+            
+            if (this.nextTabInLine)
+                this.set(this.nextTabInLine);
+            
+            if (!this.nextTabInLine && this.$activepage == amlNode) {
+                var ln = amlNode.nextSibling;
+                while (ln && (!ln.$first || !ln.visible))
+                    ln = ln.nextSibling;
+                var rn = amlNode.previousSibling;
+                while (rn && (!rn.$last || !rn.visible))
+                    rn = rn.previousSibling;
+        
+                if (this.firstChild == amlNode && ln)
+                    ln && ln.$first();
+                if (this.lastChild == amlNode && rn)
+                    rn && rn.$last();
+                
+                if (ln || rn)
+                    this.set(ln || rn);
+                else {
+                    amlNode.$deactivate();
+                    
+                    // #ifdef __ENABLE_TABSCROLL
+                    //this.setScrollerState();
+                    // #endif
+                    this.$activepage  =
+                    this.activepage   =
+                    this.activepagenr = null;
+                    this.setProperty("activepage", null);
+                }
+            }
+            else {
+                // #ifdef __ENABLE_TABSCROLL
+                //if (this.$scroll) 
+                    //this.setScrollerState();
+                // #endif
+                //#ifdef __ENABLE_TAB_SCALE
+                if (this.$scale) 
+                    this.$scaleinit();
+                //#endif
+            }
+            
+            delete this.nextTabInLine;
+        }
+
+        //#ifdef __WITH_PROPERTY_BINDING
+        this.setProperty("length", this.getPages().length - 1);
+        //#endif
+    });
+
+    this.addEventListener("DOMNodeInserted",function(e){
+        var amlNode = e.currentTarget;
+
+        if (amlNode.localName != "page" || e.relatedNode != this || amlNode.nodeType != 1)
+            return;
+
+        var pages = this.getPages();
+
+        if (!e.$beforeNode) {
+            var lastChild, pg = pages;
+            if (lastChild = pg[pg.length - 2])
+                lastChild.$last(true);
+            amlNode.$last();
+        }
+    
+        var p2, p = pages[0]; //@todo $beforeNode doesnt have to be a page
+        if (amlNode == p) {
+            if (p2 = this.getPage(1))
+                p2.$first(true);
+            amlNode.$first();
+        }
+
+        if (this.$activepage) {
+            var info = {};
+            this.$findPage(this.$activepage, info);
+
+            if (this.activepagenr != info.position) {
+                if (parseInt(this.activepage) == this.activepage) {
+                    this.activepage = info.position;
+                    this.setProperty("activepage", info.position);
+                }
+                this.activepagenr = info.position;
+                this.setProperty("activepagenr", info.position);
+            }
+        }
+        else if (!this.activepage && !this.$activepage 
+          && !amlNode.render || amlNode.$rendered) {
+            this.set(amlNode);
+        }
+        
+        //#ifdef __ENABLE_TAB_SCALE
+        if (this.$scale && amlNode.visible && !e.$isMoveWithinParent) 
+            this.$scaleinit(amlNode, "add");
+        else 
+        //#endif
+        {
+            amlNode.dispatchEvent("afteropen");
+        }
+        
+        //#ifdef __WITH_PROPERTY_BINDING
+        this.setProperty("length", this.getPages().length);
+        //#endif
+    });
+
+    // *** Private state handling functions *** //
+
+    this.$findPage = function(nameOrId, info){
+        var node, nodes = this.childNodes;
+        
+        if (nameOrId.localName) {
+            for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                if ("page|case".indexOf(node.localName) > -1 && (++t) && node == nameOrId) {
+                    if (info)
+                        info.position = t - 1;
+                    return node;
+                }
+            }
+        }
+        else {
+            for (var t = 0, i = 0, l = nodes.length; i < l; i++) {
+                node = nodes[i];
+                if ("page|case".indexOf(node.localName) > -1 && (t++ == nameOrId
+                  || node.name == nameOrId)) {
+                    if (info)
+                        info.position = t - 1;
+                    return node;
+                }
+            }
+        }
+        
+        return null;
+    };
+
+    this.$enable = function(){
+        var nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].enable)
+                nodes[i].enable();
+        }
+    };
+
+    this.$disable = function(){
+        var nodes = this.childNodes;
+        for (var i = 0, l = nodes.length; i < l; i++) {
+            if (nodes[i].disable)
+                nodes[i].disable();
+        }
+    };
+
+    // *** Keyboard support *** //
+
+    // #ifdef __WITH_KEYBOARD
+
+    this.addEventListener("keydown", function(e){
+        if (!this.$hasButtons)
+            return;
+
+        var page,
+            key = e.keyCode;
+
+        switch (key) {
+            case 9:
+                break;
+            case 13:
+                break;
+            case 32:
+                break;
+            case 37: //LEFT
+                page = this.getPage().previousSibling;
+                while(page && (page.nodeType != 1
+                  || "page|case".indexOf(page.localName) == -1 || !page.visible)) {
+                    page = page.previousSibling;
+                }
+
+                if (page)
+                    this.setProperty("activepage", page);
+                break;
+            case 39: //RIGHT
+                page = this.getPage().nextSibling;
+                while(page && (page.nodeType != 1 
+                  || "page|case".indexOf(page.localName) == -1 || !page.visible)) {
+                    page = page.nextSibling;
+                }
+
+                if (page)
+                    this.setProperty("activepage", page);
+                break;
+            default:
+                return;
+        }
+        //return false;
+    }, true);
+
+    // #endif
+
+    // *** Init *** //
+
+    this.$loadChildren = function(callback){
+        var page  = false,
+            _self = this,
+            i, j, l, node, nodes;
+
+        this.inited = true;
+
+        if (this.$hasButtons) {
+            this.$buttons = this.$getLayoutNode("main", "buttons", this.$ext);
+            this.$buttons.setAttribute("id", this.$uniqueId + "_buttons");
+            
+            if (apf.isGecko && !this.$gotContainer) {
+                var div = this.$ext.appendChild(document.createElement("div"));
+                div.style.backgroundImage = apf.getStyle(this.$buttons, "backgroundImage");
+                div.style.backgroundColor = apf.getStyle(this.$buttons, "backgroundColor");
+                div.style.position = "absolute";
+                div.style.left = 0;
+                div.style.top = 0;
+                div.style.right = 0;
+                div.style.overflow = "hidden";
+                div.style.height = this.$buttons.offsetHeight + "px";
+                div.appendChild(this.$buttons);
+                this.$buttons.style.width = "100%";
+                div.style.paddingRight = apf.getWidthDiff(this.$buttons) + "px";
+                
+                this.$gotContainer = true;
+            }
+        }
+
+        this.oPages = this.$getLayoutNode("main", "pages", this.$ext);
+        
+        // #ifdef __ENABLE_TABSCROLL
+        // add scroller node(s)
+        /*this.oScroller = this.$getLayoutNode("main", "scroller", this.oPages);
+        if (this.oScroller) {
+            function startTimer(e, dir) {
+                clearTimeout(scrollTimer);
+                globalDir   = dir;
+                scrollTimer = $setTimeout(function() {
+                    keepScrolling = true;
+                    _self.scroll(e, dir);
+                }, 500);
+            }
+            function stopTimer() {
+                clearTimeout(scrollTimer);
+                keepScrolling = false;
+            }
+
+            this.oScroller.onmouseout = function(e) {
+                SCROLLANIM.control.stop = true;
+                setButtonState(SCROLL_BOTH, SCROLL_OFF);
+            };
+
+            // #ifdef __WITH_MOUSESCROLL
+            /*apf.addEventListener("mousescroll", function(e) {
+                var found = (e.target == _self.$buttons);
+                while (!found && e.target != document.body) {
+                    e.target = e.target.offsetParent;
+                    found = (e.target == _self.$buttons);
+                }
+                if (!found) return;
+                var dir = e.delta > 0 ? SCROLL_LEFT : SCROLL_RIGHT;
+                e.delta = Math.abs(e.delta);
+                _self.scroll(e, dir);
+            });* /
+            //#endif
+
+            this.oLeftScroll  = apf.getNode(this.oScroller, [0]);
+            this.oRightScroll = apf.getNode(this.oScroller, [1]);
+            
+            ["oLeftScroll", "oRightScroll"].forEach(function(sBtn) {
+                var dir    = sBtn == "oLeftScroll" ? SCROLL_LEFT  : SCROLL_RIGHT,
+                    revDir = sBtn == "oLeftScroll" ? SCROLL_RIGHT : SCROLL_LEFT;
+
+                _self[sBtn].ondbclick   =
+                _self[sBtn].onmousedown = function(e) {
+                    SCROLLANIM.control.stop = false;
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    e = e || event;
+                    _self.scroll(e, dir);
+                    startTimer(e, dir);
+                    if (!apf.isSafariOld)
+                        this.onmouseout();
+                };
+                _self[sBtn].onmouseover = function() {
+                    SCROLLANIM.control.stop = false;
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    setButtonState(dir, SCROLL_HOVER);
+                    setButtonState(revDir, SCROLL_OFF);
+                    globalDir = dir;
+                };
+                _self[sBtn].onmouseout = function() {
+                    var state = dir & SCROLL_LEFT ? SCROLL_L_STATE : SCROLL_R_STATE;
+                    if (this.className.indexOf("disabled") != -1
+                      || state & SCROLL_DOWN) return;
+                    setButtonState(dir, SCROLL_OFF);
+                };
+                _self[sBtn].onmouseup = function() {
+                    if (this.className.indexOf("disabled") == -1) {
+                        setButtonState(dir, SCROLL_OFF);
+                    }
+                    stopTimer();
+                    SCROLLANIM.control.stop = true;
+                };
+            });
+        }
+
+        //#ifdef __WITH_LAYOUT
+        apf.layout.setRules(this.$ext, this.$uniqueId + "_tabscroller",
+            "var o = apf.all[" + this.$uniqueId + "]; o && o.correctScrollState()");
+        apf.layout.queue(this.$ext);*/
+        //#endif
+        // #endif
+
+        //Skin changing support
+        if (this.$int) {
+            //apf.AmlParser.replaceNode(this.oPages, oPages);
+            this.$int = this.oPages;
+            page      = true;
+
+            //@todo apf3.0 skin change?
+            nodes = this.childNodes;
+            for (i = 0; i < nodes.length; i++) {
+                node = nodes[i];
+                if(node.nodeType != 1)
+                    continue;
+                node.$draw(true);
+                if(node.$skinchange)
+                    node.$skinchange();
+                node.$loadAml();
+            }
+        }
+        else {
+            this.$int = this.oPages;
+
+            //Build children
+            nodes = this.getPages();
+            if (nodes.length) {
+                nodes[0].$first();
+                (node = nodes[nodes.length - 1]).$last();
+            }
+        }
+
+        //Set active page
+        if (node) {
+            this.activepage = (typeof this.activepage != "undefined"
+                ? this.activepage
+                : this.activepagenr) || 0;
+            page = this.getPage(this.activepage);
+            if (!page.render || page.$rendered)
+                this.$propHandlers.activepage.call(this, this.activepage);
+        }
+        else {
+            this.isPages = false;
+        }
+
+        //#ifdef __WITH_PROPERTY_BINDING
+        this.setProperty("length", this.getPages().length);
+        //#endif
+
+        this.ready = true;
+        // #ifdef __ENABLE_TABSCROLL
+        /*window.setTimeout(function() {
+            _self.setScrollerState();
+        }, 0);*/
+        // #endif
+
+        if (!this.activepage && this.getAttribute("src")) {
+            this.src = this.getAttribute("src");
+            this.$propHandlers["activepage"].call(this);
+        }
+    };
+    
+    this.$destroy = function(bSkinChange) {
+        if (bSkinChange || !this.oScroller)
+            return;
+        // #ifdef __ENABLE_TABSCROLL
+        //#ifdef __WITH_LAYOUT
+        /*apf.layout.removeRule(this.$ext, this.$uniqueId + "_tabscroller");
+        //#endif
+        [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
+            oBtn.onmousedown = oBtn.ondblclick = oBtn.onmouseover = 
+            oBtn.onmouseout  = oBtn.onmouseup  = null;
+        });*/
+        // #endif
+    };
+}).call(apf.BaseTab.prototype = new apf.Presentation());
+
+// #endif

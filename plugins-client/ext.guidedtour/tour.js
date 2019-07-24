@@ -1,6 +1,6 @@
 this.tour = {
-    initialText: "Welcome to the guided tour! We'll introduce you to some of the ways Cloud9 IDE makes it easy for you to program faster and smarter.\n\nDuring the tour, you can click the play button to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.\n\nDuring the tour, the IDE is mostly disabled to provide a smoother experience.",
-    finalText: "Well, that's everything! Still have questions? Head on over to <a href=\"https://github.com/exsilium/cloud9/wiki\" target=\"_blank\">our documentation site</a>.",
+    initialText: "Welcome to the guided tour! We'll introduce you to some of the ways Pylon IDE makes it easy for you to program faster and smarter.\n\nDuring the tour, you can click the play button to be taken on the tour automatically. Or, you can click the forward and backward buttons to navigate on your own.\n\nDuring the tour, the IDE is mostly disabled to provide a smoother experience.",
+    finalText: "Well, that's everything! Still have questions? Head on over to <a href=\"https://github.com/pylonide/pylon/wiki\" target=\"_blank\">our documentation site</a>.",
     steps: [
     {
         before: function() {
@@ -35,7 +35,7 @@ this.tour = {
         },
         el: undefined,
         div: "navbar.childNodes[navbar.childNodes.length - 2]",
-        desc: "This is the preferences hub for all Cloud9 IDE features.",
+        desc: "This is the preferences hub for all Pylon IDE features.",
         pos: "right",
         time: 4
     }, {

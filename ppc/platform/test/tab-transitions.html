@@ -1,0 +1,39 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:pages id="pg" width="400" height="300" resizable="true"> 
+            <a:page style="background:green" trans-in="fade" trans-out="slide-left"> 
+                Page 1
+            </a:page>
+            <a:page style="background:red" trans-in="slide-left"> 
+                Page 2
+            </a:page>
+            <a:page style="background:blue" trans-in="push-right"> 
+                Page 3
+            </a:page>
+            <a:page style="background:purple" trans-in="push-bottom" trans-out="push-bottom"> 
+                Page 4
+            </a:page>
+            <a:page style="background:orange" trans-out="fade"> 
+                Page 5
+            </a:page>
+            <a:page style="background:white"> 
+                Page 6
+            </a:page>
+        </a:pages> 
+        
+        <a:button onclick="pg.set(0)" width="80">1</a:button>
+        <a:button onclick="pg.set(1)" width="80">2</a:button>
+        <a:button onclick="pg.set(2)" width="80">3</a:button>
+        <a:button onclick="pg.set(3)" width="80">4</a:button>
+        <a:button onclick="pg.set(4)" width="80">5</a:button>
+        <a:button onclick="pg.set(5)" width="80">6</a:button>
+    </body>
+</html>

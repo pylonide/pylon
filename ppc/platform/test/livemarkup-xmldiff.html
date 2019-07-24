@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <style>
+            .test .contents div{
+                display:inline-block;border:1px solid red;padding:10px;margin:3px;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:model id="mdlTest" />
+        
+        <a:model id="mdlBlah">
+            <data>
+                <person name="Ruben" />
+                <person name="Hans" />
+                <person name="Bas" />
+            </data>
+        </a:model>
+        
+        <!--?lm
+            this.$useXmlDiff = true;
+            <a:bar height="300" class="test">{
+                each([mdlBlah::person]) {
+                    <div
+                        >blah<span>|</span></div>
+                }
+            }</a:bar>
+        ?-->
+        
+        <?lm
+            this.$useXmlDiff = true;
+            <a:bar height="300">{
+                each([mdlBlah::person]) {
+                    <div style="display:inline-block;border:1px solid red;padding:10px;margin:3px;">
+                        <div>test</div>
+                        <div>test</div>
+                        <div><a:textbox /></div>
+                        <div>test</div>
+                    {
+                        if ([@name] == "Ruben")
+                            //"Blah - "<a href="#">1 person</a>" Likes this - "<a href="#">Unlike</a><a href="#">Remove</a>" - "
+                            "Blah - "<a href="#">Like</a>" - "<a href="#">Remove</a>
+                        else
+                            "Blah - "<a href="#">1 person</a>" Likes this - "<a href="#">Unlike</a>" - "<a href="#">Remove</a>
+                    }</div>
+                }
+            }</a:bar>
+        ?>
+        
+        <a:button onclick="var val = mdlBlah.queryValue('person[1]/@name');mdlBlah.setQueryValue('person[1]/@name', val == 'Ruben' ? 'Test' : 'Ruben')" width="80">Test</a:button>
+        <a:button onclick="var val = mdlBlah.appendXml('&lt;person name=&quot;blah&quot; /&gt;')" width="80">Add</a:button>
+    </body>
+</html>

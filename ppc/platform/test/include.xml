@@ -1,0 +1,6 @@
+<a:application xmlns:a="http://ajax.org/2005/aml">
+    <a:include src="include2.xml" />
+    <div>
+        <a:include src="include2.xml" />
+    </div>
+</a:application>

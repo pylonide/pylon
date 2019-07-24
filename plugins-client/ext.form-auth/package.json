@@ -1,0 +1,11 @@
+{
+    "name": "pylon.client.form-auth",
+    "version": "0.0.1",
+    "main": "form-auth.js",
+    "private": true,
+
+    "plugin": {
+        "provides": ["client.form-auth"],
+        "consumes": ["client-plugins"]
+    }
+}

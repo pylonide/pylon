@@ -1,0 +1,275 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Debugger</title>
+        <script>var loader2 = true</script>        
+        <script src="../apf.js"></script>
+        <script src="editor/o3.js"></script>
+        
+        <style type="text/css" media="screen">
+            html{
+                overflow: hidden;
+            }
+        </style>        
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="editor/debugger_icons/" />
+
+        <a:appsettings debug="0" />
+
+        <a:debugger id="dbg"
+          state-running     = "stRunning"
+          state-attached    = "stAttached"
+          model-sources     = "mdlDbgSources"
+       	  model-stack       = "mdDbgStack"
+       	  model-breakpoints = "mdlDbgBreakpoints" 
+       	  onbreak           = ""
+       	  onchangeframe     = "if (event.data) lstScripts.setProperty('selected', mdlDbgSources.queryNode('file[@id=' + event.data.getAttribute('scriptid') +']'));"
+       	  oncontinue        = "" />
+        
+        <!--
+            Be sure to set .xmlRoot to the data of mdlTabs
+        -->
+        <a:debughost id="dbgChrome"
+          port     = "9222" 
+          server   = "localhost" 
+          type     = "chrome"
+          autoinit = "false"
+          model-tabs      = "mdlTabs"
+          state-connected = "stConnected" />
+
+        <a:debughost id="dbgNode"
+          port     = "{txtV8Port.value}" 
+          server   = "{txtV8Host.value}" 
+          type     = "v8"
+          autoinit = "false"
+          model-tabs      = "mdlTabs"
+          state-connected = "stConnected" />
+
+         <!-- tab       = "{ide.getProjectUrl()}" 
+          active    = "auto"-->
+         
+        <a:debughost id="dbgPhp"
+          port     = "9222" 
+          server   = "test.ajax.org" 
+          type     = "php"
+          autoinit = "false" />
+
+		<a:toolbar align="top" height="26">
+			<a:bar>
+	        	<a:button
+	        	  icon="standalone_v8_16.png"
+	        	  onclick="winV8.show();"
+	        	  disabled="{stConnected.active}" />
+	        	<a:button
+	        	  icon="chromium_16.png"
+	        	  onclick="winTab.show(); dbgChrome.loadTabs()"
+	        	  disabled="{stConnected.active}" />
+	        	<a:divider />
+                <a:button
+                  icon="{this.disabled ? 'resume_co_disabled.gif' : 'resume_co.gif'}"
+                  onclick="dbg.continueScript();"
+                  disabled="{stRunning.active or !stConnected.active}" />
+	        	<a:button
+	              icon="{this.disabled ? 'suspend_co_disabled.gif' : 'suspend_co.gif'}"
+                  onclick="dbg.suspend();"
+	              disabled="{!stRunning.active or !stConnected.active}"/>
+	        	<!-- a:button
+	        	  icon="{this.disabled ? 'terminate_co_disabled.gif' : 'terminate_co.gif'}"
+	        	  onclick="dbg.detach();"
+	        	  disabled="{!stAttached.active}" /-->
+	        	<a:button
+	        	  icon="{this.disabled ? 'disconnect_co_disabled.gif' : 'disconnect_co.gif'}"
+	        	  onclick="dbgChrome.disconnect();dbgNode.disconnect();"
+	        	  disabled="{!stConnected.active}" />
+				<a:divider />
+	        	<a:button
+	        	  icon="{this.disabled ? 'stepinto_co_disabled.gif' : 'stepinto_co.gif'}" 
+	        	  onclick="dbg.stepInto();" 
+	        	  disabled="{stRunning.active}" />
+	        	<a:button
+	        	  icon="{this.disabled ? 'stepover_co_disabled.gif' : 'stepover_co.gif'}"
+	        	  onclick="dbg.stepNext();"
+	        	  disabled="{stRunning.active}" />
+	        	<a:button
+	        	  icon="{this.disabled ? 'stepreturn_co_disabled.gif' : 'stepreturn_co.gif'}" 
+	        	  onclick="dbg.stepOut();"
+	        	  disabled="{stRunning.active}" />
+	        </a:bar>
+        </a:toolbar>
+        
+        <a:window id="winV8" 
+          title="Connect to V8"
+          icon="standalone_v8_16.png"
+          zindex="10" 
+          center="true" 
+          modal="true" 
+          width="200" 
+          height="120" 
+          buttons="close"
+          visible="false">
+			<a:table columns="90,90" padding="5" edge="5">
+				<a:label>Hostname</a:label>
+				<a:textbox id="txtV8Host" value="localhost" />
+				<a:label>Port</a:label>
+				<a:textbox id="txtV8Port" value="5858" />
+			</a:table>
+        	<a:button
+        	  right="5" 
+        	  bottom="5" 
+        	  width="80" 
+        	  default="true"
+        	  onclick="winV8.close();dbg.attach(dbgNode)">
+        	    Connect
+       		</a:button>
+        </a:window>        
+        
+        
+        <a:window id="winTab" 
+          title="Choose a Tab"
+          icon="chromium_16.png"
+          zindex="10" 
+          center="true" 
+          modal="true" 
+          width="450" 
+          height="200" 
+          buttons="close"
+          visible="false">
+        	<a:list id="lstTabs" 
+        	  model="mdlTabs" 
+        	  anchors="10 10 40 10" 
+        	  multiselect="false" 
+        	  autoselect="false" 
+        	  each="[tab]" 
+        	  caption="[@url]" 
+        	  empty-message="Loading tabs..."
+        	  onafterchoose = "btnTabsOk.dispatchEvent('click');"/>
+        	<a:button id="btnTabsOk"
+        	  right="10"
+        	  bottom="10"
+        	  width="60"
+        	  disabled="{!lstTabs.selected}" 
+        	  default="true"
+        	  onclick="winTab.close();dbg.attach(dbgChrome, {lstTabs.selected})">
+        	    OK
+       		</a:button>
+        </a:window>        
+        
+        <a:window
+          title="Sources" 
+          skin="dockwin" 
+          align="left-splitter" 
+          dock="true"
+          width="400" 
+          visible="true" 
+          zindex="9">
+	        <a:list id="lstScripts"
+	          model="mdlDbgSources"
+	          anchors="0 0 0 0"
+	          each="[file]"
+	          caption="[@text]"
+	          icon="file_obj.gif">
+	        	<a:actions />
+	        </a:list>
+        </a:window>
+        
+        <a:window 
+          title="Stack"
+          skin="dockwin" 
+          align="left-splitter" 
+          dock="true"
+          visible="true" 
+          zindex="9">
+	        <a:datagrid
+	          id         = "dgStack"
+	          anchors    = "0 0 0 0" 
+	          options    = "size|move"
+	          caching    = "false"
+	          prerender  = "false"
+	          model      = "mdDbgStack"
+	          selected   = "{dbg.activeframe}">
+        	    <a:actions />        	    
+	            <a:column caption="Function" value="[@name]" width="60%" icon="stckframe_obj.gif" />
+	            <a:column caption="Script" value="[@script]" width="40%" />
+	            <a:column caption="Ln" value="[@line]" width="25"/>
+	            <a:column caption="Col" value="[@column]" width="25"/>
+	            <a:each match="[frame]" />
+	        </a:datagrid>    
+        </a:window>
+
+        <a:window 
+          title="Watch"
+          skin="dockwin" 
+          align="left-splitter" 
+          dock="true"
+          visible="true" 
+          zindex="9">
+	        <a:datagrid id="dgWatch"
+	          anchors    = "0 0 0 0" 
+	          options    = "size|move"
+	          prerender  = "false"
+	          model      = "[{dgStack.selected}::vars]"
+	          loading-message = "Calculating...">
+	          	<a:load get="{adbg.loadFrame(dbg, {dgStack.selected})}"/>
+                <a:insert match="[item[@children]]" get="{adbg.loadObjects(dbg, %[.])}" />
+	            <a:column caption="Property" value="[@name]" width="120" icon="genericvariable_obj.gif" tree="true" />
+	            <a:column caption="Value" value="[@value]" width="100%" />
+	            <a:column caption="Type" value="[@type]" width="80"/>
+	            <a:each match="[item]" sort="[@name]" />
+	        </a:datagrid>		
+        </a:window>
+
+<!--         <a:window skin="dockwin" dock="true" align="left-splitter" visible="true" title="Breakpoints" zindex="9">
+			<a:list
+			  id="lstBreakpoints"
+			  anchors="0 0 0 0"
+			  model="$apf_dbg_mdlBreakpoints"
+			  each="[breakpoint]"
+			  caption="[@text]"
+			  icon="brkp_obj.gif"
+			  onafterchoose = "winBreakpointEdit.show();">
+			    <a:actions />
+			</a:list>
+        </a:window> -->
+        
+        <!-- 
+        <a:window
+          id="winBreakpointEdit"
+          title="Breakpoint"
+          center="true"
+          buttons="close"
+          width="410"
+          >
+          	<a:table columns="150,230" edge="5">
+	          	<a:label>Resource:</a:label>
+	          	<a:label value="[{lstBreakpoints.selected}::@script]" />
+	          	
+	          	<a:label>Line Number:</a:label>
+	          	<a:label value="[{lstBreakpoints.selected}::@line]" />
+	          	
+	          	<a:checkbox span="2" checked="[{lstBreakpoints.selected}::@enabled]">Enabled</a:checkbox>
+	          	
+	          	<a:label for="inpIgnoreCount">Ignore Count:</a:label>
+	          	<a:spinner width="230" id="inpIgnoreCount" value="[{lstBreakpoints.selected}::@ignorecount]" min="0" max="10000"/>
+	          	
+	          	<a:label span="*" for="txtCondition">Condition</a:label>
+	          	<a:textarea span="*" height="*" id="txtCondition" value="[{lstBreakpoints.selected}::@condition]" />
+          	</a:table>
+        </a:window> 
+        -->
+        
+        <a:codeeditor id="ce" 
+          align       = "right"
+          model       = "{lstScripts.selected}"
+          debugger    = "{dbg}"
+          syntax      = "js" 
+          readonly    = "true"        
+          showinvisibles    = "false"
+          showprintmargin   = "true"
+          printmargincolumn = "80">
+            <a:load get="{adbg.loadScript(dbg, {lstScripts.selected})}"/>
+            <a:value value="[text()]" />
+        </a:codeeditor>
+        
+    </body>
+</html>

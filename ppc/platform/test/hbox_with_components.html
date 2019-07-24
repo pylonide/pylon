@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>HBOX with Components</title>
+        
+        <script src="../apf.js"></script>
+        
+        <style>
+            .redborder{
+                border : 1px solid red;
+            }
+            
+            .boxtest{
+                border : 1px solid green;
+                font-family : Arial;
+                padding : 10px;
+            }
+        </style>
+    </head>
+    <body style="margin:0;">
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+        <!--h3>Separate components</h3>
+        <a:dropdown value="1" width="100">
+            <a:item value="1">Peoples</a:item>
+            <a:item value="2">Worknets</a:item>
+            <a:item value="3">Organizations</a:item>
+        </a:dropdown>
+        
+        <a:textbox initial-message="David van Ballegooijen"></a:textbox>
+        <h3>Components in HBOX</h3>
+        <a:hbox edge="0" padding="0">
+            <a:dropdown value="1" width="100">
+                <a:item value="1">Peoples</a:item>
+                <a:item value="2">Worknets</a:item>
+                <a:item value="3">Organizations</a:item>
+            </a:dropdown>
+            <a:textbox initial-message="David van Ballegooijen"></a:textbox>
+        </a:hbox>
+        
+        <h3>Filler</h3>
+        <a:hbox width="500">
+            <a:filler />
+            <a:button>dsdsd</a:button>
+        </a:hbox>
+        
+        <a:hbox edge="15 0 0 0" padding="0">
+            <a:filler />
+            <a:button width="108">Sign in</a:button>
+        </a:hbox-->
+        
+        <h3>INPUT elements</h3>
+        <a:vbox padding="10" edge="10">
+            <a:vbox class="redborder">
+                <a:textbox value="davidvb@gmail.com"></a:textbox>
+                <a:textbox height="30"></a:textbox>
+            </a:vbox>
+            
+            <a:vbox class="redborder">
+                <a:bar skin="basic" class="boxtest" value="davidvb@gmail.com"></a:bar>
+                <a:bar skin="basic" class="boxtest" height="30">test</a:bar>
+            </a:vbox>
+            
+            <a:vbox class="redborder" align="start">
+                <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
+                <a:textbox width="387" height="30"></a:textbox>
+            </a:vbox>
+            
+            <a:vbox class="redborder" align="start">
+                <a:bar skin="basic" class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
+                <a:bar skin="basic" class="boxtest" width="387" height="30">test</a:bar>
+            </a:vbox>
+            
+            <a:hbox class="redborder">
+                <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
+                <a:textbox flex="1"></a:textbox>
+                <a:textbox width="387" height="30"></a:textbox>
+            </a:hbox>
+            
+            <a:hbox class="redborder">
+                <a:bar skin="basic" class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
+                <a:bar skin="basic" class="boxtest" flex="1"></a:bar>
+                <a:bar skin="basic" class="boxtest" width="387" height="30" style="overflow:hidden">
+                    test<br />
+                    test<br />
+                    test<br />
+                    test<br />
+                    test<br />
+                </a:bar>
+            </a:hbox>
+            
+            <a:hbox id="test" class="redborder" align="stretch" height="30">
+                <a:textbox width="266" value="davidvb@gmail.com"></a:textbox>
+                <a:textbox flex="1"></a:textbox>
+                <a:textbox width="387"></a:textbox>
+            </a:hbox>
+            
+            <a:hbox class="redborder" align="stretch" height="30">
+                <a:bar skin="basic" class="boxtest" width="266" value="davidvb@gmail.com"></a:bar>
+                <a:bar skin="basic" class="boxtest" flex="1"></a:bar>
+                <a:bar skin="basic" class="boxtest" width="387"></a:bar>
+            </a:hbox>
+        </a:vbox>
+    </body>
+</html>

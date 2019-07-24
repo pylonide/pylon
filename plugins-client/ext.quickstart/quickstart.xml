@@ -18,7 +18,7 @@
         
          <div class="qsSupportText container">
             <p>If you ever run into trouble, be sure to check out our issue tracker page on 
-            <a href="https://github.com/exsilium/cloud9/issues" class="supportLink" target="_blank">GitHub</a>.</p>
+            <a href="https://github.com/pylonide/pylon/issues" class="supportLink" target="_blank">GitHub</a>.</p>
         </div>
         
         <a:hbox class="qsCBContainer" edge="2 0 0 0" padding="2">

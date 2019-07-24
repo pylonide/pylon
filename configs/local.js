@@ -4,7 +4,7 @@ var plugins = require("./default");
 /*
 plugins.forEach(function(plugin) {
     if (plugin.packagePath) {
-        if (/\/cloud9.core$/.test(plugin.packagePath)) {
+        if (/\/pylon.core$/.test(plugin.packagePath)) {
 
         }
     }

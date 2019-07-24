@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script>var loader2 = true</script>        
+        <script src="../../apf.js"></script>
+        
+        <style type="text/css" media="screen">
+            html, body {
+                overflow: hidden;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../../skins.xml" media-path="../../images/" icon-path="icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:toolbar align="top" height="26">
+            <a:bar>
+                <a:button icon="text_indent.png" onclick="ce.$editor.blockIndent()"></a:button>
+                <a:button icon="text_indent_remove.png" onclick="ce.$editor.blockOutdent()"></a:button>
+                <a:button icon="find.png" onclick="showSearch()"></a:button>
+                
+                <a:checkbox id="selectStyle" label="Full line selection" values="line|text" checked="true"/>
+                <a:checkbox id="highlightActive" label="Highlight active line" checked="true"/>
+                <a:checkbox id="showInvisibles" label="Show invisibles" checked="true"/>
+                <a:checkbox id="overwrite" label="Overwrite mode" checked="false" />
+                <a:checkbox id="readOnly" label="Read only" checked="false" />
+                <a:checkbox id="showPrintMargin" label="Show print margin" checked="true" />
+                <a:spinner id="printMarginColumn" label="Show print margin" realtime="true" value="80" min="1" max="200" />
+            </a:bar>
+        </a:toolbar>
+        
+        <a:tree id="tree"
+          model   = "mdlDocs" 
+          each    = "[doc|folder]" 
+          caption = "[@caption]" 
+          icon    = "[@icon]" 
+          align   = "left-splitter" 
+          width   = "200" 
+          startcollapsed = "false"
+        />
+        
+        <a:codeeditor id="ce" 
+          align       = "right"
+          model       = "{tree.selected}" 
+          value       = "[text()]" 
+          syntax      = "[@syntax]" 
+          selectstyle = "{selectStyle.value}" 
+          activeline  = "{highlightActive.value}"
+          tabsize     = "{[@tabsize] || 4}"
+          softtabs    = "[@softtabs]"
+          overwrite   = "{overwrite.value}"        
+          readonly    = "{readOnly.value}"        
+          showinvisibles    = "{showInvisibles.value}"
+          showprintmargin   = "{showPrintMargin.value}"
+          printmargincolumn = "{printMarginColumn.value}" 
+          breakpoint-each   = "{tree.selected/breakpoints}::breakpoint" 
+          
+          />        
+
+        <a:toolbar align="right" height="26">
+            <a:bar>
+                <a:dropdown value="[{tree.selected}::@syntax]">
+                    <a:item value="js">Javascript</a:item>
+                    <a:item value="css">CSS</a:item>
+                    <a:item value="html">HTML</a:item>
+                </a:dropdown>            
+                <a:dropdown value="[{tree.selected}::@tabsize]">
+                    <a:item value="2">2</a:item>
+                    <a:item value="3">3</a:item>
+                    <a:item value="4">4</a:item>
+                    <a:item value="8">8</a:item>
+                </a:dropdown>
+                <a:checkbox label="Soft tabs" checked="[{tree.selected}::@softtabs]"/>
+                <a:divider />
+                <a:label width="80">Line {ce.line}</a:label>
+                <a:divider />
+                <a:label width="80">Col {ce.col}</a:label>
+                <a:divider />
+                <a:label width="80">Ch {ce.char}</a:label>
+                <a:divider />
+                <a:label width="80">{ce.overwrite ? "INS" : ""}</a:label>
+            </a:bar>
+        </a:toolbar>
+        
+        <a:model id="mdlDocs">
+            <docs>
+                <folder caption="Homepage" icon="folder.png">
+                    <doc 
+                        caption="juhu.js" 
+                        icon="page_white_code.png" 
+                        syntax="js"
+                        tabsize="2"
+                        softtabs="true"
+                       ><![CDATA[function foo(items) {
+  for (var i=0; i<items.length; i++) {
+    alert(items[i] + "juhu";
+  }
+}]]>
+                    <breakpoints>
+                    	<breakpoint row="0" />
+                    	<breakpoint row="2" />
+                    </breakpoints></doc>
+                    <doc 
+                        caption="styles.css" 
+                        icon="css.png"                        
+                        syntax="css"
+                        tabsize="4"
+                        softtabs="true"                        
+                        ><![CDATA[.text-layer {
+    font-family: Monaco, "Courier New", monospace;
+    font-size: 12px;
+    cursor: text;
+}]]>
+                    </doc>
+                    <doc 
+                        caption="index.html" 
+                        icon="html.png" 
+                        syntax="html"
+                        tabsize="4"
+                        softtabs="false"
+                       ><![CDATA[<html>
+<head>
+
+<style type="text/css">
+.text-layer {
+	font-family: Monaco, "Courier New", monospace;
+	font-size: 12px;
+	cursor: text;
+}
+</style>
+
+</head>
+<body>
+	<h1 style="color:red">Juhu Kinners</h1>
+</body>
+</html>]]>
+                    </doc>
+                </folder>
+            </docs>
+        </a:model>
+        
+        <a:window 
+		  id        = "wFind" 
+		  buttons   = "close" 
+		  title     = "Find/Replace"
+		  icon      = "find.png"
+		  width     = "260"
+		  height    = "340"
+		  center    = "true"
+		  visible   = "false">
+		    <a:vbox anchors="0 0 0 0">
+				<a:table columns="100,130" edge="5" padding="4">
+		    		<a:label width="100">Find:</a:label>
+		    		<a:textbox id="txtFind"></a:textbox>
+		    		<a:label width="100">Replace with:</a:label>
+		    		<a:textbox id="txtReplace"></a:textbox>
+	    		
+    	    		<a:hbox width="100%" colspan="2" edge="0" margin="5 0 0 0">
+    		    		<a:frame caption="Direction" width="116">
+    		    		    <a:radiobutton group="searchDirection">Forward</a:radiobutton> 
+    					    <a:radiobutton group="searchDirection">Backward</a:radiobutton>
+    		    		</a:frame>
+    		    		<a:frame caption="Scope" width="116">
+    					    <a:radiobutton group="searchScope">All</a:radiobutton>
+    					    <a:radiobutton group="searchScope">Selected lines</a:radiobutton>
+    		    		</a:frame>	    		
+    	    		</a:hbox>
+	    		
+    	    		<a:frame caption="Options" colspan="2" margin="5 0 0 0">
+    	    			<a:table columns="50%, 50%">
+    						<a:checkbox id="cbCaseSensitive" label="Case sensitive" />
+    						<a:checkbox id="cbWrapSearch" checked="true" label="Wrap search" />
+    						<a:checkbox id="cbWholeWord" label="Whole word" />
+    						<a:checkbox id="cbRegExpSearch" checked="true" label="Regular Expression" />
+    				    </a:table>
+    	    		</a:frame>
+    	    	</a:table>
+	    		
+	    		<a:table columns="115, 115">
+	    			<a:button default="sDefault" onclick="find();">Find</a:button>
+	    			<a:button onclick="replace(); find();">Replace/Find</a:button>
+	    			<a:button onclick="replace();">Replace</a:button>
+	    			<a:button onclick="replaceAll();">Replace All</a:button>
+	    		</a:table>
+	    		<a:hbox pack="right" edge="2">
+    			    <a:button onclick="wFind.close()" width="100">Close</a:button>
+    			</a:hbox>    
+		    </a:vbox>
+		</a:window>
+		
+		<script type="text/javascript" charset="utf-8">
+
+function showSearch() {
+	var ed = this.ce.$editor;
+	if (ed.getSelection().isEmpty()) {
+		var needle = "";
+	} else {
+		var needle = ed.getDocument().getTextRange(ed.getSelectionRange())
+	}
+	txtFind.setAttribute("value", needle);
+    wFind.show();
+}
+
+function initSearch() {
+	ce.$editor.$search.set({
+		needle: txtFind.value,
+	    caseSensitive: !!cbCaseSensitive.value,
+	    wrap: !!cbWrapSearch.value,
+	    wholeWord: !!cbWholeWord.value,
+	    regExp: !!cbRegExpSearch.value
+	});
+}
+
+function find() {
+	initSearch();
+    ce.$editor.find(txtFind.value);
+}
+
+function replace() {
+    ce.$editor.replace(txtReplace.value);
+}
+
+function replaceAll() {
+    initSearch();
+    ce.$editor.replaceAll(txtReplace.value); 	   
+}
+		</script>
+    </body>
+</html>

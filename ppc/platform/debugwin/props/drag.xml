@@ -1,0 +1,52 @@
+<props><drag><group caption="General"><prop caption="drag" editor="checkbox" value="[@drag]" description="whether the element allows dragging of it's items." values="true|false"/><prop caption="dragcopy" editor="checkbox" value="[@dragcopy]" description="whether dragged items are copied." values="true|false"/><prop caption="drop" editor="checkbox" value="[@drop]" description="whether the element allows items to be dropped." values="true|false"/><prop caption="dragdrop" editor="textbox" value="[@dragdrop]" description="the name of the dragdrop element for this element.
+&lt;code&gt;
+&lt;a:tree align=&quot;left&quot; width=&quot;200&quot; height=&quot;300&quot;&gt;
+&lt;a:each match=&quot;[root|account|folder|mail]&quot;&gt;
+&lt;a:caption match  = &quot;[@name]&quot; /&gt;
+&lt;a:drag    match  = &quot;[folder|mail]&quot; /&gt;
+&lt;a:drop    match  = &quot;[folder]&quot;
+target = &quot;[folder|account]&quot;
+action = &quot;tree-append&quot; /&gt;
+&lt;a:drop   match  = &quot;[mail]&quot;
+target = &quot;[folder]&quot;
+action = &quot;tree-append&quot; /&gt;
+&lt;/a:each&gt;
+&lt;a:model&gt;
+&lt;data&gt;
+&lt;root name=&quot;Root&quot;&gt;
+&lt;account name=&quot;Account 1&quot;&gt;
+&lt;folder name=&quot;Folder 1&quot;&gt;
+&lt;mail name=&quot;Mail drag drop&quot;&gt;&lt;/mail&gt;
+&lt;/folder&gt;
+&lt;/account&gt;
+&lt;/root&gt;
+&lt;/data&gt;
+&lt;/a:model&gt;
+&lt;/a:tree&gt;
+
+&lt;a:list bindings=&quot;bndDragdrop&quot; align=&quot;right&quot;&gt;
+&lt;a:model&gt;
+&lt;data&gt;
+&lt;mail name=&quot;Mail 1&quot;&gt;&lt;/mail&gt;
+&lt;mail name=&quot;Mail 2&quot;&gt;&lt;/mail&gt;
+&lt;mail name=&quot;Mail 3&quot;&gt;&lt;/mail&gt;
+&lt;/data&gt;
+&lt;/a:model&gt;
+&lt;/a:list&gt;
+
+&lt;a:bindings id=&quot;bndDragdrop&quot;&gt;
+&lt;a:caption match=&quot;[@name]&quot; /&gt;
+&lt;a:each match=&quot;[mail]&quot; /&gt;
+&lt;a:drag match = &quot;[mail]&quot; /&gt;
+&lt;a:drop
+match = &quot;[mail]&quot;
+action = &quot;list-append&quot; /&gt;
+&lt;/a:bindings&gt;
+&lt;/code&gt;"/><prop caption="match" editor="textbox" value="[@match]" description="an xpath statement querying the
+{@link term.datanode data node} that is
+dragged. If the query matches a node it
+is allowed to be dropped. The xpath is
+automatically prefixed by 'self::'."/><prop caption="copy" editor="textbox" value="[@copy]" description="a javascript expression that determines
+whether the dragged element is a copy or
+a move. Use event.ctrlKey to use the Ctrl
+key to determine whether the element is copied."/></group><events caption="Events"><prop caption="dragdata" editor="textbox" value="[@dragdata]" type="event" description="Fires before a drag&amp;drop operation is started to determine the data that is dragged."/><prop caption="dragstart" editor="textbox" value="[@dragstart]" type="event" description="Fires before a drag operation is started."/><prop caption="dragover" editor="textbox" value="[@dragover]" type="event" description="Fires when the users drags over this aml element."/><prop caption="dragout" editor="textbox" value="[@dragout]" type="event" description="Fires when the user moves away from this aml element."/><prop caption="dragdrop" editor="textbox" value="[@dragdrop]" type="event" description="Fires when the user drops an item on this aml element."/><prop caption="DOMNodeInserted" editor="textbox" value="[@domnodeinserted]" type="event"/><prop caption="DOMNodeInsertedIntoDocument" editor="textbox" value="[@domnodeinsertedintodocument]" type="event"/><prop caption="DOMNodeRemoved" editor="textbox" value="[@domnoderemoved]" type="event"/><prop caption="DOMNodeRemovedFromDocument" editor="textbox" value="[@domnoderemovedfromdocument]" type="event"/><prop caption="propertychange" editor="textbox" value="[@propertychange]" type="event" description="Fires when a property changes."/></events></drag></props>

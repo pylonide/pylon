@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" 
+    xmlns:a="http://ajax.org/2005/aml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>Getting Started</title>
+        
+        <script src="js/trunk/apf.js"></script>
+    </head>
+    <body style="margin:30px;">
+        <a:skin src="skins/_index.xml" media-path="images/" icon-path="icons/" />
+        <a:menu id="mnuTest">
+           <a:item match="[person]" method="send">Send an E-mail</a:item>
+           <a:item match="[phone]" method="call">Call Number</a:item>
+           <a:divider />
+           <a:item match="[phone]" method="remove">Remove</a:item>
+           <a:divider />
+           <a:item match="[person|phone]" method="viewpictures">View Pictures</a:item>
+        </a:menu>
+        
+        <a:menu id="mnuXY">
+           <a:item>Reboot</a:item>
+        </a:menu>
+        
+        <a:text contextmenu="mnuXY" width="200" height="200">
+           Please right-click on this plane
+        </a:text>
+        
+        <a:list id="lstTest" allow-deselect="true" width="200" height="200">
+            <a:each match="[person|phone|computer]">
+                <a:caption match="[@caption]" />
+                <a:icon match="[person]" value="user.png" />
+                <a:icon match="[phone]" value="phone.png" />
+                <a:icon match="[computer]" value="computer.png" />
+            </a:each>
+            <a:model>
+                <data>
+                    <person caption="Ruben Daniels" />
+                    <person caption="Rik Arends" />
+                    <phone caption="+31 555 544486" />
+                    <phone caption="+1 555 2392" />
+                    <computer caption="Mail Server" />
+                    <computer caption="File Server" />
+                </data>
+            </a:model>
+
+        
+           <a:contextmenu menu="mnuXY" match="[computer]" />
+           <a:contextmenu menu="mnuTest" />
+        </a:list>
+        
+    </body>
+</html>

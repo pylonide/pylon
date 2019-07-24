@@ -1,0 +1,65 @@
+<!doctype html>
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>GeoLocation testing</title>
+        <script type="text/javascript" src="../apf.js"></script>
+        <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script>
+        <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <div id="status">Click the button...</div>
+        <a:map id="mapTest" width="320" height="350" type="roadmap" maptypecontrol="style:dropdown" />
+        
+        <a:button id="btnTest" onclick="testGeo()">Get Location!</a:button>
+        <a:script><![CDATA[
+            var map, testing, last_position = null;
+
+            function testGeo() {
+                if (testing) {
+                    clearInterval(testing);
+                    document.getElementById("status").innerHTML = "On hold.";
+                    btnTest.setCaption("Get Location!");
+                    return;
+                }
+                if (!apf.hasGeoLocation()) {
+                    document.getElementById("status").innerHTML = "Functionality not available";
+                    return;
+                }
+
+                btnTest.setCaption("Stop");
+
+                retrieve();
+            }
+
+            function retrieve() {
+                clearInterval(testing);
+                document.getElementById("status").innerHTML = "Retrieving location...";
+                apf.geolocation.getCurrentPosition(show_position, function(){
+                    document.getElementById("status").innerHTML = "Couldn't get location";
+                });
+                testing = setInterval(retrieve, 10000);
+            }
+
+            function show_position(p) {
+                if (last_position && last_position.coords.latitude == p.coords.latitude
+                  && last_position.coords.longitude == p.coords.longitude) {
+                    document.getElementById("status").innerHTML = "User has not moved, checking again in 10s";
+                    return;
+                }
+
+                last_position = p;
+                document.getElementById("status").innerHTML = "latitude=" + p.coords.latitude.toFixed(2)
+                    + " longitude=" + p.coords.longitude.toFixed(2);
+
+                mapTest.setAttribute("latitude", p.coords.latitude);
+                mapTest.setAttribute("longitude", p.coords.longitude);
+
+                mapTest.addMarker("You are here", "<strong>yes</strong>");
+            }
+        ]]></a:script>
+    </body>
+</html>

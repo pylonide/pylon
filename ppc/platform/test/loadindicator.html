@@ -1,0 +1,17 @@
+<!doctype html>
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>spinner</title>
+        <script type="text/javascript" src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="loadindicator.xml" media-path="skins/platform/trunk/images/"
+          image-path="skins/platform/trunk/images/" icon-path="../icons/" />
+
+        <a:appsettings debug="false" debug-teleport="true" name="pngspinner" />
+
+        <a:loadindicator id="spinner" framewidth="40" frameheight="40" src="images/loading.png" spinnerspeed="66" framelength="12" top="50%" left="40%"/>
+        <a:button onclick="spinner.start()" width="150">Start spinner!</a:button>
+        <a:button onclick="spinner.stop()" width="150">Start spinner!</a:button>
+    </body>
+</html>

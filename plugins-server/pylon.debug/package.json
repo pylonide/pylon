@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.debug",
+    "name": "pylon.debug",
     "version": "0.0.1",
     "main": "debug.js",
     "private": true,

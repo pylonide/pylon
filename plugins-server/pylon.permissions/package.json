@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.permissions",
+    "name": "pylon.permissions",
     "version": "0.0.1",
     "main": "permissions-ext.js",
     "private": true,

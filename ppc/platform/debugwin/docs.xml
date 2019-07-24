@@ -1,0 +1,695 @@
+<a:model id="mdlNote"
+  saveoriginal    = "true"
+  submission      = "post data.php"
+  onsubmitsuccess = "form.enable();addNewComment();"
+  onsubmiterror   = "alert('Unable to submit your note, please try again later');form.enable();"
+  onbeforesubmit  = "
+    form.disable();
+    apf.createNodeFromXpath(this.data, 'page/text()').nodeValue = apf.lastloaded;
+    apf.setNodeValue(this.data.selectSingleNode('section'), 'comment');
+    apf.setNodeValue(this.data.selectSingleNode('date'), new Date().format('mmm dd, yyyy'));
+  ">
+    <comment new="true">
+        <section />
+        <date />
+    </comment>
+</a:model>
+
+<a:model id="mdlComments">
+    <data />
+</a:model>
+
+<a:model id="mdlSearchDocs" src="http://www.ajax.org/refguide/3.0/search.xml" />
+<a:model id="mdlBrowseDocs" src="http://www.ajax.org/refguide/3.0/browse.xml" />
+
+<style>
+.doctree{
+    background : #f5f5f5;
+    border-right : 1px solid #c3c3c3;
+}    
+</style>
+
+<a:hbox id="hDocs" anchors="0 0 0 0" edge="0">
+    <a:vbox id="tvbox" padding="0" edge="0" class="doctree" width="250">
+        <a:hbox padding="2" edge="5">
+            <a:textbox id="txtFilter" width="100%"
+              initial-message = "Search API docs"
+              skin            = "tbempty" 
+              onclear         = "doDocSearch();"
+              onkeyup         = "if (apf.isCharacter(event.keyCode)) { doDocSearch(this.getValue()) }"
+              onkeydown       = "
+                if (event.keyCode == 9){
+                }
+                else if (event.keyCode == 27) {
+                    this.clear();
+                    this.blur();
+                }
+                else if (event.keyCode == 13) {
+                    doDocSearch(this.getValue(), true);
+                }
+                else if (event.keyCode == 40) {
+                    var node = trDocs.queryNode('category');
+                    if (node) {
+                        setTimeout(function(){
+                            trDocs.setCaret(node);
+                            trDocs.focus();
+                        });
+                    }
+                }"
+            >
+            </a:textbox>
+            <a:dropdown
+                id    = "ddFilter"
+                width = "50"
+                value = "apf"
+                tabindex = "1"
+                onslideup = "if (txtFilter.value) { doDocSearch(txtFilter.value) }"
+              >
+                 <a:item value="apf">APF</a:item>
+                 <a:item value="o3">O3</a:item>
+            </a:dropdown>
+        </a:hbox>
+    
+        <a:tree id="trDocs"
+          height          = "100%"
+          skin            = "tree_demosmenu"
+          model           = "mdlBrowseDocs"
+          prerender       = "false"
+          border          = "1 0 0 0"
+          empty-message   = "No documents found"
+          removecontainer = "true"
+          reselectable    = "true"
+          ctrlselect      = "enter"
+          multiselect     = "false"
+          canrename       = "false"
+          autoselect      = "false"
+          onblur          = "this.setCaret()"
+          onafterload     = "this.setCaret();"
+          onafterchoose   = "openPage()"
+          onafterselect   = "if (event.selected) openPage()"
+          onselecttop     = "txtFilter.focus(null, {mouse:true});"
+          onkeydown       = "
+            if (event.keyCode == 27) {
+                txtFilter.clear();
+            }
+            else if (apf.isCharacter(event.keyCode)) {
+                txtFilter.setValue(String.fromCharCode(event.keyCode));
+                txtFilter.focus();
+                txtFilter.$focus({mouse:true});
+            }">
+            <a:bindings>
+                <a:caption>
+                    [@n] {if (#[@p]) "({[@p].split('.').reverse().join(' ')})"}
+                </a:caption>
+                
+                <a:value>
+                    {if (#[@p]) "[@p]."}{tagName()}.{[@n].toLowerCase()}.html
+                </a:value>
+        
+                <a:icon match="[node()[not(local-name()='category') and not(local-name()='subcat') and not(local-name()='more')]]" 
+                    value="http://www.ajax.org/icns/[@icon|../@icon].png" />
+                <a:selectable match="[node()[not(local-name()='more')]]" />
+                <!--j:tooltip match="@description" /-->
+                <!--a:select match="{apf.isSafari ? '[.]' : &quot;[node()[not(local-name()='section') or node()[local-name()='method' or local-name()='event' or local-name()='binding' or local-name()='attribute' or local-name()='element' or local-name()='property']]]&quot;}" /-->
+                <a:each match="[node()[local-name()]]" /><!-- and (not(local-name()='binding')
+                    and not(local-name()='event') and not(local-name()='method') and not(local-name()='attribute')
+                    and not(local-name()='property'))]]" />-->
+                <a:collapsed match = "[node()[@collapse='true']]" />
+                <!-- local-name()='subcat' and -->
+            </a:bindings>
+        </a:tree>
+    </a:vbox>
+    
+    <a:bar id="refguide_container" width="100%" skin="basic" style="border-width:0 0 0 1px;background:white;overflow:auto;padding:10px;">
+        <a:text id="txtInfoDocs" class="doc" visible="false"/>
+    
+        <a:bar id="txtHome" skin="basic" class="dochome" left="50%-150" top="50%-25" width="300" height="50" style="text-align:center">
+            <h1 style='color:#c3c3c3'>Documentation</h1>
+            
+            <!--h2 style='color : #2582d1;'>Latest user comments on the documentation</h2>
+            <a:list id="lc" model="{comm.getComments('latest');}"
+              bindings  = "bndComments"
+              caching   = "false" 
+              skin      = "listcomments">
+                <a:actions />
+            </a:list-->
+        </a:bar>
+        
+        <h2 id="headNotes" class="usernotes" style="display:none">
+            <!--a href="javascript:void(0)" class="addnote" onclick="addNote(true);event.cancelBubble=true;">Add your own note</a-->
+            User Contributed Notes
+        </h2>
+        
+        <a:actiontracker id="atNote" />
+        <!-- @todo this is completely broken -->
+        <!--a:bar id="barNote" minwidth="660" skin="basic"
+          model         = "mdlNote"
+          actiontracker = "atNote"
+          class         = "newnote"
+          width         = "670"
+          realtime      = "true"
+          visible       = "false">
+            <a:bar skin = "basic" class = "preview"
+              resizable     = "vertical"
+              minheight     = "28"
+              onresizestart = "
+              this.$int.style.overflow = 'hidden';
+              txtPreview.setHeight('100%-6');">
+                <a:text id="txtPreview"
+                  model         = "mdlNote"
+                  class         = "listcomments"
+                  scrolldown    = "true"
+                  secure        = "true"
+                  empty-message = "Preview">
+                    <a:value><?lm {
+                        if (#[subject]) {
+                            <h3>[subject]</h3>
+                        }
+                        if (#[name]) {
+                            <blockquote>By <a href="http://[url]">[name]</a> on {new Date().format("mmm dd, yyyy")}</blockquote>
+                        }
+                        if (#[body]){
+                            <div class="message">{
+                                [body].trim()
+                                    .replace(/<code>([\s\S]*?)(?:<\/code>\s*\n?|$)|(\n)/g, function(m, m1, nl){
+                                        if (nl) return <br />;
+                                        return <pre class="code">{apf.highlightCode(m1)}</pre>;
+                                    });
+                            }</div>
+                        }
+                        if (!output().trim()) {
+                            <span class="emptypreview">Preview</span>
+                        }
+                    } ?></a:value>
+                </a:text>
+            </a:bar>
+    
+            <a:table id="form" 
+              minheight  = "175"
+              width      = "658"
+              columns    = "60, 215, 60, 100%"
+              margin     = "10 10 45 10"
+              cellheight = "20"
+              padding    = "8"
+              validgroup = "vgNote">
+                <a:label>Subject:</a:label>
+                <a:textbox value="[subject]" span="3" required="true" 
+                    minlength="4" invalidmsg="Invalid subject;The subject is required and should be at least 4 characters long." />
+                <a:label>Name:</a:label>
+                <a:textbox value="[name]" required="true" 
+                    minlength="3" invalidmsg="Invalid name;Your name is required and should be at least 3 characters long." />
+                <a:label>Website:</a:label>
+                <a:textbox value="[url]" datatype="a:website"
+                    invalidmsg="Invalid website;Please enter a correct website address." 
+                    onblur="if (this.value.indexOf('http://') > -1){
+                        this.change(this.value.replace('http://', ''));
+                    }"/>
+                <a:label span="*">
+                    Message (<a href="http://en.wikipedia.org/wiki/Markdown" target="_blank">Markdown</a> formatting allowed):
+                </a:label>
+                <a:textarea value="[body]" height="150" resizable="vertical" span="*" required="true" 
+                    minlength="1" invalidmsg="Invalid message;Please write a message here." />
+            </a:table>
+            
+            <a:label bottom="13" left="10" style="color:#333;font-size:9pt;">
+                To mark code (either javascript or xml) use <code> alert(1) </code>.
+            </a:label>
+            <a:button onclick="cancelAdding()" disabled="{form.disabled}"
+                right="110" bottom="10" width="60">Cancel</a:button>
+            <a:button onclick="if (vgNote.isValid()) mdlNote.submit()" disabled="{form.disabled || !atNote.undolength}"
+                default="true" bottom="10" right="7">Post</a:button>
+            <a:button default = "true"
+              bottom   = "10"
+              right    = "7"
+              disabled = "{form.disabled || !atNote.undolength}"
+              onclick  = "if (vgNote.isValid()) mdlNote.submit()">
+                    Post
+            </a:button>
+        </a:bar-->
+        
+        <a:bindings id="bndComments">
+            <a:caption><?lm
+                <a href="#docs/[page]" style="float:right">{[page].split(".").pop()}</a>
+                <h3>[subject]</h3>
+                <blockquote>By {if ([url]){ <a href="http://[url]">[name]</a> } else { [name] }} on [date]
+                    {
+                    if ([@new])
+                        <a href="javascript:void(0)" onclick="editNote()">\[Edit\]</a>
+                    }
+                </blockquote>
+                <div class="message">{
+                    [body]
+                        .trim()
+                        .replace(/(<[^>]+>)|(http:\/\/[^\s\n\r]+|www\.[^\s\n\r]+)/g, function(m, x, a){
+                            if (x) return x;
+                            return "<a href='" + a + "' target='_blank'>" + a + "</a>";
+                        })
+                        .replace(/<p>|<\/p>/g, "")
+                        .replace(/<code>([\s\S]*?)<\/code>\s*\n?|(\n)/g, function(m, m1, nl){
+                            if (nl) return "<br />";
+                            return '<pre class="code">' + apf.highlightCode(m1) + '</pre>';
+                        });
+                }</div>
+            ?></a:caption>
+            <a:each match="comment" />
+        </a:bindings>
+        
+        <a:list id="lstComments" caching="false" skin="listcomments"
+          model         = "mdlComments"
+          empty-message = "Be the first to write a note!"
+          focussable    = "false"
+          visible       = "false"
+          bindings      = "bndComments"
+          onafterload   = "
+            if (!this.visible)
+                return;
+            if (!this.length)
+                addNote(null, true);
+            else if (!atNote.undolength)
+                cancelAdding(true);
+          ">
+            <a:actions />
+        </a:list>
+    
+        <br style="line-height:30px" clear="all" />
+    </a:bar>
+</a:hbox>
+
+<a:script><![CDATA[
+    function openPage() {
+        if (trDocs.selected && (trDocs.selected.tagName == "category" || trDocs.selected.tagName == "subcat")) return;
+        app.gotoPage('docs/' + trDocs.value)
+    }
+    function gotoPage(page){
+        var parts;
+        var main = (parts = page.replace(/\.html$/, "").split("/")).shift();
+    
+        var last;
+        if (self.initRefGuide) 
+            initRefGuide();
+
+        if (parts.length) {
+            loadNewDoc((last = parts.join("/")) + ".html");
+
+            var q = [], s;
+            var items = last.trim().split(".");//.reverse();
+            for (var i = 0; i < items.length; i += 2) {
+                s = [];
+                q.push(items[i], items[i + 1]);
+                if (items[i + 1] == "teleport")
+                    items[i + 1] = "teleport module";
+                s.push(items[i + 1], items[i]);
+            }
+        }
+        else {
+            txtInfoDocs.hide();
+            txtHome.show();
+            lstComments.hide();
+            barNote.hide();
+            app.headNotes.style.display = "none";
+        }
+    }
+    
+    app = {gotoPage : gotoPage, docCache: {}, scrollToTop: function(){
+        refguide_container.$ext.scrollTop = 0;
+    }};
+
+/**** Reference Guide Script ****/
+
+function initRefGuide() {
+    app.headNotes = document.getElementById("headNotes");
+
+    refguide_container.$ext.onclick = function(e){
+        if (!e) e = event;
+        var node = e.srcElement || e.target;
+
+        if (node.tagName != "A")
+            return;
+
+        var href = node.getAttribute("href");
+        if (href.substr(0, 5) != "file:"     
+          && (href.indexOf("javascript:") == 0
+          || (apf.isIE && !apf.isIE8
+            ? !href.match(/http\:\/\/www\.ajax\.org\/[^\/]*$/)
+            : href.indexOf("http:") == 0)))
+              return;
+
+        app.gotoPage("docs/" + apf.getFilename(node.getAttribute("href")));
+        return false;
+    }
+
+    initRefGuide = null;
+}
+
+function addNewComment(){
+    var xmlNode;
+    if (!mdlNote.data.parentNode) {
+        xmlNode = apf.xmldb.getCleanCopy(mdlNote.data);
+        apf.xmldb.appendChild(lstComments.xmlRoot, xmlNode, lstComments.xmlRoot.firstChild);
+        apf.xmldb.notifyQueued();
+    }
+    else xmlNode = mdlNote.data;
+
+    var oHtml = apf.xmldb.findHTMLNode(xmlNode, lstComments);
+    apf.tween.css(oHtml, 'highlight', {anim: 0, steps: 5, interval: 10});
+
+    apf.tween.single(barNote, {type: 'fade', anim: 0,
+        steps: 5, interval: 10, from:1, to:0});
+
+    apf.tween.single(lstComments, {type: 'top', anim: 0, steps: 5, interval: 10,
+        from:0, to: -1* barNote.getHeight() - 10,
+        onfinish: function(){
+            setTimeout(function(){
+                apf.tween.css(oHtml, 'highlight', {anim: 0, steps: 20, interval: 30,
+                    onfinish: function(){
+                        barNote.hide();
+                        lstComments.$ext.style.top = "0";
+                    }}, true);
+            }, 100);
+        }});
+}
+
+function addNote(toggle, noAnim){
+    return;
+    if (toggle && barNote.visible)
+        return cancelAdding();
+
+    mdlNote.reset();
+    atNote.reset();
+    vgNote.hideAllErrors();
+
+    barNote.show();
+    apf.setOpacity(barNote.$ext, 0);
+    var top = -1 * barNote.getHeight() - 10;
+    lstComments.$ext.style.top = top + "px";
+
+    if (noAnim) {
+        lstComments.$ext.style.top = 0;
+        //apf.tween.fade(barNote.$ext, 1);
+        barNote.$ext.style.filter = "";
+    }
+    else {
+        apf.tween.single(lstComments, {type: 'top', anim: 0, steps: 20,
+            interval: 10, from:top, to: 0,
+            onfinish: function(){
+                apf.tween.single(barNote, {type: 'fade', anim: 0, steps: 15,
+                  interval: 10, from:0, to:1, onfinish : function(){
+                      barNote.$ext.style.filter = "";
+                  }});
+            }});
+    }
+}
+
+function cancelAdding(noanim){
+    if (!self.barNote || atNote.undolength && !confirm("Are you sure you want to discard your changes?"))
+        return false;
+
+    if (mdlNote.data.parentNode)
+        atNote.undo(-1);
+
+    if (noanim) {
+        barNote.hide()
+        return;
+    }
+
+    apf.tween.single(barNote, {type: 'fade', anim: 0, steps: 15,
+        interval: 10, from:1, to:0,
+        onfinish: function(){
+           apf.tween.single(lstComments, {type: 'top', anim: 0, steps: 20,
+                interval: 10, from:0, to: -1* barNote.getHeight() - 10,
+                onfinish: function(){
+                    barNote.hide();
+                    lstComments.$ext.style.top = "0";
+                }});
+        }});
+}
+
+function editNote(){
+    if (barNote.visible && cancelAdding(true) === false)
+        return;
+
+    if (barNote.visible && mdlNote.data == lstComments.selected)
+        return;
+
+    addNote();
+    mdlNote.load(lstComments.selected, true);
+}
+
+function loadFile(filename){
+    if (app.cache[filename])
+        return app.cache[filename];
+
+    var data = (new apf.http()).getXml(app.server + filename + ".xml", null, {async:false});
+    app.cache[filename] = data;
+    return data;
+}
+
+function activateMemberBlock(h2, id){
+    //var bq = h2.nextSibling;
+    //if (bq.nodeType != 1) bq = bq.nextSibling;
+    var bq = document.getElementById("block" + id);
+
+    var nodes = bq.parentNode.childNodes;
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].nodeType != 1 || nodes[i].tagName == "DIV")
+            continue;
+
+        nodes[i].className = "";
+    }
+
+    h2.className = "current"
+    bq.className = "current"
+}
+
+var lastHover;
+function memberover(e){
+    var node = e.srcElement || e.target;
+    if ("A".indexOf(node.tagName) > -1)
+        node = node.parentNode;
+    else if ("TD".indexOf(node.tagName) == -1)
+        return;
+
+    var nodes = node.parentNode.childNodes;
+    for (var i = 0; i < nodes.length; i++) {
+        if (nodes[i].nodeType != 1)
+            continue;
+        nodes[i].className = i == 0 ? "first hover" : "hover";
+    }
+
+    if (lastHover && lastHover != node.parentNode) {
+        var nodes = lastHover.childNodes;
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 1)
+                continue;
+            nodes[i].className = i == 0 ? "first" : "";
+        }
+    }
+
+    lastHover = node.parentNode;
+}
+
+function memberout(e){
+    if (lastHover) {
+        var nodes = lastHover.childNodes;
+        for (var i = 0; i < nodes.length; i++) {
+            if (nodes[i].nodeType != 1)
+                continue;
+            nodes[i].className = i == 0 ? "first" : "";
+        }
+    }
+}
+
+function memberclick(e){
+    var node = e.srcElement || e.target;
+    if ("A".indexOf(node.tagName) > -1)
+        return;
+        //node = node.parentNode;
+    else if ("TD".indexOf(node.tagName) == -1)
+        return;
+
+    try {
+        node.parentNode.getElementsByTagName("a")[0].click();
+    }catch(e){}
+}
+
+function toggleClass(mem){
+    mem.className = mem.className.indexOf("members_long") == -1
+        ? "members members_long"
+        : "members";
+}
+
+function checkBase(n, type){
+    var nodes = n.selectNodes("inherit");
+    for (var i = 0; i < nodes.length; i++){
+        n = loadFile('baseclass.' + nodes[i].getAttribute("name").toLowerCase());
+        if (n && (n.selectSingleNode(type) || checkBase(n, type)))
+            return true;
+    }
+    return false;
+}
+
+function loadNewDoc(doc){
+    if (!doc) return;
+    doc = doc.trim();
+
+    var isMore;
+    if (doc.indexOf("section") == 0 || (isMore = doc.indexOf("more") == 0)) {
+        if (trDocs.selected && (isMore
+          || trDocs.selected.firstChild
+          && app.expanded[trDocs.selected.firstChild.tagName])) {
+            txtInfoDocs.hide();
+            app.headNotes.style.display = "none";
+            txtHome.hide();
+            lstComments.hide();
+            barNote.hide();
+        }
+
+        return;
+    }
+
+    var name  = doc.replace(/\.html$/, "");
+    doc       = name + ".html";
+    var timer = setTimeout(function(){
+        txtInfoDocs.clear("loading");
+        app.headNotes.style.display = "none";
+        lstComments.hide();
+        barNote.hide();
+    }, 400);
+    txtInfoDocs.show();
+    txtHome.hide();
+
+    mdlComments.reset();
+    lstComments.clear("loading");
+    lstComments.reload();
+    if(name)
+        mdlComments.load("{comm.getComments(name)}", {name: name});
+    app.lastloaded = name;
+    function callback(d, state){
+        clearTimeout(timer);
+        if (state == apf.SUCCESS) {
+            txtInfoDocs.setValue(d);
+            app.docCache[name] = d;
+            app.headNotes.style.display = "block";
+            lstComments.show();
+        }
+        else {
+            txtInfoDocs.setAttribute("empty-message", "Could not load document");
+            txtInfoDocs.clear();
+        }
+
+        app.scrollToTop();
+    }
+
+    if (app.docCache[name])
+        return callback(app.docCache[name], apf.SUCCESS);
+
+    var docPath = "http://www.ajax.org/refguide/3.0/html";//app.basepath;
+    if (doc.substr(0, 15) == "getting_started" || doc.substr(0, 6) == "manual" || doc.substr(0, 21) == "configure_your_editor")
+        docPath = 'http://www.ajax.org/refguide/docs/html';
+/*
+    if (trDocs.selected && trDocs.selected.parentNode.getAttribute('n').indexOf('O3') > -1)
+        docPath = 'http://www.ajax.org/refguide/o3/html';
+*/
+
+    if(doc.trim() != '.html') {
+        apf.getData(apf.getAbsolutePath(docPath, doc.trim().replace(/\s/g, '_')), {callback: callback});
+        if (self.pageTracker)
+            pageTracker._trackPageview(doc.trim());
+    }
+}
+
+//Searching
+function doDocSearch(value, force){
+    clearTimeout(app.timer);
+
+    if (value) {
+        var testBeginning = false;
+        var cacheId       = value;
+        value             = value.toLowerCase();
+        if (value.charAt(0) == "^") {
+            testBeginning = true;
+            value = value.substr(1);
+        }
+        //trDocs.setModel(mdlSearchDocs);
+    }
+    
+    if (!value || value.length == 1 || !mdlBrowseDocs.data){
+        trDocs.prerender = false;
+        trDocs.each      = "node()[local-name()]";//"node()[local-name() and not(local-name()='binding') and not(local-name()='event') and not(local-name()='method') and not(local-name()='attribute') and not(local-name()='element') and not(local-name()='property')]";
+        trDocs.setModel(mdlBrowseDocs);
+        return;
+    }
+
+    if (force || trDocs.$isCached(cacheId))
+        doRealSearch(testBeginning, cacheId, value);
+    else {
+        app.timer = setTimeout(function(){
+            doRealSearch(testBeginning, cacheId, value);
+        }, 400);
+    }
+}
+
+function doRealSearch(testBeginning, cacheId, value) {
+    var group, node;
+    if (!trDocs.$isCached(cacheId)){ //Copy nodes
+        group = apf.xmldb.getCleanCopy(mdlSearchDocs.data);
+
+        if (testBeginning) {
+            nodes = group.selectNodes("//node()[not(local-name()='category' or local-name()='subcat' or starts-with(translate(@n, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "') or starts-with(translate(@p, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "'))]");
+            for (var i = nodes.length - 1; i >= 0; i--)
+                nodes[i].parentNode.removeChild(nodes[i]);
+        }
+        else {
+            nodes = group.selectNodes("//node()[not(local-name()='category' or local-name()='subcat' or contains(translate(@n, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "') or contains(translate(@p, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "'))]");
+            for (var i = nodes.length - 1; i >= 0; i--)
+                nodes[i].parentNode.removeChild(nodes[i]);
+        }
+
+        // ignore apf or o3 based on dropdown selection
+        var ignoreNode;
+        if (ddFilter.value == "apf")
+            ignoreNode = group.selectSingleNode("category[@n='O3']")
+        else if (ddFilter.value == "o3")
+            ignoreNode = group.selectSingleNode("category[@n='APF']")
+        
+        ignoreNode.parentNode.removeChild(ignoreNode);
+        
+        nodes = group.selectNodes("//node()[(local-name()='category' or local-name()='subcat') and not(node())]");
+        
+        var parent;
+        for (var i = nodes.length - 1; i >= 0; i--) {
+            parent = nodes[i].parentNode;
+            parent.removeChild(nodes[i]);
+            if (!parent.childNodes.length)
+                parent.parentNode.removeChild(parent);
+        }
+
+        nodes = group.selectNodes("//subcat");
+        for (var v, i = nodes.length - 1; i >= 0; i--) {
+            nodes[i].setAttribute("total", v = nodes[i].childNodes.length);
+            nodes[i].setAttribute("collapse", "false");
+            if (v > 10) {
+                var m = group.ownerDocument.createElement("more");
+                m.setAttribute("n", "(" + (v - 10) + " more items)");
+                nodes[i].insertBefore(m, nodes[i].childNodes[10]);
+            }
+        }
+    }
+
+    trDocs.prerender      = false;
+    trDocs.startcollapsed = false;
+    trDocs.each           = "node()[node() or position() < 12]";
+    trDocs.load(group, cacheId);
+}
+
+function runFound(){
+    if (trDocs.xmlRoot == mdlSearchDocs.data)
+        return;
+
+    var node = trDocs.xmlRoot.selectSingleNode("//section[not(section)]");
+    if (!node) return;
+
+    app.gotoPage("docs/" + trDocs.value);
+}
+
+]]></a:script>

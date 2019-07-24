@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.ide.shell",
+    "name": "pylon.ide.shell",
     "version": "0.0.1",
 
     "main": "./shell.js",

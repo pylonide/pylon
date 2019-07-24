@@ -1,0 +1,214 @@
+<!doctype html>
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>BOT</title>
+        <script src="../apf.js"></script>
+        <style type="text/css">
+            #message_log {
+                border: 1px solid silver;
+                font-family: "Lucida Console", Sans Serif;
+                padding: 8px;
+                color: green;
+                background: #333;
+                height: 250px;
+                width: 250px;
+            }
+
+            .loginform {
+                width: 250px;
+                border: 1px solid silver;
+            }
+        </style>
+        <script type="text/javascript">//<!--
+            /*
+            <data>
+                <drive caption="Boot Disk (C:)" date="">
+                    <folder caption="My Documents" fid="1" icon="folder_page.png" date="21-06-1980">
+                        <folder caption="Assets" fid="2" date="21-06-1980">
+                            <file filename="bach.wma" fid="2" date="21-06-1980"/>
+                            <file filename="escher.zip" fid="2" date="21-06-1980"/>
+                            <file filename="godel.doc" fid="2" date="21-06-1980"/>
+                            <file filename="Todo.txt" fid="2" date="21-06-1980"/>
+                        </folder>
+                        <folder caption="Presentation" icon="folder_picture.png" fid="3" date="21-06-1980">
+                            <file filename="SmartBindings.ppt" fid="2" date="21-06-1980"/>
+                            <file filename="aboutus.doc" fid="2" date="21-06-1980"/>
+                        </folder>
+                        <folder caption="Website" fid="4" date="21-06-1980">
+                            <folder caption="HTML files" fid="5" date="21-06-1980">
+                                <file filename="Getting Started.html" fid="2" date="21-06-1980"/>
+                            </folder>
+                            <file filename="Check this out.ppt" fid="1" date="21-06-1980"/>
+                            <file filename="Todo.txt" fid="2" date="21-06-1980"/>
+                            <file filename="Test.zip" fid="3" date="21-06-1980"/>
+                        </folder>
+                        <folder caption="My Images" fid="6" date="21-06-1980">
+                            <file filename="myself.jpg" fid="2" date="21-06-1980"/>
+                            <file filename="me.xls" fid="2" date="21-06-1980"/>
+                            <file filename="i.gif" fid="2" date="21-06-1980"/>
+                        </folder>
+                        <folder caption="Development" icon="folder_wrench.png" fid="8" date="21-06-1980">
+                            <folder caption="Ajax" icon="folder_lightbulb.png" fid="9">
+                                <file filename="Visitors.xls" fid="4" date="21-06-1980"/>
+                                <file filename="Business Plan.doc" fid="5" date="21-06-1980"/>
+                                <file filename="Test.zip" fid="6" date="21-06-1980"/>
+                            </folder>
+                            <file filename="AboutCharts.pdf" fid="7" date="21-06-1980"/>
+                            <file filename="Test.html" fid="8" date="21-06-1980"/>
+                            <file filename="Test.zip" fid="9" date="21-06-1980"/>
+                        </folder>
+                        <file filename="Project.xls" fid="10" date="21-06-1980"/>
+                        <file filename="UX.doc" fid="11" date="21-06-1980"/>
+                        <file filename="Example.wma" fid="12" date="21-06-1980"/>
+                        <file filename="Blah.jpg" fid="13" date="21-06-1980"/>
+                        <file filename="LogoDesign.psd" fid="14" date="21-06-1980"/>
+                    </folder>
+                    <folder caption="Javeline Test Folder" fid="10" date="21-06-1980"/>
+                </drive>
+            </data>
+            */
+            var test = {
+                "inserting nodes" : function() {
+                    //drive[1]/folder[3]
+                    apf.xmldb.appendChild(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), apf.getXml('<file filename="NewFile1.png"/>'));
+                },
+                "updating node attributes" : function() {
+                    apf.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]"), "new_attr", "test");
+                    apf.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), "new_attr", "test");
+                    apf.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[2]"), "new_attr", "test");
+                    apf.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"), "new_attr", "test");
+
+                    apf.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]"), "new_attr");
+                    apf.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), "new_attr");
+                    apf.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[2]"), "new_attr");
+                    apf.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"), "new_attr");
+                },
+                "removing nodes" : function() {
+                    apf.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"));
+                    apf.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"));
+                    apf.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[2]"));
+                    apf.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]"));
+
+                    apf.window.getActionTracker().undo(4);
+                },
+                "large change" : function() {
+                    //
+                },
+                "conflicting change" : function() {
+                    //
+                }
+            };
+            function executeTests() {
+                var o = document.getElementById("tests"),
+                    a = o.getElementsByTagName("option");
+                for (var s, i = 0, l = a.length; i < l; ++i) {
+                    if (a[i] && a[i].selected && (s = a[i].getAttribute("value")) && test[s]) {
+                        console.log("Executing test: " + s);
+                        test[s]();
+                    }
+                }
+            }
+        //-->
+        </script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/"
+          image-path="../images/" icon-path="../icons/" />
+
+        <a:appsettings debug="false" debug-teleport="true" name="remotetest" locking="optimistic"  />
+
+        <!-- <a:xmpp id="myXMPP" url="http://chatslave4.hyves.org:5222/http-poll" roster-model="myRoster" -->
+        <a:xmpp id="myXMPP"
+            url               = "http://localhost:5280/http-bind"
+            host              = "localhost"
+            model             = "myRoster"
+            model-contents    = "roster|typing|chat"
+            rdb-bot           = "true"
+            type              = "binding"
+            resource          = "{'apf_'.appendRandomNumber(5)}"
+            onpriority        = "getPrio()"
+            onconnected       = "apf.console.log('yay')"
+            onconnectionerror = "apf.console.log('boohoo:' + event.message)"
+            onauthfailure     = "apf.console.log('AUTHFAILURE:' + event.message)"
+            onconnectionlost  = "apf.console.log('connection lost!:' + event.message)"
+            onreconnect       = "apf.console.log('attempting to restore connection')" />
+
+        <a:remote transport="myXMPP" id="rmtFs" />
+
+        <!--a:model id="mdlFs" remote="rmtFs" src="filesystem.xml" />
+
+        <a:tree model="mdlFs" width="70%" height="200">
+            <a:bindings>
+                <a:caption match="[@caption|@filename]" />
+                <a:icon  match="[drive]"  value="drive.png" />
+                <a:icon  match="[file]"   value="page_white.png" />
+                <a:icon  match="[folder]" value="folder.png" />
+                <a:empty match="[folder]" value="Drag a contact to this group." />
+                <a:each  match="[drive|folder|file]" />
+            </a:bindings> 
+        </a:tree-->
+
+        <a:list model="myRoster" each="[user]" caption="[@node]@[@host]" icon="icoUsers.gif" width="200" height="100" />
+
+        <?lm
+        <select id="tests" multiple="multiple">{
+        for (var i in test) {
+            <option value="{i}" selected>{i}</option>
+        }
+        }</select>
+        ?><br />
+        <button onclick="executeTests()">Execute Selected</button><br />
+
+        <!--a:list id="lstPersons" model="mdlFs" each="[file]" caption="[@caption|@filename]" icon="icoUsers.gif" width="200" height="100" />
+
+        <a:button onclick="lstPersons.rename(lstPersons.selected, 'test' + Math.round(Math.random()*100));">Rename</a:button>
+
+        <a:button onclick="apf.xmldb.setAttribute(lstPersons.selected, 'id', 'test' + Math.round(Math.random()*100));">Change Attr</a:button-->
+        <!--a:button onclick="lstPersons.add('&lt;person&gt;new person&lt;/person&gt;')">Add</a:button>
+
+        <a:slider value="[folder[1]/@test]" realtime="false" model="mdlFs" /-->
+
+        <br />
+        <a:textbox id="username" value="bot1" />
+        <br/><br />
+        <a:textbox type="password" id="password" value="botz1" />
+        <br/><br/>
+        <button onclick="myXMPP.connect(username.value, password.value)">Login</button>
+        <button onclick="myXMPP.disconnect()">Disconnect</button>
+        <br/>
+        <br/>
+        <a:textarea id="txtAnyXml" width="70%" height="120" resizable="true"><![CDATA[
+            <message to='test@rdb.localhost' />
+        ]]></a:textarea>
+        <a:button caption="Send" id="btnSend" onclick="myXMPP.sendXml({message: txtAnyXml.value, callback: function(data) {alert(data);}})" />
+        <a:script><![CDATA[
+            function getPrio() {
+                return 42;
+            }
+            
+            rmtFs.addEventListener("change", function(e) {
+            	console.log(e);
+            });
+
+            rmtFs.addEventListener("rdbinit", function(e) {
+            	var resource = e.resource,
+                    model    = e.model;
+                (new apf.http()).get("filesystem.xml", {
+                    callback: function(data) {
+                        model.load(data);
+                    }
+                });
+            });
+
+            rmtFs.addEventListener("rpc", function(e) {
+            	rmtFs.sendRPCResult({
+                    sid    : e.sid,
+                    status : 200,
+                    to     : e.from,
+                    command: e.command,
+                    data   : e.data
+                });
+            });
+        ]]></a:script>
+    </body>
+</html>

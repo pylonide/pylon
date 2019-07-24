@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.client.treehugger",
+    "name": "pylon.client.treehugger",
     "version": "0.0.1",
     "main": "treehugger-lib.js",
     "private": true,

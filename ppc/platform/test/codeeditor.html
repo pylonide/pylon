@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        
+        <style type="text/css" media="screen">
+            html, body {
+                overflow: hidden;
+            }
+        
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:toolbar align="top" height="26">
+            <a:bar>
+                <a:checkbox id="selectStyle" label="Full line selection" values="line|text" checked="true"/>
+                <a:checkbox id="highlightActive" label="Highlight active line" checked="true"/>
+                <a:checkbox id="showInvisibles" label="Show invisibles" checked="true"/>
+                <a:checkbox id="readOnly" label="Read only" checked="false" />
+            </a:bar>
+        </a:toolbar>
+        
+        <a:tree id="tree"
+          model   = "mdlDocs" 
+          each    = "[doc|folder]" 
+          caption = "[@caption]" 
+          icon    = "[@icon]" 
+          align   = "left-splitter" 
+          width   = "200" 
+          startcollapsed = "false"
+        />
+        
+        <a:codeeditor id="ce" 
+          align       = "right"
+          model       = "{tree.selected}" 
+          value       = "[text()]" 
+          syntax      = "[@syntax]" 
+          selectstyle = "{selectStyle.value}" 
+          activeline  = "{highlightActive.value}"
+          tabsize     = "{[@tabsize] || 4}"
+          softtabs    = "[@softtabs]"
+          readonly    = "{readOnly.value}"        
+          showinvisibles = "{showInvisibles.value}" />        
+
+        <a:toolbar align="right" height="26">
+            <a:bar>
+                <a:dropdown value="[{tree.selected}::@syntax]">
+                    <a:item value="js">Javascript</a:item>
+                    <a:item value="css">CSS</a:item>
+                    <a:item value="html">HTML</a:item>
+                </a:dropdown>            
+                <a:dropdown value="[{tree.selected}::@tabsize]">
+                    <a:item value="2">2</a:item>
+                    <a:item value="3">3</a:item>
+                    <a:item value="4">4</a:item>
+                    <a:item value="8">8</a:item>
+                </a:dropdown>
+                <a:checkbox label="Soft tabs" checked="[{tree.selected}::@softtabs]"/>
+            </a:bar>
+        </a:toolbar>
+        
+        <a:model id="mdlDocs">
+            <docs>
+                <folder caption="Homepage" icon="icoXPFolder.gif">
+                    <doc 
+                        caption="juhu.js" 
+                        icon="icoDocument.gif" 
+                        syntax="js"
+                        tabsize="2"
+                        softtabs="true"
+                       ><![CDATA[function foo(items) {
+    for (var i=0; i<items.length; i++) {
+        alert(items[i] + "juhu";
+    }
+}]]>
+                    </doc>
+                    <doc 
+                        caption="styles.css" 
+                        icon="icoDocument.gif"                        
+                        syntax="css"
+                        tabsize="4"
+                        softtabs="true"                        
+                        ><![CDATA[.text-layer {
+    font-family: Monaco, "Courier New", monospace;
+    font-size: 12px;
+    cursor: text;
+}]]>
+                    </doc>
+                    <doc 
+                        caption="index.html" 
+                        icon="icoDocument.gif" 
+                        syntax="html"
+                        tabsize="4"
+                        softtabs="false"
+                       ><![CDATA[<html>
+<head>
+
+<style type="text/css">
+.text-layer {
+    font-family: Monaco, "Courier New", monospace;
+    font-size: 12px;
+    cursor: text;
+}
+</style>
+
+</head>
+<body>
+    <h1 style="color:red">Juhu Kinners</h1>
+</body>
+</html>]]>
+                    </doc>
+                </folder>
+            </docs>
+        </a:model>
+    </body>
+</html>

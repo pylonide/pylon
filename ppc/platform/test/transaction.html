@@ -1,0 +1,117 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+
+        <a:model id="mdlItems">
+            <items>
+                <item>
+                    <name>John Doe</name>
+                    <subject>About those important documents.</subject>
+                    <message>I would really like them back!</message>
+                </item>
+            </items>
+        </a:model>
+        
+        <a:actions id="actExample">
+            <a:add>
+                <item />
+            </a:add>
+            <a:update />
+        </a:actions>
+        
+        <a:button 
+          caption = "Add"
+          right   = "10" 
+          top     = "10"
+          onclick = "winMessage.begin('add')" />
+        <a:button id="btn1"
+          caption  = "Undo"
+          right    = "10"
+          top      = "40"
+          disabled = "{!atTransTest1.undolength}" 
+          onclick  = "atTransTest1.undo()" />
+        <a:button id="btn2"
+          caption  = "Redo"
+          right    = "10"
+          top      = "70"
+          disabled = "{!atTransTest1.redolength}" 
+          onclick  = "atTransTest1.redo()" />
+        
+        <a:label height="20">Double click on an item to edit it</a:label>
+        <a:datagrid 
+          id      = "dgItems" 
+          width   = "525" 
+          height  = "100" 
+          model   = "mdlItems" 
+          actions = "actExample"
+          actiontracker ="atTransTest1"
+          onafterchoose = "winMessage.show()">
+            <a:each match="[item]">
+                <a:column type="icon" value="note.png" width="18"/>
+                <a:column caption="Name" value="[name]" width="30%"/>
+                <a:column caption="Subject" value="[subject]" width="70%"/>
+            </a:each>
+        </a:datagrid>
+        
+        <a:window 
+          id          = "winMessage" 
+          transaction = "true"
+          kbclose     = "true"
+          popout      = "true"
+          buttons     = "min|max|close" 
+          width       = "300" 
+          height      = "300" 
+          center      = "true"
+          minwidth    = "300" 
+          minheight   = "290"
+          resizable   = "true"
+          realtime    = "true" 
+          title       = "Message" 
+          icon        = "note.png" 
+          model       = "{dgItems.selected}">
+            <a:table 
+              columns = "80, *" 
+              margin  = "10 10 10 10" 
+              padding = "5" 
+              bottom  = "35" 
+              top     = "0">
+                <a:label>Name</a:label>
+                <a:textbox value="[name]" id="txt"
+                  required   = "true" 
+                  invalidmsg = "Missing name;The name field is required" />
+                <a:label>Subject</a:label>
+                <a:textbox value="[subject]" />
+                <a:label span="*">Message</a:label>
+                <a:textarea value="[message]" 
+                    height = "*" 
+                    span   = "*"/>
+            </a:table>
+            
+            <a:button 
+              action  = "ok"
+              default = "true"
+              right   = "170"
+              bottom  = "10"
+              width   = "75">OK</a:button>
+                
+            <a:button 
+              action  = "cancel"
+              right   = "90"
+              bottom  = "10"
+              width   = "75">Cancel</a:button>
+            
+            <a:button 
+              action   = "apply"
+              right    = "10"
+              bottom   = "10"
+              width    = "75"
+              disabled = "{!winMessage.undolength}">Apply</a:button>
+        </a:window>
+	</body>
+</html>

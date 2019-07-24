@@ -1,0 +1,685 @@
+{
+    if ([@experimental]){      
+        <h1 class="experimental">This {tagName(_n)} is marked as experimental and is subject to change. </h1>
+    }
+    
+    if (![description] || tagName(_n) == "teleport" && !#[attribute] && !#[inherit[@name="rpc"]] && [@name] != 'http'){
+        <h1 class="incomplete">This {tagName(_n) == 'teleport' ? 'item' : tagName(_n)} has incomplete documentation. </h1>
+    }
+
+    function loopUsed(){
+        each(*[used]){
+            var f = [@filename];
+
+            if (f.indexOf("baseclass") == 0 && f.match(/(\.)/g).length == 1) {
+                local(self.loadFile(f)){
+                    loopUsed();
+                }
+            }
+            else {
+                <a href="{f}">[@name]</a> 
+            }
+        }
+    }
+
+    function detectCode(str){
+        //jpf.highlightCode();
+        return str.replace(/<code>([\s\S]*?)<\/code>/g, function(m, m1){
+            return '<pre class="code">' + 
+                (m1.trim().charAt(0) == "<" 
+                    ? apf.highlightXml(m1)
+                    : apf.highlightJs(m1)) + '</pre>';
+        });
+    }
+    
+    function members(types, prefix) {
+        var base = (prefix ? prefix + "." : "") + (tagName(_n) == "object" ? "object" : tagName(_n)) + "." + [@name].toLowerCase();
+
+        function hasContent(type) {
+            function checkParent(type) {
+ 	            var base = 'baseclass.' + [@name].toLowerCase();
+   	            local(self.loadFile(base)){
+       	            if (#[{type}]) {
+                        return true;
+                    }
+            
+                    each(*[inherit]) {
+            	        if (checkParent(type)) return true;
+                    }
+                }
+            }
+
+            if(#[{type}]){
+                return true;
+            }
+
+            each(*[inherit]) {
+    	        if (checkParent(type)) return true;
+            }
+
+            return false;
+        }
+
+        var f;
+        var heads = {
+            for (f = 0, i = 0; i < types.length; i++) {
+                type = types[i][0];
+
+                if(hasContent(type) || self.checkBase(_n, type)){
+                    <h2 class="{f++==0?'current':''}" onmousedown="activateMemberBlock(this, {i})">{types[i][1]}</h2>
+                }
+             }
+        }
+
+        if (f == 0) {
+            return;
+        }
+
+        <h2>Members</h2>
+        <div class="members" onmouseover="memberover(event)" onmouseout="memberout(event)" onclick="memberclick(event)">
+            <div class="sizebtn" onclick="toggleClass(this.parentNode)"> </div>{
+    		    heads;
+
+    	        function inherit(type){
+    	            var base = 'baseclass.' + [@name].toLowerCase();
+    	            
+                    local(self.loadFile(base)){
+        	            if (#[{type}]) {
+        	                <tr><th colspan="2" class="baseclass">[@name]</th></tr>{
+            	                each (*[{type}]) {
+            	                    <tr><td class="first">
+            	                        <a href="{base}.{tagName(_n)}.{[@name].toLowerCase()}.html">[@name]</a>
+            	                    </td><td>
+            	                        {(tagName(_n) == 'attribute' && (#[@readonly] 
+            	                            ? "Retrieves "  
+            	                            : "Sets or retrieves") || "")}
+            	                        [description]
+            	                     </td></tr>
+            	                }
+                            }
+        	            }
+    
+                        each(*[inherit]) {
+                            inherit(type);
+                        }
+                    }
+                }
+
+    	        for (var type, f = 0, i = 0; i < types.length; i++) {
+    	            type = types[i][0];
+
+    	            if(#[{type}] || self.checkBase(_n, type)){
+    	                <blockquote class="{f++==0?'current':''}" id="block{i}">
+    	                    <table cellpadding="0" cellspacing="0">
+    	                        <tr class="head"><th>Name</th><th>Description</th></tr>{
+    	                            each (*[{type}]) {
+        	                            <tr><td class="first">
+        	                                <a href="{base}.{tagName(_n)}.{[@name].toLowerCase()}.html">[@name]</a>
+        	                            </td><td>
+        	                                {(tagName(_n) == 'attribute' && (#[@readonly] 
+        	                                    ? "Retrieves "  
+        	                                    : "Sets or retrieves") || "")}
+        	                                [description]
+        	                             </td></tr>
+        	                        }
+                                    
+                                    each(*[inherit]) {
+        	                            inherit(type);
+                                    }
+                            }</table>
+    	                </blockquote>
+    	            }
+    	        }
+    	        
+    	}</div>
+    }
+
+    if (tagName(_n) == 'alias') {
+        "Alias to [@file]"
+    }
+    else if (tagName(_n) == 'term') {
+        <h1 class="{tagName(_n)}">Term: [@name]</h1>
+        if ([description]){
+            <p class="short">[description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">[description][desclong]</p>
+        }
+        
+        each(*[section]){
+            <h2>[@name]</h2>
+            {detectCode([text()])}
+        }
+    }
+    else if (tagName(_n) == 'action') {
+        <h1 class="{tagName(_n)}">[@name] {tagName(_n)}</h1>
+        if ([description]){
+            <p class="short">[description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">[description] [desclong]</p>
+        }
+        
+        <h2>Syntax</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><th>AML</th><td>&lt;a:[@name] select="xpath" \[set="String"\] /&gt;</td></tr>
+        </table>
+        
+        var types = [['attribute', 'Attributes'], ['event', 'Event']];
+        members(types, _n.parentNode.tagName.toLowerCase() + "." + [../@name].toLowerCase());
+        
+        each(*[section]){
+            <h2>[@name]</h2>
+            {detectCode([text()])}
+        }
+    
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+    
+        used = loopUsed();
+        if (used){
+            <h2>Used by</h2>
+            <div class="used">
+               {used}
+            </div>
+        }
+    } 
+    else if (tagName(_n) == 'binding') {
+        <h1 class="{tagName(_n)}">[@name] {tagName(_n)}</h1>
+        if ([description]){
+            <p class="short">[description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">[description] [desclong]</p>
+        }
+        
+        <h2>Syntax</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><th>AML</th><td>&lt;a:[@name] select="xpath"{ 
+                if ("traverse|load|insert".indexOf([name]) == -1) {
+                    '[value="String"] [method="String"] [eval="String"] [mask="String1, String2, ..."]'
+                } else {
+                    each(*[attribute]) {
+                        "[@name]=\"[@type]\" "
+                    }
+                }
+            }/&gt;</td></tr>
+        </table>
+
+        var types = [,['attribute', 'Attributes']];
+
+        members(types, _n.parentNode.tagName.toLowerCase() + "." + [../@name].toLowerCase());
+        
+        each(*[section]){
+            <h2>[@name]</h2>
+            {detectCode([text()])}
+        }
+    
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+    
+        var used = loopUsed();
+        if (used){
+            <h2>Used by</h2>
+            <div class="used">
+               {used}
+            </div>
+        }
+    }
+    else if (tagName(_n) == 'event') {
+        if ([@context] == "o3") {
+            <img alt="o3 logo" src="images/docs/o3_logo.jpg" class="o3_logo"/>
+        }
+        <h1 class="{tagName(_n)}">[@name] {tagName(_n)}</h1>
+        if ([description]){
+            <p class="short">[description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">[description] [desclong]</p>
+        }
+        
+        <h2>Syntax</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><th>AML</th><td>&lt;a:element on[@name]="sExpression" /&gt;</td></tr>
+            <tr><th>Scripting</th><td><i>object</i>.<strong>on[@name]</strong> = sFunction;</td></tr>
+            <tr><th class="w3c" rowspan="3">W3C</th><td><i>object</i>.addEventListener(<strong>"[@name]"</strong>, sFunction);</td></tr>
+            <tr><td><i>object</i>.removeEventListener(<strong>"[@name]"</strong>, sFunction);</td></tr>
+            <tr><td><i>object</i>.dispatchEvent(<strong>"[@name]"</strong>);</td></tr>
+        </table>
+        
+        <h2>Event Information</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><th>Bubbles</th><td class="codename">{[section/@name] == "bubbles"?'Yes':'No'}</td></tr>
+            <tr><th>Cancels</th><td class="codename">
+                {#[section[@name="cancelable"]] ?
+                    ([text()] || 'Yes'):'No'}
+            </td></tr>
+        </table>
+        
+        if(#[section[@name="object"]]/item){
+            <h2>Event Object Properties</h2>
+            <p class="short">An object is passed as the first argument of the callback function(s) for this event</p>
+            <h3>Available Properties</h3>
+            <table class="syntax" cellpadding="0" cellspacing="0">{
+                each(*[section[@name="object"]/item]){
+                    <tr><th>[@name]</th><td>{[text()]}</td></tr>
+                }
+            }</table>
+        }
+        
+        each(*[section]){
+            if ('object|bubbles|cancelable'.indexOf([@name]) == -1){
+                <h2>[@name]</h2>
+                {detectCode([text()])}
+            }
+        }
+    
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+    
+        used = loopUsed();
+        if(used){
+            <h2>Used by</h2>
+            <div class="used">
+               {used}
+            </div>
+        }
+    }
+    else if (tagName(_n) == 'attribute') {
+        if ([@context] == "o3") {
+            <img alt="o3 logo" src="images/docs/o3_logo.jpg" class="o3_logo"/>
+        }
+        <h1 class="{tagName(_n)}">[@name] {tagName(_n)}</h1>
+        if ([description]){
+            <p class="short">{#[@readonly] ? "Retrieves "  : "Sets or retrieves "} [description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">{#[@readonly] ? "Retrieves "  : "Sets or retrieves "} [description] [desclong]</p>
+        }
+        
+        var varname = ([@type].substr(0,1).toLowerCase() + [@name].uCaseFirst().replace(/-/g,""));
+        <h2>Syntax</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><th>AML</th><td>&lt;a:element [@name]="{varname}" /&gt;</td></tr>{
+                if ([@name].indexOf('-') > -1){
+                    <tr><th>Scripting</th><td>\[ {varname} = \] <i>object</i>\["<strong>[@name]</strong>"\]</td></tr>
+                }else{
+                    <tr><th>Scripting</th><td>\[ {varname} = \] <i>object</i>.<strong>[@name]</strong></td></tr>
+                }
+            }<tr><th class="w3c" rowspan="2">W3C DOM</th><td>\[ {varname} = \] <i>object</i>.getAttribute(<strong>"[@name]"</strong>);</td></tr>
+            <tr><td><i>object</i>.setAttribute(<strong>"[@name]"</strong>, {varname});</td></tr>
+        </table>
+        
+        <h2>Possible Values</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><td>{varname}</td><td colspan="2">
+                <strong>[@type]</strong> that specifies [description]
+            </td></tr>{
+            
+            each(*[section[@name="Possible values"]/item]){
+                <tr><td></td><td class="codename">[@name]</td><td>{[text()]}</td></tr>
+            }
+        }</table>
+        <div class="annotations">
+            {#[@readonly] ? "This attribute is read only"  : "This attribute is read/write"}.
+            Expressions can be used in place of the preceding value(s), see <a href="term.propertybinding">About Property Binding</a>.
+        </div>
+        
+        each(*[section[not(@name="Possible values")]]){
+            <h2>[@name]</h2>
+            {detectCode([text()])}
+        }
+    
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+    
+        used = loopUsed();
+        if(used){
+            <h2>Used by</h2>
+            <div class="used">
+               {used}
+            </div>
+        }
+    }
+    else if (tagName(_n) == 'property') {
+        if ([@context] == "o3") {
+            <img alt="o3 logo" src="images/docs/o3_logo.jpg" class="o3_logo"/>
+        }
+        <h1 class="{tagName(_n)}">[@name] {tagName(_n)}</h1>
+        if ([description]){
+            <p class="short">{(#[@readonly] ? "Retrieves "  : "Sets or retrieves ")} [description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">[description] [desclong]</p>
+        }
+        
+        var varname = ([@type].substr(0,1).toLowerCase() + [@name].uCaseFirst().replace(/-/g,""))
+        <h2>Syntax</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">{
+            if ([@name].indexOf('-') > -1){
+                <tr><th>Scripting</th><td>\[ {varname} = \] <i>object</i>\[<strong>[@name]</strong>\]</td></tr>
+            }else{
+                <tr><th>Scripting</th><td>\[ {varname} = \]" <i>object</i>.<strong>[@name]</strong></td></tr>
+            }
+        }</table>
+        
+        <h2>Possible Values</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><td>{varname}</td><td colspan="2">
+                <strong>[@type]</strong> that specifies [description]
+            </td></tr>{
+                each(*[section[@name="Possible values"]/item]){
+                    <tr><td></td><td class="codename">[@name]</td><td>{[text()]}</td></tr>
+                }
+        }</table>
+        <div class="annotations">
+            {#[@readonly] ? "This attribute is read only"  : "This attribute is read/write"}.
+        </div>
+        
+        each(*[section[not(@name="Possible values")]]){
+            <h2>[@name]</h2>
+            {detectCode([text()])}
+        }
+    
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+    
+        used = loopUsed();
+        if(used){
+            <h2>Used by</h2>
+            <div class="used">
+               {used};
+            </div>
+        }
+    }
+    else if (tagName(_n) == 'method') {
+        if ([@context] == "o3") {
+            <img alt="o3 logo" src="images/docs/o3_logo.jpg" class="o3_logo"/>
+        }
+        <h1 class="{tagName(_n)}">[@name] {tagName(_n)}</h1>
+        if ([description]){
+            <p class="short">[description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">[description] [desclong]</p>
+        }
+        
+        <h2>Syntax</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><th>Scripting</th><td>
+                <i>{
+                if([return]){
+                    {[@type].substr(0,1).toLowerCase() + "Value ="}
+                }
+                }object</i><strong>.[@name](</strong>{
+                found = 0;
+                each(*[param]){
+                    if ([@required] == 'true') {
+                        <strong class="required">{found?"<strong>, </strong>":""}[@name]</strong>
+                    }
+                    else{
+                        <strong>\[{found?", ":""}</strong>{[@name]}<strong>\]</strong>
+                    }
+                    found = found+1;
+                }
+                }<strong>)</strong>
+            </td></tr>
+        </table>
+        
+        if(#[param]){
+            <h2>Parameters</h2>
+            <table class="syntax" cellpadding="0" cellspacing="0">{
+                each(*[param]){
+                    <tr><td>[@name]</td><td colspan="2">{
+                        if(#[description]){
+                            <strong>[@type]</strong>" that specifies [description]"
+                            if ([desclong]){
+                                "<br />[desclong]"
+                            }
+                        }
+                    }
+                    <table class="syntax" cellpadding="0" cellspacing="0">{
+                        each(*[section]){
+                            <tr><th colspan="2" class="sub">[@name] ([../@type])</th></tr>
+                            each(*[item]){
+                                <tr><th>[@name]</th><td>{[text()]}</td></tr>
+                            }
+                        }
+                    }</table>
+                    </td></tr>
+                }
+            }</table>
+        }
+        
+        each(*[section]){
+            <h2>[@name]</h2>
+            {detectCode([text()])}
+        }
+    
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+        
+        used = loopUsed();
+        if(used){
+            <h2>Used by</h2>
+            <div class="used">
+               {used}
+            </div>
+        }
+    }
+    else if (tagName(_n) == 'baseclass' || tagName(_n) == "object") {
+        if ([@context] == "o3") {
+            <img alt="o3 logo" src="images/docs/o3_logo.jpg" class="o3_logo"/>
+        }
+
+        <h1 class="{tagName(_n)}">[@name] {tagName(_n)}</h1>
+        if ([description]){
+            <p class="short">[description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">
+                {detectCode([desclong])}
+            </p>
+        }
+
+        var types = [['attribute', 'Attributes'], ['event', 'Events'], ['binding', 'Bindings'], ['action', 'Actions'], ['method', 'Methods'], ['property', 'Properties'], ['object', 'Objects'], ['skinitem', 'Skin Items']];
+        
+        if (tagName(_n) == 'baseclass') {
+            members(types);
+        }
+        
+        each(*[section]){
+            <h2>[@name]</h2>
+            {detectCode([text()])}
+        }
+
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+
+        used = loopUsed();
+        if(used){
+            <h2>Used by</h2>
+            <div class="used">
+               {used}
+            </div>
+        }
+    }
+    else if (tagName(_n) == 'teleport') {
+        <h1 class="{tagName(_n)}">Teleport: [@name] 
+        if(#[inherit[@name="rpc"]]){
+            "rpc module"
+        }
+        </h1>
+        if ([description]){
+            <p class="short">[description]</p>
+        }
+        <div class="seperator"> </div>
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">
+                {detectCode([desclong])}
+            </p>
+        }
+        
+        var types = [['attribute', 'Attributes'], ['method', 'Methods'], ['property', 'Properties'], ['event', 'Events'], ['object', 'Objects']];
+        members(types);
+        
+        each(*[section]){
+            <h2>[@name]</h2>
+            {detectCode([text()])};
+        }
+        
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+        
+        used = loopUsed();
+        if(used){
+            <h2>Used by</h2>
+            <div class="used">
+               {used}
+            </div>
+        }
+    }
+    else if (tagName(_n) == 'element') {
+        function doInherit(load){
+            local(load ? self.loadFile('baseclass.' + [@name].toLowerCase()) : %[.]){
+                <ul>{
+                    each(*[inherit]){
+                        <li class="{%[../inherit[last()]] == %[.] ? 'last' : ''}">
+                            <a href="baseclass.{[@name].toLowerCase()}">[@name]</a>
+                            {doInherit(true);}
+                        </li>
+                    }
+                }</ul>
+            }
+        }
+        
+        <div class="inheritance">
+            <h2>Inheritance</h2>
+            <strong>[@name]</strong>
+            {doInherit();}
+            <span>
+                <a href="/term.baseclass">Learn more about multiple inheritance</a>
+            </span>
+        </div>
+        
+        <h1 class="{tagName(_n)}">[@name] {tagName(_n)}</h1>
+        if ([description]){
+            <p class="short">[description]</p>
+        }
+        <div class="seperator"> </div>
+        
+        if ([desclong]){
+            <h2>Description</h2>
+            <p class="description">[description] [desclong]</p>
+        }
+        
+        <h2>Syntax</h2>
+        <table class="syntax" cellpadding="0" cellspacing="0">
+            <tr><th>AML</th><td>&lt;a:<strong>[@name]</strong> id="jObj" /&gt;</td></tr>
+            <tr><th>Scripting</th><td>\[ jObj = \] <i>apf.document</i>.createElement("<strong>[@name]</strong>");</td></tr>
+        </table>
+        
+        var types = [['attribute', 'Attributes'], ['event', 'Events'], ['binding', 'Bindings'], ['action', 'Actions'], ['method', 'Methods'], ['property|object', 'Properties'], ['skinitem', 'Skin Items']];
+        <br clear="right" />
+        {members(types);}
+
+        each(*[section]){
+            <h2>[@name]</h2>
+            {detectCode([text()])}
+        }
+        
+        if(#[see]){
+            <h2>See also</h2>
+            <div class="see">{
+                each(*[see]){
+                    "\{@link [@filename] \}"
+                }
+            }</div>
+        }
+    }
+
+    return output().replace(/\{\@link\s+([^\}]*)\}/g, function(m, m1){
+        var s = m1.split(" ");
+        url = s.shift();
+        s = s.join(" ");
+        if (!s && url.substr(0, 7) != "http://") {
+            s = [];
+            var items = url.split(".").reverse();
+            for (var i = 0; i < items.length; i += 2) {
+                if (i > 0)
+                    s.push(" on the ");
+                s.push(items[i], " ", items[i + 1]);
+            }
+            s = s.join("");
+        }
+        if (url.substr(0, 7) != "http://")
+            return "<a href='/" + url.toLowerCase() + ".html'>" + s + "</a>";
+        else
+            return "<a href='" + url.toLowerCase() + "'>" + s + "</a>";
+    });
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <!--script type="text/javascript" src="https://d6ff1xmuve0sx.cloudfront.net:443/2.0.3-3fd7e96a/static/require.js"></script>
+        <script>
+            var config = {"baseUrl":"https://d6ff1xmuve0sx.cloudfront.net:443/2.0.3-3fd7e96a/static","paths":{}};
+            require(config, ["https://d6ff1xmuve0sx.cloudfront.net:443/2.0.3-3fd7e96a/static/apf-packaged/apf_release.js"], function() {
+                apf.addEventListener("load", function() {
+                    console.log("LOADED!");
+                });
+            });
+        </script-->
+    </head>
+    <body>
+        <a:skin src="../debugwin/skins.xml" media-path="../debugwin/resources/" />
+
+        <a:appsettings debug="0" />
+
+        <a:model id="mdlTest" />
+
+        <a:model id="mdlBlah">
+            <data>
+                <person name="Ruben" />
+                <person name="Hans" />
+                <person name="Bas" />
+            </data>
+        </a:model>
+
+        <?lm
+            foreach([mdlBlah::person]) {
+                "Direct output:" + [@name] + "<br/>";
+                <a:textbox value="[@name]" />
+                <a:button onclick="alert([@name])">Done</a:button>
+            }
+        ?>
+
+        <a:list
+          model   = "mdlBlah"
+          caption = "[@name]"
+          each    = "[person]"
+        />
+
+        <a:button onclick="mdlBlah.removeXml('person[2]')">Remove</a:button>
+    </body>
+</html>

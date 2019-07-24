@@ -1,7 +1,6 @@
 /*
  * @package jsDAV
  * @subpackage DAV
- * @copyright Copyright(c) 2011 Ajax.org B.V. <info AT ajax DOT org>
  * @author Mike de Boer <info AT mikedeboer DOT nl>
  * @license http://github.com/mikedeboer/jsDAV/blob/master/LICENSE MIT License
  */
@@ -9,11 +8,11 @@
 
 var jsDAV_FS_Node     = require("./node");
 var jsDAV_FS_File     = require("./file");
-var jsDAV_Collection  = require("cozy-jsdav-fork/lib/DAV/collection");
-var jsDAV_iQuota      = require("cozy-jsdav-fork/lib/DAV/interfaces/iQuota");
+var jsDAV_Collection  = require("@pylonide/jsdav/lib/DAV/collection");
+var jsDAV_iQuota      = require("@pylonide/jsdav/lib/DAV/interfaces/iQuota");
 
 var Path              = require("path");
-var Exc               = require("cozy-jsdav-fork/lib/shared/exceptions");
+var Exc               = require("@pylonide/jsdav/lib/shared/exceptions");
 var Stream            = require('stream').Stream;
 
 var jsDAV_FS_Directory = module.exports = jsDAV_FS_Node.extend(jsDAV_Collection, jsDAV_iQuota, {

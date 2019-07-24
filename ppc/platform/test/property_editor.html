@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" 
+  xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+       <title>Ajax.org Platform Elements</title>
+       <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="1" />
+
+        <a:model id="mdlProps">
+           <props>
+               <folder>
+                    <group caption="General">
+                       <prop 
+                         caption    = "Title" 
+                         editor     = "textbox" 
+                         value      = "[@caption]" 
+                         required   = "true" />
+                       <prop 
+                         caption  = "Priority" 
+                         editor   = "dropdown" 
+                         value    = "[@priority]"
+                         >
+                            <item value="1">1</item> 
+                            <item value="2">2</item> 
+                            <item value="3">3</item> 
+                            <item value="4">4</item> 
+                            <item value="5">5</item> 
+                       </prop>
+                       <prop 
+                         caption   = "(Align)" 
+                         editor    = "textbox" 
+                         value     = "[@align]">
+                            <prop 
+                              caption  = "Position" 
+                              editor   = "dropdown" 
+                              value    = "[@align-template]">
+                                <item value="left">left</item> 
+                                <item value="top">top</item> 
+                                <item value="right">right</item> 
+                                <item value="bottom">bottom</item> 
+                            </prop>
+                            <prop 
+                              caption  = "Splitter" 
+                              editor   = "checkbox" 
+                              values   = "True|False"
+                              value    = "[@splitter]" />
+                            <prop 
+                              caption  = "Edge" 
+                              editor   = "slider" 
+                              value    = "[@edge]" />
+                            <prop 
+                              caption  = "Some value" 
+                              editor   = "spinner" 
+                              value    = "[@some]" />
+                       </prop>
+                       <prop 
+                          caption  = "Date" 
+                          editor   = "caldropdown" 
+                          value    = "[@date]" />
+                    </group>
+                    <group caption="Advanced">
+                       <prop 
+                         caption    = "Title" 
+                         editor     = "textbox" 
+                         value      = "[@caption]" 
+                         required   = "true" />
+                       <prop 
+                         caption  = "Priority" 
+                         editor   = "dropdown" 
+                         value    = "[@priority]"
+                         >
+                            <item value="1">1</item> 
+                            <item value="2">2</item> 
+                            <item value="3">3</item> 
+                            <item value="4">4</item> 
+                            <item value="5">5</item> 
+                       </prop>
+                       <prop 
+                         caption   = "(Align)" 
+                         editor    = "textbox" 
+                         value     = "[@align]">
+                            <prop 
+                              caption  = "Position" 
+                              editor   = "dropdown" 
+                              value    = "[@align-template]">
+                                <item value="left">left</item> 
+                                <item value="top">top</item> 
+                                <item value="right">right</item> 
+                                <item value="bottom">bottom</item> 
+                            </prop>
+                            <prop 
+                              caption  = "Splitter" 
+                              editor   = "checkbox" 
+                              values   = "True|False"
+                              value    = "[@splitter]" />
+                            <prop 
+                              caption  = "Edge" 
+                              editor   = "slider" 
+                              value    = "[@edge]" />
+                            <prop 
+                              caption  = "Some value" 
+                              editor   = "spinner" 
+                              value    = "[@some]" />
+                       </prop>
+                       <prop 
+                          caption  = "Date" 
+                          editor   = "caldropdown" 
+                          value    = "[@date]" />
+                    </group>
+               </folder>
+           </props>
+       </a:model>
+       
+        <a:model id="mdlData">
+            <folder caption="My Documents" priority="4" align="left-splitter-3" />
+        </a:model>
+    
+        <!--a:propedit id="pe" columns="35%,65%" model="mdlData" width="880" height="200">
+            <a:properties match="[folder]" src="[mdlProps::folder]" />
+            <a:properties match="[file]" src="[mdlProps::file]" />
+        </a:propedit>
+        
+        <a:propedit id="pe2" columns="35%,65%" model="mdlData" width="880" height="200">
+            <a:prop 
+              caption    = "Title" 
+              type       = "textbox" 
+              select     = "@caption" 
+              required   = "true" />
+            <a:prop 
+              caption  = "Priority" 
+              type     = "dropdown" 
+              select   = "@priority"
+              overview = "overview" 
+              >
+                 <a:item value="1">1</item> 
+                 <a:item value="2">2</item> 
+                 <a:item value="3">3</item> 
+                 <a:item value="4">4</item> 
+                 <a:item value="5">5</item> 
+            </a:prop>
+        </a:propedit>
+        
+        <a:button caption="test" id="btnProp" />
+        
+        <a:propedit id="pe2" columns="35%,65%" model="{btnProp}" width="880" height="200" /-->
+        
+        <a:propedit id="pe" columns="35%,65%" model="mdlData" 
+            properties="[mdlProps::folder]" width="300" height="500" onbeforechange="alert(2)">
+            <a:change set="{alert(1)}" />
+        </a:propedit>
+        
+        <!--a:dropdown>
+            <a:item>teasdasd</a:item>
+            <a:item>teasdasd</a:item>
+            <a:item>teasdasd</a:item>
+        </a:dropdown-->
+    </body>
+<!--
+Property:
+- caption
+- editor (name of widget, lm function returning amlNode or lm template ref)
+    - children being aml nodes
+- value (lm, only when widget is created by grid)
+
+validation attr: (only when widget is created by grid)
+- required
+- datatype
+- required
+- pattern
+- min
+- max
+- maxlength
+- minlength
+- notnull
+- checkequal
+- validtest
+
+Group:
+- name
+- properties
+
+Move from dg to widgets:
+- autocomplete with template
+- dropdown with bound multicheck
+
+Furthermore it supports:
+- properties binding rule to switch properties
+- special node introspection mode
+    - .listAttributes()
+        - returns array of objects
+            - name
+            - editor
+            - validation rules
+    - .setAttribute(name, value)
+    - .getAttribute(name)
+    - .addEventListener("prop." + name);
+    - .removeEventListener("prop." + name);
+-->
+</html>

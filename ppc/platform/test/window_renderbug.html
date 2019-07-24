@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>WINDOW Render runtime bug</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <style>
+            .redborder{
+                border : 1px solid red;
+            }
+            .boxtest{
+                border : 1px solid green;
+                font-family : Arial;
+                padding : 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+        <a:model id="mdlDashboard">
+            <person>
+                <memberships computed="1">
+                    <membership id="120" level="1" orgfirst="1">
+                        <person id='101' first_name="Jimmy" last_name="Harrison" initials="J.A." icon="2312" />
+                        <org id='102' icon="2212" name="The World Health Organization" tagline="The United Nations public health arm" website="http://www.who.int"/>
+                        <worknet id="100" icon="2012" name="Business Intelligence for Small Businesses, London" tagline="Working together towards the Conference on the 10th of September 2010 at the"/>
+                    </membership>
+                </memberships>
+                
+                <partners computed="1"/>
+                
+                <orgs computed="1">
+                    <org id='102' icon="2212" name="The World Health Organization" tagline="The United Nations public health arm" website="http://www.who.int" employees="100"/>
+                    <org id="202" icon="2012" name="Ajax.org" tagline=""/>
+                </orgs>
+                
+                <contacts computed="1">
+                    <person id='201' title="Drs" first_name="Jane" last_name="Campbell" initials="J.C." icon="2112" />
+                </contacts>
+            </person>
+        </a:model>
+        
+        <a:window id="winSendMessage"
+          icon    = ""
+          render2  = "runtime" 
+          center  = "true"
+          popup   = "true"
+          width   = "550"
+          validgroup = "vgNewMessage">
+            <a:vbox padding="3" edge="0 9 0 9">
+                <a:hbox pack="start" align="center">
+                    <span class="message_label">To:</span>
+                    <a:textbox id="txtContactSearch" skin="status_textinput"
+                      onafterchange     = "
+                        if (this.value != '' AND (lstContacts.length OR lstContactsWorknets.length OR lstContactsOrgs.length)) {
+                            var pos = apf.getAbsolutePosition(this.$ext);
+                            mnuContacts.display(pos[0]-5,pos[1]+30);
+                        }
+                        else {
+                            mnuContacts.hide();
+                        }
+                      "
+                      class     = "closebtn"
+                      flex      = "1"
+                      realtime  = "true" />
+                </a:hbox>
+            </a:vbox>
+        </a:window>
+
+        <a:menu id="mnuContacts"
+          anim = "{!apf.isIE}"
+          skin = "invite_menu">
+            <a:list
+              id        = "lstContacts"
+              model     = "[mdlDashboard::contacts]"
+              each      = "person"
+              skin      = "lstMnuInvite"
+              onclick   = "
+                mnuContacts.hide();
+              "
+              visible = "{lstContacts.length ? true : false}">
+                <a:each
+                  match  = "[person]"
+                  sort   = "[@last_name]"
+                  order  = "ascending"
+                  filter = "{txtContactSearch.value}"
+                  filter-fields = "@title,@first_name,@last_name"
+                >
+                    <a:caption>[@title] [@first_name] [@last_name]</a:caption>
+                </a:each>
+            </a:list>
+            <a:divider visible="{lstContacts.length AND (lstContactsWorknets.length OR lstContactsOrgs.length)}"/>
+            <a:list
+              id        = "lstContactsWorknets"
+              model     = "[mdlDashboard::memberships]"
+              each      = "membership/worknet"
+              skin      = "lstMnuInvite"
+              onclick   = "
+                mnuContacts.hide();
+              "
+              visible = "{lstContactsWorknets.length ? true : false}">
+                <a:each
+                  match  = "[membership/worknet]"
+                  sort   = "[@name]"
+                  order  = "ascending"
+                  filter = "{txtContactSearch.value}"
+                  filter-fields = "@name">
+                  <a:caption>[@name]</a:caption>
+                </a:each>
+            </a:list>
+            <a:divider visible="{lstContactsWorknets.length AND lstContactsOrgs.length}"/>
+            <a:list
+              id        = "lstContactsOrgs"
+              model     = "[mdlDashboard::orgs]"
+              each      = "org"
+              skin      = "lstMnuInvite"
+              onclick   = "
+                mnuContacts.hide();
+              "
+              visible = "{lstContactsOrgs.length ? true : false}">
+                <a:each
+                  match  = "[org]"
+                  sort   = "[@name]"
+                  order  = "ascending"
+                  filter = "{txtContactSearch.value}"
+                  filter-fields = "@name">
+                  <a:caption>[@name]</a:caption>
+                </a:each>
+            </a:list>
+        </a:menu>
+        
+        <a:button onclick="winSendMessage.show()">Open</a:button>
+    </body>
+</html>

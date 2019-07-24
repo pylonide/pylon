@@ -1,0 +1,334 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>LiveMarkup Example</title>
+    <style>
+        body, button{
+            font-family : Myriad Web, Arial;
+        }
+    
+        body{
+            margin : 20px;
+        }
+
+        P{
+            font-size : 9pt;
+            background-color : #EEEEEE;
+            padding : 10px;
+            border-left : 1px solid #DDDDDD;
+        }
+
+        h1{
+            color : orange;
+        }
+
+        h2{
+            margin-bottom : 0;
+            font-size : 14pt;
+            color : midnightblue;
+        }
+
+        .float{
+            float : left;
+            width : 49%;
+        }
+
+        .float textarea{
+            width : 95%;
+            height : 180px;
+            border : 1px solid gray;
+        }
+
+        label{
+            font-size : 8pt;
+            position : relative;
+            top : -1px;
+        }
+
+        button{
+            border-width : 1px;
+            padding : 2px;
+            float:left;
+        }
+        #taLM{
+            color: blak;
+        }
+        #taXml{
+            color: red;
+        }
+        #taResult{
+            color: green;
+        }
+        #taCode{
+            color: gray;
+        }
+    </style>
+        <script >//<![CDATA[
+
+        window.onload = function(){
+                // lets parse the XML, and JSLT
+                doLMProcessing(0);
+
+            }
+	/*		single quote ' error
+Error parsing: [folder/@name] $[btnhello]
+broken: each([folder]) 
+  *[file]
+
+parse: "*[x]"
+
+parse: [x] += <node/>
+
+*/
+            var xmlData;
+            var jsltCode;
+
+            function setCode(x){document.getElementById('taCode').value = x;}
+            function setResult(x){document.getElementById('taResult').value = x;}
+            function getLM(){return document.getElementById('taLM').value;}
+            function getXml(){ return document.getElementById('taXml').value;}
+
+
+            function doParseXML(){
+                try{ xmlData = parseXML(getXml());}
+                catch(e){
+                    xmlData= null;
+                }
+                if(!xmlData || !xmlData.documentElement)setResult("XML Parsing error occured\n");
+            }
+
+            function doCompileJSLT(){
+                clearLog();
+                try{
+                    var lm = getLM();
+					apf.lm.resetCache();
+                    if(lm.indexOf('##')!=-1){
+                        var args = lm.split(/##/);
+                        for(i=0;i<args.length;i++)if(args[i]=='-')args[i]='';
+                        jsltCode = apf.lm.compileMatch( args, {node:1} );
+                    }else if(lm.indexOf('!!')==0){
+                        jsltCode = apf.lm.compile( lm.slice(2), {event:1,parsecode:1,funcglobal:1});
+                    }if(lm.indexOf('??')==0){
+                        jsltCode = apf.lm.compile( lm.slice(2), {precall:1,parsecode:1});
+                    }else{
+						//{editable:1,parsecode:0,xpathmode:0} 
+                        var opt = {parsecode:0,xpathmode:0,storedyn:1}; 
+						//var dt = new Date().getTime();
+                        jsltCode = apf.lm.compile( lm,opt );
+                        //event:1,xpathmode:0,injectself:1
+						//logw((new Date().getTime())-dt);
+                    }
+                } catch(e){
+                    setResult("JSLT Compilation occured:\n"+e.message);
+                    jsltCode = null;
+                }
+                setCode(apf.lm.lastCode());
+            }
+
+            // do the processing
+            function doLMProcessing(x){
+                if(!xmlData || x&1)doParseXML();
+                if(!xmlData || !xmlData.documentElement)return;
+                if(!jsltCode || x&2)doCompileJSLT();
+                var obj = {v1:3};
+                try{ 
+					doParseXML();
+                    if(jsltCode){
+                        if(jsltCode.type == 1){
+                            if(jsltCode.asyncs){
+                                //logw("async call");
+                                 jsltCode(xmlData.documentElement,function(v){
+                                    setResult( 'Async received:'+v );
+                                },{});
+                            }else{
+                                var res = jsltCode( xmlData.documentElement, {});
+                                setResult(res);
+                            }
+                        }else{
+                            if(jsltCode.type == 2){
+                                setResult("Simple string:"+jsltCode.str);
+                            }
+                            if(jsltCode.type == 3){
+                                setResult(jsltCode( xmlData.documentElement, {}));
+                            }
+                        }
+                    }
+                }
+                catch(e){
+                  setResult("JSLT Execution occured:\n"+e.message);
+                }
+            }
+
+            // util function
+            function parseXML(x){
+                var p;
+                if(document.all){p = new ActiveXObject("microsoft.XMLDOM");p.setProperty("SelectionLanguage", "XPath");p.loadXML(x);}
+                else{p = new DOMParser();if(x) p = p.parseFromString(x, "text/xml");}
+                return p;
+            }
+
+            function clearLog(){
+                var e = document.getElementById('dbgLog');
+                if(1)e.innerHTML = "";
+            }
+
+            var ts=[],ti;
+            function logw(txt){
+                var e = document.getElementById('dbgLog');
+                if(!e){
+                  if(txt===undefined)return txt;
+                  ts.push(txt);ts.push('\n');
+                  window.setTimeout("logw()",100);
+                  return txt;
+                }
+                
+                if(txt===undefined){if(!ts)return txt;txt = ts.join('');ts=null;}
+                var t = (txt+'').replace(/ /g, "&nbsp;").replace(/\</g, "&lt;").replace(/\>/g, "&gt;").replace(/\n/g, "<br/>").replace(/\t/g, "&nbsp;&nbsp;&nbsp;")+"<br/>";
+                e.innerHTML += t;
+              //  e.insertAdjacentHTML("beforeend", t);
+                e.scrollTop = e.scrollHeight;
+                return txt;
+            }
+
+            function test(x){
+                return x;
+            }
+            
+            var apf = {
+                SUCCESS:1,
+				xmldb:{
+					removeNode:function(xmlNode){
+						if(xmlNode.nodeType==2)
+							(xmlNode.ownerElement || xmlNode.selectSingleNode("..")).removeAttribute(xmlNode.nodeName);
+						else xmlNode.parentNode.removeChild(xmlNode);
+					},
+					removeNodeList:function(list){
+						for(var i = 0,j;i<list.length;i++){
+							if((j = list[i]).nodeType==2)
+								(j.ownerElement || j.selectSingleNode("..")).removeAttribute(j.nodeName);
+							else j.parentNode.removeChild(j);
+						}
+					},
+					appendChild:function(pNode,xmlNode,beforeNode){
+						if (pNode.ownerDocument && pNode.ownerDocument.importNode && pNode.ownerDocument != xmlNode.ownerDocument)
+							xmlNode = pNode.ownerDocument.importNode(xmlNode, true); //Safari issue not auto importing nodes		
+						
+						return pNode.insertBefore(xmlNode, beforeNode);
+					},
+					replaceNode:function(newNode, oldNode){
+						oldNode.parentNode.replaceChild(newNode, oldNode);
+						return newNode;
+					},
+					removeAttribute:function(xmlNode,attribute){
+						xmlNode.removeAttribute(attribute);
+					},
+					setAttribute:function(xmlNode,attribute){
+						xmlNode.setAttribute(attribute);
+					}
+				},				
+                language:{words:{}},
+                console:{error:logw,warn:logw},
+                getXml:function(str){
+                        return parseXML(str).documentElement;
+                },
+                getXmlDom:function(str){
+                        return parseXML(str);
+                },
+				formatErrorString:function(a,b,s0,s1){
+					return s0+s1;
+				},
+				setNodeValue : function(xmlNode, value){
+					if(xmlNode.nodeType == 1){
+						var n;
+						if((n = xmlNode.firstChild) && n && n.nodeType!=1)
+							n.nodeValue = value;
+					}else
+						xmlNode.nodeValue = value;
+				},
+                createNodeFromXpath:function(xmlNode,xpath){
+					var n = xmlNode.selectSingleNode(xpath);
+					if(n) return n;
+					return {};
+				},
+                nameserver:{lookup:{model:{}}},
+                dump:function( o, s, d ){
+                  if(!s)s = [], d = 0; var k, t, u, l = s.length;
+                  switch(typeof(o)){
+                      case 'object': if(o!==null){
+                          t = Array(d+2).join('   '), u  =Array(d+1).join('   ');
+                          if(o.constructor == Array){
+                              s[l++]="[\n";
+                              for(k = 0;k<o.length;k++)s[l++]=t,apf.dump(o[k],s,d+1),l=s.length,s[l++]=",\n";
+                              s[l]="\n", s[l++]=u, s[l++]="]";
+                          }else{
+                              s[l++]="{\n";
+                              for(k in o)s[l++]=t,s[l++]=k.match(/[^a-zA-Z0-9_]/)?'"'+k+'"':k,
+                                 s[l++]=':',apf.dump(o[k],s,d+1),l=s.length,l=s.length,s[l++]=",\n";
+                              s[l]="\n", s[l++]=u, s[l++]="}";
+                          }
+                      }else s[l++] = 'null';break;
+                      case 'string':s[l++]='"',s[l++]=o.replace(/(["\\])/g, '\\$1').replace(/\r?\n/g,"\\n"),s[l++] ='"';break;
+                      default:s.push(o);break;
+                  }
+                  return d?0:s.join('');
+                }
+            };
+            var rpc = {
+                exec : function(func,args,cb){
+                    window.setTimeout(function(){
+                        cb( rpc[func].call(func,args), 1, 0);
+                    },1000);
+                },
+                test : function(a){
+                    return "<xml><drive><folder caption='hello'/></drive></xml>"+a;
+                }
+            }
+        
+        //]]></script>
+        <script src='../core/parsers/livemarkup.js'></script>
+  </head>
+  <body>
+  
+
+      <div class="float">
+          <h2>XML</h2>
+        <textarea id='taXml' onkeyup='if(!document.getElementById("nort").checked)doLMProcessing(1)'>
+<xml>
+ <folder name='F1'>
+  <file>C</file>
+  <file>A</file>
+  <file>B</file>
+ </folder>
+ <folder name='F2'>
+  <file>D</file>
+ </folder>
+ <folder name='F2'>
+  <file>F</file>
+  <file>A</file>
+ </folder>
+</xml>
+</textarea>
+
+    </div>
+    <div class="float">
+        <h2>Live markup</h2>
+        <textarea id='taLM' onkeyup='if(!document.getElementById("nort").checked)doLMProcessing(2)'>(x=y)
+		</textarea>
+
+    </div>
+    <div class="float">
+        <h2>Output</h2>
+        <textarea id='taResult'></textarea>
+    </div>
+    <div class="float">
+        <h2>Generated code</h2>
+        <textarea id='taCode'></textarea>
+    </div>
+    <button onclick='doLMProcessing(3)'>Update</button>
+    <input id='nort' type="checkbox"><label>Don't update in real-time.</label></input><br /><br />
+    <div id='dbgLog' style="width:100%;height:500px;overflow-y:scroll;overflow-x:scroll;white-space:break-word;background-color:black;color:gray;font-family:courier;font-size:8pt;">
+    </div>
+    </body>
+  
+</html>

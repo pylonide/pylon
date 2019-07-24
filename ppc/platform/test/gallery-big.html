@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <title>Caldropdown Gen API</title>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        <a:appsettings debug="false" />
+        <a:model id="mdlSlideshow1">
+            <data>
+                <picture name="img13" title="Landscape"></picture>
+                <picture name="img14" title="Flower"></picture>
+                <picture name="img15" title="Trees"></picture>
+                <picture name="img16" title="Sunflower"></picture>
+                <picture name="img17" title="City"></picture>
+                <picture name="img18" title="Meeting"></picture>
+                <picture name="img19" title="Call center"></picture>
+                <picture name="img21" title="The country"></picture>
+                <picture name="img22" title="River"></picture>
+                <picture name="img24" title="Wool"></picture>
+                <picture name="img25" title="Fabric"></picture>
+                <picture name="img26" title="Ocean"></picture>
+                <picture name="img27" title="Beach"></picture>
+                <picture name="img28" title="Beach"></picture>
+                <picture name="img29" title="Beach"></picture>
+                <picture name="img1" title="Phone"></picture>
+                <picture name="img2" title="Lemon... ?"></picture>
+                <picture name="img3" title="Mainboard"></picture>
+                <picture name="img4" title="Sky"></picture>
+                <picture name="img5" title="Beach"></picture>
+                <picture name="img6" title="Cogwheel"></picture>
+                <picture name="img7" title="Antenna"></picture>
+                <picture name="img8" title="Beach"></picture>
+                <picture name="img9" title="Cosmodrome"></picture>
+                <picture name="img10" title="Outer space"></picture>
+                <picture name="img11" title="Planet Earth"></picture>
+                <picture name="img12" title="Hands"></picture>
+            </data>
+        </a:model>
+        
+        <a:gallery
+          id            = "ss1"
+          model         = "mdlSlideshow1"
+          thumbheight="35"
+          autoselect="true"
+          title="text+number"
+
+          thumb-mode="grid"
+          >
+            <a:each match="[picture]">
+                <a:src match="[@name]">images/slideshow_img/[@name].jpg</a:src>
+                <a:caption match="[@title]"></a:caption>
+                <a:image match="[@name]">images/slideshow_img/[@name]_small.jpg</a:image>
+            </a:each>
+        </a:gallery>
+        
+        <a:script><![CDATA[
+            ss1.show();
+        ]]></a:script>
+        
+        
+
+
+    </body>
+</html>

@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.eventbus",
+    "name": "pylon.eventbus",
     "version": "0.0.1",
 
     "main": "./eventbus-plugin.js",

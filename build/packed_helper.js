@@ -40,7 +40,7 @@ for (var f in templates) {
     var tmplFile = require(tmplPath)("blank", project, pluginList, options);
 
     var idePlugin = tmplFile.plugins.filter(function(plugin) {
-        return plugin.packagePath && plugin.packagePath.indexOf("cloud9.core") !== -1;
+        return plugin.packagePath && plugin.packagePath.indexOf("pylon.core") !== -1;
     })[0];
     var scmPluginList = idePlugin.clientPlugins;
 

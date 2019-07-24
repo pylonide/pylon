@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <style>
+        .red{
+            background : red;
+        }
+        
+        .blue{
+            background : blue;
+        }
+    </style>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0"
+          allow-select        = "true"
+          allow-blur          = "true"
+          initdelay           = "false" />
+        
+        <a:model id="mdlBlah">
+            <data>
+                <person id="test" name="" />
+                <person name="Ruben Daniels" />
+                <person name="USA" datatype="country"/>
+                <person name="Bas van Lippen Bisterveld" />
+                <person name="Bas van Lippen Bisterveld
+                    asdasdasd
+                    asdasdasdasdasd" />
+            </data>
+        </a:model>
+        
+        <a:bar model="mdlBlah" height="200" width="400">
+            <a:textbox id="tb" value="[person/@id]" realtime="true" />
+                
+            <div id="test" class="{[person/@id] == 'test2' ? 'red' : 'blue'}">-asdasd-asd</div>
+        </a:bar>
+    </body>
+</html>

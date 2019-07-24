@@ -1,0 +1,5859 @@
+<?xml version='1.0'?>
+<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:codeeditor name="codeeditor">
+    <a:style><![CDATA[
+        .ceDisabled {
+            border: 1px solid #c3c3c3;
+            color: #bebebe;
+        }
+
+        .ceError{
+            border: 1px solid #ffb500;
+            padding : 5px;
+        }
+        
+        /*** TM ***/
+        
+        .ce {
+          border: 1px solid #c3c3c3;
+          -moz-box-sizing: border-box;
+          -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+        }
+        
+        .ce .gutter {
+          width: 40px;
+          background: #e1e7ec; 
+          border-right: 1px solid #c3c3c3;  
+          color: #333;
+          font-family: Monaco, "Courier New";
+          font-size: 12px;  
+          overflow : hidden;
+        }
+        
+        .ceFocus .gutter{
+            background: #c5daec; 
+            border-right : 1px solid #b2b2b2;
+        }
+        
+        .ceFocus{
+            background : #f2f9ff;
+            border-color : #b2b2b2;
+        }
+        
+        .ce .gutter-layer {
+          right: 10px;
+          text-align: right;
+        }
+        
+        .ce .text-layer {
+          font-family: Monaco, "Courier New", monospace;
+          font-size: 12px;
+          cursor: text;
+        }
+        
+        .ce .cursor {
+          border-left: 2px solid black;
+        }
+
+        .ce .cursor.overwrite {
+          border-left: 0px;
+          border-bottom: 1px solid black;
+        }
+        
+        .ce .line .invisible {
+          color: rgb(191, 191, 191);
+         }
+        
+        .ce .line .keyword {
+          color: blue;
+        }
+        
+        .ce .line .buildin-constant {
+          color: rgb(88, 72, 246);
+        }
+        
+        .ce .line .library-constant {
+          color: rgb(6, 150, 14);
+        }
+        
+        .ce .line .buildin-function {
+          color: rgb(60, 76, 114);
+        }
+        
+        .ce .line .string {
+          color: rgb(3, 106, 7);
+        }
+        
+        .ce .line .comment {
+          font-style: italic;
+          color: rgb(76, 136, 107);
+        }
+        
+        .ce .line .doc-comment {
+          color: rgb(0, 102, 255);
+        }
+        
+        .ce .line .doc-comment-tag {
+          color: rgb(128, 159, 191);
+        }
+        
+        .ce .line .number {
+          color: rgb(0, 0, 205);
+        }
+        
+        .ce .line .xml_pe {
+          color: rgb(104, 104, 91);
+        }
+        
+        .ce .marker-layer .selection {
+          background: rgb(181, 213, 255);
+          /*color: white;
+          background-color: #2582d1;*/
+        }
+        
+        .ce .marker-layer .bracket {
+          margin: -1px 0 0 -1px;
+          border: 1px solid rgb(192, 192, 192);
+        }
+        
+        .ce .marker-layer .active_line {
+          background: rgb(232, 242, 254);
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main content=".">
+            <div class="ce"> </div>
+        </a:main>
+    </a:presentation>
+</a:codeeditor>
+<a:tree name="macro_tree">
+    <a:style><![CDATA[
+        .macro_tree {
+            background-color : #edf2f8;
+            font-family      : Tahoma, Arial;
+            font-size        : 11px;
+            padding          : 2px 32px 7px 7px;
+            overflow         : hidden;
+            position         : relative;
+            float            : left;
+            display          : block;
+        }
+        
+        .macro_tree DIV.root,
+        .macro_tree DIV.empty {
+            position    : relative;
+            overflow    : visible;
+            padding-top : 19px;
+            display     : block;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle {
+            height      : 21px;
+            padding     : 6px 0 0 3px;
+            display     : inline-block;
+            white-space : nowrap;
+            width       : auto;
+            overflow    : hidden;
+            position    : relative;
+        }
+        
+        /* Root nodes */
+        .macro_tree DIV.macro_rcaption {
+            height              : 16px;
+            padding             : 3px 5px 0 10px;
+            background-image    : url(images/macro_root_back_left.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            color               : #1e7ecd;
+            display             : block;
+            position            : absolute;
+            right               : 5px;
+            top                 : 0;
+            outline             : none;
+        }
+        
+        .macro_tree #txt_rename {
+            height              : 16px;
+            padding             : 3px 5px 0 10px;
+            background-image    : url(images/macro_root_back_left.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            color               : #1e7ecd;
+            position            : absolute;
+            right               : 5px;
+            top                 : 0;
+            word-break          : keep-all;
+            overflow            : visible;
+            cursor              : text;
+            outline             : none;
+        }
+
+        .macro_tree DIV.macro_rright {
+            height              : 19px;
+            width               : 5px;
+            background-image    : url(images/macro_root_back_right.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            position            : absolute;
+            right               : 0;
+            top                 : 0;
+        }
+        
+        .macro_tree DIV.empty DIV.macro_rcaption,
+        .macro_tree DIV.empty DIV.macro_rright,
+        .macro_tree DIV.new_recording DIV.macro_rcaption,
+        .macro_tree DIV.new_recording DIV.macro_rright {
+            color : #aabccb;
+        }
+
+        .macro_tree DIV.macro_arrow {
+            display : none;
+        }
+        
+        .macro_tree BLOCKQUOTE {
+            margin              : 0 0 4px 0;
+            height              : 27px;
+            position            : relative;
+            overflow            : visible;
+            padding             : 0;
+            width               : 100%;
+            white-space         : nowrap;
+            display             : inline-block;
+            background-image    : url(images/macro_row_back_middle_active.png);
+            background-position : 0 0;
+            background-repeat   : repeat-x;
+        }
+        
+        .macro_tree DIV.new_recording BLOCKQUOTE {
+            background-image    : url(images/macro_row_back_middle_nactive.png);
+        }
+        
+        .macro_tree .selected BLOCKQUOTE {
+            background-position : 0 -27px;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_xbutton {
+            position            : absolute;
+            top                 : 6px;
+            right               : -24px;
+            width               : 16px;
+            height              : 16px;
+            background-image    : url(images/macro_del_ico.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_left {
+            width               : 5px;
+            height              : 27px;
+            overflow            : hidden;
+            position            : relative;
+            display             : inline-block;
+            background-image    : url(images/macro_row_back_left_active.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle {
+            height      : 21px;
+            padding     : 6px 0 0 3px;
+            display     : inline-block;
+            white-space : nowrap;
+            width       : auto;
+            overflow    : hidden;
+            position    : relative;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_right {
+            width               : 5px;
+            height              : 27px;
+            background-image    : url(images/macro_row_back_right_active.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            overflow            : hidden;
+            position            : absolute;
+            top                 : 0;
+            right               : 0;
+        }
+        
+        .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_left,
+        .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_left {
+            background-image : url(images/macro_row_back_left_nactive.png);
+        }
+        .macro_tree DIV.empty BLOCKQUOTE SPAN.macro_cont_right,
+        .macro_tree DIV.new_recording BLOCKQUOTE SPAN.macro_cont_right {
+            background-image : url(images/macro_row_back_right_nactive.png);
+        }
+        
+        .macro_tree DIV.selected BLOCKQUOTE SPAN.macro_cont_left,
+        .macro_tree DIV.selected BLOCKQUOTE SPAN.macro_cont_right {
+            background-position : 0 -27px;
+        }
+
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
+            display     : inline-block;
+            overflow    : hidden;
+            position    : relative;
+            height      : 15px;
+            cursor      : default;
+            white-space : nowrap;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.dragInsert {
+            border-left : 1px dotted black;
+            margin-left : -1px;
+        }
+
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rcaption,
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.playing DIV.macro_rright {
+            background-position : 0 -45px;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.finished DIV.macro_rcaption,
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.finished DIV.macro_rright {
+            background-position : 0 0;
+        }
+        
+        /* Reset styles for other nodes */
+        .macro_tree BLOCKQUOTE DIV.macro_rcaption {
+            display             : block;
+            position            : relative;
+            width               : auto;
+            height              : 15px;
+            background-image    : url(images/macro_child_left_default.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            padding             : 0 5px 0 12px;
+            color               : white;
+            top                 : 0;
+            right               : 0;
+            overflow            : hidden;
+        }
+        
+        .macro_tree BLOCKQUOTE DIV.macro_rright {
+            display             : block;
+            position            : relative;
+            width               : 7px;
+            height              : 15px;
+            background-image    : url(images/macro_child_right_default.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            overflow            : hidden;
+            top                 : 0;
+            right               : 0;
+        }
+        
+        .macro_tree DIV.empty BLOCKQUOTE DIV.macro_rcaption,
+        .macro_tree DIV.new_recording BLOCKQUOTE DIV.macro_rcaption {
+            background-image : url(images/macro_child_left_new_recording.png);
+            color            : #aabccb;
+        }
+        .macro_tree DIV.empty BLOCKQUOTE DIV.macro_rright,
+        .macro_tree DIV.new_recording BLOCKQUOTE DIV.macro_rright {
+            background-image : url(images/macro_child_right_new_recording.png);
+        }
+        
+        .macro_treeFocus DIV BLOCKQUOTE DIV.selected DIV.macro_rcaption,
+        .macro_treeFocus DIV BLOCKQUOTE DIV.selected DIV.macro_rright {
+            background-position : 0 -15px;
+        }
+        
+        .macro_tree BLOCKQUOTE DIV.macro_arrow {
+            display             : inline-block;
+            position            : relative;
+            width               : 7px;
+            height              : 13px;
+            background-image    : url(images/macro_white_arrow.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            margin              : 0 4px 0 7px;
+            overflow            : hidden;
+        }
+        
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV.last DIV.macro_arrow,
+        .macro_tree BLOCKQUOTE SPAN.last DIV.macro_arrow {
+            background-image : none;
+            margin           : 0;
+        }
+        
+        .macro_tree DIV.empty,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_right,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_middle,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_cont_left,
+        .macro_tree BLOCKQUOTE BLOCKQUOTE SPAN.macro_xbutton {
+            display : none;
+        }
+        
+        /* DRAG & DROP */
+        
+        .dragmacro_tree DIV.macro_rcaption {
+            display             : block;
+            position            : relative;
+            float               : left;
+            width               : auto;
+            height              : 15px;
+            background-image    : url(images/macro_child_left_default.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            padding             : 0 5px 0 12px;
+            color               : white;
+            overflow            : hidden;
+            font-family         : Tahoma, Arial;
+            font-size           : 11px;
+        }
+        
+        .dragmacro_tree DIV.macro_rright {
+            display             : block;
+            position            : relative;
+            width               : 7px;
+            height              : 15px;
+            background-image    : url(images/macro_child_right_default.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            overflow            : hidden;
+        }
+    ]]></a:style>
+    <a:style condition="!apf.isIE"><![CDATA[
+        .macro_tree BLOCKQUOTE DIV.macro_arrow {
+            margin : 0 7px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isChrome"><![CDATA[
+        .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
+            float : left;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isOpera"><![CDATA[
+       .macro_tree BLOCKQUOTE {
+            display : block;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="macro_tree">
+
+            </div>
+        </a:main>
+        <a:item
+          class     = "."
+          caption   = "div[1]/text()"
+          icon      = "."
+          check     = "."
+          openclose = "div[2]"
+          select    = "."
+          container = "blockquote/span[2]">
+            <div><div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span></blockquote></div>
+        </a:item>
+        <a:dragindicator>
+            <div class="dragmacro_tree">
+                <div class="macro_rcaption">-</div><div class="macro_rright"></div>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption="div[1]/text()">
+            <div><div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton"> </span></blockquote></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+
+<a:tree name="checktree">
+    <a:style><![CDATA[
+        .checktree {
+            overflow         : auto;
+            position         : relative;
+            background-color : white;
+            cursor           : default;
+            border           : 1px solid #c3c3c3;
+            padding          : 3px;
+        }
+    
+        .trDefines {
+            background    : none;
+            border-bottom : 1px solid #c3c3c3;
+            border-top    : 1px solid #c3c3c3;
+            border-right  : none;
+            border-left   : none;
+            posittion     : relative;
+            padding-top   : 8px;
+        }
+    
+        .checktree SPAN, 
+        .dragchecktree SPAN {
+            width       : 15px;
+            height      : 18px;
+            background  : no-repeat 3px 5px;
+            display     : block;
+            margin-left : -29px;
+        }
+    
+        .dragchecktree SPAN {
+            background : transparent;
+        }
+    
+        .checktree DIV.pluslast SPAN,
+        .checktree DIV.plus SPAN {
+            background-image:url(images/plus.png);
+        }
+        
+        .checktree DIV.minlast SPAN,
+        .checktree DIV.min SPAN {
+            background-image:url(images/min.png);
+        }
+    
+        .checktree DIV, 
+        .dragchecktree {
+            padding      : 0;
+            height       : 18px;
+            padding-left : 29px;
+            font-family  : Tahoma, Arial, Arial;
+            font-size    : 8.5pt;
+            position     : relative;
+        }
+        
+        .checktree .focusbug {
+            padding-left : 0;
+            overflow     : auto;
+        }
+        
+        .dragchecktree {
+            opacity    : 0.5;
+            background : none;
+        }
+        
+        .checktree LABEL, 
+        .dragchecktree LABEL {
+            padding     : 1px 0 0 18px;
+            background  : no-repeat 1px center;
+            height      : 16px;
+            white-space : nowrap;
+            margin-left : 0px;
+            display     : block;
+            float       : left;
+            margin-top  : -18px;
+        }
+    
+        .checktree DIV.loading LABEL {
+            background : no-repeat 1px center;
+        }
+        
+        .checktree DIV.loading SPAN {
+            background : no-repeat 0px 0px;
+        }
+    
+        .checktree U, 
+        .dragchecktree U {
+            text-decoration : none;
+            color           : black;
+            cursor          : default;
+            display         : inline !important; display: block;
+            padding         : 2px 4px 2px 2px;
+        }
+        
+        .checktreeFocus .indicate U {
+            border  : 1px dotted #BBB;/*#2582d1;*/
+            padding : 1px 3px 1px 1px;
+            color   : black;
+        }
+        
+        .checktree BLOCKQUOTE {
+            margin     : 0;
+            padding    : 0 0 0 20px;
+            display    : none;
+            height     : 0;
+            overflow   : hidden;
+            background : repeat-y 0px center;
+        }
+    
+        .checktree #txt_rename {
+            border      : 1px solid black;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma, Arial;
+            font-size   : 8pt;
+            color       : black;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : -2px;
+            *margin-top : 0;
+            cursor      : text;
+            height      : 13px;
+            outline     : none;
+        }
+    
+        .checktree DIV.dragInsert label {
+            border-top : 2px solid black;
+            height     : 14px;
+            overflow   : hidden;
+        }
+    
+        .checktree DIV.dragInsert U, 
+        .checktree DIV.dragDenied U {
+            padding-top : 0;
+        }
+    
+        /*.checktree DIV.dragDenied label {
+            border-top          : 2px solid red;
+            height              : 14px;
+            overflow            : hidden;
+            padding-top         : 2px;
+            margin-top          : -20px;
+            background-position : 1px 0;
+        }*/
+        
+        .checktree .message {
+            text-align : center;
+            padding    : 8px 10px 0 0;
+            color      : #AAA;
+        }
+        
+        .checktree b {
+            overflow    : hidden;
+            margin      : 2px;
+            width       : 12px;
+            height      : 12px;
+            background  : url("images/tree_checkbox.png") no-repeat 0 -12px;
+            float       : left;
+            margin-left : -31px;
+        }
+        
+        .checktreeFocus .indicate U {
+            border  : 1px dotted #BBB;/*#2582d1;*/
+            padding : 1px 3px 1px 1px;
+            color   : black;
+        }
+        
+        .checktree .selected U, 
+        .checktree .dragAppend U {
+            background-color : #f0f0f0;
+            color            : black;
+        }
+        
+        .checktreeFocus .selected U, 
+        .checktreeFocus .dragAppend U, 
+        .dragtree U {
+            color            : white;
+            background-color : #2582d1;
+        }
+        
+        .checktree .checked b {
+            background-position : 0 -24px;
+        }
+        
+        .checktree .partial b {
+            background-position : 0 -48px;
+        }
+        
+        .checktreeDisabled .checked b, 
+        .checktreeDisabled .partial b, 
+        .checktreeDisabled b {
+            background-position : 0 -0px;
+        }
+    
+        .checktreeDisabled .checked U, 
+        .checktreeDisabled .partial U, 
+        .checktreeDisabled .indicate U, 
+        .checktreeDisabled U {
+            color : #bebebe;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="checktree">
+
+            </div>
+        </a:main>
+        <a:item
+          class     = "."
+          caption   = "label/u/text()"
+          icon      = "label"
+          check     = "label/b"
+          openclose = "span"
+          select    = "label"
+          container = "following-sibling::blockquote">
+            <div>
+                <span> </span>
+                <label>
+                    <b> </b>
+                    <u>-</u>
+                </label>
+            </div>
+            <blockquote> </blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragchecktree'>
+                <span> </span>
+                <label>
+                    <u>-</u>
+                </label>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+
+
+<a:tree name="tree">
+    <a:style><![CDATA[
+        .tree {
+            border           : 1px solid #c3c3c3;
+            background-color : white;
+            width            : 200px;
+            height           : 500px;
+            overflow         : hidden;
+            cursor           : default;
+            position         : relative;
+            overflow         : auto;
+        }
+        
+        .trDefines {
+            background    : none;
+            border-bottom : 1px solid #c3c3c3;
+            border-top    : 1px solid #c3c3c3;
+            border-right  : none;
+            border-left   : none;
+            posittion     : relative;
+            padding-top   : 8px;
+        }
+    
+        .tree SPAN, 
+        .dragtree SPAN {
+            width       : 15px;
+            height      : 18px;
+            background  : no-repeat 3px 5px;
+            display     : block;
+            margin-left : -15px;
+        }
+    
+        .dragtree SPAN {
+            background : transparent;
+        }
+    
+        .tree DIV.pluslast SPAN,
+        .tree DIV.plus SPAN {
+            background-image : url(images/plus.png);
+        }
+        
+        .tree DIV.minlast SPAN,
+        .tree DIV.min SPAN {
+            background-image : url(images/min.png);
+        }
+    
+        .tree DIV, 
+        .dragtree {
+            padding      : 0;
+            height       : 18px;
+            padding-left : 15px;
+            overflow     : hidden;
+            font-family  : Tahoma, Arial, Arial;
+            font-size    : 8.5pt;
+        }
+        
+        .tree .focusbug {
+            padding-left : 0;
+        }
+        
+        .dragtree {
+            opacity    : 0.5;
+            filter     : progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+            background : none;
+        }
+        
+        /*.tree DIV.root {
+            padding : 0;
+        }*/
+    
+        .tree LABEL, 
+        .dragtree LABEL {
+            padding     : 1px 0 0 20px;
+            background  : no-repeat 1px 1px;
+            height      : 16px;
+            white-space : nowrap;
+            margin-left : 0px;
+            display     : block;
+            float       : left;
+            margin-top  : -18px;
+        }
+
+        .tree DIV.loading LABEL {
+        }
+        
+        .tree DIV.loading SPAN {
+            background : no-repeat 0px 0px;
+        }
+    
+        .tree U, 
+        .dragtree U {
+            text-decoration : none;
+            color           : black;
+            cursor          : default;
+            display         : inline !important; display: block;
+            padding         : 2px 4px 2px 2px;
+        }
+    
+        .treeFocus .indicate U {
+            border  : 1px dotted #BBB;/*#2582d1;*/
+            padding : 1px 3px 1px 1px;
+            color   : black;
+        }
+        
+        .tree .selected U {
+            background-color : #f0f0f0;
+            color            : black;
+        }
+        
+        .treeFocus .selected U, 
+        .tree .dragAppend U, 
+        .dragtree U {
+            color            : white;
+            background-color : #2582d1;
+        }
+    
+        .tree BLOCKQUOTE {
+            margin     : 0;
+            padding    : 0 0 0 20px;
+            display    : none;
+            height     : 0;
+            overflow   : hidden;
+            background : repeat-y 0px center;
+        }
+        
+        /*
+        .tree BLOCKQUOTE.root {
+            padding : 0;
+        }
+        */
+    
+        .tree #txt_rename {
+            border      : 1px solid black;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma, Arial;
+            font-size   : 8pt;
+            color       : black;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : -2px;
+            *margin-top : 0;
+            cursor      : text;
+            height      : 13px;
+            outline     : none;
+        }
+    
+        .tree DIV.dragInsert label {
+            border-top          : 1px dotted gray;
+            padding-top         : 2px;
+            background-position : 1px 0;
+            height              : 15px;
+            overflow            : hidden;
+        }
+    
+        .tree DIV.dragInsert U {
+            padding-top : 0;
+        }
+    
+        /*.tree DIV.dragDenied label {
+            border-top          : 2px solid red;
+            height              : 14px;
+            overflow            : hidden;
+            padding-top         : 2px;
+            margin-top          : -20px;
+            background-position : 1px 0;
+        }*/
+        
+        .tree .empty, 
+        .tree .offline, 
+        .tree .loading {
+            padding     : 4px 0 2px 0;
+            color       : #AAA;
+            font-weight : normal;
+        }
+        
+        .tree .loading {
+            text-align : left;
+        }
+        
+        .tree .message {
+            text-align : center;
+        }
+        
+        .tree .root {
+            position : relative;
+        }
+        
+        .treeDrop {
+            border : 1px solid #2582d1;
+        }
+        
+        blockquote.dragInsert {
+            background : #f6f6f6;
+        }
+    ]]></a:style>
+    <a:style condition="!apf.isIE"><![CDATA[
+        .tree LABEL, 
+        .dragtree LABEL {
+            padding : 3px 0 0 20px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="tree">
+
+            </div>
+        </a:main>
+        <a:item
+          class     = "."
+          caption   = "label/u"
+          icon      = "label"
+          openclose = "span"
+          select    = "label"
+          container = "following-sibling::blockquote">
+            <div>
+                <span> </span>
+                <label>
+                    <u>-</u>
+                </label>
+            </div>
+            <blockquote> </blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragtree'>
+                <span> </span>
+                <label>
+                    <u>-</u>
+                </label>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+<a:button name="button_macro_play">
+    <a:style><![CDATA[
+        .dgr_btn_macro_play {
+            width               : 68px;
+            height              : 53px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/macro_play.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_macro_playOver {
+            background-position:0 -53px;
+        }
+        
+        .dgr_btn_macro_playDown {
+            background-position:0 -106px;
+        }
+        
+        .dgr_btn_macro_playDisabled {
+            background-position:0 -159px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = "."
+          minheight  = "53" 
+          maxheight  = "53" 
+          minwidth   = "68" 
+          maxwidth   = "68">
+            <div class="dgr_btn_macro_play">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="button_macro_playsmall">
+    <a:style><![CDATA[
+        .dgr_btn_macro_playsmall {
+            width               : 32px;
+            height              : 26px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/macro_play_small.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_macro_playsmallOver {
+        }
+        
+        .dgr_btn_macro_playsmallDown {
+            background-position : 0 -26px;
+        }
+        
+        .dgr_btn_macro_playsmallDisabled {
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = "."
+          minheight  = "26" 
+          maxheight  = "26" 
+          minwidth   = "32" 
+          maxwidth   = "32">
+            <div class="dgr_btn_macro_playsmall">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+
+<a:button name="button_macro_record">
+    <a:style><![CDATA[
+        .dgr_btn_macro_record {
+            width               : 68px;
+            height              : 53px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/macro_record.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_macro_recordOver {
+            background-position:0 -53px;
+        }
+        
+        .dgr_btn_macro_recordDown {
+            background-position:0 -106px;
+        }
+        
+        .dgr_btn_macro_recordDisabled {
+            background-position:0 -159px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = "."
+          minheight  = "53" 
+          maxheight  = "53" 
+          minwidth   = "68" 
+          maxwidth   = "68">
+            <div class="dgr_btn_macro_record">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+    
+    
+<a:button name="button_macro_stoprecord">
+    <a:style><![CDATA[
+        .dgr_btn_macro_stoprecord {
+            width               : 68px;
+            height              : 53px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/macro_stoprecord.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_macro_stoprecordOver {
+            background-position:0 -53px;
+        }
+        
+        .dgr_btn_macro_stoprecordDown {
+            background-position:0 -106px;
+        }
+        
+        .dgr_btn_macro_stoprecordDisabled {
+            background-position:0 -159px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = "."
+          minheight  = "53" 
+          maxheight  = "53" 
+          minwidth   = "68" 
+          maxwidth   = "68">
+            <div class="dgr_btn_macro_stoprecord">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+
+<a:button name="button_macro_stop">
+    <a:style><![CDATA[
+        .dgr_btn_macro_stop {
+            width               : 68px;
+            height              : 53px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/macro_stop.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_macro_stopOver {
+            background-position:0 -53px;
+        }
+        
+        .dgr_btn_macro_stopDown {
+            background-position:0 -106px;
+        }
+        
+        .dgr_btn_macro_stopDisabled {
+            background-position:0 -159px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = "."
+          minheight  = "53" 
+          maxheight  = "53" 
+          minwidth   = "68" 
+          maxwidth   = "68">
+            <div class="dgr_btn_macro_stop">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:markupedit name="markupedit">
+    <a:style><![CDATA[
+        .debugmarkup{
+            background : #fbfbfb;
+            font-family : Monaco, 'Courier New';
+            font-size : 11px;
+            cursor : default;
+            padding : 1px;
+            border : 1px solid #c3c3c3;
+            overflow : auto;
+            line-height : 1.4em;
+            position : relative;
+        }
+        .debugmarkup dl,
+        .debugmarkup dt,
+        .debugmarkup dd{
+            margin : 0;
+            display:inline-block;
+            vertical-align: top;
+        }
+        .debugmarkup dt,
+        .debugmarkup span{
+            color : #0b5feb;
+        }
+        .debugmarkup dt{
+            cursor : pointer;
+        }
+        .attribute dl,
+        .attribute dt,
+        .attribute dd{
+            display : inline-block;
+        }
+        .debugmarkup #txt_rename{
+            display : inline-block;
+            position : relative;
+            z-index : 1000;
+            vertical-align : top;
+            background-color : white;
+            color : black;
+            border : 1px solid #666;
+            padding : 1px 2px 1px 2px;
+            margin : -1px -3px -2px -3px;
+            line-height : 14px;
+            height : 14px;
+            cursor : text;
+            outline : none;
+            
+            -moz-box-shadow: 1px 1px 6px -2px #000000;
+            -webkit-box-shadow: 1px 1px 6px -2px #000000;
+            box-shadow: 1px 1px 6px -2px #000000;
+        }
+        .debugmarkup #txt_rename.attrvalue{
+            position : relative;
+            left : -2px;
+            padding-right : 2px;
+            margin : -1px -5px -2px -1px;
+        }
+        .debugmarkup DIV .attribute{
+            cursor : pointer;
+        }
+        .debugmarkup .selected .attribute{
+            cursor : default;
+        }
+        .debugmarkup .attribute DT,
+        .debugmarkup .attribute DD{
+            cursor : text;
+        }
+        .attribute dt{
+            color : #191970;
+        }
+        .attribute dd{
+            color : #FF0000;
+        }
+        .debugmarkup dt,
+        .attribute,
+        .debugmarkup .selected span{}
+        .debugmarkup dl.attribute{
+            padding : 0 0 0 5px;
+        }
+        .debugmarkup dl{
+            /*height : 18px;*/
+            white-space : normal;
+            padding : 1px 5px 3px 3px;
+        }
+        .debugmarkup dl dt{
+            white-space : normal;
+            /*padding : 1px 0 2px 2px;*/
+        }
+        .debugmarkup dl dl{
+            /*height : 14px;*/
+            white-space : nowrap;
+        }
+        .debugmarkup dl dl dt{
+            white-space : nowrap;
+        }
+        .debugmarkup span{
+            display : inline-block;
+            padding : 0 0 0 2px;
+            vertical-align: top;
+        }
+        .debugmarkup u{
+            text-decoration : none;
+            display : inline-block;
+            height : 18px;
+        }
+        .debugmarkup strong{
+            font-weight : normal;
+        }
+        .debugmarkup DIV{
+            cursor : default;
+            padding : 0 0 0 14px;
+            position : relative;
+            margin : 0 0 -2px 0;
+        }
+        .debugmarkup DIV>SPAN{
+            margin : 0 0 -2px 0;
+            padding-top : 1px;
+            display : block;
+        }
+        /*.debugmarkup DIV>DL{
+            display : block;
+        }*/
+        .debugmarkup .selected,
+        .debugmarkup .selected dl,
+        .debugmarkup .selected dd,
+        .debugmarkup .selected dt,
+        .debugmarkup .selected span,
+        .debugmarkup .selected strong{
+            background-color : #2582d1;
+            color : #FFFFFF;
+            
+            -moz-border-radius: 5px;
+            webkit-border-radius: 5px;
+            border-radius: 5px;
+        }
+        .has_apf .debugmarkup .highlight{
+            background-color : #FFFF00;
+            color : #000000;
+            
+            -moz-border-radius: 2px;
+            webkit-border-radius: 2px;
+            border-radius: 2px;
+        }
+        .debugmarkup I{
+            width : 9px;
+            height : 9px;
+            position : absolute;
+            left : 2px;
+            top : 5px;
+            background-repeat : no-repeat;
+        }
+        .debugmarkup I.pluslast {
+            background-image:url(images/splus.gif);
+        }
+        .debugmarkup I.minlast {
+            background-image:url(images/smin.gif);
+        }
+        .debugmarkup I.plus {
+            background-image:url(images/splus.gif);
+        }
+        .debugmarkup I.min, .debugmarkup .open I {
+            background-image:url(images/smin.gif);
+        }
+        .debugmarkup DIV BLOCKQUOTE{
+            margin : -3px 0 0 0;
+            padding : 0 0 0 10px;
+            display : none;
+            height : 0;
+            overflow : visible;
+            width : auto;
+        }
+        .debugmarkup .plus>span, .debugmarkup .pluslast>span{
+            display : none;
+        }
+        
+        .debugmarkup .anynode{
+            padding : 1px 1px 1px 16px;
+        }
+        
+        .debugmarkup .anynode strong{
+            margin : 0 0 0 10px;
+            cursor : text;
+            width : 0;
+            height : 1em;
+            overflow : hidden;
+            display : inline-block;
+            white-space : pre-wrap;
+        }
+        .debugmarkup .anynode #txt_rename{
+            display : block;
+            margin : -1px 20px -2px 9px;
+            border : 1px dotted gray;
+            height : auto;
+            white-space : pre-wrap;
+        }
+        .debugmarkup .anynode #txt_rename p{
+            margin : 0;
+        }
+        
+        .debugmarkup .open strong{
+            width : auto;
+            overflow : visible;
+            display : block;
+            height : auto;
+        }
+        
+        .debugmarkup .comment{
+            color : green;
+        }
+        
+        .debugmarkup .cdata{
+            color : gray;
+        }
+        
+        .debugmarkup .procinstr{
+            color : orange;
+        }
+        
+        .debugmarkup .procinstr strong, .debugmarkup .cdata strong{
+            color : #333;
+        }
+        
+        .debugmarkup .textnode{
+            padding : 3px 1px 3px 16px;
+            color : #333;
+            cursor : text;
+            white-space : pre-wrap;
+        }
+        .debugmarkup .textnode u{
+            text-decoration : none;
+        }
+        .debugmarkup .textnode #txt_rename{
+            margin-top : -1px;
+            margin-bottom : 1px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE">
+        .debugmarkup .attribute{
+            margin : 0 -7px 0 0;
+        }
+        .debugmarkup .generated{
+            margin : 0;
+        }
+    </a:style>
+    <a:style condition="apf.isWebkit">
+        .debugmarkup #txt_rename{
+            margin-top : -2px;
+        }
+        .debugmarkup #txt_rename.attrvalue{
+            margin-top : -2px;
+        }
+        .debugmarkup dl{
+            padding-top : 2px;
+        }
+    </a:style>
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="debugmarkup">
+            </div>
+        </a:main>
+        <a:item 
+          class      = "dl" 
+          begintag   = "dl/dt" 
+          begintail  = "dl/span" 
+          endtag     = "span" 
+          attributes = "dl" 
+          openclose  = "i" 
+          select     = "dl" 
+          container  = "blockquote">
+            <div><dl><dt>-</dt><span> </span></dl><blockquote> </blockquote><span>-</span><i> </i></div>
+        </a:item>
+        <a:attribute name="dt" value="dd">
+            <dl class="attribute"><dt> </dt>="<dd> </dd>"</dl>
+        </a:attribute>
+        <a:textnode text="u">
+            <div class="textnode"><u>-</u></div>
+        </a:textnode>
+        <a:anynode text="strong" tagend="text()[2]" tagstart="text()" openclose="i">
+            <div class="anynode">-<strong>-</strong>-<i class="plus"> </i></div>
+        </a:anynode>
+        <a:loading>
+            <div class="loading"> </div>
+        </a:loading>
+        <a:empty container=".">
+            <div class="empty"></div>
+        </a:empty>
+    </a:presentation>
+</a:markupedit>
+<a:divider name="divider">
+    <a:style><![CDATA[
+        .divider{
+            height : 0;
+            border: 1px solid white;
+            border-width : 1px 0 1px 0;
+            border-color : #c3c3c3 white white #c3c3c3;
+            line-height : 0;
+            margin : 10px 0 10px 0;
+            cursor : default;
+        }
+        
+        .hbox .divider, .vdivider{
+            width : 0;
+            margin : 0 10px 0 10px;
+            height: 17px;
+            border-width : 0 1px 0 1px;
+            height: 17px;
+        }
+        
+        .divider span{
+            color : #333;
+            background : #f5f5f5;
+            padding : 0 2px 0 2px;
+            position : relative;
+            top : -1px;
+            display : none;
+            font-size : 8pt;
+        }
+        
+        .table .divider, .vbox .divider, .hbox .divider{
+            margin : 0;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main container="." caption="span" minheight="2" minwidth="2">
+            <div class='divider'><span> </span> </div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+
+<a:divider name="divider_tab">
+    <a:style><![CDATA[
+        .divider_tab {
+            width        : 0px;
+            height       : 31px;
+            position     : absolute;
+            border-left  : 1px solid #105e9c;
+            border-right : 1px solid #4c8cbf;
+            z-index      : 110;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main 
+          container = "." 
+          caption   = "." 
+          minheight = "2" 
+          minwidth  = "0" 
+          maxwidth  = "0">
+            <div class="divider_tab">-</div>
+        </a:main>
+    </a:presentation>
+</a:divider>
+
+<a:tab name="tab">
+    <a:style><![CDATA[
+        .debug2010tab {
+            color               : white;
+            font-weight         : bold;
+            font-family         : Tahoma, Arial;
+            padding             : 51px 0 0 0;
+            overflow            : hidden;
+            position            : relative;
+            /*border-top          : 1px solid #194a6f;*/
+            background-image    : url(images/debugger_tab_backg.png);
+            background-repeat   : repeat-x;
+            background-position : 0 0;
+        }
+        
+        .debug2010tab .apf_logo {
+            width               : 116px;
+            height              : 43px;
+            position            : absolute;
+            top                 : 4px;
+            left                : 17px;
+            background-image    : url(images/ajax_org_logo.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .debug2010tab .btncontdebug {
+            padding-left : 303px;
+            margin-top   : -41px;
+            position     : absolute;
+            z-index      : 100;
+            width        : 100000px;
+            height       : 41px;
+            overflow     : visible;
+            font-size    : 12px;
+        }
+    
+        .debug2010tab .btncontdebug DIV {
+            cursor  : default;
+            display : block;
+            float   : left;
+            margin  : 0 3px 0 0;
+            padding : 0;
+        }
+        
+        .debug2010tab .btncontdebug .tabdiv{
+            display : block;
+            float : left;
+            width : 15px;
+            height : 10px;
+        }
+    
+        .debug2010tab .btncontdebug DIV {
+            background : url(images/debugger_tab_left.png) no-repeat 0 -44px;
+            height     : 42px;
+        }
+        
+        .debug2010tab .btncontdebug DIV SPAN {
+            margin-top  : 13px;
+            float       : left;
+            text-shadow : 0 1px #1167ab;
+            filter      : dropshadow(color=#1167ab,offX=0,offY=1);
+        }
+        
+        .debug2010tab .btncontdebug DIV .btnClose {
+            width      : 9px;
+            height     : 9px;
+            position   : relative;
+            background : url(images/btnCloseTab.png) 0 0  no-repeat;
+            margin     : 3px 0 0 6px;
+            cursor     : pointer;
+        }
+        
+        .debug2010tab .btncontdebug DIV .btnClose:hover {
+            background-position : 0 -9px;
+        }
+    
+        .debug2010tab .btncontdebug DIV.curbtn {
+            background-position : 0 0;
+            color               : #327fbd;
+        }
+        
+        .debug2010tab .curbtn DIV SPAN {
+            margin-top  : 10px;
+            color       : #1167ab;
+            text-shadow : 0 1px #ffffff;
+            filter      : dropshadow(color=#ffffff,offX=0,offY=1);
+        }
+        
+        .debug2010tabFocus .curbtn {
+        }
+    
+        .debug2010tabFocus .curbtn SPAN {
+            border  : 1px dotted gray;
+            padding : 0px 3px 2px 3px;
+            margin  : 10px -4px 0 -4px;
+            top     : -1px;
+            position : relative;
+            display : block;
+        }
+    
+        .debug2010tab .btncontdebug DIV DIV {
+            height  : 42px;
+            margin  : 0 -3px 0 0;
+            padding : 4px 20px 0 20px;
+        }
+    
+        .debug2010tab .btncontdebug DIV DIV {
+            background : url(images/debugger_tab_right.png) no-repeat right -44px;
+        }
+    
+        .debug2010tab .btncontdebug DIV.curbtn DIV {
+            background-position : right 0;
+            height              : 42px;
+            padding-top         : 5px;
+        }
+        
+        .debug2010tabDisabled .btncontdebug DIV SPAN {
+            color : #bebebe;
+        }
+        
+        .debug2010tabDisabled .btncontdebug .curbtn {
+            border        : 0;
+            margin-top    : -4px;
+            margin-bottom : -1px;
+            padding       : 0;
+        }
+    
+        .debug2010tab .page {
+            clear            : both;
+            background-color : white;
+            overflow         : hidden;
+            display          : none;
+            height           : 100%;
+            position         : relative;
+            color            : black;
+            font-weight      : normal;
+        }
+    
+        .debug2010tab .page.curpage {
+            display : block;
+        }
+
+        .debug2010tab .scrollerdebug {
+            position : absolute;
+            top      : 7px;
+            right    : 0px;
+            width    : 32px;
+            margin   : 0;
+            padding  : 0;
+            z-index  : 101;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_left,
+        .debug2010tab .scrollerdebug .scroller_btn_right {
+            position            : relative;
+            float               : left;
+            width               : 15px;
+            height              : 17px;
+            background-image    : url(images/tab_scroller_btns.gif);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            margin              : 0;
+            padding             : 0;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_right {
+            float               : right;
+            width               : 17px;
+            background-position : -15px 0;
+        }
+    ]]></a:style>
+    <a:style condition="!apf.isIE"><![CDATA[
+        .debug2010tab .scrollerdebug .scroller_btn_left.hover {
+            background-position : 0 -17px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_left.down {
+            background-position : 0 -34px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_left.disabled {
+            background-position : 0 -51px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_right.hover {
+            background-position : -15px -17px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_right.down {
+            background-position : -15px -34px;
+        }
+    
+        .debug2010tab .scrollerdebug .scroller_btn_right.disabled {
+            background-position : -15px -51px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE"><![CDATA[
+        .debug2010tab .scrollerdebug SPAN.hover {
+            background-position-y : -17px;
+        }
+    
+        .debug2010tab .scrollerdebug SPAN.down {
+            background-position-y : -34px;
+        }
+    
+        .debug2010tab .scrollerdebug SPAN.disabled {
+            background-position-y : -51px;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main 
+          pages    = "." 
+          buttons  = "div[1]" 
+          scroller = "div[2]">
+            <div class="debug2010tab">
+                <div class="btncontdebug">
+
+                </div>
+                <div class="scrollerdebug">
+                    <span class="scroller_btn_left"> </span>
+                    <span class="scroller_btn_right"> </span>
+                </div>
+                <div class="apf_logo"> </div>
+            </div>
+        </a:main>
+        <a:button caption="div/span/text()" btncontainer="div">
+            <div class="btn">
+                <div>
+                    <span>-</span>
+                </div>
+            </div>
+        </a:button>
+        <a:divider inherit="true">
+            <span class="tabdiv"> </span>
+        </a:divider>
+        <a:page container="." inherit="true">
+            <div class="page"> </div>
+        </a:page>
+        <a:btnclose container=".">
+            <span class="btnClose"> </span>
+        </a:btnclose>
+    </a:presentation>
+</a:tab>
+<a:button name="toolbarbutton">
+    <a:style><![CDATA[
+        .dbg_menubar .toolbarbutton {
+            display: block;
+            height: 18px;
+            float: left;
+            cursor: default;
+            padding: 4px 8px 0 8px;
+            line-height: 13px;
+            text-decoration: none;
+            color: #000000;
+        }
+
+        .dbg_menubar .toolbarbuttonOver, .dbg_menubar .toolbarbuttonDown {
+            background : #45b3e8 url(images/menu_over.gif);
+            color : #ffffff;
+        }
+
+        .dbg_menubar .toolbarbuttonDown, .dbg_menubar .toolbarbuttonDown {
+            background : #45b3e8 url(images/menu_down.gif);
+            color : #ffffff;
+        }
+
+        .dbg_menubar .toolbarbuttonDisabled, .dbg_menubar .toolbarbuttonDisabled {
+            background : none;
+            color : #bebebe;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton {
+            display: block;
+            height: 22px;
+            /*float: left;*/
+            cursor: default;
+            margin: 2px 1px 0 1px;
+            text-decoration: none;
+            color: #000000;
+            text-align: center;
+            padding: 0 4px 0 0;
+            line-height: 13px;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbutton div {
+            float: left;
+            margin: 0;
+            height: 17px;
+            padding: 4px 4px 0 8px;
+            border: 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonOver {
+            background: url("images/toolbar_a_hover_right.png") no-repeat top right;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonOver div {
+            background: url("images/toolbar_a_hover.png") no-repeat top left;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonDown, .dbg_toolbar .dbg_subbar .toolbarbuttonChecked {
+            background: url("images/toolbar_a_down_right.png") no-repeat top right;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonDown div, .dbg_toolbar .dbg_subbar .toolbarbuttonChecked div {
+            background: url("images/toolbar_a_down.png") no-repeat top left;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonDisabled, .dbg_toolbar .dbg_subbar .toolbarbuttonDisabled div {
+            background: none;
+            color: #bebebe;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonIcon div{
+            padding-left : 4px;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonEmpty div{
+            padding: 4px 0 0 7px;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonIcon span{
+            display: block;
+            float:left;
+            width: 16px;
+            height: 16px;
+            margin: -2px 4px 0 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .toolbarbuttonEmpty span{
+            margin: -1px 3px 0 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="div/text()" label="div/text()" background="div/span" icon="div/span">
+            <div class='toolbarbutton'><div><span> </span>-</div></div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="radiotab">
+    <a:style><![CDATA[
+        .dbg_menubar .radiotab {
+            display         : block;
+            height          : 21px;
+            float           : left;
+            cursor          : default;
+            line-height     : 13px;
+            text-decoration : none;
+            color           : #000000;
+        }
+
+        .dbg_menubar .radiotabOver, 
+        .dbg_menubar .radiotabDown {
+            background : #45b3e8 url(images/menu_over.gif);
+            color      : #ffffff;
+        }
+
+        .dbg_menubar .radiotabDown, 
+        .dbg_menubar .radiotabDown {
+            background : #45b3e8 url(images/menu_down.gif);
+            color      : #ffffff;
+        }
+
+        .dbg_menubar .radiotabDisabled, 
+        .dbg_menubar .radiotabDisabled {
+            background : none;
+            color      : #bebebe;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotab {
+            display         : block;
+            height          : 21px;
+            float           : left;
+            cursor          : default;
+            margin          : 5px 3px 0 1px;
+            text-decoration : none;
+            color           : #000000;
+            text-align      : center;
+            padding         : 0 10px 0 0;
+            line-height     : 13px;
+            font-size       : 10px;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotab DIV {
+            float   : left;
+            margin  : 0;
+            height  : 17px;
+            padding : 3px 0 1px 10px;
+            border  : 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabOver {
+            background-image    : url("images/debugger_tbbtn_tablook_right.png");
+            background-repeat   : no-repeat;
+            background-position : right -21px;
+            color               : #555555;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabOver DIV {
+            background-image    : url("images/debugger_tbbtn_tablook_left.png");
+            background-repeat   : no-repeat;
+            background-position : left -21px;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabDown, 
+        .dbg_toolbar .dbg_subbar .radiotabChecked {
+            background-image    : url("images/debugger_tbbtn_tablook_right.png");
+            background-repeat   : no-repeat;
+            background-position : right 0;
+            color               : white;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabDown DIV, 
+        .dbg_toolbar .dbg_subbar .radiotabChecked DIV {
+            background-image    : url("images/debugger_tbbtn_tablook_left.png");
+            background-repeat   : no-repeat;
+            background-position : left 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabDisabled, 
+        .dbg_toolbar .dbg_subbar .radiotabDisabled DIV {
+            background : none;
+            color      : #bebebe;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabIcon DIV {
+            padding-left : 4px;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabEmpty DIV {
+            padding : 4px 0 0 7px;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabIcon SPAN {
+            display : block;
+            float   : left;
+            width   : 16px;
+            height  : 16px;
+            margin  : -2px 4px 0 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .radiotabEmpty SPAN {
+            margin : -1px 3px 0 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "div/text()" 
+          label      = "div/text()" 
+          background = "div/span" 
+          icon       = "div/span">
+            <div class='radiotab'><div><span> </span>-</div></div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+
+<a:button name="toolbar_radio">
+    <a:style><![CDATA[
+        .dbg_menubar .dbg_toolbarbutton {
+            display         : block;
+            height          : 15px;
+            cursor          : default;
+            line-height     : 13px;
+            text-decoration : none;
+            color           : #000000;
+        }
+
+        .dbg_menubar .dbg_toolbarbuttonOver, 
+        .dbg_menubar .dbg_toolbarbuttonDown {
+            background : #45b3e8 url(images/menu_over.gif);
+            color      : #ffffff;
+        }
+
+        .dbg_menubar .dbg_toolbarbuttonDown, 
+        .dbg_menubar .dbg_toolbarbuttonDown {
+            background : #45b3e8 url(images/menu_down.gif);
+            color      : #ffffff;
+        }
+
+        .dbg_menubar .dbg_toolbarbuttonDisabled, 
+        .dbg_menubar .dbg_toolbarbuttonDisabled {
+            background : none;
+            color      : #bebebe;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbutton {
+            display         : block;
+            height          : 15px;
+            float           : left;
+            cursor          : default;
+            margin          : 6px 3px 0 1px;
+            text-decoration : none;
+            color           : #000000;
+            text-align      : center;
+            padding         : 0 7px 0 0;
+            line-height     : 13px;
+            font-size       : 10px;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbutton DIV {
+            float        : left;
+            margin       : 0;
+            height       : 15px;
+            border       : 0;
+            padding-left : 7px;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonOver {
+            background-image    : url("images/debugger_toolbarbutton_right.png");
+            background-repeat   : no-repeat;
+            background-position : top right;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonOver DIV {
+            background-image    : url("images/debugger_toolbarbutton_left.png");
+            background-repeat   : no-repeat;
+            background-position : top left;
+            color               : #555555;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonDown, 
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonChecked {
+            background-image    : url("images/debugger_toolbarbutton_right.png");
+            background-repeat   : no-repeat;
+            background-position : right -15px;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonDown DIV, 
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonChecked DIV {
+            background-image    : url("images/debugger_toolbarbutton_left.png");
+            background-repeat   : no-repeat;
+            background-position : left -15px;
+            color               : white;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonDisabled, 
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonDisabled DIV {
+            background : none;
+            color      : #555555;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonIcon DIV {
+            padding-left : 4px;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonEmpty DIV {
+            padding : 4px 0 0 7px;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonIcon SPAN {
+            display : block;
+            float   : left;
+            width   : 16px;
+            height  : 16px;
+            margin  : -2px 4px 0 0;
+        }
+
+        .dbg_toolbar .dbg_subbar .dbg_toolbarbuttonEmpty SPAN {
+            margin : -1px 3px 0 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "div/text()" 
+          label      = "div/text()" 
+          background = "div/span" 
+          icon       = "div/span">
+            <div class="dbg_toolbarbutton"><div><span> </span>-</div></div>
+        </a:main>
+    </a:presentation>
+</a:button>
+<a:textbox name="textbox">
+    <a:alias>input</a:alias>
+    <a:alias>secret</a:alias>
+    <a:style><![CDATA[
+        .tb {
+            background: white url("images/textarea_background2.png") no-repeat 0 0;
+            /*background-attachment: fixed !important; background-attachment: scroll; */
+            width:  161px;
+            height: 15px;
+            color: #333;
+            border: 1px solid #c3c3c3;
+            margin: 0;
+            padding: 2px 0 0 2px;
+            outline: none;
+            font-family: Tahoma, Arial;
+            font-size: 11px;
+            text-overflow: ellipsis;
+        }
+
+        .tbFocus {
+            border: 1px solid #327fbd;
+        }
+
+        .tbDisabled {
+            border: 1px solid #c3c3c3;
+            color: #bebebe;
+        }
+
+        .tbError {
+            border: 2px solid #ffb500;
+            margin : -1px 0 0 -1px;
+        }
+
+        .tbInitial{
+            color : gray;
+        }
+
+        .tbautoc{
+            border: 1px solid gray;
+            width: 250px;
+            overflow-y: auto;
+            z-index: 10000000;
+
+            position: absolute;
+            background-color: white;
+            margin: 23px 0 0 0;
+
+            white-space: nowrap;
+            display: none;
+        }
+
+        .tbautoc div{
+            padding: 1px 5px 1px 3px;
+            cursor: default;
+            margin: 0px;
+            color: black;
+            font-family: Tahoma, Arial;
+            font-size: 11px;
+        }
+
+        .tbautoc div.hover{
+            background-color: #2582d1;
+            color: white;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="." minheight="19" maxheight="19">
+            <input type='text' class="tb" />
+        </a:main>
+        <a:container>
+            <div class="tbautoc"> </div>
+        </a:container>
+        <a:item caption=".">
+            <div>-</div>
+        </a:item>
+    </a:presentation>
+</a:textbox>
+<a:textbox name="textarea">
+    <a:style><![CDATA[
+        .ta{
+            border: 1px solid #c3c3c3;
+            background: white url("images/textarea_background2.png") no-repeat top left;
+            /*background-attachment: fixed !important; background-attachment: scroll; */
+            color: #333;
+            padding: 6px;
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+            overflow: auto;
+            outline: none;
+            resize: none;
+        }
+
+        .taFocus{
+            background : #e4f1fb;
+        }
+
+        .taDisabled{
+            border: 1px solid #c3c3c3;
+            color: #bebebe;
+        }
+
+        .taInitial{
+            color : gray;
+        }
+
+        .taError{
+            border: 2px solid #ffb500;
+            padding : 5px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input=".">
+            <textarea type='text' class="ta" />
+        </a:main>
+    </a:presentation>
+</a:textbox>
+<a:dropdown name="dropdown">
+    <a:style><![CDATA[
+        .dropdown{
+            position: relative;
+            background: url("images/dropdown.png") no-repeat top right;
+            height: 17px;
+            margin: 0;
+            padding : 2px 18px 0 0;
+
+            color: #333;
+            font-family : Tahoma, Arial;
+            font-size : 11px;
+        }
+
+        .dropdownError {
+            background-position: right -57px;
+        }
+
+        .dropdownDisabled {
+            color: #bebebe;
+        }
+
+        .dropdownFocus {
+            background-position:  right -19px;
+        }
+
+        .dropdownOver {
+
+        }
+
+        .dropdownDown {
+            position: relative;
+            background-position: right -38px;
+        }
+
+        .dropdown .dropdownLeftBorder {
+            background: url("images/dropdown.png") no-repeat top left;
+            float: left;
+            margin: -2px 0 0 0;
+            width: 2px;
+            _margin: -2px -1px 0 0;
+            height: 19px;
+        }
+
+        .dropdown .dropdownlabel{
+            padding: 0 0 0 4px;
+            cursor : default;
+            height: 15px;
+            margin : 0 0 0 2px;
+            overflow : hidden;
+            white-space : nowrap;
+            text-overflow : ellipsis;
+        }
+
+        .dropdownError .dropdownLeftBorder {
+            background-position: 0 -57px;
+        }
+
+        .dropdownError .dropdownlabel{
+            background-color: #ffb500;
+            color: #fbfbfb;
+        }
+
+
+        .dropdownInitial .dropdownLeftBorder {
+        }
+
+        /*.dropdownFocus .dropdownlabel{
+            background-color: transparent;
+            color : #ffffff;
+        }*/
+
+        .dropdownFocus .dropdownLeftBorder{
+            background-position: 0 -19px;
+        }
+        
+        .dropdownInitial .dropdownlabel{
+            color : #999;
+        }
+
+        .dropdownFocus .dropdownlabel{
+            background-color: #2582d1;
+            color: #ffffff;
+        }
+        
+        .dropdownDown .dropdownlabel{
+            color : #333;
+            background-color : white;
+        }
+        
+        .dropdownDown .dropdownLeftBorder {
+            background-position: 0 -38px;
+        }
+
+        .optionList{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 120px;
+            margin-top : -1px;
+            border: 1px solid #327fbd;
+            background: #ffffff url("images/dropdown_background.png") repeat-y top left;
+            z-index: 1000;
+            color: #0d5381;
+            font-family : Tahoma, Arial;
+            font-size : 11px;
+            display : none;
+            overflow : auto;
+        }
+
+        .optionList .top{
+            background: url("images/dropdown_background_top.png") no-repeat top left;
+            width: 136px;
+            height: 5px;
+        }
+
+        .optionList span{
+            display: block;
+            height: 15px;
+            padding: 2px 3px 2px 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            background-color: white;
+            color: black;
+            cursor: default;
+        }
+
+        .optionList span.hover {
+            background-color: #2582d1;
+            color: #ffffff;
+        }
+
+        .optionList .selected{
+            background-color: #f0f0f0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="div[2]/text()" button="." width-diff="-1" item-height="19" minheight="19" maxheight="19">
+            <div class='dropdown'>
+                <div class='dropdownLeftBorder'> </div>
+                <div class='dropdownlabel'>-</div>
+            </div>
+        </a:main>
+        <a:container contents=".">
+            <div class='optionList'>
+            </div>
+        </a:container>
+        <a:item
+            class       = "."
+            caption     = "text()"
+            select      = "."
+            inherit     = "true"
+        >
+            <span>-</span>
+        </a:item>
+        <a:empty caption=".">
+            <div class="empty">-</div>
+        </a:empty>
+    </a:presentation>
+</a:dropdown>
+<a:list name="macro_list">
+    <a:style><![CDATA[
+        .macro_list {
+            overflow            : auto;
+            position            : relative;
+            border              : 1px solid #c3c3c3;
+            border-top          : 0;
+            border-bottom       : 0;
+            background-color    : #c9d6e1;
+            cursor              : default;
+            background-position : right 0;
+            background-repeat   : repeat-y;
+        }
+    
+        .white {
+            background : white;
+        }
+    
+        .macro_list,
+        .dragmacro_list {
+            font-family : Tahoma, Arial;
+            font-size   : 8pt;
+            font-weight : bold;
+        }
+    
+        .macro_list DIV {
+            padding       : 0;
+            height        : 26px;
+            border-top    : 1px solid #c9d6e1;
+            border-bottom : 1px solid #c9d6e1;
+            overflow      : hidden;
+            position      : relative;
+            display       : block;
+            margin        : 0;
+            color         : #333;/* #1167ab; */
+        }
+        
+        .macro_list DIV SPAN .ico {
+            width               : 16px;
+            height              : 16px;
+            background-image    : url(images/macro_del_ico.png);
+            background-repeat   : no-repeat;
+            background-position : 0 0;
+            margin              : 0;
+            padding             : 0;
+            position            : absolute;
+            top                 : 5px;
+            left                : 2px;
+            display             : none;
+        }
+        
+        .macro_list .even {
+            
+        }
+        
+        .macro_list .hover {
+            border-top       : 1px solid #d6dde5;
+            border-bottom    : 1px solid #d6dde5;
+            color            : #333; /* #1167ab; */
+            background-image : none;
+            background-color : #d6dde5;
+        }
+        
+        .macro_list .hover SPAN .ico {
+            display : block;
+        }
+        
+        
+        .macro_list .selected {
+            border-top          : 1px solid #1167ab;
+            border-bottom       : 1px solid #1167ab;
+            color               : white;
+            background-image    : url(images/macro_list_selected.png);
+            background-position : 0 50%;
+            background-repeat   : repeat-x;
+        }
+    
+        .macro_list SPAN.caption {
+            height              : 26px;
+            margin              : 0;
+            position            : absolute;
+            top                 : 0;
+            left                : 0;
+            right               : 0;
+            background-repeat   : no-repeat;
+            background-position : 3px 8px;
+        }
+    
+        .macro_list SPAN.caption U {
+            text-decoration : none;
+            cursor          : default;
+            text-decoration : none;
+            white-space     : nowrap;
+            position        : absolute;
+            top             : 0;
+            left            : 0;
+            right           : 0;
+            height          : 20px;
+            padding         : 6px 0 0 19px;
+        }
+    
+        .macro_listFocus .indicate U {
+        }
+    
+        .macro_list .selected U {
+            
+        }
+        
+        .macro_list #txt_rename {
+            border      : 1px solid black;
+            background  : white;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma, Arial;
+            font-size   : 8pt;
+            color       : #333;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : 4px;
+            margin-left : 17px;
+            cursor      : text;
+            height      : 13px;
+            display     : inline-block;
+            outline     : none;
+        }
+    
+        .macro_list .empty, 
+        .macro_list .offline, 
+        .macro_list .loading {
+            text-align  : center;
+            padding     : 8px 0 0 5px;
+            color       : #AAA;
+            font-weight : normal;
+        }
+    
+        .shortmacro_list {
+            border     : 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+            max-height : 90px;
+            width      : auto;
+        }
+        
+        /* Drag & drop */
+        .dragmacro_list {
+            height:16px;
+            overflow:hidden;
+            position:absolute;
+        }
+        
+        .dragmacro_list DIV {
+            height:16px;
+            width:7px;
+            background-image:url(images/macro_child_backg_right.png);
+            background-position:right -15px;
+            background-repeat:no-repeat;
+            overflow:hidden;
+            float:left;
+        }
+        
+        .dragmacro_list SPAN U,
+        .dragmacro_list  U {
+            height:16px;
+            background-image:url(images/macro_child_backg_left.png);
+            background-position:left -15px;
+            background-repeat:no-repeat;
+            color:white;
+            text-decoration:none;
+            font-weight:normal;
+            padding:0 4px 0 11px;
+            float:left;
+            
+        }
+        
+        /* BIGLIST */
+        .biglist DIV {
+            padding : 3px 3px 3px 3px;
+            font-size : 11px;
+            position : relative;
+            height:26px;
+        }
+        
+        .biglist SPAN.caption {
+            height:32px;
+        }
+        
+        .biglist SPAN.caption U {
+            font-weight:bold;
+            height:30px;
+            padding:2px 0 0 49px;
+        }
+        
+        .biglist SPAN.caption U .size {
+            position:absolute;
+            top:3px;
+            right:9px;
+            font-size : 9px;
+            font-weight:normal;
+        }
+        
+        .biglist SPAN.caption U .status {
+            width  : 40px;
+            height:9px;
+            text-align : right;
+            font-size : 9px;
+            font-weight:normal;
+            position:absolute;
+            top:3px;
+            left:0;
+        }
+        
+        .biglist SPAN.caption U .localname {
+            width  : 40px;
+            height:11px;
+            text-align : right;
+            font-size : 9px;
+            font-weight:normal;
+            position:absolute;
+            top:18px;
+            left:0;
+        }
+        
+        .biglist SPAN.caption U .url {
+            position:absolute;
+            top:16px;
+            left:49px;
+            font-size : 9px;
+            display : block;
+            width : 100%;
+            overflow : hidden;
+            margin : 3px 0 0 0;
+            white-space : nowrap;
+            font-weight:normal;
+        }
+        
+        .biglist .hover SPAN .ico {
+            display : none;
+        }
+        
+        
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          container = "."
+          minwidth  = "100"
+          minheight = "50">
+            <div class="macro_list"> </div>
+        </a:main>
+        <a:item
+          class   = "."
+          caption = "span/u"
+          icon    = "span"
+          select  = ".">
+            <div>
+                <span class="caption">
+                    <blockquote class="ico" onclick="apf.findHost(this).remove();"> </blockquote>
+                    <u>-</u>
+                </span>
+            </div>
+        </a:item>
+        <a:dragindicator>
+            <div class="dragmacro_list">
+                <span>
+                    <u>-</u>
+                </span>
+                <div></div>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+<a:toolbar name="toolbar">
+    <a:style><![CDATA[
+        .dbg_toolbar{
+			border : 0px solid #c3c3c3;
+            overflow : hidden;
+        }
+        
+        .dbg_toolbar .dbg_menubar {
+            background    : url(images/menubar_row.png) repeat-x top left;
+            height        : 21px;
+            font-family   : Verdana;
+            font-size     : 11px;
+            border-bottom : 1px solid #c3c3c3;
+            position      : relative;
+        }
+
+        .dbg_toolbar .dbg_subbar {
+            background    : url(images/toolbar_row.png) repeat-x top left;
+            height        : 25px;
+            font-family   : Verdana;
+            font-size     : 11px;
+            border-bottom : 1px solid #c3c3c3;
+            position      : relative;
+            padding       : 0;
+            width         : 100%;
+        }
+        
+        .dbg_toolbar>.dbg_subbar>* {
+            display : inline-block;
+            float   : left;
+            margin  : 2px;
+        }
+        
+        .dbg_toolbar>.dbg_subbar>.hbox, 
+        .dbg_toolbar>.dbg_subbar>.vbox, 
+        .dbg_toolbar>.dbg_subbar>.table {
+            display : block;
+            float   : none;
+            margin  : 0;
+        }
+
+        .dbg_toolbar>.dbg_subbar>.divider {
+            border-left  : 1px solid #c3c3c3;
+            border-right : 1px solid #FFFFFF;
+            height       : 17px;
+            float        : left;
+            margin       : 4px 0 0 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="dbg_toolbar"> </div>
+        </a:main>
+        <a:bar container="." inherit="true">
+            <div class="dbg_subbar"> </div>
+        </a:bar>
+        <a:menubar container="." inherit="true">
+            <div class="dbg_menubar">
+            </div>
+        </a:menubar>
+        <a:button link="toolbarbutton" inherit="true" />
+        <a:divider inherit="true">
+            <div class="divider"> </div>
+        </a:divider>
+    </a:presentation>
+</a:toolbar>
+
+<a:toolbar name="macro_toolbar">
+    <a:style><![CDATA[
+        .macro_toolbar {
+            border-right : 1px solid #c3c3c3; 
+            overflow : hidden;
+        }
+        
+        .macro_toolbar .macro_menubar {
+            background    : url(images/macro_toolbar_backg.png) repeat-x top left;
+            height        : 61px;
+            font-family   : Verdana;
+            font-size     : 11px;
+            position      : relative;
+        }
+
+        .macro_toolbar .macro_subbar {
+            background    : url(images/macro_toolbar_backg.png) repeat-x top left;
+            height        : 61px;
+            font-family   : Verdana;
+            font-size     : 11px;
+            position      : relative;
+            padding       : 4px 0 0 4px;
+            width         : 100%;
+        }
+        
+        .macro_toolbar>.macro_subbar>* {
+            display : inline-block;
+            float   : left;
+            margin  : 2px;
+        }
+        
+        .macro_toolbar>.macro_subbar>.hbox, 
+        .macro_toolbar>.macro_subbar>.vbox, 
+        .macro_toolbar>.macro_subbar>.table {
+            display : block;
+            float   : none;
+            margin  : 0;
+        }
+
+        .macro_toolbar>.macro_subbar>.divider {
+            border-left  : 1px solid #c3c3c3;
+            border-right : 1px solid #FFFFFF;
+            height       : 17px;
+            float        : left;
+            margin       : 4px 0 0 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="macro_toolbar"> </div>
+        </a:main>
+        <a:bar container="." inherit="true">
+            <div class="macro_subbar"> </div>
+        </a:bar>
+        <a:menubar container="." inherit="true">
+            <div class="macro_menubar">
+            </div>
+        </a:menubar>
+        <a:button inherit="true" />
+        <a:divider inherit="true">
+            <div class="divider"> </div>
+        </a:divider>
+    </a:presentation>
+</a:toolbar>
+<a:propedit name="propedit">
+    <a:style><![CDATA[
+        .propedit{
+            border: 1px solid #c3c3c3;
+            /*border-left : 14px solid #c6cdd3;*/
+            background-color: white;
+            cursor: default;
+
+            font-family: Tahoma, Arial;
+            font-size: 11px;
+
+            padding: 0 1px 0 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+        }
+        div.propedit{
+            position : relative;
+        }
+
+        .propedit .headings{
+            position : relative;
+            top : 0;
+            left : 0;
+            height : 17px;
+            z-index : 10;
+            background-color : #e6e6e6;
+            background-image : url(images/debugger_propedit_title_backg.png);
+            background-repeat :repeat-x;
+            background-position:0 0;
+            margin : 0; /*margin : 0 16px 0 0; Temp disabled for non scrolling */
+            white-space : nowrap;
+            border-bottom : 1px solid #c6cdd3;
+        }
+
+        .fixed .headings{
+            overflow : hidden;
+            z-index : 100;
+        }
+
+        .propedit .headings span{
+            display : inline-block;
+            height : 15px;
+        }
+
+        .propedit .headings span b{
+            font-weight : normal;
+
+            /*background : #e6e6e6 no-repeat 0 50%;*/
+            overflow : hidden;
+            text-overflow : ellipsis;
+
+            padding : 2px 1px 0px 3px;
+            margin : 0 -1px 0 -1px;
+            border-left : 1px solid #c6cdd3;
+            display : block;
+            height : 15px;
+            font-weight : bold;
+        }
+
+        .propedit .headings span.hover{
+        }
+
+        .propedit .headings span.down b, .propedit .headings span.drag b{
+            color: white;
+            background-color: #2582d1;
+        }
+
+        .propedit .headings span.ascending b{
+            background-image : url(images/sort_asc_n.gif);
+            background-repeat : no-repeat;
+            background-position : right 6px;
+        }
+
+        .propedit .headings span.descending b{
+            background-image : url(images/sort_desc_n.gif);
+            background-repeat : no-repeat;
+            background-position : right 6px;
+        }
+
+        .propedit .headings span.drag{
+            border : 1px solid white;
+        }
+
+        .virtual .records{
+            overflow : hidden;
+        }
+
+        .fixed .records{
+            overflow-x: auto;
+        }
+
+        .propedit body.records{
+            overflow : visible;
+            margin : 0;
+            border : 0;
+            padding : 17px 0 0 0;
+            white-space : nowrap;
+        }
+
+        .propedit iframe{
+            position : absolute;
+            left : 0;
+            top : 0;
+            width : 100%;
+            height : 100%;
+        }
+
+        html.propedit{
+            overflow-x: hidden;
+            overflow-y: auto; /* Should be auto. This was scroll */
+            border : 0;
+            margin : 0;
+        }
+
+        html.fixed{
+            overflow-x : auto;
+        }
+
+        .propedit .records div dl{
+            font-weight : normal;
+            padding : 2px 1px 2px 3px;
+            display : block;
+            border : 1px solid #c6cdd3;
+            overflow : hidden;
+            min-height : 13px;
+            margin : 0 -1px 0 -1px;
+            cursor : default;
+        }
+
+        .propedit .records div span{
+            display : inline-block;
+            vertical-align : top;
+
+            background : white no-repeat 0 50%;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+        }
+
+        .propedit .records div{
+            margin-bottom : -1px;
+        }
+
+        .propedit .records .tall dl{height : 36px;}
+        .propedit .records .tall span{height : 40px;}
+        .propedit .records .tall{height : 41px;}
+
+        .propedit .records .selected .celllabel dl{
+            background-color: #eaeff2;
+            color: black;/*#333;*/
+        }
+
+        .propeditFocus .records .selected .celllabel dl{
+            color: white;
+            background-color: #2582d1;
+        }
+
+        .propedit .records .cellselected dl{
+            background : white;
+            color : black;
+            cursor : text;
+        }
+
+        .propeditFocus .records .cellselected dl{
+        }
+
+        /*.propedit .records .cellselected{
+            background-color: #eaeff2;
+            color: #333;
+        }
+        .propeditFocus .records .cellselected{
+            color: white;
+            background-color: #2582d1;
+        }*/
+
+        .propedit .move_pointer{
+            height : 100px;
+            width : 2px;
+            position : absolute;
+            top : 0;
+            margin : -10px 0 0 -4px;
+            width : 9px;
+            height : 38px;
+            background : url(images/column_picker.gif) no-repeat 0 0;
+            overflow : hidden;
+            z-index : 1000;
+        }
+
+        .propedit .size_pointer{
+            border : 1px dotted gray;
+            border-width : 0 1px 0 1px;
+            height : 100%;
+            position : absolute;
+            top : 0px;
+            z-index : 1000;
+            cursor : w-resize;
+        }
+
+        .pointer{
+            display : none;
+        }
+
+        .propedit .empty, .propedit .offline, .propedit .loading{
+            text-align: center;
+            padding: 8px 0 0 5px;
+            color: #AAA;
+            font-weight : normal;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE6"><![CDATA[
+        .propedit{
+            overflow-x : hidden;
+            padding-right : 16px;
+        }
+
+        .fixed .headings{
+            width : 100%;
+        }
+
+        .fixed .records{
+            width : 100%;
+            padding-left : -16px;
+            text-index : expression(this.style.paddingLeft='16px');
+        }
+
+        .fixed .records div{
+            margin-left : -16px;
+        }
+
+        .fixed .records div span{
+            overflow : hidden;
+            height : 19px;
+            margin-top : -1px;
+        }
+
+        .propedit body.records{
+            padding : 18px 0 0 0;
+        }
+
+        .fixed .records div span dl{
+            width : expression(this.parentNode.offsetWidth - 5);
+        }
+
+        .propedit iframe{
+            height : expression(this.parentNode.parentNode.offsetHeight - 2);
+            width : expression(this.parentNode.parentNode.offsetWidth - 2);
+        }
+
+        html.propedit body.records {
+            margin-right : -20px;
+        }
+
+        .propedit .size_pointer{
+            height : expression(this.parentNode.offsetHeight - 2);
+        }
+    ]]></a:style>
+    <a:style condition="!apf.isIE || apf.isIE &gt; 7"><![CDATA[
+        .propedit .records{
+            overflow-x: hidden;
+            overflow-y: auto;
+            height : 100%;
+            position : absolute;
+            top : 0;
+            left : 0;
+            width : 100%;
+            padding : 0;
+            white-space : nowrap;
+        }
+
+        .propedit .records>div:first-child{
+            margin-top : 17px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isGecko &amp;&amp; apf.versionGecko &lt; 3"><![CDATA[
+        .propedit .headings{
+            height : 18px;
+        }
+
+        .propedit .headings span{
+            height : 18px;
+        }
+
+        .propedit .records div span{
+            height : 18px;
+        }
+
+        /*.propedit .records div{
+            height : 18px;
+        }*/
+
+        .propedit .records div span dl{
+            border-width : 0 1px 1px 0;
+        }
+
+        .propedit .headings span{
+            display : -moz-inline-grid;
+            overflow : visible;
+            position : relative;
+        }
+
+        .propedit .records{
+        }
+
+        .propedit .records div span{
+            display : -moz-inline-grid;
+            overflow : visible;
+            position : relative;
+        }
+    ]]></a:style>
+    <a:style>
+        .propedit blockquote{
+            margin : 0 0 0 15px;
+        }
+        .propedit blockquote blockquote{
+            margin : -1px 0 -1px 0;
+        }
+        
+        .propedit .heading>.row{
+            margin-left : 15px;
+        }
+        
+        .propedit .row .row>span{
+            background : url(images/cell.gif) white;
+            min-height : 19px;
+        }
+        
+        .propedit .row .row>span dl{
+            background : white;
+        }
+        
+        /*.propedit .row .row .row{
+            margin-top : -1px;
+        }*/
+        
+        .propedit .row .selected>span dl{
+            background-color: #eaeff2;
+            color: black;
+        }
+        .propeditFocus .row .selected>span dl{
+            color: white;
+            background-color: #2582d1;
+            border: 1px solid #327fbd;
+            position : relative;
+            /*z-index : 10000;*/
+        }
+        
+        .propedit .row>u{
+            display : block;
+            float : left;
+            width: 15px;
+            height: 18px;
+            background: no-repeat 3px 5px;
+            margin-left : -15px;
+        }
+        .propedit .row>u.min{
+            background-image:url(images/min.png);
+        }
+        .propedit .row>u.plus{
+            background-image:url(images/plus.png);
+        }
+        
+        .propedit .headings{
+            padding-left:15px;
+        }
+        
+        .propedit .headings .first b{
+            border-left : 0;
+        }
+        
+        .propedit .heading>u{
+            position : absolute;
+            margin-left : 0;
+        }
+        
+        .propedit .heading{
+            width : 100%;
+            background : #c6cdd3;
+        }
+        
+        .propedit .heading>span{
+            width : 100%;
+            border : 0;
+        }
+        
+        .propedit .heading>span dl{
+            border : 0;
+            background : #c6cdd3;
+            font-weight : bold;
+            padding : 2px 0 2px 17px;
+        }
+        
+        .propedit .tb{
+            padding-left : 3px;
+            color : black;
+        }
+        
+        .propedit .cbcontainer{
+            border : 1px solid #c3c3c3;
+            padding-bottom : 2px;
+            background : white;
+        }
+        
+        .propeditFocus .cbcontainer{
+            border : 1px solid #327fbd;
+        }
+        
+        .propedit .slider{
+            margin : 5px 5px 0 3px;
+        }
+    </a:style>
+    <a:style condition="apf.isWebkit"><![CDATA[
+        .propedit .tb{
+            padding-left : 2px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isGecko"><![CDATA[
+        .propedit .tb{
+            padding-left : 2px;
+            padding-top : 1px;
+            padding-bottom : 1px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+            head        = "div[1]"
+            body        = "div[3]"
+            pointer     = "div[2]"
+
+            widthdiff    = "2"
+            defaultwidth = "70"
+            scalerename  = "true"
+            iframe       = "false"
+        >
+            <div class="propedit">
+                <div class='headings'>
+
+                </div>
+                <div class='pointer'> </div>
+                <div class='records'> </div>
+            </div>
+        </a:main>
+
+        <a:headitem class="." caption="b/text()">
+            <span><b>-</b></span>
+        </a:headitem>
+
+        <a:row class="." container=".">
+            <div class="row"></div>
+        </a:row>
+        
+        <a:cell caption="dl"><span><dl> </dl></span></a:cell>
+        
+        <a:heading
+            caption   = "span/dl"
+            container = "."
+        >
+            <div class="heading">
+                <span><dl> </dl></span>
+            </div>
+        </a:heading>
+
+        <a:loading>
+            <div class="loading"><span></span><label>Loading...</label></div>
+        </a:loading>
+
+        <a:empty caption=".">
+            <div class="empty"> </div>
+        </a:empty>
+    </a:presentation>
+</a:propedit>
+
+<a:datagrid name="datagrid">
+    <a:style><![CDATA[
+        .datagrid{
+            position: relative;
+            border: 1px solid #c3c3c3;
+            background-color: white;
+            cursor: default;
+
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+
+            padding: 21px 0 0 0;
+            color : #333;
+        }
+
+        .datagrid .headings{
+            position : relative;
+            top : 0;
+            left : 0;
+            height : 17px;
+            z-index : 10;
+            /*padding-left : 5px;*/
+            background-color : #e6e6e6;
+            margin : -21px 17px 0 0;
+            border : 1px solid white;
+            border-left : 0;
+            border-right : 0px solid white;
+            white-space : nowrap;
+        }
+        .noscrollbar .headings {
+		    margin : -21px 1px 0 0;
+		}
+		.noscrollbar .datagrid{
+		    background : transparant;
+		}
+
+        .datagrid .headings div{
+            display : inline-block;
+            height : 17px;
+
+            /*margin-right : -3px;
+            margin-left : -5px;*/
+
+            background : #e6e6e6 no-repeat 0 50%;
+            overflow : hidden;
+            text-overflow : ellipsis;
+        }
+        .datagrid .headings div u{
+            padding : 1px 4px 1px 3px;
+            display : inline-block;
+            height : 15px;
+            text-decoration : none;
+            border-left : 1px solid white;
+        }
+        
+        .datagrid .headings div.hover{
+            background-color: #DDD;
+        }
+
+        .datagrid .headings div.down, .datagrid .headings div.drag{
+            color: white;
+            background-color: #2582d1;
+        }
+
+        .datagrid .headings div.drag{
+            border : 1px solid white;
+        }
+
+        .datagrid .headings div.ascending{
+            background-image : url(images/sort_asc.gif);
+            background-repeat : no-repeat;
+            background-position : right 6px;
+        }
+
+        .datagrid .headings div.descending{
+            background-image : url(images/sort_desc.gif);
+            background-repeat : no-repeat;
+            background-position : right 6px;
+        }
+
+        .datagrid .records{
+            overflow-x: hidden;
+            overflow-y: scroll;
+            height : 100%;
+            padding : 18px 0 0 0;
+            position : relative;
+            top : -19px;
+            border : 1px solid white;
+            border-width : 1px 1px 0 0;
+            white-space : nowrap;
+        }
+        
+        .noscrollbar .records{
+            overflow-y : hidden;
+        }
+
+        .datagrid .records .row span{
+            display : inline-block;
+
+            /*padding : 1px 0 1px 0;*/
+            height : 18px;
+            background : white no-repeat 0 50%;
+            border-bottom : 1px solid #eee;
+        }
+        
+        .datagrid .records .row span u{
+            padding : 2px 3px 2px 4px;
+            height : 15px;
+            display : inline-block;
+            text-decoration : none;
+            border-left : 1px solid #eee;
+            text-overflow : ellipsis;
+            white-space : nowrap;
+            overflow : hidden;
+        }
+
+        .noscrollbar .datagrid .records .row span{
+            background-color : transparent;
+        }
+
+        .datagrid .records .row{
+            height : 19px;
+            padding-left : 0;
+        }
+
+        .datagrid .records .highlight span{
+
+        }
+
+        .datagrid .records .highlight{
+
+        }
+
+        .datagridFocus .records .indicate span{
+            /*border: 1px dotted #BBB;
+            border-width : 1px 0 1px 0;*/
+            padding : 0;
+            color : #333;
+        }
+        
+        .datagridFocus .records .indicate span u{
+        }
+
+        .datagridFocus .records .row span{
+        }
+
+        .datagrid .records .selected, .datagrid .records .selected span{
+            background-color: #f0f0f0;
+            color : #333;
+        }
+        .datagridFocus .records .selected, .datagridFocus .records .selected span{
+            color: white;
+            background-color: #2582d1;
+        }
+        .datagrid .records .editing, .datagrid .records .editing span{
+            background-color : white;
+            color : #333;
+        }
+
+        .datagrid .move_pointer{
+            height : 100px;
+            width : 2px;
+            position : absolute;
+            top : 0;
+            margin : -10px 0 0 -4px;
+            width : 9px;
+            height : 38px;
+            background : url(images/column_picker.gif) no-repeat 0 0;
+            overflow : hidden;
+            z-index : 1000;
+        }
+
+        .datagrid .size_pointer{
+            border : 1px dotted gray;
+            border-width : 0 1px 0 1px;
+            height : 100%;
+            position : absolute;
+            top : 0px;
+            z-index : 1000;
+            cursor : w-resize;
+        }
+
+        .datagrid .message{
+            font-weight : normal;
+            color : #333;
+            padding : 0 0 10px 50px;
+            font-size : 11px;
+            margin-top : 10px;
+            /*text-align : center;*/
+            border-bottom : 1px solid #eee;
+        }
+        
+        .datagrid .message label{
+            padding : 2px 0 0 4px;
+            height : 14px;
+            display : inline-block;
+            position : relative;
+            top : -3px;
+        }
+        
+        /*.datagrid .message span{
+            background : url(icons/cog.png) no-repeat left bottom;
+            width : 16px;
+            height : 16px;
+            display : inline-block;
+        }*/
+        
+        .datagrid .loading, .datagrid .empty, .datagrid .offline{
+            padding : 5px;
+            margin : 0;
+        }
+        
+        .datagrid .loading span, .datagrid .empty span, .datagrid .offline span{
+            background : white;
+            display : inline;
+        }
+
+        .pointer{
+            display : none;
+        }
+
+        .dginfo{
+            display : none;
+            overflow : hidden;
+            white-space : normal;
+            padding : 5px;
+            background-color : #f3f3f3;
+            margin-top : 3px;
+            margin-left : 6px;
+            position : relative;
+            left : -3px;
+            margin-bottom : 3px;
+        }
+
+        .dginfo h3{
+            margin : 0 0 5px 0;
+        }
+
+        .dginfo p{
+            margin : 0;
+        }
+
+        .datagrid .records .stdel, .datagridFocus .records .stdel,
+        .datagrid .records .stdel span, .datagridFocus .records .stdel span{
+            color : #ccc;
+        }
+
+        .dragdg{
+            border : 2px solid black;
+            width : 10px;
+            height : 5px;
+        }
+
+        .datagrid .records .dragInsert{
+            border-top : 2px solid gray;
+            height : 17px;
+        }
+
+        .datagrid .records .dragInsert span{
+            padding-top : 0px;
+            margin-bottom : 0;
+            background-position : 0 0;
+        }
+        
+        .datagrid blockquote{
+            padding : 0;
+            margin : 0;
+            display: none;
+            height: 0;
+            overflow: hidden;
+            background: repeat-y 0px center;
+        }
+        
+        .datagrid .records span.treecell u{
+            text-decoration : none;
+            display : inline-block;
+            padding : 1px 2px 3px 2px;
+            border : 0;
+        }
+        
+        .datagrid .records span.treecell u.iconCell {
+            background-repeat : no-repeat;
+            padding-left      : 18px;
+        }
+        
+        .datagrid .treecell strong{
+            width : 9px;
+            height : 9px;
+            margin : 4px 4px 0 4px;
+            position : relative;
+            top : -5px;
+            display : inline-block;
+        }
+        
+        .datagrid .plus>.treecell strong,
+        .datagrid .pluslast>.treecell strong{
+            background-image:url(images/plus.png);
+        }
+        
+        .datagrid .min>.treecell strong,
+        .datagrid .minlast>.treecell strong{
+            background-image:url(images/min.png);
+        }
+        
+        .datagrid .slider{
+            margin : 5px 5px 0 3px;
+        }
+        
+        .datagrid .tb{
+            border : 0;
+            padding : 2px 0 4px 4px;
+            background : white;
+            border-left : 1px solid #eee;
+            border-bottom : 1px solid #eee;
+            height : 13px;
+            position : relative;
+            top : -6px;
+        }
+        
+        .datagrid .treecell .tb{
+            padding : 1px 0 0 0;
+            top : 0;
+            border : 0;
+            border-bottom : 1px solid #eee;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE &amp;&amp; !apf.isIE8"><![CDATA[
+        .datagrid .headings div{
+            float : left;
+        }
+
+        .datagrid .records .row span{
+            float : left;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isGecko &amp;&amp; apf.versionGecko &lt; 3"><![CDATA[
+        .datagrid .headings{
+            padding-top : 2px;
+            height : 15px;
+        }
+
+        .datagrid .headings div{
+            display : -moz-inline-box;
+            overflow : visible;
+            position : relative;
+        }
+
+        .datagrid .records{
+        }
+
+        .datagrid .records .row span{
+            display : -moz-inline-box;
+            overflow : visible;
+            position : relative;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isChrome"><![CDATA[
+        .datagrid .treecell strong {
+            top : 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main
+            head        = "div[1]"
+            container   = "div[3]"
+            pointer     = "div[2]"
+
+            widthdiff   = "1"
+            iframe2     = "true"
+        >
+            <div class="datagrid">
+                <div class='headings'>
+
+                </div>
+                <div class='pointer'> </div>
+                <div class='records'> </div>
+            </div>
+        </a:main>
+
+        <a:headitem class="." caption="u/text()">
+            <div><u>-<span></span></u></div>
+        </a:headitem>
+
+        <a:rowheaditem class="." caption="text()">
+            <span>-</span>
+        </a:rowheaditem>
+
+        <a:item class="." container="following-sibling::blockquote">
+            <div class="row"></div>
+            <blockquote> </blockquote>
+        </a:item>
+
+        <a:dragindicator>
+            <div class='dragdg'> </div>
+        </a:dragindicator>
+
+        <a:cell caption="u"><span><u>-</u></span></a:cell>
+        
+        <a:treecell caption="u" openclose="strong"><span class="treecell"><strong> </strong><u>-</u></span></a:treecell>
+
+        <a:container container=".">
+            <div class="dginfo">-</div>
+        </a:container>
+
+        <a:loading>
+            <div class="message"><span></span><label>Calculating...</label></div>
+        </a:loading>
+
+        <a:empty caption=".">
+            <div class="empty"> </div>
+        </a:empty>
+    </a:presentation>
+</a:datagrid>
+<a:menu name="menu">
+    <a:style><![CDATA[
+        .menu {
+            background: #FFFFFF;
+            margin: 0 0 0 0;
+            padding: 0;
+            z-index: 10000;
+            position: absolute;
+            font-family: Tahoma, Arial;
+            font-size: 11px;
+            color : #333;
+            border : 1px solid #c3c3c3;
+            display : none;
+        }
+
+        .menu blockquote {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        .menu div{
+            padding: 4px 56px 4px 23px;
+            white-space: nowrap;
+            cursor : default;
+        }
+        .menu>div{
+            height: 13px;
+        }
+        .menu div.hover{
+            background: #2582d1;
+            color : white;
+        }
+
+        .menu div.menu_divider{
+            border-style: solid;
+            border-width: 1px 0 0 0;
+            border-color: #c3c3c3;
+            overflow: visible;
+            margin: 1px 3px 1px 3px;
+            padding: 0;
+            font-size: 1px;
+        }
+
+        .menu>div.menu_divider{
+            height: 0;
+        }
+
+        .menu div span{
+            right: 15px;
+            margin-top: 0px;
+            z-index: 10;
+            text-align: right;
+            padding-left: 15px;
+            /*margin-right: -15px;*/
+            position : absolute;
+        }
+
+        .menu div.submenu span{
+            background: url(images/submenu_arrow.gif) no-repeat right top;
+            width: 4px;
+            height: 7px;
+            display: block;
+            position: absolute;
+            right: 8px;
+            margin: 3px 0 0 0;
+            z-index: 10;
+        }
+
+        .menu div.hover span{
+            background-position : right -15px;
+        }
+
+        .menu div.submenu>span{
+            margin-top: -10px;
+        }
+
+        .menu div.disabled{
+            color: gray;
+        }
+
+        .menu u{
+            width: 16px;
+            height: 16px;
+            position: absolute;
+            left: 3px;
+            margin-top : -1px;
+        }
+
+        .menu div.selected u{
+            background-image: url(images/radio.gif);
+            background-repeat: no-repeat;
+            background-position: 0 0;
+        }
+
+        .menu div.checked u{
+            background-image: url(images/check.gif);
+            background-repeat: no-repeat;
+            background-position: 0 0;
+        }
+
+        .menu div.hover u{
+            background-position : 0 -16px;
+        }
+
+        .menu div.menuShadowTop {
+            position: absolute;
+            left: 0;
+            top: -2px;
+            margin: 0;
+            padding: 0 4px 0 0;
+            width: 100%;
+            height: 2px;
+            overflow: hidden;
+            z-index: -10;
+            background: url("images/menu_context_shtb.png") no-repeat top right;
+        }
+
+        .menu div.menuShadowRight {
+            position: absolute;
+            right: -4px;
+            bottom: -4px;
+            margin: 0;
+            padding: 0 0 4px 0;
+            width: 4px;
+            height: 100%;
+            overflow: hidden;
+            z-index: -10;
+            background: url("images/menu_context_shlr.png") no-repeat bottom right;
+        }
+
+        .menu div.menuShadowBottom {
+            position: absolute;
+            bottom: -4px;
+	        right: 0;
+            margin: 0;
+            padding: 0 0 0 3px;
+            width: 100%;
+            height: 4px;
+            overflow: hidden;
+            z-index: -10;
+            background: url("images/menu_context_shtb.png") no-repeat bottom left;
+	}
+
+        .menu div.menuShadowLeft {
+            position: absolute;
+            left: -3px;
+            bottom: 0;
+            margin: 0;
+            padding: 2px 0 0 0;
+            width: 3px;
+            height: 100%;
+            overflow: hidden;
+            z-index: -10;
+            background: url("images/menu_context_shlr.png") no-repeat top left;
+        }
+
+    ]]></a:style>
+    <a:style condition="apf.isIE6">
+    	.menu div.menuShadowTop, .menu div.menuShadowRight, .menu div.menuShadowLeft, .menu div.menuShadowBottom {
+    	   display: none;
+    	}
+    </a:style>
+    <a:presentation>
+        <a:main container="blockquote" overlay="strong">
+            <blockquote class='menu'>
+                <blockquote>
+
+                </blockquote>
+                <div class="menuShadowTop"> </div>
+                <div class="menuShadowRight"> </div>
+                <div class="menuShadowBottom"> </div>
+                <div class="menuShadowLeft"> </div>
+            </blockquote>
+        </a:main>
+        <a:item caption="text()" icon="u" hotkey="span" inherit="true">
+            <div><u> </u>-<span> </span></div>
+        </a:item>
+        <a:divider inherit="true">
+            <div class='menu_divider'></div>
+        </a:divider>
+    </a:presentation>
+</a:menu>
+<a:label name="label">
+    <a:style><![CDATA[
+        .label {
+            font-size   : 8pt;
+            font-family : Tahoma, Arial;
+            overflow    : hidden;
+            cursor      : default;
+            color       : #333;
+            padding     : 2px;
+            position    : relative;
+        }
+
+        .labelDisabled {
+            color : #bebebe;
+        }
+
+        .error .label {
+            background : url(images/alert.png) no-repeat 0 0;
+            min-height : 37px;
+            padding    : 3px 0 0 45px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main caption="." for="@for" minheight="17">
+            <div class="label"> </div>
+        </a:main>
+    </a:presentation>
+</a:label>
+<a:errorbox name="errorbox">
+    <a:style><![CDATA[
+        .errorbox{
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+            cursor : default;
+
+            z-index: 100000;
+            position: absolute;
+            margin : 22px 0 0 16px;
+            width : 250px;
+        }
+
+        .errorbox .errorboxContent {
+            background: url(images/errorbox_backg.png) repeat-y top left;
+            width: 250px;
+        }
+
+        .errorbox .errorboxContent span{
+            background : transparent;
+        }
+
+        .errorbox .errorboxTop {
+            background: url("images/errorbox_top.png") no-repeat top left;
+            width: 250px;
+            height: 9px;
+        }
+
+        .errorbox .errorboxBottom {
+            background: url("images/errorbox_bottom.png") no-repeat top left;
+            width: 250px;
+            height: 16px;
+        }
+
+        .errorbox .errorboxTop div {
+            background: url("images/tooltip_arrow.png") no-repeat top left;
+            width: 19px;
+            height: 11px;
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            padding: 0;
+            margin: 0;
+            border: 0;
+            z-index: 10000000;
+        }
+
+        .errorbox .close {
+            width: 13px;
+            height: 13px;
+            background: url("images/close.png") no-repeat top left;
+            overflow: hidden;
+            cursor : default;
+            position : absolute;
+            right : 13px;
+            top : 6px;
+        }
+
+        .errorbox .close:hover{
+            background-position : 0 -13px;
+        }
+
+        .errorbox span{
+            display: block;
+            padding: 0 10px 4px 10px;
+
+        }
+
+        .errorbox strong{
+            display : block;
+            line-height: 13px;
+            margin-top: 0;
+            padding-top: 0;
+            padding-bottom: 3px;
+            border: 0;
+        }
+
+        .rightbox{
+            margin-left : -205px;
+        }
+
+        .rightbox .errorboxTop div {
+            right : 20px;
+            left : auto;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="div[2]/span" close="div[1]/a">
+            <div class="errorbox">
+                <div class="errorboxTop"><div> </div><a class="close" href="javascript:void(0)" onclick="return false"> </a></div>
+                <div class="errorboxContent"><span> </span></div>
+                <div class="errorboxBottom"> </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:errorbox>
+<a:text name="text">
+    <a:style><![CDATA[
+        .text{
+            font-family: Arial;
+            font-size: 8pt;
+            color: #333;
+            background : white;
+            overflow : auto;
+            border : 0px solid #c3c3c3;
+        }
+        .dockblank .text{
+            height : 100%;
+        }
+        .apf_console{
+            font-family: "Lucida Grande", Verdana;
+        }
+
+        .textEmpty{
+            font-size : 8pt;
+            font-weight : bold;
+            color : #ccc;
+            text-align : center;
+        }
+        
+        .textFocus{
+            background : #fbfdff;
+            border-color : #b2b2b2;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class='text'></div>
+        </a:main>
+    </a:presentation>
+</a:text>
+<a:bar name="basic">
+    <a:style><![CDATA[
+        .basic{
+            position : relative;
+            overflow:auto;
+        }
+        
+        .prop_desc{
+            border:1px solid #c3c3c3;
+            border-width:0 0 0 1px;
+            background:#f1f1f1;
+            padding:3px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class="basic">
+            </div>
+        </a:main>
+    </a:presentation>
+</a:bar>
+<a:splitter name="splitter">
+    <a:style><![CDATA[
+        .splitter{
+            position: absolute;
+            zIndex: 100;
+            overflow: hidden;
+            background: url(images/spacer.gif);
+            padding: 1px;
+            background : #f1f1f1;
+        }
+
+        .splitterFocus{
+            border: 1px dotted black;
+            padding: 0;
+        }
+
+        .w-resize{
+            cursor: w-resize;
+        }
+
+        .n-resize{
+            cursor: n-resize;
+        }
+
+        .moving{
+            background-color: gray;
+        }
+
+        .horizontal div{
+            height: 2px;
+            width: 18px;
+            background : url(images/splitter_handle_horizontal.gif);
+            margin: -1px auto 0 auto;
+        }
+
+        .vertical div{
+            height: 18px;
+            width: 2px;
+            background : url(images/splitter_handle_vertical.gif);
+            position: relative;
+            top: 50%;
+            margin: -9px 0 0 0;
+        }
+
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main handle="." minwidth="3" minheight="3">
+            <div class='splitter'><div></div></div>
+        </a:main>
+    </a:presentation>
+</a:splitter>
+<a:pages name="pages">
+    <a:style><![CDATA[
+        .pages{
+        }
+
+        .pages .page{
+            display: none;
+
+            width: 100%;
+            height: 100%;
+        }
+
+        .pages .curpage{
+            display: block;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main pages=".">
+            <div class='pages'>
+            </div>
+        </a:main>
+        <a:page container=".">
+            <div class='page'></div>
+        </a:page>
+    </a:presentation>
+</a:pages>
+<a:textbox name="tbempty">
+    <a:style><![CDATA[
+        .tbempty {
+            background: white url("images/textarea_background2.png") no-repeat 0 0;
+            /*background-attachment: fixed !important; background-attachment: scroll; */
+            height: 17px;
+            border: 1px solid #c3c3c3;
+            position : relative;
+            padding : 0 22px 0 0;
+        }
+        .tbempty input{
+           color: #333;
+           padding: 1px 1px 1px 2px;
+           font-family: Tahoma, Arial;
+           font-size: 11px;
+           outline: none;
+           height : 100%;
+           width : 100%;
+           border : 0;
+           margin : 1px 0 0 0;
+           background : transparent;
+        }
+        
+        .tbemptyFocus {
+            border: 1px solid #327fbd;
+        }
+        
+        .tbemptyDisabled {
+            border: 1px solid #c3c3c3;
+            color: #bebebe;
+        }
+        
+        .tbemptyError {
+            border: 2px solid #ffb500;
+            margin : -1px 0 0 -1px;
+        }
+        
+        .tbemptyInitial input{
+            color : gray;
+        }
+        
+        .tbempty .btnclose{
+            position : absolute;
+            right : 2px;
+            top : 2px;
+            width : 14px;
+            height : 14px;
+            background : url(images/btnclose.gif) no-repeat 0 0;
+            display : none;
+        }
+        
+        .tbempty .btnclose:hover{
+            background-position : 0 -14px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE &amp;&amp; !apf.isIE8"><![CDATA[
+        .tbempty input{
+            margin : 0 0 0 -7px;
+        }
+        
+        .search .tbempty input{
+            margin : 0 0 0 -14px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+        .tbempty input{
+            margin : -1px 0 0 -1px;
+        }
+        
+        #menubar .search .tbempty input{
+            top : -2px;
+            position : relative;
+        }
+
+        .refguide_container .col2{
+            margin-left : 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main input="input" button="div">
+            <div class="tbempty">
+                <input type='text' />
+                <div class="btnclose" />
+            </div>
+        </a:main>
+    </a:presentation>
+</a:textbox>
+<a:list name="listcomments">
+    <a:style><![CDATA[
+    .listcomments{
+        overflow: auto;
+        position: relative;
+        cursor: default;
+        cursor : auto;
+    }
+    
+    .listcomments div{
+        margin : 0 0 20px 0;
+        background : #f2f2f2;
+        padding : 10px;
+    }
+    
+    .listcomments .message{
+        /*font-family : Courier New;*/
+        background : white;
+        margin : 10px 0 0 0;
+        word-wrap : break-word
+    }
+    
+    .listcomments blockquote{
+        margin : 0;
+        padding : 0;
+        font-family : Arial;
+    }
+    
+    .listcomments pre{
+        margin : 10px 0 10px 0;
+        width : 600px;
+    }
+    
+    .listcomments h3{
+        font-size : 12pt;
+        font-family : Arial;
+        margin : 0;
+    }
+    
+    .listcomments{
+        line-height : 1.3em;
+    }
+    
+    .listcomments .highlight{
+        background-color : #FFF59A;
+    }
+    
+    .listcomments .empty, .listcomments .loading{
+        font-size : 8pt;
+        font-weight : bold;
+        color : #ccc;
+        text-align : center;
+        display : block;
+        background : white;
+    }
+]]>
+    </a:style>
+
+    <a:presentation>
+        <a:main container=".">
+            <div class='listcomments'>
+            </div>
+        </a:main>
+        <a:item
+        class    = "."
+        caption  = "."
+        select   = "."
+    >
+            <div> </div>
+        </a:item>
+        <a:empty caption=".">
+            <div>-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+<a:button name="button">
+    <a:alias>submit</a:alias>
+    <a:alias>reset</a:alias>
+    <a:style><![CDATA[
+    .apf_btn {
+        color       : #333;
+        font-family : Tahoma, Arial;
+        font-size   : 8pt;
+        height      : 25px;
+        width       : 100px;
+        overflow    : hidden;
+        cursor      : default;
+    }
+
+    .apf_btn .left {
+        float         : left;
+        width         : 8px;
+        height        : 25px;
+        _margin-right : -3px; /* IE6 bug fix */
+    }
+
+    .apf_btn .lbl {
+        height        : 20px;
+        padding-top   : 5px;
+        text-align    : center;
+        margin        : 0;
+        _margin       : 0; /* IE6 fix */
+        white-space   : nowrap;
+        overflow      : hidden;
+        text-overflow : ellipsis;
+    }
+
+    .apf_btn .right {
+        float       : right;
+        width       : 9px;
+        height      : 25px;
+       _margin-left : -3px; /* IE6 bug fix */
+    }
+    
+    .apf_btn .left{
+        background : url("images/button_left.png") no-repeat 0 -25px;
+    }
+    
+    .apf_btn .lbl{
+        background : url("images/button_middle.png") repeat-x 0 -25px;
+    }
+    
+    .apf_btn .right{
+        background : url("images/button_right.png") no-repeat 0 -25px;
+    }
+    
+    .apf_btnDefault .left {
+        background : url("images/button_left.png") no-repeat top left;
+    }
+    
+    .apf_btnDefault .lbl {
+        background : url("images/button_middle.png") repeat-x top left;
+    }
+    
+    .apf_btnDefault .right {
+        background : url("images/button_right.png") no-repeat top left;
+    }        
+
+    .redBtn {
+        color: #ffffff;
+    }
+
+    .redBtn .left{
+        background-image: url("images/red_button_left.png");
+    }
+
+    .redBtn .lbl{
+        background-image: url("images/red_button_middle.png");
+    }
+
+    .redBtn .right{
+        background-image: url("images/red_button_right.png");
+    }
+
+    .apf_btn span{
+        padding  : 1px 3px 1px 3px;
+        border   : 1px solid transparent;
+        position : relative;
+        _border  : 0;
+        _padding : 2px 4px 2px 4px;
+        _margin  : 0;
+    }
+    
+    .apf_btnDisabled  {
+        color : #bebebe;
+    }
+    
+    .apf_btnDisabled .left {
+        background : url("images/button_left.png") no-repeat 0 -50px;
+    }
+    
+    .apf_btnDisabled .lbl {
+        background : url("images/button_middle.png") repeat-x 0 -50px;
+    }
+    
+    .apf_btnDisabled .right {
+        background : url("images/button_right.png") no-repeat 0 -50px;
+    }
+    .apf_btnFocus {
+    }
+    
+    .apf_btnFocus span{
+        border  : 1px dotted #BBB;
+        padding : 1px 3px 1px 3px;
+    }
+    
+    .apf_btnDown .left {
+        background : url("images/button_left.png") no-repeat 0 -75px;
+    }
+
+    .apf_btnDown .lbl {
+        background : url("images/button_middle.png") repeat-x 0 -75px;
+    }
+        
+    .apf_btnDown .right {
+        background : url("images/button_right.png") no-repeat 0 -75px;
+    }
+    .apf_btnDown.redBtn .left{
+        background-image: url("images/red_button_left.png");
+    }
+
+    .apf_btnDown.redBtn .lbl{
+        background-image: url("images/red_button_middle.png");
+    }
+
+    .apf_btnDown.redBtn .right{
+        background-image: url("images/red_button_right.png");
+    }
+    .apf_btnOver {   
+    }
+]]>
+    </a:style>
+    <a:style condition="apf.isIE7">
+    .apf_btn .right {
+        margin: 0;
+    }
+    
+    .apf_btn .left {
+        margin: 0;
+    }
+    </a:style>
+
+    <a:presentation>
+        <a:main caption="div[3]/span/text()" background=".">
+            <div class="apf_btn">
+                <div class="left"> </div>
+                <div class="right"> </div>
+                <div class="lbl">
+                    <span>-</span>
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="button_close">
+    <a:style><![CDATA[
+        .dgr_btn_close {
+            height              : 20px;
+            width               : 20px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/debugger_close.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_closeOver {
+            background-position:0 -20px;
+        }
+        
+        .dgr_btn_closeDown {
+            background-position:0 -40px;
+        }
+        
+        .dgr_btn_closeDisabled {
+            background-position:0 -60px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = ".">
+            <div class="dgr_btn_close">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="button_edit">
+    <a:style><![CDATA[
+        .dgr_btn_edit {
+            height              : 36px;
+            width               : 35px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/debugger_tab_buttons.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_editOver {
+            background-position : -35px 0;
+        }
+        
+        .dgr_btn_editDown {
+            background-position : -70px 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = ".">
+            <div class="dgr_btn_edit">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="button_select">
+    <a:style><![CDATA[
+        .dgr_btn_select {
+            height              : 36px;
+            width               : 35px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/debugger_tab_buttons.png);
+            background-position : 0 -36px;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_selectOver {
+            background-position : -35px -36px;
+        }
+        
+        .dgr_btn_selectDown {
+            background-position : -70px -36px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = ".">
+            <div class="dgr_btn_select">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:button name="button_save">
+    <a:style><![CDATA[
+        .dgr_btn_save {
+            height              : 36px;
+            width               : 35px;
+            overflow            : hidden;
+            cursor              : default;
+            z-index             : 110;
+            background-image    : url(images/debugger_tab_buttons.png);
+            background-position : 0 -72px;
+            background-repeat   : no-repeat;
+        }
+        
+        .dgr_btn_saveOver {
+            background-position : -35px -72px;
+        }
+        
+        .dgr_btn_saveDown {
+            background-position : -70px -72px;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          caption    = "text()" 
+          background = ".">
+            <div class="dgr_btn_save">-</div>
+        </a:main>
+    </a:presentation>
+</a:button>
+
+<a:tree name="tree_demosmenu">
+    <a:style><![CDATA[
+    .tree_demosmenu {
+        background-color : #f2f2f2;
+        height           : auto;
+        overflow-y       : auto;
+        overflow-x       : hidden;
+        cursor           : default;
+        font-size        : 8pt;
+        position         : relative;
+        border           : 0 solid #c3c3c3;
+    }
+    
+    .tree_demosmenu DIV SPAN.openclose {
+        width      : 20px;
+        height     : 21px;
+        background : /*url(icns/brick.png)*/ no-repeat 3px 5px;
+        display    : block;
+        margin     : -6px 0 0 0;
+        float      : left;
+        position   : relative;
+        left       : -4px;
+    }
+
+    .tree_demosmenu DIV.pluslast SPAN.openclose,
+    .tree_demosmenu DIV.plus SPAN.openclose {
+        background-image : url(images/plus.png);
+        margin-top  : -3px;
+        left        : -3px;
+        width      : 15px;
+        height     : 18px;
+    }
+    
+    .tree_demosmenu DIV.minlast SPAN.openclose,
+    .tree_demosmenu DIV.min SPAN.openclose {
+        background-image : url(images/min.png);
+        margin-top  : -3px;
+        left        : -3px;
+        width      : 15px;
+        height     : 18px;
+    }
+    
+    /*.tree_demosmenu blockquote div div span.openclose,
+    .tree_demosmenu div.root span.openclose {
+        display : none;
+    }*/
+    
+    .tree_demosmenu div.root {
+        height           : 14px;
+        padding          : 5px 3px 5px 8px;
+        cursor           : pointer;
+        background-color : #2582d1;
+        border           : 1px solid #2582d1;
+        color            : white;
+        position         : relative;
+    }
+    
+    .tree_demosmenu div.root span.counter {
+        position:absolute;
+        right:0;
+        top              : 0;
+        padding          : 5px 5px 3px 11px;
+        background-image : url(images/menu_back2.png);
+        width            : auto;
+        min-width        : 2px;
+        height           : 16px;
+        display          : block;
+        color            : white;
+        text-align       : right;
+    }
+    
+    .tree_demosmenu blockquote {
+        margin: 0;
+        display: none;
+        height: 0;
+        overflow: hidden;
+        background: repeat-y 0px center;
+        position:relative;
+    }
+    
+    .tree_demosmenu blockquote.root {
+        padding:0;
+        margin:0 0 10px 0;
+        position:relative;
+    }
+
+    .tree_demosmenu blockquote.root blockquote {
+        margin:0;
+        padding:0;
+        position:relative;
+    }
+    
+    .tree_demosmenu blockquote.root blockquote div.component, 
+    .tree_demosmenu blockquote.root div.component {
+        padding:5px 3px 5px 5px;
+        cursor:pointer;
+        background-color:#f2f2f2;
+        margin:0;
+        /*background:url(images/arrow.png) no-repeat 5px 8px;*/
+        position:relative;
+    }
+    
+    .tree_demosmenu blockquote.root blockquote div.component span.counter, 
+    .tree_demosmenu blockquote.root div.component span.counter {
+        display:none;
+    }
+    
+    .tree_demosmenu blockquote.root blockquote div.component:hover,
+    .tree_demosmenu blockquote.root div.component:hover {
+        background-color:#eaeaea;
+    }
+
+    .tree_demosmenu blockquote.root div.component.selected {
+        background-color:#dddddd;
+    }
+    
+    .tree_demosmenu blockquote.root div.plus,
+    .tree_demosmenu blockquote.root div.pluslast, 
+    .tree_demosmenu blockquote.root div.min,
+    .tree_demosmenu blockquote.root div.minlast {
+        height:14px;
+        width:100%;
+        margin-left:0;
+        padding:5px 3px 5px 5px;
+        border-bottom:1px solid #bbbbbb;
+        background-color:#e6e6e6;
+        margin-bottom:1px;
+        position:relative;
+        cursor:pointer;
+        background-image:none;
+    }
+    
+    .tree_demosmenu blockquote.root div.plus span.counter,
+    .tree_demosmenu blockquote.root div.pluslast span.counter, 
+    .tree_demosmenu blockquote.root div.min span.counter,
+    .tree_demosmenu blockquote.root div.minlast span.counter {
+        position:absolute;
+        right:0;
+        top:0;
+        background-image:url(images/menu_back.png);
+        width:auto;
+        min-width:2px;
+        height:16px;
+        display:block;
+        color:#898989;
+        text-align:right;
+        padding:5px 13px 3px 9px;
+    }
+    
+    .tree_demosmenu .message{
+        padding: 6px;
+        color: #AAA;
+    }
+    
+    .tree_demosmenu .loading{
+        padding: 5px;
+        color: #AAA;
+    }
+]]>
+    </a:style>
+    <a:style condition="apf.isIE">
+    .tree_demosmenu div.root {
+        width:auto;
+    }
+    
+    .tree_demosmenu blockquote.root div.plus, 
+    .tree_demosmenu blockquote.root div.min,
+    .tree_demosmenu blockquote.root div.pluslast,
+    .tree_demosmenu blockquote.root div.minlast {
+        width: 100%;
+    }
+    
+    .tree_demosmenu blockquote.root div.plus span.counter,
+    .tree_demosmenu blockquote.root div.pluslast span.counter, 
+    .tree_demosmenu blockquote.root div.min span.counter,
+    .tree_demosmenu blockquote.root div.minlast span.counter {
+        width:auto;
+        padding-right:13px;
+    }
+    </a:style>
+    <a:style condition="apf.isSafari">
+    .tree_demosmenu blockquote.root div.minlast span.counter {
+
+    }
+    </a:style>
+    <a:presentation>
+        <a:main container="." startclosed="false" openclose="onmousedown">
+            <div class="tree_demosmenu">
+
+            </div>
+        </a:main>
+        <a:item
+        class        = "."
+        caption      = "text()"
+        icon         = "span"
+        openclose    = "span"
+        select       = "."
+        container    = "following-sibling::blockquote"
+    >
+            <div class="component"><span class="openclose"> </span>-
+            </div>
+            <blockquote></blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragtree'>
+                <span> </span>
+                <label>
+                    <u>-</u>
+                </label>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+<a:checkbox name="checkbox">
+    <a:style><![CDATA[
+        .cbcontainer{
+            padding: 2px 2px 2px 2px;
+            _padding: 2px; /* IE6 fix */
+            position: relative;
+            overflow : hidden;
+            color: #333;
+            background: url(images/spacer.gif);
+            _clear: both; /* IE6 fix */
+        }
+
+        .cbcontainer span{
+            font-family: Tahoma, Arial;
+            font-size: 11px;
+            cursor: default;
+            padding: 1px 3px 2px 3px;
+            margin : -2px 0 0 0;
+            overflow: hidden;
+            float: left;
+            line-height: 13px;
+        }
+
+        .cbcontainerFocus span{
+            padding: 0px 2px 1px 2px;
+            border: 1px dotted #BBB;
+        }
+        .propedit .cbcontainerFocus span{
+            border: 0;
+            padding: 1px 3px 2px 3px;
+        }
+
+        .cbcontainerChecked.cbcontainerDown.cbcontainerFocus .checkbox {
+            background-position: 0 -48px;
+        }
+
+        .cbcontainer .checkbox{
+            width: 12px;
+            height: 12px;
+            overflow: hidden;
+            position: relative;
+            float:left;
+            _position: relative; /* IE6 fix */
+            _float: left; /* IE6 fix */
+            _margin: -2px 4px 0 0; /* IE6 fix */
+            background: url("images/checkbox.png") no-repeat 0 -12px;
+        }
+
+        .cbcontainerDown .checkbox{
+            background-position: 0 -36px;
+        }
+
+        .cbcontainerChecked .checkbox{
+            background-position: 0 -24px;
+        }
+
+        .cbcontainerError span{
+            background-color : #ffb500;
+            color: #fbfbfb;
+        }
+
+        .cbcontainerDisabled .checkbox{
+            background-position: 0 -0px;
+        }
+
+        .cbcontainerDisabled span{
+            color: #bebebe;
+        }
+
+        .cbcontainer br{
+            display: none;
+        }
+    ]]></a:style>
+    <a:style condition="!apf.isIE"><![CDATA[
+        .cbcontainer br{
+            line-height: 0;
+            display: block;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main label="span/text()" minheight="18" minwidth="18">
+            <div class='cbcontainer'>
+                <div class='checkbox'> </div>
+                <span>-</span>
+                <br clear="left" />
+            </div>
+        </a:main>
+    </a:presentation>
+</a:checkbox>
+<a:modalwindow name="alert">
+    <a:style><![CDATA[
+        .alert{
+            font-family: Tahoma, Arial;
+            font-size: 11px;
+            padding : 27px 0 10px 0;
+            text-align : left;
+        }
+
+        .alert .topLeft{
+            background: url("images/error_box_lt.png") no-repeat top left;
+            width: 8px;
+            height: 27px;
+            float:left;
+            margin: -27px 0 0 0;
+            _margin: -27px -8px 0 0; /* IE6 bug fix */
+            padding: 0;
+            border: 0;
+        }
+        .alert .topRight{
+            background: url("images/error_box_rt.png") no-repeat top left;
+            width: 14px;
+            height: 27px;
+            float: right;
+            margin: -27px 0 0 0;
+            _margin: -27px 0 0 -14px;
+            padding: 0;
+            border: 0;
+        }
+
+        .alert .title{
+            border-top:1px solid #c3c3c3;
+            height: 18px;
+            margin: -27px 14px 0 8px;
+            padding : 8px 0 0 3px;
+
+            font-weight: bold;
+            color : #0e9717;
+            cursor : default;
+            background : white;
+        }
+
+        .error .title{
+            color: #327fbd;
+        }
+
+        .alert .content{
+            border-left: 1px solid #c3c3c3;
+            padding: 1px 0 0 10px;
+            margin : -1px 9px 0 0;
+            /*overflow: hidden;*/
+            height : 100%;
+            position : relative;
+            background : white;
+        }
+
+        .alert .borderRight{
+            background: url("images/error_box_r.png") repeat-y top right;
+            overflow: hidden;
+            height : 100%;
+            float : right;
+            width : 9px;
+        }
+
+        .selectSupplier .borderRight{
+            bottom:26px;
+            position:absolute;
+            right:0;
+            top:27px;
+            z-index:1;
+            height: auto;
+        }
+        .alert .bottomLeft{
+            background: url("images/error_box_lb.png") no-repeat top left;
+            width: 8px;
+            height: 16px;
+            float: left;
+            margin: 0;
+            _margin: 0 -8px 0 0; /* IE6 bug fix */
+            padding: 0;
+            border: 0;
+        }
+
+        .alert .bottomRight{
+            background: url("images/error_box_rb.png") no-repeat top right;
+            width: 14px;
+            height: 16px;
+            float: right;
+            margin: 0;
+            _margin: 0 0 0 -14px; /* IE6 bug fix */
+            padding: 0;
+            border: 0;
+        }
+
+        .alert .bottomBar{
+            background: url("images/error_box_b.png") repeat-x bottom left;
+            height: 16px;
+            margin: 0 14px 0 8px;
+            padding: 0;
+            border: 0;
+        }
+
+        .alert .close{
+            width: 13px;
+            height: 13px;
+            background: url("images/close.png") no-repeat top left;
+            margin : -2px 1px 0 0;
+            overflow: hidden;
+            position : absolute;
+            right : 14px;
+            top : 9px;
+        }
+
+        .alert .title .hover{
+            background-position : 0 -13px;
+        }
+        
+        .cover{
+            background: black;
+            opacity: 0.3;
+            filter:progid:DXImageTransform.Microsoft.Alpha(opacity=30);
+
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            height: expression(document.documentElement.offsetHeight);
+            z-index: 10000;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <!--  min-width="50" min-height="50"  -->
+        <a:main collapsed-height="30"
+          container="div[5]" drag="div[3]" title="div[3]/text()"
+          buttons="div[3]">
+            <div class="alert">
+                <div class="topLeft"> </div>
+                <div class="topRight"> </div>
+                <div class="title">-</div>
+
+                <div class="borderRight"> </div>
+                <div class="content">
+                </div>
+
+                <div class="bottomLeft"> </div>
+                <div class="bottomRight"> </div>
+                <div class="bottomBar"> </div>
+
+            </div>
+        </a:main>
+        <a:button>
+            <div> </div>
+        </a:button>
+        <a:cover>
+            <div class='cover'> </div>
+        </a:cover>
+    </a:presentation>
+</a:modalwindow>
+<a:list name="list">
+    <a:style><![CDATA[
+        .list {
+            overflow         : auto;
+            position         : relative;
+            border           : 1px solid #c3c3c3;
+            background-color : white;
+            cursor           : default;
+        }
+    
+        .white {
+            background : white;
+        }
+    
+        .list, 
+        .draglist {
+            font-family : Tahoma, Arial;
+            font-size   : 8pt;
+        }
+    
+        .list DIV, 
+        .draglist {
+            padding : 0;
+            height  : 18px;
+        }
+    
+        .list SPAN, 
+        .draglist SPAN {
+            padding    : 0 0 0 20px;
+            background : no-repeat 1px center;
+            height     : 16px;
+            float      : left;
+        }
+    
+        .list U, 
+        .draglist U {
+            text-decoration : none;
+            color           : black;
+            cursor          : default;
+            display         : block;
+            padding         : 2px 4px 2px 2px;
+            text-decoration : none;
+            white-space     : nowrap;
+        }
+    
+        .listFocus .indicate U {
+            border  : 1px dotted #BBB;/*#2582d1;*/
+            color   : black;
+            /*
+            background-color : #e4f4fc;
+            */
+            padding : 1px 3px 1px 1px;
+        }
+    
+        .list .selected U {
+            background-color : #f0f0f0;
+            color            : black;
+        }
+        
+        .listFocus .selected U, 
+        .draglist U {
+            color            : white;
+            background-color : #2582d1;
+        }
+    
+        .list #txt_rename {
+            border      : 1px solid #bbb;
+            padding     : 1px 15px 1px 1px;
+            font-family : Tahoma, Arial;
+            font-size   : 8pt;
+            color       : black;
+            word-break  : keep-all;
+            overflow    : visible;
+            margin-top  : 0px;
+            cursor      : text;
+            height      : 13px;
+            display     : block;
+            outline     : none;
+        }
+    
+        .list .empty, 
+        .list .offline, 
+        .list .loading {
+            text-align  : center;
+            padding     : 8px 0 0 5px;
+            color       : #AAA;
+            font-weight : normal;
+        }
+    
+        .shortlist {
+            border     : 0;
+            overflow-y : auto;
+            overflow-x : hidden;
+            max-height : 90px;
+            width      : auto;
+        }
+        
+        .listDrop {
+            border : 1px solid #2582d1;
+        }
+    
+        .draglist_multiple {
+            border     : 2px solid black;
+            width      : 10px;
+            height     : 5px;
+            padding    : 0;
+            background : none;
+        }
+    
+        .draglist_multiple span {
+            display : none;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main 
+          container = "."
+          minwidth  = "100"
+          minheight = "50">
+            <div class="list">
+            </div>
+        </a:main>
+        <a:item
+          class   = "."
+          caption = "span/u"
+          icon    = "span"
+          select  = "span">
+            <div>
+                <span>
+                    <u>-</u>
+                </span>
+            </div>
+        </a:item>
+        <a:dragindicator>
+            <div class="draglist">
+                <span>
+                    <u>-</u>
+                </span>
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">Loading...</div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message">-</div>
+        </a:empty>
+    </a:presentation>
+</a:list>
+<a:tree name="doctree">
+    <a:style><![CDATA[
+    .docutree{
+        overflow: auto;
+        position: relative;
+        border: 1px solid #c3c3c3;
+        background-color: white;
+        cursor: default;
+    }
+
+    .docutree DIV SPAN, .dragdoctree SPAN{
+        width: 15px;
+        height: 18px;
+        background: url(images/bullet_go.png) no-repeat 3px 5px;
+        display: block;
+        margin : -3px 3px 0 -3px;
+        float : left;
+    }
+
+    .docutree DIV.pluslast SPAN,
+    .docutree DIV.plus SPAN{background-image:url(images/plus.png)}
+    
+    .docutree DIV.minlast SPAN,
+    .docutree DIV.min SPAN{background-image:url(images/min.png)}
+
+    .docutree DIV, .dragdoctree{
+        padding: 6px 3px 1px 6px;
+        height: 18px;
+
+        font-size: 8pt;
+        background : #e6e6e6 no-repeat 205px;
+        border-bottom : 1px solid #bbb;
+        margin : 1px 0 0 0;
+        white-space : nowrap;
+        text-overflow : ellipsis;
+        overflow : hidden;
+        
+        font-family: Tahoma, Arial, Arial;
+        font-size: 8.5pt;
+    }
+    
+    .docutree .focusbug{
+        padding : 0;
+        height : auto;
+        background : inherit;
+        border : 0;
+        margin : 0;
+        overflow : visible;
+    }
+    
+    .docutreeFocus div.indicate{
+        padding: 5px 3px 1px 5px;
+        border : 1px dotted gray;
+        background-position : 204px;
+        background-color : #ddd;
+    }
+    
+    .docutree blockquote div, .dragdoctree{
+        background : #f9f9f9 no-repeat 12px;
+        padding-left : 31px;
+        padding-top : 4px;
+        border : 0;
+        margin : 0;
+        cursor : default;
+    }
+    
+    .dragdoctree{
+        /*opacity : 0.8;
+        filter:progid:DXImageTransform.Microsoft.Alpha(opacity=80);*/
+    }
+    
+    .docutree blockquote div.hover{
+        background-color : #eee;
+    }
+    
+    .docutree blockquote div.indicate, .dragdoctree{
+        color: white;
+        background-color: #2582d1;
+    }
+    
+    .docutreeFocus blockquote div.indicate{
+        background-color : #ddd;
+        background-position : 12px;
+        padding : 4px 3px 1px 31px;
+        border : 0;
+        color: white;
+        background-color: #2582d1;
+    }
+    
+    .docutree blockquote div span{
+        display : none;
+    }
+    
+    .docutree BLOCKQUOTE{
+        margin: 0;
+        display: none;
+        height: 0;
+        overflow: hidden;
+        background: repeat-y 0px center;
+    }
+    
+    .docutree .message{
+        text-align: center;
+        padding: 8px 10px 0 0;
+        color: #AAA;
+    }
+]]>
+    </a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="true" openclose="onmousedown">
+            <div class="docutree">
+
+            </div>
+        </a:main>
+        <a:item
+        class        = "."
+        caption      = "text()"
+        icon         = "."
+        openclose    = "span"
+        select       = "."
+        container    = "following-sibling::blockquote"
+    >
+            <div><span> </span>-
+            </div>
+            <blockquote> </blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragdoctree'>
+                <span> </span>-
+            </div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading">
+                <span> </span>
+                <label>Loading...</label>
+            </div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+<a:tree name="tree">
+    <a:style><![CDATA[
+        .tree{
+            border: 1px solid #c3c3c3;
+
+            background-color: white;
+            width: 200px;
+            height: 500px;
+            overflow: hidden;
+            cursor : default;
+
+            overflow: auto;
+        }
+
+        .tree SPAN, .dragtree SPAN{
+            width: 15px;
+            height: 18px;
+            background: no-repeat 3px 5px;
+            display: block;
+            margin-left: -15px;
+        }
+
+        .dragtree SPAN{
+            background : transparent;
+        }
+
+        .tree DIV.pluslast SPAN,
+        .tree DIV.plus SPAN{background-image:url(images/plus.png)}
+
+        .tree DIV.minlast SPAN,
+        .tree DIV.min SPAN{background-image:url(images/min.png)}
+
+        .tree DIV, .dragtree{
+            padding: 0;
+            height: 18px;
+            padding-left: 15px;
+
+            font-family: Tahoma, Arial, Arial;
+            font-size: 8.5pt;
+        }
+
+        .dragtree{
+            opacity : 0.5;
+            filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
+            background : none;
+        }
+
+        /*.tree DIV.root{
+            padding: 0;
+        }*/
+
+        .tree LABEL, .dragtree LABEL{
+            padding: 1px 0 0 20px;
+            background: no-repeat 1px 1px;
+            height: 16px;
+            white-space: nowrap;
+            margin-left: 0px;
+            display: block;
+            float: left;
+            margin-top: -18px;
+        }
+
+        .tree DIV.loading LABEL{
+
+        }
+        .tree DIV.loading SPAN{
+            background: no-repeat 0px 0px;
+        }
+
+        .tree U, .dragtree U{
+            text-decoration: none;
+            color: black;
+            cursor: default;
+            display: inline !important; display: block;
+            padding: 2px 4px 2px 2px;
+        }
+
+
+        .treeFocus .indicate U{
+            border: 1px dotted #BBB;/*#2582d1;*/
+            padding: 1px 3px 1px 1px;
+            color : black;
+        }
+
+        .tree .selected U, .tree .dragAppend U{
+            background-color: #f0f0f0;
+            color: black;
+        }
+
+        .treeFocus .selected U, .treeFocus .dragAppend U, .dragtree U{
+            color: white;
+            background-color: #2582d1;
+        }
+
+        .tree BLOCKQUOTE{
+            margin: 0;
+            padding: 0 0 0 20px;
+            display: none;
+            height: 0;
+            overflow: hidden;
+            background: repeat-y 0px center;
+        }
+        /*.tree BLOCKQUOTE.root{padding:0}*/
+
+        .tree #txt_rename{
+            border: 1px solid black;
+            padding: 1px 15px 1px 1px;
+            font-family: Tahoma, Arial;
+            font-size: 8pt;
+            color: black;
+            word-break: keep-all;
+            overflow: visible;
+            margin-top : -2px;
+            *margin-top: 0;
+            cursor: text;
+            height: 13px;
+            outline : none;
+        }
+
+        .tree DIV.dragInsert label{
+            border-top: 1px solid gray;
+            padding-top : 2px;
+            background-position : 1px 0;
+            height: 15px;
+            overflow: hidden;
+        }
+
+        .tree DIV.dragInsert U{
+            padding-top: 0;
+        }
+
+        /*.tree DIV.dragDenied label{
+            border-top: 2px solid red;
+            height: 14px;
+            overflow: hidden;
+            padding-top : 2px;
+            margin-top : -20px;
+            background-position : 1px 0;
+        }*/
+
+        .tree .empty, .tree .offline, .tree .loading{
+            text-align: center;
+            padding: 4px 0 2px 0;
+            color: #AAA;
+            font-weight : normal;
+        }
+
+        .tree .loading{
+            text-align : left;
+        }
+        
+        .tree .focusbug{
+            padding : 0;
+        }
+    ]]></a:style>
+
+    <a:presentation>
+        <a:main container="." startclosed="false">
+            <div class="tree">
+
+            </div>
+        </a:main>
+        <a:item
+            class        = "."
+            caption      = "label/u"
+            icon         = "label"
+            openclose    = "span"
+            select       = "label"
+            container    = "following-sibling::blockquote"
+        >
+            <div><span> </span><label><u>-</u></label></div>
+            <blockquote> </blockquote>
+        </a:item>
+        <a:dragindicator>
+            <div class='dragtree'><span> </span><label><u>-</u></label></div>
+        </a:dragindicator>
+        <a:loading>
+            <div class="loading"><span> </span><label>Loading...</label></div>
+        </a:loading>
+        <a:empty caption=".">
+            <div class="message"></div>
+        </a:empty>
+    </a:presentation>
+</a:tree>
+<a:tslider name="tslider">
+    <a:style><![CDATA[
+        .tslider {
+            height   : 19px;
+            position : relative;
+            overflow : visible;
+        }
+        
+        .tslider .button {
+            width               : 17px;
+            height              : 19px;
+            background-image    : url(images/slider_tbutton.png);
+            background-position : 0 0;
+            background-repeat   : no-repeat;
+            position            : absolute;
+            overflow            : hidden;
+            top                 : 0;
+            right               : 0;
+        }
+        
+        .tsliderFocus .button {
+            background-position : 0 -19px;
+        }
+        
+        .tsliderDown .button {
+            background-position : 0 -38px;
+        }
+        
+        .tsliderError .button {
+            background-position : 0 -57px;
+        }
+        
+        /* 
+        ===========================
+        ======== TEXTBOX ==========
+        ===========================
+        */
+        
+        .tslider .fixdiv {
+            position     : absolute;
+            left         : 0;
+            top          : 0;
+            height       : 17px;
+            border       : 1px solid #c3c3c3;
+            border-right : 0;
+            bottom       : 0;
+            right        : 17px;
+            overflow     : hidden;
+            background   : white url("images/textarea_background2.png") no-repeat 0 0;
+        }
+
+        .tslider .fixdiv .tb {
+            width         : 100%;
+            height        : 15px;
+            color         : #4b4b4b;
+            border        : 0;
+            margin        : 0 0 0 -1px;
+            padding       : 2px 0 0 0;
+            outline       : none;
+            font-family   : Tahoma, Arial;
+            font-size     : 11px;
+            text-overflow : ellipsis;
+            text-align    : right;
+            position      : relative;
+            overflow      : hidden;
+        }
+    
+        .tsliderFocus .fixdiv {
+            border : 1px solid #327fbd;
+            border-right:0;
+        }
+        
+        .tsliderDisabled .fixdiv {
+            border       : 1px solid #c3c3c3;
+            border-right : 0;
+        }
+    
+        .tsliderDisabled .fixdiv .tb {
+            color  : #bebebe;
+        }
+    
+        .tsliderError .fixdiv {
+            border       : 2px solid #ffb500;
+            border-right : 0;
+            margin       : -1px 0 0 -1px;
+        }
+    
+        .tsliderInitial .fixdiv .tb {
+            color : gray;
+        }
+
+        /* 
+        ===========================
+        ========= SLIDER ==========
+        ===========================
+        */
+        
+        .tslider_container {
+            position         : absolute;
+            background-color : #ebebeb;
+            border           : 1px solid #cccccc;
+            overflow         : hidden;
+            width            : 154px;
+            height           : 12px;
+            display          : none;
+        }
+
+        .tslider_container .slider {
+            background  : url("images/bar_right.png") no-repeat top right;
+            width       : 150px;
+            height      : 8px;
+            position    : absolute;
+            font-family : Tahoma, Arial;
+            font-size   : 9px;
+            text-align  : center;
+            overflow    : visible;
+            display     : block;
+            top         : 2px;
+            left        : 2px;
+        }
+        
+        .tslider_containerDisabled .slider {
+            background-position : right -8px;
+        }
+        
+        .tslider_container .slider .left {
+            background   : url("images/bar_left.png") no-repeat top left;
+            height       : 8px;
+            overflow     : hidden;
+            margin-right : 4px;
+        }
+        
+        .tslider_containerDisabled .slider .left {
+            background-position : left -8px;
+        }
+        
+        .tslider_containerDisabled .slider .filledbar {
+            background-position : 0 -8px;
+        }
+        
+        .tslider_container .slider .grabber {
+            background : url("images/slider.png") no-repeat top left;
+            width      : 20px;
+            height     : 8px;
+            overflow   : hidden;
+            position   : absolute;
+            z-index    : 10;
+        }
+        
+        .tslider_containerDisabled .slider .grabber {
+            background-position : left -8px;
+        }
+
+        .tslider_container .slider U {
+            position    : absolute;
+            background  : #c3c3c3;
+            overflow    : hidden;
+            height      : 4px;
+            margin      : 2px 0 0 0;
+            display     : block;
+            width       : 1px;
+            margin-left : 10px;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isOpera"><![CDATA[
+        /* Fix for Opera 10.01 */
+        .tslider .fixdiv .tb {
+            padding : 1px 0 1px 0;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isIE7"><![CDATA[
+        .tslider .fixdiv .tb {
+            margin  : -1px 0 0 -1px;
+            padding : 2px 0 2px 0;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isGecko &amp;&amp; apf.versionFF == 3.6"><![CDATA[
+        .tslider .fixdiv .tb {
+            padding : 1px 0 1px 0;
+        }
+    ]]></a:style>
+    
+    <a:presentation>
+        <a:main 
+          container = "."
+          button    = "div[1]"
+          status    = "div[2]/input"
+          direction = "horizontal"
+          minheight = "19"
+          maxheight = "19"
+          minwidth  = "35">
+            <div class="tslider">
+                <div class="button"> </div>
+                <div class="fixdiv">
+                    <input type="text" class="tb" />
+                </div>
+            </div>
+        </a:main>
+        <a:container
+          container = "."
+          slider    = "div" 
+          grabber   = "div/div[1]"
+          markers   = "div/div[2]"> 
+            <div class="tslider_container">
+                    <div class="slider">
+                        <div class="grabber"> </div>
+                        <div class="left"> </div>
+                    </div>
+                </div>
+        </a:container>
+        <marker>
+            <u> </u>
+        </marker>
+    </a:presentation>
+</a:tslider>
+<a:spinner name="spinner">
+    <a:style><![CDATA[
+        .spinner {
+            position  : relative;
+            height    : 19px;
+            margin    : 0;
+            padding   : 0;
+        }
+
+        .spinner .divfix {
+            display    : block;
+            position   : absolute;
+            text-align : right;
+            height     : 19px;
+            left       : 0;
+            right      : 19px;
+            margin     : 0;
+            z-index    : 9000;
+            padding    : 0;
+            border     : 0;
+        }
+
+        .spinner .divfix input {
+            outline             : none;
+            display             : block;
+            border-top          : 1px solid #b2b2b2;
+            border-left         : 1px solid #b2b2b2;
+            border-bottom       : 1px solid #b2b2b2;
+            border-right        : 0;
+            padding             : 1px 1px 2px 0;
+            position            : absolute;
+            text-align          : right;
+            left                : 0;
+            height              : 14px;
+            background-position : 0 0;
+            background-image    : url(images/spinner_body2.png);
+            color               : black;
+            font-family         : Tahoma, Arial;
+            font-size           : 11px;
+            width               : 100%;
+            margin              : 0;
+            z-index             : 10000;
+        }
+
+        .spinner .buttons {
+            display  : block;
+            width    : 18px;
+            height   : 19px;
+            position : absolute;
+            right    : 0;
+            z-index  : 11000;
+        }
+
+        .spinner .buttons .plus {
+            height              : 9px;
+            width               : 18px;
+            cursor              : default;
+            border-left         : 0;
+            border-right        : 1px solid #b2b2b2;
+            border-bottom       : 0;
+            border-top          : 1px solid #b2b2b2;
+            background-image    : url(images/spinner_plus.png);
+            background-position : 0 0;
+            margin              : 0;
+        }
+
+        .spinner .buttons .minus {
+            height              : 8px;
+            width               : 18px;
+            cursor              : default;
+            border-left         : 0;
+            border-right        : 1px solid #b2b2b2;
+            border-bottom       : 1px solid #b2b2b2;
+            border-top          : 0;
+            background-image    : url(images/spinner_minus.png);
+            background-position : 0 0;
+        }
+
+        .spinner .buttons .plusFocus {
+            background-position : 0 27px;
+            border-top          : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .minusFocus {
+            background-position : 0 24px;
+            border-bottom       : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .plusDown {
+            background-position : 0 9px;
+            border-top          : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .minusDown {
+            background-position : 0 8px;
+            border-bottom       : 1px solid #327fbd;
+            border-right        : 1px solid #327fbd;
+        }
+
+        .spinner .buttons .plusHover {
+            background-position : 0 18px;
+        }
+
+        .spinner .buttons .minusHover {
+            background-position : 0 16px;
+        }
+
+        .spinner .divfix .focus {
+            background-position : 0 17px;
+            border-top          : 1px solid #327fbd;
+            border-bottom       : 1px solid #327fbd;
+            border-left         : 1px solid #327fbd;
+            border-right        : 0;
+        }
+    ]]></a:style>
+    <a:style condition="apf.isOpera"><![CDATA[
+        .spinner .divfix {
+            right : 20px;
+        }
+    ]]></a:style>
+    <a:presentation>
+        <a:main
+            container="."
+            input="div[2]/input"
+            buttonplus="div/div[1]"
+            buttonminus="div/div[2]"
+            minwidth = "35"
+            minheight = "19"
+            maxheight = "19">
+            <div class="spinner">
+                <div class="buttons">
+                    <div class="plus"> </div>
+                    <div class="minus"> </div>
+                </div>
+                <div class="divfix">
+                    <input type="text"  />
+                </div>
+            </div>
+        </a:main>
+    </a:presentation>
+</a:spinner>
+</a:skin>

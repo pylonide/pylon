@@ -27,7 +27,7 @@ util.inherits(Plugin, events.EventEmitter);
             body   : msg  || "Access denied."
         };
 
-        // We check for the ide variable in order to know if we are in a cloud9
+        // We check for the ide variable in order to know if we are in a Pylon
         // plugin or in a infra plugin. Pretty nasty, but it will hopefully go
         // away soon.
         if (this.ide)

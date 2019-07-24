@@ -1,0 +1,59 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Switching skin</title>
+
+        <script src="trunk/apf.js"></script>
+    </head>
+    
+    <body>
+        <a:skin src="skins.xml" media-path="images/" icon-path="icns/" />
+        <a:appsettings language="[mdlLang::english]" />
+        <a:model id="mdlLang" src="langdb2.xml" />
+        
+        <a:list 
+          width         = "639"
+          height        = "400"
+          skin          = "thumbnail"
+          onafterchoose = "ss1.select(this.selected)" 
+          autoselect    = "false"
+          model         = "mdlSlideshow1">
+            <a:each match="[picture]" >
+                <a:image match="[@name]">siteimg/slideshow_img/[@name]_small.jpg</a:image>
+                <a:caption match="[@title]" />
+            </a:each>
+        </a:list>
+        <a:model 
+          id            = "mdlSlideshow1" 
+          save-original = "true" 
+          src          = "lang_slideshow.xml">
+        </a:model>
+        <a:slideshow
+          id            = "ss1"
+          title         = "number+text"
+          skin          = "slideshowdemo"
+          disabled      = "true"
+          delay         = "5"
+          model         = "mdlSlideshow1"
+          thumbheight   = "60"
+          defaulttitle = "$[sub/slideshow/defaulttitle]"
+          scalewidth    = "true">
+            <a:each match="[picture]">
+                <a:src match="[@name]">siteimg/slideshow_img/[@name].jpg</a:src>
+                <a:title match="[@title]"></a:title>
+                <a:thumb match="[@name]">siteimg/slideshow_img/[@name]_small.jpg</a:thumb>
+            </a:each>
+        </a:slideshow>
+
+        <a:dropdown bottom="10" left="10" width="150" 
+          initial-message = "Choose a language"
+          onafterchange   = "apf.language.load(mdlLang.queryNode(this.value))"
+          value           = "english">
+            <a:item icon="us.gif" value="english">English</a:item>
+            <a:item icon="fr.gif" value="french">French</a:item>
+            <a:item icon="bl.gif" value="dutch">Dutch</a:item>
+            <a:item icon="pl.gif" value="polish">Polish</a:item>
+        </a:dropdown>
+        
+    </body>
+</html>

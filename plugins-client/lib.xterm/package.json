@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.client.xterm",
+    "name": "pylon.client.xterm",
     "version": "0.0.1",
     "main": "xterm-lib.js",
     "private": true,

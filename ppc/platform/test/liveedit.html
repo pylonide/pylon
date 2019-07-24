@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+        <style>
+            .example{
+                font-family : Arial;
+                font-size : 13px;
+                padding : 10px;
+                border : 1px solid gray;
+                width : 300px;
+            }
+            .row{
+                margin : 0 10px 10px 0;
+            }
+            
+            .liveEdit{
+                outline: 1px dotted #ddd;
+            }
+            
+            .liveEdit p{
+                margin : 0;
+            }
+            
+            .liveEdit{
+                min-height : 1.2em;
+                min-width : 10px;
+            }
+            span.liveEdit{
+                display : inline-block;
+            }
+            
+            .liveEditInitial{
+                color : gray;
+            }
+            
+            .liveEditOver{
+                outline: 1px dotted gray;
+            }
+            
+            .liveEditActive{
+                outline: 1px dotted #333;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0"
+          allow-select        = "true"
+          allow-blur          = "true"
+          initdelay           = "false" />
+        
+        <a:model id="mdlTest" />
+        
+        <a:model id="mdlBlah">
+            <data>
+                <person id="test" name="" />
+                <person name="Ruben Daniels" />
+                <person name="USA" datatype="country"/>
+                <person name="Bas van Lippen Bisterveld" />
+                <person name="Bas van Lippen Bisterveld
+                    asdasdasd
+                    asdasdasdasdasd" />
+                <person id="novalue"/>
+            </data>
+        </a:model>
+        
+        <div id="test2" model="mdlBlah" liveedit="{btn.value}" realtime="true" class="example"><?lm
+            var arr = [];
+            foreach([person]) {
+                if ([@name] == 1)
+                    continue;
+
+                <div class='row'>{edit([@name], {
+                    required   : true,
+                    invalidmsg : "Your name can only be 10 characters long",
+                    /*maxlength  : 10, */
+                    multiline  : [@name].indexOf("Bas") > -1 || [@name].indexOf("Ruben") > -1,
+                    editor     : [@name].indexOf("Bas") > -1 
+                        ? "richtext" 
+                        : ([@datatype] == 'country' ? "dropdown" : "default"), //ddCountries
+                    skin       : "ddinline",
+                    fill       : "The Netherlands, United Kingdom, USA",
+                    initial    : "Type your name here"
+                })}</div>
+            }
+        ?></div>
+        
+        <div liveedit="true" model="mdlBlah"><?lm
+            <div class="row">[person[@id='test']/text()]</div>
+        ?></div>
+        <a:button width="80" id="btn" state="true" caption="{this.value ? 'Done' : 'Edit'}" />
+
+        <!--div id="test" model="mdlBlah" liveedit="{btn.value}"><?lm
+            foreach([person]) {
+                <div>[@name]</div>
+            }
+        ?></div>
+
+        <a:button state="true" width="100" onclick="
+            test.setAttribute('liveedit', this.value);
+        ">Toggle {this.value}</a:button-->
+        
+        <!--a:dropdown id="ddCountries">
+            <a:item>Test 1</a:item>
+            <a:item>Test 2</a:item>
+            <a:item>Test 3</a:item>
+        </a:dropdown-->
+
+        <a:script><![CDATA[
+            function insertEl() {
+                var o = document.body.appendChild(document.createElement("div"));
+                o.innerHTML = "blahblah test";
+                o.contentEditable = true;
+                window.testEl = o;
+            }
+            function selectEl() {
+                var sel = new apf.selection();
+                sel.selectNode(window.testEl);
+                $setTimeout(function() {
+                    window.testEl.focus();
+                }, 20);
+            }
+        ]]></a:script>
+    </body>
+</html>

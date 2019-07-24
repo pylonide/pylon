@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>HBOX</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <style>
+            .box{
+                border : 1px solid red;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+        
+        <h3>Hbox</h3>
+        
+        <a:hbox width="400" height="100" class="box">
+            <a:text flex="5">
+                test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2
+            </a:text>
+            <a:text flex="1" />
+        </a:hbox>
+        
+        <a:hbox width="400" height="100" class="box">
+            <a:text id="txt" flex="5" />
+            <a:text flex="1" />
+        </a:hbox>
+        
+        <a:hbox width="400" class="box">
+            <a:text flex="5">
+                test1<br />
+                test1<br />
+                test1<br />
+            </a:text>
+            <a:text flex="1" />
+        </a:hbox>
+        
+        <a:hbox width="400" class="box">
+            <a:text flex="5">
+                test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 
+            </a:text>
+            <a:text flex="1" />
+        </a:hbox>
+        
+        <a:hbox width="400" class="box" minheight="100">
+            <a:text flex="5">
+                test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2
+            </a:text>
+            <a:text flex="1" />
+        </a:hbox>
+        
+        <h3>Vbox</h3>
+        
+        <a:hbox class="box">
+            <a:vbox height="400" width="100" class="box">
+                <a:text flex="5">
+                    test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2test2
+                </a:text>
+                <a:text flex="1" />
+            </a:vbox>
+            
+            <a:vbox height="400" width="100" class="box">
+                <a:text id="txt" flex="5" />
+                <a:text flex="1" />
+            </a:vbox>
+            
+            <a:vbox height="400" class="box">
+                <a:text flex="5">
+                    test1<br />
+                    test1<br />
+                    test1<br />
+                </a:text>
+                <a:text flex="1" />
+            </a:vbox>
+            
+            <a:vbox height="400" class="box">
+                <a:text flex="5">
+                    test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 test2 
+                </a:text>
+                <a:text flex="1" />
+            </a:vbox>
+        </a:hbox>
+        <a:button onclick="txt.addValue('test')" right="10" top="10">add</a:button>
+    </body>
+</html>

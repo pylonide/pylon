@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var copy = require('dryice').copy;
+var copy = require('@pylonide/dryice').copy;
 
 var ACE_HOME = __dirname + "/node_modules/ace"
 
@@ -15,7 +15,7 @@ function main(args) {
     }
 
     if (!target) {
-        console.log("--- Cloud9 Dryice Build Tool ---");
+        console.log("--- Pylon Dryice Build Tool ---");
         console.log("");
         console.log("Options:");
         console.log("  worker    build workers");
@@ -37,7 +37,7 @@ function main(args) {
 }
 
 function worker(project) {
-    console.log('# cloud9 worker ---------');
+    console.log('# Pylon worker ---------');
 
     var worker = copy.createDataObject();
     var workerProject = copy.createCommonJsProject(project);

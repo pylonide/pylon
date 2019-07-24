@@ -1,0 +1,10 @@
+.project
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.core.runtime.prefs
+.*.gz
+.DS_Store
+.c9revisions
+.settings
+node_modules/
+doc/out
+doc/apf.json

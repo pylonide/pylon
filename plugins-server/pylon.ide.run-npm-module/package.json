@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.ide.run-npm-module",
+    "name": "pylon.ide.run-npm-module",
     "version": "0.0.1",
 
     "main": "./run-npm-module.js",

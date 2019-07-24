@@ -1,13 +1,12 @@
 /*
  * @package jsDAV
  * @subpackage DAV
- * @copyright Copyright(c) 2011 Ajax.org B.V. <info AT ajax DOT org>
  */
 "use strict";
 
-var jsDAV_iNode = require("cozy-jsdav-fork/lib/DAV/interfaces/iNode");
-var Exc         = require("cozy-jsdav-fork/lib/shared/exceptions");
-var Util        = require("cozy-jsdav-fork/lib/shared/util");
+var jsDAV_iNode = require("@pylonide/jsdav/lib/DAV/interfaces/iNode");
+var Exc         = require("@pylonide/jsdav/lib/shared/exceptions");
+var Util        = require("@pylonide/jsdav/lib/shared/util");
 
 var jsDAV_FS_Node = module.exports = jsDAV_iNode.extend({
   initialize: function(vfs, path, stat) {

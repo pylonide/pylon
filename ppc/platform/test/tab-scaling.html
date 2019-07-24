@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <script src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
+        
+        <a:appsettings debug="0" />
+        
+        <a:tab id="tab" left="10" top="10" width="600" height="200" buttons="close|scale" resizable="true"> 
+            <a:page caption="Page 1" closebtn="false" /> 
+            <a:page caption="Page 2" />
+            <a:page caption="Page 3" /> 
+            <a:page caption="Page 2" />
+            <!--a:page caption="Page 3" /> 
+            <a:page caption="Page 2" />
+            <a:page caption="Page 3" /> 
+            <a:page caption="Page 2" />
+            <a:page caption="Page 3" /--> 
+        </a:tab>
+        
+        <a:button onclick="var pg = tab.add('New Page');tab.set(pg);" bottom="10" left="10" width="80">Add</a:button>
+        <a:button onclick="var pg = tab.add(new Date().getTime(), null, null, tab.getPages()[4]);tab.set(pg);" bottom="10" left="100" width="80">Before</a:button>
+    </body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>VBOX</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <style>
+            .redborder{
+                border : 1px solid red;
+            }
+            .boxtest{
+                border : 1px solid green;
+                font-family : Arial;
+                padding : 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+        
+        <a:vbox padding="8" edge="10 10 0 10">
+            <a:vbox padding="4" edge="0 0 0 0" align="left">
+                <a:label skin="label_gray_forms">Title (required)</a:label>
+                <a:textbox id="cnw_title"
+                  skin="status_textarea" 
+                  height="30" 
+                  width="200" 
+                  minlength="3"
+                  maxlength="60" 
+                  required="true" 
+                  initial-message="Give your Worknet a clear title (max 70 characters)"
+                  invalidmsg="A title for your worknet is required" />
+            </a:vbox>
+            <a:vbox padding="4" edge="0 0 0 0" align="left">
+                <a:label skin="label_gray_forms">Tag line</a:label>
+                <a:textbox 
+                  skin="status_textarea" 
+                  height="30" 
+                  width="200" 
+                  maxlength="80" 
+                  initial-message="A tag line is optional" />
+            </a:vbox>
+        </a:vbox>
+    </body>
+</html>

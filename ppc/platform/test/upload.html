@@ -1,0 +1,51 @@
+<!doctype html>
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Uploadr</title>
+        <script type="text/javascript" src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+
+        <a:appsettings debug="false" debug-teleport="true" name="uploadtest" />
+
+        <a:button id="btnSelect" width="200">Select Files</a:button>
+
+        <a:upload id="uplAvatar" 
+          model      = "mdlUpload"
+          button     = "btnSelect"
+          target     = "upload.php"
+          onerror    = "apf.console.log('ERROR EVENT RECEIVED', event)"
+          onqueue    = "apf.console.log('QUEUE EVENT RECEIVED', event)"
+          onuploaded = "apf.console.log('UPLOADED EVENT RECEIVED', event)" />
+        <br /><br />
+
+        <a:list id="lstFiles" model="mdlUpload" canrename="false" onremove="uplAvatar.remove(event)" width="200">
+            <a:each match="[file]" />
+            <a:caption match="[@name]" />
+        </a:list><br />
+
+        <a:progressbar
+          width    = "200"
+          min      = "0"
+          max      = "100"
+          value    = "{uplAvatar.percent}"
+          visible  = "{uplAvatar.state == apf.upload.STARTED}">
+        </a:progressbar>
+
+        <!--?lm
+            <div>
+                Upload state: {uplAvatar.state}<br />
+                Total Size: {uplAvatar.size}<br />
+                Total Number of bytes loaded: {uplAvatar.loaded}<br />
+                Total Number of uploaded files: {uplAvatar.uploaded}<br />
+                Total Number of failed uploads: {uplAvatar.failed}<br />
+                Total Number of queued files: {uplAvatar.queued}<br />
+                Percentage of total upload: {uplAvatar.percent}<br />
+                Bitrate of current upload: {uplAvatar.bitrate}<br />
+            </div>
+        ?-->
+
+        <a:button id="btnUpload" onclick="uplAvatar.start()" width="150">Upload!</a:button>
+    </body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>TEST BOT</title>
+        <script type="text/javascript" src="../apf.js"></script>
+    </head>
+    <body>
+        <a:skin src="../skins.xml" />
+            
+        <a:appsettings name   = "worknets" debug="false"
+          disable-right-click = "false"
+          disable-space       = "true"
+          disable-f5          = "false"
+          auto-hide-loading   = "true"
+          allow-select        = "true"
+          allow-blur          = "true"
+          initdelay           = "false"
+          loading-message     = "Loading..."
+          empty-message       = "Loading..."
+          baseurl             = "{apf.host ? apf.host + '/' : 'http://dev.worknets.com/'}">
+        </a:appsettings>
+
+        <a:xmpp id="myXMPPBot"
+            url        = "{apf.host ? apf.host : 'http://dev2.worknets.com'}:5280/http-bind"
+            host       = "worknets.com"
+            rdb-bot    = "true"
+            type       = "binding"
+            resource   = "{'apf_'.appendRandomNumber(5)}" />    
+    
+        <a:remote transport="myXMPPBot" id="rmtFsBot" />
+    
+        <a:xmpp id="myXMPPClient"
+          url               = "{apf.host ? apf.host : 'http://dev2.worknets.com'}:5280/http-bind"
+          host              = "worknets.com"
+          type              = "binding"
+          resource          = "{'apf_'.appendRandomNumber(5)}" />
+    
+        <a:remote transport="myXMPPClient" id="rmtFsClient" />
+    
+    	<a:script src="xmpptest.js"/>
+    </body>
+</html>

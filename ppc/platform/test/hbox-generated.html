@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:a="http://ajax.org/2005/aml" >
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>HBOX</title>
+        
+        <script src="../apf.js"></script>
+        
+        <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
+        <style>
+            .redborder{
+                border : 1px solid red;
+            }
+            .boxtest{
+                border : 1px solid green;
+                font-family : Arial;
+                padding : 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <a:skin 
+          src        = "../../../skins/platform/trunk/xml/_index.xml" 
+          media-path = "../../../skins/platform/trunk/images/" 
+          icon-path  = "../../../skins/platform/trunk/icons/" />
+        
+        <a:model id="mdlStatus">
+            <data>
+                <mode />
+            </data>
+        </a:model>
+        
+        <?lm
+        <a:hbox padding="10" align="stretch">{
+            foreach([mdlStatus::mode]) {
+                <a:panel height="272" caption="test" width="155">
+                    <div class="boxbar" style="margin:0 -1px 0 -1px;">
+                        <a:hbox id="test" padding="8" edge="0 8 0 11" height="100" pack="end">
+                            <a:button>test</a:button>
+                            <a:filler />
+                            <a:button>test</a:button>
+                        </a:hbox>
+                        <a:hbox edge="0 0 0 0" class="boxsearchbar" height="100">
+                            <a:button>test</a:button>
+                        </a:hbox>
+                    </div>
+                </a:panel>
+            }
+        }</a:hbox>
+        ?>
+    </body>
+</html>

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript">    
+        function test(){
+            var d = document.getElementById("test");
+            ctx = this.$ctx = new apf.vector.vml('test3',100,100,0,0,'red');
+            g = ctx.group({x:0,y:0,w:300,h:300});
+            ctx.rect({x:0,y:0,w:100,h:100,f:'blue'},g);
+            ctx.repaint();
+            apf.logw(1);
+           }
+    </script>
+        <style>
+            html{
+                overflow : hidden;
+            }
+        </style>
+    </head>
+    <body onload="test()">
+        
+        <!--:appsettings debug="0" /-->
+        
+        <div id="test3" style="width:400px;height:400px"></div>
+
+    </body>
+</html>

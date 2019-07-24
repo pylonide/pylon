@@ -1,3 +1,22 @@
+v2.5.0
+======
+* Dark themed file browser, ui enhancements
+* Further namespace changes to Pylon #48
+* APF Merged into Pylon IDE as PPC #66
+* Connect middleware gets redirect() support #67
+* Support for Forms authentication #69
+* Removal of apf-packager and apf dependencies #87
+* cozy-jsdav-fork dependency changed to @pylonide/jsdav for enhanced security
+* dryice dependency changed to @pylonide/dryice for enhanced security
+* Pylon namespace changes
+* Upgrade to ACE v1.4.5
+* Dependency upgrades and security enhancements
+* One of the last releases to remain compatible with End-of-Life Releases of Node.js:
+    * v4
+    * v5
+    * v6
+    * v7
+
 v2.4.0
 ======
 * Further namespace changes to Pylon

@@ -2,9 +2,9 @@ var assert = require("assert");
 var path = require("path");
 var error = require("http-error");
 
-var jsDAV = require("cozy-jsdav-fork");
+var jsDAV = require("@pylonide/jsdav");
 var jsDAV_Tree_Filesystem = require("./fs/tree");
-var BrowserPlugin = require("cozy-jsdav-fork/lib/DAV/plugins/browser");
+var BrowserPlugin = require("@pylonide/jsdav/lib/DAV/plugins/browser");
 var DavFilewatch = require("./dav/filewatch");
 var DavPermission = require("./dav/permission");
 
@@ -51,7 +51,7 @@ module.exports = function setup(options, imports, register) {
             if (!req.session || !(req.session.uid || req.session.anonid))
                 return next(new error.Unauthorized());
 
-            permissions.getPermissions(req.session.uid, workspaceId, "cloud9.fs.fs-plugin", function(err, permissions) {
+            permissions.getPermissions(req.session.uid, workspaceId, "pylon.fs.fs-plugin", function(err, permissions) {
                 if (err) {
                     next(err);
                     return;

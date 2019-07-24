@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.client-plugins",
+    "name": "pylon.client-plugins",
     "version": "0.0.1",
     "main": "client-plugins.js",
     "private": true,

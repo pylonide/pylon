@@ -1,5 +1,5 @@
 {
-    "name": "cloud9.run.ruby",
+    "name": "pylon.run.ruby",
     "version": "0.0.1",
 
     "main": "./ruby-plugin.js",

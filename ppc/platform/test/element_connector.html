@@ -1,0 +1,94 @@
+<html>
+ <head>
+     <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
+    <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
+    
+    <script LANGUAGE="JavaScript" type="text/javascript">
+    var ctx, g;
+
+    function init(testIdx){
+        ctx = new apf.vector.vml('drawnode',800,600,0,0);
+        g = ctx.group({x:0,y:0,w:800,h:600});
+        
+        drawConnections();
+    }
+    var connections = [
+        ["el1", "el2", "connection1"],
+        ["el3", "el4", "connection2"],
+        ["el1", "el3", "connection3"],
+        ["el4", "el2", "connection4"]
+    ];
+    function drawConnections() {
+        for (var p, lines = [], el1, el2, c, i = 0, l = connections.length; i < l; i++) {
+            // el1 left of el2
+            if (right(el1 = document.getElementById((c = connections[i])[0]))[0] < left(el2 = document.getElementById((c)[1]))[0])
+                p = [right, left];
+            // el1 right of el2
+            else if (right(el2)[0] < left(el1)[0])
+                p = [left, right];
+            // el1 above el2
+            else if (bottom(el1)[1] < top(el2)[1])
+                p = [bottom, top];
+            // el1 below el2
+            else if (bottom(el2)[1] < top(el1)[1])
+                p = [top, bottom];
+            // connection from element to itself
+            else if (el1 == el2)
+                p = [right, bottom];
+            else
+                p = null;
+                
+            if (!p) continue;
+            
+            lines[i] = ctx.path({
+                p: ["M",p[0](el1)[0],p[0](el1)[1],"L",p[1](el2)[0],p[1](el2)[1]].join(" "),
+                s: "black"
+            }, g);
+        }
+        ctx.repaint();
+    }
+    
+    function left(el) {
+        return [el.offsetLeft, el.offsetTop + el.offsetHeight/2];
+    }
+    function right(el) {
+        return [el.offsetLeft + el.offsetWidth, el.offsetTop + el.offsetHeight/2, ];
+    }
+    function top(el) {
+        return [el.offsetLeft + el.offsetWidth/2, el.offsetTop];
+    }
+    function bottom(el) {
+        return [el.offsetLeft + el.offsetWidth/2, el.offsetTop + el.offsetHeight];
+    }
+    
+    </script>
+    <style type="text/css">
+        #drawNode {
+            position: absolute;
+            left: 0;
+            top: 0;
+            border: 1px solid red;
+        }
+        .element {
+            position: absolute;
+            width   : 100px;
+            height  : 50px;
+            border  : 1px solid black;
+            background : "yellow";
+        }
+    </style>
+ </head>
+ <body onload="init()">
+    <div id="el1" class="element" style="left: 50px; background: red;"></div>
+    <div id="el2" class="element" style="left: 250px; background: yellow;"></div>
+    <div id="el3" class="element" style="top: 300px; left: 50px; background: green;"></div>
+    <div id="el4" class="element" style="top: 300px; left: 250px; background: blue;"></div>
+    <div id="drawnode"></div>
+ </body>
+ 
+	
+
+ </html>

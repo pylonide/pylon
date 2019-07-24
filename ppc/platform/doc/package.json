@@ -1,0 +1,13 @@
+{
+  "name": "apf-api",
+  "version": "3.0.0",
+  "private": true,
+  "engines": {
+    "node": "~0.6.0"
+  },
+  "dependencies": {
+    "panino": "",
+    "panda-docs": ""
+  },
+  "devDependencies": {}
+}

@@ -9,7 +9,7 @@ var extraPaths = [
 module._resolveFilename = function(request, paths) {
     // Ensure client extensions can be loaded
     request = request.replace(/^ext\//, "ext.")
-            .replace(/^core\//, "cloud9.core/www/core/");
+            .replace(/^core\//, "pylon.core/www/core/");
     // Add the extra paths
     extraPaths.forEach(function(p) {
         if(paths.paths.indexOf(p) === -1)
