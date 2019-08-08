@@ -7,7 +7,7 @@
 "use strict";
 
 var Plugin = require("../pylon.core/plugin");
-var fsnode = require("vfs-nodefs-adapter");
+var fsnode = require("@pylonide/vfs-nodefs-adapter");
 var util = require("util");
 var assert = require("assert");
 

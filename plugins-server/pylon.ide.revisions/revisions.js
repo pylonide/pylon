@@ -10,7 +10,7 @@ var Diff_Match_Patch = require("./diff_match_patch");
 var Path = require("path");
 var PathUtils = require("./path_utils.js");
 var Async = require("async");
-var fsnode = require("vfs-nodefs-adapter");
+var fsnode = require("@pylonide/vfs-nodefs-adapter");
 
 /**
  *  FILE_SUFFIX = "c9save"

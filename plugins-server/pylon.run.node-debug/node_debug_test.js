@@ -14,7 +14,7 @@ var V8Debugger = require("v8debug").V8Debugger;
 var WSV8DebuggerService = require("v8debug").WSV8DebuggerService;
 var ProcessManager = require("../pylon.process-manager/process_manager");
 var vfsLocal = require("vfs-local");
-var fsnode = require("vfs-nodefs-adapter");
+var fsnode = require("@pylonide/vfs-nodefs-adapter");
 
 module.exports = {
 
