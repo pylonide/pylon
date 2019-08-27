@@ -68,6 +68,6 @@
         "start": "./bin/pylon.sh",
         "test": "npm run-script build && ./test/run-tests.sh",
         "build": "mkdir -p ./plugins-client/lib.ppc/www/ppc && cd ppc && mkdir -p build && node ppc-package.js projects/default.ppp && cat ./build/ppc_release.js | sed 's/\\(\\/\\*FILEHEAD(\\).*//g' > ../plugins-client/lib.ppc/www/ppc/ppc.js && cd ..",
-        "postinstall": "if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi"
+        "postinstall": "if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker; make mode; make theme; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi"
     }
 }
