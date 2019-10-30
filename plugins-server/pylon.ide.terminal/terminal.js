@@ -27,7 +27,7 @@ module.exports = function setup(options, imports, register) {
         sessionTimeout: 3600 // in seconds
     });
 
-    imports.log.info("[tty.js] Cloud9 terminal started, serving requests on port: %s".green, server.address().port);
+    imports.log.info("[tty.js] Pylon terminal started, serving requests on port: %s".green, server.address().port);
 
 };
 

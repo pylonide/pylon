@@ -42,6 +42,7 @@
         "architect": "~0.1.13",
         "node-pty": "0.9.0",
         "xterm": "~4.2.0",
+        "xterm-addon-fit": "~0.3.0",
         "vary": "^1.1.2",
         "@pylonide/dryice": "^0.5.2",
         "@pylonide/jsdav": "~0.4.0",

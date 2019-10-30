@@ -1,11 +1,11 @@
 {
     "name": "pylon.client.xterm",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "main": "xterm-lib.js",
     "private": true,
 
     "dependencies": {
-        "xterm": "~2.6.0"
+        "xterm": "~4.2.0"
     },
 
     "plugin": {

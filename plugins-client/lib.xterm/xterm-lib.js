@@ -1,11 +1,17 @@
 module.exports = function setup(options, imports, register) {
-  var base = require.resolve("xterm/package.json").slice(0, -13);
+  var libBase = require.resolve("xterm/package.json").slice(0, -13);
+  var fitBase = require.resolve("xterm-addon-fit/package.json").slice(0, -13);
   imports.static.addStatics([{
-    path: base + "/dist",
+    path: libBase + "/lib",
     mount: "/xterm"
-  }, {
-    path: base + "/lib/xterm.css",
+  },
+  {
+    path: libBase + "/css/xterm.css",
     mount: "/xterm/xterm.css"
+  },
+  {
+    path: fitBase + "/lib",
+    mount: "/xterm-fit"
   }]);
 
   register(null, {
