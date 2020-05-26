@@ -44,11 +44,15 @@ Modern versions of Chrome and Safari are supported. Firefox, altough functional,
 
 ### Basic iPad Pro support with keyboard
 
-As of v2.3.0 efforts have been made to make Pylon usable with iPad. However, for a smoother ride, some keyboard settings needs to be changed:
+Efforts have been made to make Pylon usable with iPad. However, for a smoother ride, some keyboard settings needs to be changed:
 
 - Settings -> General -> Keyboard -> Auto-Correction -> `Off`
 - Settings -> General -> Keyboard -> Smart Punctuation -> `Off` (interferes with coding by changing quotes)
 - Settings -> General -> Keyboard -> Shortcuts -> `Off` (interferes by displaying bottom bar that hides the console prompt)
+
+For quality of life it is recommended to remap Caps Lock hardware key to act as an ESC key:
+
+- Settings -> General -> Keyboard -> Hardware Keyboard -> Modifier Keys -> Caps Lock Key -> Escape
 
 ## Installation and Usage
 
