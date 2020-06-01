@@ -4,7 +4,7 @@
     "version": "2.6.0",
     "homepage": "http://github.com/pylonide/pylon",
     "engines": {
-        "node": ">= 4.9.1"
+        "node": ">= 10.20.1"
     },
     "author": "Sten Feldman <exile@chamber.ee>",
     "contributors": [
