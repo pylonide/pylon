@@ -16,7 +16,7 @@
         "web": "https://github.com/pylonide/pylon/blob/master/README.md"
     },
     "dependencies": {
-        "async": "~3.1.0",
+        "async": "~3.2.0",
         "colors": "~1.4.0",
         "connect": "~3.7.0",
         "express-session": "~1.17.0",
