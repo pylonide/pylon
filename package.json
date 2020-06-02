@@ -48,7 +48,7 @@
         "@pylonide/jsdav": "~0.4.0",
         "@pylonide/vfs-architect": "~0.1.0",
         "@pylonide/vfs-nodefs-adapter": "~0.4.0",
-        "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.7",
+        "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.10",
         "smith": "https://github.com/pylonide/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
         "architect-build": "https://github.com/pylonide/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
         "asyncjs": "https://github.com/pylonide/async.js/tarball/be2c5b9195312c9c4aa8c3e29932b0b9784bcae7",

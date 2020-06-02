@@ -1,7 +1,6 @@
 /**
- * Code Editor for the Cloud9 IDE
+ * Code Editor for the Pylon IDE
  *
- * @copyright 2010, Ajax.org B.V.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
  */
 
@@ -23,13 +22,20 @@ module.exports = ext.register("ext/themes_default/themes_default", {
                        {"Clouds" : "ace/theme/clouds"},
                        {"Clouds Midnight" : "ace/theme/clouds_midnight"}
                    ],
+        "Chaos" : "ace/theme/chaos",
         "Cobalt" : "ace/theme/cobalt",
         "Crimson Editor" : "ace/theme/crimson_editor",
         "Dawn" : "ace/theme/dawn",
+        "Dracula" : "ace/theme/dracula",
         "Dreamweaver" : "ace/theme/dreamweaver",
         "Eclipse" : "ace/theme/eclipse",
         "GitHub" : "ace/theme/github",
+        "Gob" : "ace/theme/gob",
+        "Gruvbox" : "ace/theme/gruvbox",
         "Idle Fingers" : "ace/theme/idle_fingers",
+        "iPlastic" : "ace/theme/iplastic",
+        "Katzen Milch" : "ace/theme/katzenmilch",
+        "Kuroir" : "ace/theme/kuroir",
         "Kr Theme" : "ace/theme/kr_theme",
         "Merbivore" : [
                           {"Merbivore" : "ace/theme/merbivore"},
@@ -37,11 +43,14 @@ module.exports = ext.register("ext/themes_default/themes_default", {
                       ],
         "Mono Industrial" : "ace/theme/mono_industrial",
         "Monokai" : "ace/theme/monokai",
+        "Nord Dark" : "ace/theme/nord_dark",
         "Pastel On Dark" : "ace/theme/pastel_on_dark",
         "Solarized" : [
                         {"Solarized Dark" : "ace/theme/solarized_dark"},
                         {"Solarized Light" : "ace/theme/solarized_light"}
                       ],
+        "SQL Server" : "ace/theme/sqlserver",
+        "Terminal" : "ace/theme/terminal",
         "TextMate" : "ace/theme/textmate",
         "Tomorrow" :  [
                         {"Tomorrow" : "ace/theme/tomorrow"},
