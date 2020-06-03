@@ -48,7 +48,7 @@ var Document = require("ace/document").Document;
 var dom = require("ace/lib/dom");
 
 require("ace/lib/fixoldbrowsers");
-require("apf/elements/scrollbars");
+require("ppc/elements/scrollbars");
 
 apf.codeeditor = module.exports = function(struct, tagName) {
     this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);

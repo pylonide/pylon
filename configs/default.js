@@ -47,7 +47,7 @@ var config = [
     // Client libraries
     "./../plugins-client/pylon.core",
     "./../plugins-client/lib.ace",
-    "./../plugins-client/lib.apf",
+    "./../plugins-client/lib.ppc",
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",

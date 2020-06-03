@@ -11,7 +11,7 @@
         "provides": ["client.pylon"],
         "consumes": [
             "static",
-            "client.apf",
+            "client.ppc",
             "lib.requirejs"
         ]
     }

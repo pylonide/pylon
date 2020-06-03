@@ -7,7 +7,7 @@
 
 define(function(require, exports, module) {
 
-require("apf/elements/codeeditor");
+require("ppc/elements/codeeditor");
 
 var ide = require("core/ide");
 var ext = require("core/ext");

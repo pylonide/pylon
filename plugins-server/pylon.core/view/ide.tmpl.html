@@ -113,13 +113,13 @@
             }
 
             if (!cloud9config.packed) {
-                var RELEASE = "release";
+                var RELEASE = "";
                 var DEBUG   = "release";
                 var FILES   = "files";
 
                 var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
 
-                var apfLoc = "[%staticUrl%]/apf-packaged/apf_" + VERSION + ".js";
+                var apfLoc = "[%staticUrl%]/ppc/ppc" + VERSION + ".js";
             }
             else {
                var apfLoc = "";
