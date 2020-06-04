@@ -28,10 +28,10 @@ self = window = global;
 
 self.util = util;
 
-require("./apf-o3");
+require("./ppc-o3");
 require("./loader-o3");
-//o3.print("AML: " + cwd.get(apf.config.name + ".aml").data);
-apf.start();//cwd.get(apf.config.name + ".aml").data);
-//sys.puts(sys.inspect(apf));
+//o3.print("AML: " + cwd.get(ppc.config.name + ".aml").data);
+ppc.start();//cwd.get(ppc.config.name + ".aml").data);
+//sys.puts(sys.inspect(ppc));
 //#endif
 //#endif

@@ -30,7 +30,7 @@
  */
 
 //Start of the Ajax.org Platform namespace
-apf = {
+ppc = {
     SUCCESS : 1,
     TIMEOUT : 2,
     ERROR   : 3,
@@ -60,7 +60,7 @@ apf = {
      *
      */
     ns : {
-        apf    : "https://github.com/pylonide/pylon",
+        ppc    : "https://github.com/pylonide/pylon",
         aml    : "https://github.com/pylonide/pylon",
         xsd    : "http://www.w3.org/2001/XMLSchema",
         xhtml  : "http://www.w3.org/1999/xhtml",
@@ -74,23 +74,23 @@ apf = {
         this.hostPath = null;
         this.CWD      = null;
         this.TAGNAME  = "localName";
-        this.oHttp    = new apf.http();
-        apf.runO3();
+        this.oHttp    = new ppc.http();
+        ppc.runO3();
 
-        this.implement(apf.Class);
+        this.implement(ppc.Class);
 
         //if (strAml)
-        apf.window.init(strAml || "<a:application xmlns:a='https://github.com/pylonide/pylon' />");
+        ppc.window.init(strAml || "<a:application xmlns:a='https://github.com/pylonide/pylon' />");
     },
 
     importClass : function(ref, strip, win){
         if (!ref)
-            throw new Error(apf.formatErrorString(1018, null,
+            throw new Error(ppc.formatErrorString(1018, null,
                 "importing class",
                 "Could not load reference. Reference is null"));
 
         if (!strip)
-            return apf.jsexec(ref.toString());
+            return ppc.jsexec(ref.toString());
 
         var q = ref.toString().replace(/^\s*function\s*\w*\s*\([^\)]*\)\s*\{/, "");
         q = q.replace(/\}\s*$/, "");
@@ -98,7 +98,7 @@ apf = {
         //var q = ref.toString().split("\n");q.shift();q.pop();
         //if(!win.execScript) q.shift();q.pop();
 
-        return apf.jsexec(q);
+        return ppc.jsexec(q);
     },
 
     /**
@@ -107,7 +107,7 @@ apf = {
     * @method
     */
     toString : function(){
-        return "[Ajax.org Platform (apf)]";
+        return "[Ajax.org Platform (ppc)]";
     },
 
     all : [],
@@ -122,7 +122,7 @@ apf = {
             arg = arguments[i]
             //#ifdef __DEBUG
             if (!arg) {
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Implementing class",
                     "Could not implement from '" + classRef + "'",
                     this.$aml));
@@ -235,19 +235,19 @@ apf = {
         },
 
         dir : function(obj){
-            this.info(apf.vardump(obj, null, true));
+            this.info(ppc.vardump(obj, null, true));
         },
 
         teleport: function() {}
     },
 
     namespace : function(name, oNamespace){
-        eval("apf." + name + " = oNamespace");
+        eval("ppc." + name + " = oNamespace");
     },
 
     formatErrorString : function(number, control, process, message, amlContext, outputname, output){
         //#ifdef __DEBUG
-        var str = ["---- APF Error ----"];
+        var str = ["---- PPC Error ----"];
         if (amlContext) {
             var amlStr = (amlContext.outerHTML || amlContext.xml || amlContext.serialize())
                 .replace(/\<\?xml\:namespace prefix = j ns = "http\:\/\/ajax.org\/2005\/aml" \/\>/g, "")
@@ -310,11 +310,11 @@ apf = {
 
     include : function(sourceFile, doBase){
         if (doBase) {
-            var base = apf.basePath || "";
+            var base = ppc.basePath || "";
             if (sourceFile.indexOf(base) !== 0)
                 sourceFile = base + sourceFile;
         }
-//        apf.console.info("including js file: " + sourceFile);
+//        ppc.console.info("including js file: " + sourceFile);
         //o3.js.include(sourceFile);
         require("./" + sourceFile.replace(/\.js$/i, ""));
         //var fd = fs.child(sourceFile);
@@ -327,7 +327,7 @@ apf = {
         },
         script : function(){
             for (var i = 0; i < arguments.length; i++) {
-                apf.include(arguments[i], true);
+                ppc.include(arguments[i], true);
             }
             return this;
         },
@@ -356,12 +356,12 @@ apf = {
             l = this.all.length;
         for (; i < l; i++) {
             node = this.all[i];
-            if (node && node != exclude && node.destroy && !node.apf)
+            if (node && node != exclude && node.destroy && !node.ppc)
                 node.destroy(false);
         }
 
-        if (apf.xmldb)
-            apf.xmldb.unbind(apf.window);
+        if (ppc.xmldb)
+            ppc.xmldb.unbind(ppc.window);
     }
 };
 
@@ -377,7 +377,7 @@ Function.prototype.toHTMLNode = function(highlight){
     TYPE_BOOLEAN    = "Boolean";
     TYPE_FUNCTION   = "Function";
     TYPE_DOMNODE    = "XMLNode";
-    TYPE_APFNODE    = "AMLElement";
+    TYPE_PPCNODE    = "AMLElement";
 
     STATE_UNDEFINED = "undefined";
     STATE_NULL      = "null";
@@ -400,7 +400,7 @@ Function.prototype.toHTMLNode = function(highlight){
 
         if (typeof variable == "object") {
             if (variable.hasFeature)
-                return TYPE_APFNODE;
+                return TYPE_PPCNODE;
             if (variable.tagName || variable.nodeValue)
                 return TYPE_DOMNODE;
         }
@@ -432,7 +432,7 @@ Function.prototype.toHTMLNode = function(highlight){
                 argName  = (namedArgs[i] || "NOT_NAMED").trim();// args += "<b>" + arr[i] + "</b>";
 
                 args.push("[" + getType(this.arguments[i]) + "] " + argName);
-                //info.push("Value: " + apf.vardump(this.arguments[i], null, false));
+                //info.push("Value: " + ppc.vardump(this.arguments[i], null, false));
             }
         }
 
@@ -446,7 +446,7 @@ Function.prototype.toHTMLNode = function(highlight){
 $setTimeout  = setTimeout;
 $setInterval = setInterval;
 
-apf.stacktrace = function(){
+ppc.stacktrace = function(){
     var list = [], seen = {}, loop, end;
 
     //Opera doesnt support caller... weird...

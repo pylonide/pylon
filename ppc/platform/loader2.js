@@ -22,28 +22,28 @@
 /*
  * Bootloader for Ajax.org Platform
  *
- * Include apf.js, then just go about it as you would with the 
+ * Include ppc.js, then just go about it as you would with the 
  * packaged version. Adapt this file to include your preferred modules
  */
 
 // #ifndef __PACKAGED
 if (location.protocol != "file:") {
-    apf.console.warn("You are serving multiple files from a (local) "
+    ppc.console.warn("You are serving multiple files from a (local) "
            + "webserver - please consider\nusing the file:// protocol to "
            + "load your files, because that will make your\napplication "
            + "load several times faster.\n"
            + "On a webserver, we recommend using a release or debug build "
            + "of Ajax.org Platform.");
 }
-apf.$loader
+ppc.$loader
     .setGlobalDefaults({
-        BasePath: apf.basePath, 
+        BasePath: ppc.basePath, 
         //AlwaysPreserveOrder: true,
         AllowDuplicates : true
         //UsePreloading : false
     })
 
-apf.$x = apf.$loader
+ppc.$x = ppc.$loader
     .script(
         "core/class.js",
     
@@ -494,47 +494,47 @@ apf.$x = apf.$loader
         "elements/bindingeachrule.js",
         "processinginstructions/livemarkup.js"
     ).wait(function() {
-        if (apf.$required.length)
-            apf.$x.script.apply(apf.$x, apf.$required).wait(start);
+        if (ppc.$required.length)
+            ppc.$x.script.apply(ppc.$x, ppc.$required).wait(start);
         else
             start();
     });
     
-    //Let's start APF
+    //Let's start PPC
     function start(){
-        if (apf.started) 
+        if (ppc.started) 
             return; //@todo ask @getify why this function is called twice
-        apf.start();
+        ppc.start();
     }
 
 //Conditional compilation workaround... (can this be improved??)
 if (document.all) {
     var oldWinError = window.onerror, z;
     window.onerror = z = function(m){
-        apf.console.error("Error caught from early startup. Might be a html parser syntax error (not your fault). " + m);
+        ppc.console.error("Error caught from early startup. Might be a html parser syntax error (not your fault). " + m);
 
         if (!arguments.caller)
             return true;
     }
 }
-apf.Init.addConditional(function(){
+ppc.Init.addConditional(function(){
     if (document.all && window.onerror == z) //Conditional compilation workaround... (can this be improved??)
         window.onerror = oldWinError;
 
-    apf.dispatchEvent("domready");
+    ppc.dispatchEvent("domready");
 }, null, ["body", "class"]);
 
-apf.require = function(){
-    var dir = apf.getDirname(location.href), req = [];
+ppc.require = function(){
+    var dir = ppc.getDirname(location.href), req = [];
     for (var i = 0, l = arguments.length; i < l; i++) 
-        req.push(apf.getAbsolutePath(dir, arguments[i]))
-    apf.$x.script.apply(apf.$loader, req).wait();
+        req.push(ppc.getAbsolutePath(dir, arguments[i]))
+    ppc.$x.script.apply(ppc.$loader, req).wait();
 };
 
 /*if(document.body)
-    apf.Init.run("body");
+    ppc.Init.run("body");
 else*/
-    apf.addDomLoadEvent(function(){apf.Init.run('body');});
+    ppc.addDomLoadEvent(function(){ppc.Init.run('body');});
 
 //A way to prevent parsing body
 /*window.onerror = function(){
