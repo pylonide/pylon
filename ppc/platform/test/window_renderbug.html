@@ -4,7 +4,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
         <title>WINDOW Render runtime bug</title>
         
-        <script src="../apf.js"></script>
+        <script src="../ppc.js"></script>
         
         <!--meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" /-->
         <style>
@@ -60,7 +60,7 @@
                     <a:textbox id="txtContactSearch" skin="status_textinput"
                       onafterchange     = "
                         if (this.value != '' AND (lstContacts.length OR lstContactsWorknets.length OR lstContactsOrgs.length)) {
-                            var pos = apf.getAbsolutePosition(this.$ext);
+                            var pos = ppc.getAbsolutePosition(this.$ext);
                             mnuContacts.display(pos[0]-5,pos[1]+30);
                         }
                         else {
@@ -75,7 +75,7 @@
         </a:window>
 
         <a:menu id="mnuContacts"
-          anim = "{!apf.isIE}"
+          anim = "{!ppc.isIE}"
           skin = "invite_menu">
             <a:list
               id        = "lstContacts"

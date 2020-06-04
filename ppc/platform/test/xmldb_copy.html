@@ -3,7 +3,7 @@
     <head>
         <title>Caldropdown Gen API</title>
         
-        <script src="trunk/apf.js"></script>
+        <script src="trunk/ppc.js"></script>
     </head>
     <body>
         <a:skin src="skins.xml" media-path="images/" icon-path="icns/" />
@@ -27,8 +27,8 @@
         </a:list>
         
         <a:script><![CDATA[
-            apf.onload = function() {
-                var xmlNode = apf.xmldb.copy(myList.selected);
+            ppc.onload = function() {
+                var xmlNode = ppc.xmldb.copy(myList.selected);
                 xmlNode.setAttribute("name", "New product");
                 myList.add(xmlNode);
                 myList.select(xmlNode);

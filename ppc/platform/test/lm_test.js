@@ -195,7 +195,7 @@ var test_list = {
 var test_proc = {
 	1 : function(dbg, id, num, inp, exp){
 		var o = runLM( inp, testmodel.data, {} );
-		var cod = apf.lm.lastCode();
+		var cod = ppc.lm.lastCode();
 		if(exp === 0){ // expect error
 			if(typeof(o)!='string' || o.indexOf("error:")!=0)
 				error(id, num,"Expected exception, but returned"+o,inp,"exception");
@@ -213,7 +213,7 @@ var test_proc = {
 	},	
 	2 :  function(dbg, id, num, inp, exp){
 		var o = runLM( inp, testmodel.data, {parsecode:1} );
-		var cod = apf.lm.lastCode();
+		var cod = ppc.lm.lastCode();
 		if(exp === 0){ // expect error
 			if(typeof(o)!='string' || o.indexOf("error:")!=0)
 				error(id, num,"Expected exception, but returned"+o,inp,"exception",cod);
@@ -240,7 +240,7 @@ var test_proc = {
 function runLM(input, xmldata, options, callback){
 
 	function run(){
-		var genCode = apf.lm.compile(input, options)
+		var genCode = ppc.lm.compile(input, options)
 		if (genCode) {
 			if (genCode.type == 1) {
 				if (genCode.asyncs) {
@@ -272,9 +272,9 @@ function runLM(input, xmldata, options, callback){
 }
 
 function doTest( id, num ){
-	apf.language.words = testlang;
-	testmodel = apf.testmodel(testxml);
-	apf.nameserver.lookup.model.testmodel = testmodel;
+	ppc.language.words = testlang;
+	testmodel = ppc.testmodel(testxml);
+	ppc.nameserver.lookup.model.testmodel = testmodel;
 	
 	if(id){ // find specific test
 		test_proc[id].apply(0,[1,id,num].concat(test_list[id][num]));
@@ -685,7 +685,7 @@ test("lm_plusplus_codemode()", function() {
 
 	//not sure which one is correct
 	//xmlData = parseXml("<folder name='5'><file>2</file><file>4</file><file>6</file></folder><folder name='10'><file>8</file></folder><folder name='15'><file>10</file><file>12</file></folder>");	
-	testmodel.data = apf.getXml("<folder name='5'><file>2</file><file>4</file><file>6</file></folder><folder name='10'><file>8</file></folder><folder name='15'><file>10</file><file>12</file></folder>");
+	testmodel.data = ppc.getXml("<folder name='5'><file>2</file><file>4</file><file>6</file></folder><folder name='10'><file>8</file></folder><folder name='15'><file>10</file><file>12</file></folder>");
 	
 	
 	testmodel.copy = testmodel.data.cloneNode(true);

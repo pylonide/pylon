@@ -2,7 +2,7 @@
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>MASTER CLIENT</title>
-        <script src="../apf.js"></script>
+        <script src="../ppc.js"></script>
         <style type="text/css">
             #message_log {
                 border: 1px solid silver;
@@ -47,7 +47,7 @@
                     return mdlFs;
             });
             
-            if (apf.isIE)
+            if (ppc.isIE)
                 myPersist.connect('jane@campell.com', 'geheim');//, 'rdb://worknets.com/101');
             else
                 myPersist.connect('jharrison@bi.nl', '101', 'rdb://worknets.com/101');
@@ -58,7 +58,7 @@
                 
                 //Test create
                 myPersist.create("rdb://worknets.com/worknet", function(data){
-                    apf.console.log("RECEIVED: " + data);
+                    ppc.console.log("RECEIVED: " + data);
                     myPersist.join(data);
                 });
                 

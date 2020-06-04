@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <script src="../apf.js"></script>
+        <script src="../ppc.js"></script>
     </head>
     <body>
         <a:skin src="skins/platform/trunk/xml/_index.xml" media-path="skins/platform/trunk/images/" icons="../icons/" />
@@ -19,11 +19,11 @@
         <a:script><![CDATA[
             var fakes   = {},
                 counter = 0,
-                app     = '<a:application xmlns:a="' + apf.ns.aml + '"/>';
+                app     = '<a:application xmlns:a="' + ppc.ns.aml + '"/>';
             function addFakeTab(type, content) {
                 var fake;
                 if (!(fake = fakes[type])) {
-                    fake = fakes[type] = tab.ownerDocument.createElementNS(apf.ns.aml, "page");
+                    fake = fakes[type] = tab.ownerDocument.createElementNS(ppc.ns.aml, "page");
                     fake.setAttribute("visible", false);
                     fake.setAttribute("id", type);
                     tab.appendChild(fake);

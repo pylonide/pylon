@@ -2,13 +2,13 @@ var panino = require("../../panino-docs/index.js");
 var panda = require("panda-docs");
 
 var buildOptions = {
-  title          : "APF API",
+  title          : "PPC API",
   output         : './out',
   skin           : "./resources/templates/layout.jade",
   assets         : "./resources/assets",
   additionalObjs : "./additionalObjs.json",
   parseType      : "jsd",
-  globalNS       : "apf",
+  globalNS       : "ppc",
   index          : "./index.md",
   splitByClass   : true,
   splitFromNS    : true,

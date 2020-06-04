@@ -2,7 +2,7 @@
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>MASTER CLIENT</title>
-        <script src="../apf.js"></script>
+        <script src="../ppc.js"></script>
         <style type="text/css">
             #message_log {
                 border: 1px solid silver;
@@ -33,12 +33,12 @@
             model             = "myRoster"
             model-contents    = "roster|typing|chat"
             type              = "binding"
-            resource          = "{'apf_'.appendRandomNumber(5)}"
-            onconnected       = "apf.console.log('yay')"
-            onconnectionerror = "apf.console.log('boohoo:' + event.message)"
-            onauthfailure     = "apf.console.log('AUTHFAILURE:' + event.message)"
-            onconnectionlost  = "apf.console.log('connection lost!:' + event.message)"
-            onreconnect       = "apf.console.log('attempting to restore connection')" />
+            resource          = "{'ppc_'.appendRandomNumber(5)}"
+            onconnected       = "ppc.console.log('yay')"
+            onconnectionerror = "ppc.console.log('boohoo:' + event.message)"
+            onauthfailure     = "ppc.console.log('AUTHFAILURE:' + event.message)"
+            onconnectionlost  = "ppc.console.log('connection lost!:' + event.message)"
+            onreconnect       = "ppc.console.log('attempting to restore connection')" />
 
         <a:remote transport="myXMPP" id="rmtFs" />
 
@@ -61,7 +61,7 @@
 
         <a:button onclick="lstPersons.rename(lstPersons.selected, 'test' + Math.round(Math.random()*100));">Rename</a:button>
 
-        <a:button onclick="apf.xmldb.setAttribute(lstPersons.selected, 'id', 'test' + Math.round(Math.random()*100));">Change Attr</a:button-->
+        <a:button onclick="ppc.xmldb.setAttribute(lstPersons.selected, 'id', 'test' + Math.round(Math.random()*100));">Change Attr</a:button-->
         <!--a:button onclick="lstPersons.add('&lt;person&gt;new person&lt;/person&gt;')">Add</a:button>
 
         <a:slider value="[folder[1]/@test]" realtime="false" model="mdlFs" /-->

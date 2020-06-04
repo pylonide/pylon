@@ -56,7 +56,7 @@
         .portal>br{
         }
     ]]></a:style>
-    <a:style condition="apf.isIE &lt; 8"><![CDATA[
+    <a:style condition="ppc.isIE &lt; 8"><![CDATA[
         .portal .column{
             float : left;
         }
@@ -607,7 +607,7 @@
         }
 
     ]]></a:style>
-    <a:style condition="apf.isGecko"><![CDATA[
+    <a:style condition="ppc.isGecko"><![CDATA[
         .flowchart .connector-end {
             margin:0;
         }
@@ -633,10 +633,10 @@
         </a:empty>
     </a:presentation>
 </a:flowchart>
-<a:accordion name="accordion_apf_ver">
+<a:accordion name="accordion_ppc_ver">
     <a:alias>accordion</a:alias>
     <a:style><![CDATA[
-        .accordion_apf_ver {
+        .accordion_ppc_ver {
             overflow     : auto;
             color        : #4b4b4b;
             height       : auto;
@@ -646,7 +646,7 @@
             border       : 1px solid #c3c3c3;
         }
 
-        .accordion_apf_ver .panel {
+        .accordion_ppc_ver .panel {
             padding          : 0;
             font-size        : 11px;
             font-family      : Tahoma, Arial;
@@ -657,12 +657,12 @@
             overflow         : hidden;
         }
 
-        .accordion_apf_ver .ending {
+        .accordion_ppc_ver .ending {
             display : none;
         }
 
-        .accordion_apf_ver .panel .title {
-            background-image    : url(images/accordion_apf_title.png);
+        .accordion_ppc_ver .panel .title {
+            background-image    : url(images/accordion_ppc_title.png);
             background-position : 0 0;
             height              : 12px;
             color               : #4b4b4b;
@@ -673,7 +673,7 @@
             cursor              : pointer;
         }
 
-        .accordion_apf_ver .panel .title .icon {
+        .accordion_ppc_ver .panel .title .icon {
             width               : 12px;
             height              : 10px;
             position            : absolute;
@@ -683,26 +683,26 @@
             background-position : 6px 50%;
         }
 
-        .accordion_apf_ver .panel .Active .icon,
-        .accordion_apf_ver .panel .title:hover .icon {
+        .accordion_ppc_ver .panel .Active .icon,
+        .accordion_ppc_ver .panel .title:hover .icon {
             background-position : -4px 50%;
         }
 
-        .accordion_apf_ver .panel .title:hover {
+        .accordion_ppc_ver .panel .title:hover {
             background-position : 0 -20px;
             color               : white;
         }
 
-        .accordion_apf_ver .panel .Active {
+        .accordion_ppc_ver .panel .Active {
             background-position : 0 -20px;
             color               : white;
         }
 
-        .accordion_apf_ver .panel .NotActive {
+        .accordion_ppc_ver .panel .NotActive {
            background-position : 0 0;
         }
 
-        .accordion_apf_ver .panel .body {
+        .accordion_ppc_ver .panel .body {
             position       : relative;
             padding        : 3px;
             overflow       : hidden;
@@ -713,13 +713,13 @@
             border-bottom  : 1px solid #c3c3c3;
         }
 
-        .accordion_apf_ver .panel .last {
+        .accordion_ppc_ver .panel .last {
             border-bottom  : 0;
         }
     ]]></a:style>
     <a:presentation>
         <a:main container="." direction="vertical">
-            <div class="accordion_apf_ver"> </div>
+            <div class="accordion_ppc_ver"> </div>
         </a:main>
         <a:panel
             container = "div[2]"
@@ -738,9 +738,9 @@
         </a:ending>
     </a:presentation>
 </a:accordion>
-<a:accordion name="accordion_apf_hor">
+<a:accordion name="accordion_ppc_hor">
     <a:style><![CDATA[
-        .accordion_apf_hor {
+        .accordion_ppc_hor {
             overflow-x  : auto;
             overflow-y  : hidden;
             color       : #4b4b4b;
@@ -753,7 +753,7 @@
             white-space : nowrap;
         }
 
-        .accordion_apf_hor .panel {
+        .accordion_ppc_hor .panel {
             padding          : 0;
             font-size        : 11px;
             font-family      : Tahoma, Arial;
@@ -765,12 +765,12 @@
             display          : inline-block;
         }
 
-        .accordion_apf_hor .ending {
+        .accordion_ppc_hor .ending {
             display : none;
         }
 
-        .accordion_apf_hor .panel .title {
-            background-image    : url(images/accordion_apf_title_hor.png);
+        .accordion_ppc_hor .panel .title {
+            background-image    : url(images/accordion_ppc_title_hor.png);
             background-position : 0 0;
             width               : 12px;
             color               : white;
@@ -783,7 +783,7 @@
             cursor              : pointer;
         }
 
-        .accordion_apf_hor .panel .title .icon {
+        .accordion_ppc_hor .panel .title .icon {
             width    : 12px;
             height   : 10px;
             position : relative;
@@ -792,25 +792,25 @@
             background-repeat:no-repeat;
         }
 
-        .accordion_apf_hor .panel .Active .icon,
-        .accordion_apf_hor .panel .title:hover .icon {
+        .accordion_ppc_hor .panel .Active .icon,
+        .accordion_ppc_hor .panel .title:hover .icon {
             background-position:50% -4px;
         }
 
-        .accordion_apf_hor .panel .title:hover {
+        .accordion_ppc_hor .panel .title:hover {
             background-position : -20px 0;
             color               : white;
         }
 
-        .accordion_apf_hor .panel .Active {
+        .accordion_ppc_hor .panel .Active {
             background-position : -20px 0;
         }
 
-        .accordion_apf_hor .panel .NotActive {
+        .accordion_ppc_hor .panel .NotActive {
             background-position : 0 0;
         }
 
-        .accordion_apf_hor .panel .body {
+        .accordion_ppc_hor .panel .body {
             position     : relative;
             display      : none;
             float        : left;
@@ -819,7 +819,7 @@
             border-left  : 1px solid #d7d7d7;
         }
 
-        .accordion_apf_hor .panel .body .header {
+        .accordion_ppc_hor .panel .body .header {
             font-size           : 14px;
             font-weight         : bold;
             background-image    : url(images/accordion_header.png);
@@ -831,11 +831,11 @@
             white-space         : nowrap;
         }
 
-        .accordion_apf_hor .panel .last {
+        .accordion_ppc_hor .panel .last {
             border-right:0;
         }
 
-        .accordion_apf_hor .panel .body .content {
+        .accordion_ppc_hor .panel .body .content {
             padding     : 5px;
             overflow    : hidden;
             white-space : nowrap;
@@ -844,7 +844,7 @@
 
     <a:presentation>
         <a:main container="." direction="horizontal">
-            <div class="accordion_apf_hor"> </div>
+            <div class="accordion_ppc_hor"> </div>
         </a:main>
         <a:panel
             container = "div[2]/div[2]"
@@ -933,7 +933,7 @@
             margin:1px 5px;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE"><![CDATA[
+    <a:style condition="ppc.isIE"><![CDATA[
      ]]></a:style>
     <a:presentation>
         <a:main container="." content="div[1]" pages="div[2]/div">
@@ -1069,7 +1069,7 @@
             white-space : nowrap;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE6 &#38;&#38; apf.isIE7">
+    <a:style condition="ppc.isIE6 &#38;&#38; ppc.isIE7">
         .accordion_menu .rounded {
             top : -4px;
         }
@@ -1515,18 +1515,18 @@
             display: block;
         }
 
-        #apf_outline{
+        #ppc_outline{
 
         }
 
-        #apf_outline.drag{
+        #ppc_outline.drag{
             border: 2px solid black;
             /*background: #CCC;*/
             opacity: 0.4;
             filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
         }
 
-        #apf_outline.resize{
+        #ppc_outline.resize{
             border: 3px solid black;
             background: #CCC;
             opacity: 0.3;
@@ -3158,7 +3158,7 @@
     <a:alias>submit</a:alias>
     <a:alias>reset</a:alias>
     <a:style><![CDATA[
-        .apf_btn{
+        .ppc_btn{
             color: #4b4b4b;
             font-family: Tahoma, Arial;
             font-size: 8pt;
@@ -3169,14 +3169,14 @@
 /*            margin : 0 -5px -2px 0; */
 	    }
 
-        .apf_btn .left{
+        .ppc_btn .left{
             float: left;
             width: 8px;
             height: 25px;
             _margin-right: -3px; /* IE6 bug fix */
         }
 
-        .apf_btn .lbl{
+        .ppc_btn .lbl{
             height: 20px;
             padding-top: 5px;
             text-align: center;
@@ -3188,38 +3188,38 @@
             text-overflow: ellipsis;
         }
 
-        .apf_btn .right{
+        .ppc_btn .right{
             float: right;
             width: 9px;
             height: 25px;
 	       _margin-left: -3px; /* IE6 bug fix */
         }
 
-        .apf_btn .left{
+        .ppc_btn .left{
             background: url("images/button_left.png") no-repeat 0 -25px;
         }
 
-        .apf_btn .lbl{
+        .ppc_btn .lbl{
             background: url("images/button_middle.png") repeat-x 0 -25px;
         }
 
-        .apf_btn .right{
+        .ppc_btn .right{
             background: url("images/button_right.png") no-repeat 0 -25px;
         }
 
-        .apf_btnDefault .left {
+        .ppc_btnDefault .left {
             background: url("images/button_left.png") no-repeat top left;
         }
 
-        .apf_btnDefault .lbl {
+        .ppc_btnDefault .lbl {
             background: url("images/button_middle.png") repeat-x top left;
         }
 
-        .apf_btnDefault .right {
+        .ppc_btnDefault .right {
             background: url("images/button_right.png") no-repeat top left;
         }
 
-        .apf_btn span{
+        .ppc_btn span{
             padding : 1px 3px 1px 3px;
             border: 1px solid transparent;
             position : relative;
@@ -3228,50 +3228,50 @@
             _margin: 0;
         }
 
-        .apf_btnDisabled  {
+        .ppc_btnDisabled  {
             color: #bebebe;
         }
 
-        .apf_btnDisabled .left {
+        .ppc_btnDisabled .left {
     	    background: url("images/button_left.png") no-repeat 0 -50px;
     	}
 
-    	.apf_btnDisabled .lbl {
+    	.ppc_btnDisabled .lbl {
     	    background: url("images/button_middle.png") repeat-x 0 -50px;
     	}
 
-    	.apf_btnDisabled .right {
+    	.ppc_btnDisabled .right {
     	    background: url("images/button_right.png") no-repeat 0 -50px;
     	}
-    	.apf_btnFocus {
+    	.ppc_btnFocus {
         }
 
-        .apf_btnFocus span{
+        .ppc_btnFocus span{
             border: 1px dotted #BBB;
             padding : 1px 3px 1px 3px;
         }
 
-        .apf_btnDown .left {
+        .ppc_btnDown .left {
 	        background: url("images/button_left.png") no-repeat 0 -75px;
         }
 
-    	.apf_btnDown .lbl {
+    	.ppc_btnDown .lbl {
     	    background: url("images/button_middle.png") repeat-x 0 -75px;
     	}
 
-    	.apf_btnDown .right {
+    	.ppc_btnDown .right {
     	    background: url("images/button_right.png") no-repeat 0 -75px;
     	}
 
-        .apf_btnOver {
+        .ppc_btnOver {
         }
     ]]></a:style>
-    <a:style condition="apf.isIE7">
-    	.apf_btn .right {
+    <a:style condition="ppc.isIE7">
+    	.ppc_btn .right {
     	    margin: 0;
     	}
 
-    	.apf_btn .left {
+    	.ppc_btn .left {
     	    margin: 0;
     	}
     </a:style>
@@ -3279,7 +3279,7 @@
     <a:presentation>
         <a:main caption="div[3]/span/text()" background="."
           minheight="25" maxheight="25">
-            <div class="apf_btn">
+            <div class="ppc_btn">
                 <div class="left"> </div>
                 <div class="right"> </div>
                 <div class="lbl"><span>-</span></div>
@@ -3582,7 +3582,7 @@
         }
     ]]></a:style>
 
-    <a:style condition="apf.isIE6"><![CDATA[
+    <a:style condition="ppc.isIE6"><![CDATA[
         .tab .btncontainer div, .tab .btncontainer div div {
             margin: 0 0 0 0;
         }
@@ -3590,7 +3590,7 @@
             bottom: 11px;
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!ppc.isIE"><![CDATA[
         .tab .scroller .scroller_btn_left.hover {
             background-position: 0 -17px;
         }
@@ -3615,7 +3615,7 @@
             background-position: -15px -51px;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE"><![CDATA[
+    <a:style condition="ppc.isIE"><![CDATA[
         .tab .scroller span.hover {
             background-position-y: -17px;
         }
@@ -3725,7 +3725,7 @@
             display: none;
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!ppc.isIE"><![CDATA[
         .cbcontainer br{
             line-height: 0;
             display: block;
@@ -4039,7 +4039,7 @@
         }
 
     ]]></a:style>
-    <a:style condition="apf.isIE6">
+    <a:style condition="ppc.isIE6">
 	.menu div.menuShadowTop, .menu div.menuShadowRight, .menu div.menuShadowLeft, .menu div.menuShadowBottom {
 	   display: none;
 	}
@@ -4492,7 +4492,7 @@
             display : none;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE">
+    <a:style condition="ppc.isIE">
         .thumbs_caption label, .dragthumb_caption label {
             width: auto;
         }
@@ -5808,7 +5808,7 @@
         }
 
     ]]></a:style>
-    <a:style condition="apf.isIE7">
+    <a:style condition="ppc.isIE7">
 	.progressbar .lbl {
 	    margin: 0;
 	}
@@ -6297,7 +6297,7 @@
         background-position: -32px 0;
     }
     ]]></a:style>
-    <a:style condition="apf.isIE8">
+    <a:style condition="ppc.isIE8">
         .slider16_ver .top {
             bottom:0;
         }
@@ -6418,7 +6418,7 @@
             background-position: 0 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE8">
+    <a:style condition="ppc.isIE8">
         .slider11_ver .top {
             bottom:-5px;
         }
@@ -6751,7 +6751,7 @@
 
 
     ]]></a:style>
-    <a:style condition="apf.isIE6">
+    <a:style condition="ppc.isIE6">
     	.bar {
 	    padding: 20px 0 0 0;
 	}
@@ -6828,17 +6828,17 @@
             position : relative;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE6">
+    <a:style condition="ppc.isIE6">
     	.frame {
     	    height: 1%;
     	}
     </a:style>
-    <a:style condition="!apf.isIE">
+    <a:style condition="!ppc.isIE">
     	.frame .legend{
     	    margin : 5px 0 7px -3px;
     	}
     </a:style>
-    <a:style condition="apf.isIE &gt; 7">
+    <a:style condition="ppc.isIE &gt; 7">
         .frame {
             padding-top : 10px;
         }
@@ -7987,7 +7987,7 @@
             background-position : 0 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE &amp;&amp; !apf.isIE8"><![CDATA[
+    <a:style condition="ppc.isIE &amp;&amp; !ppc.isIE8"><![CDATA[
         .datagrid .headings div{
             float : left;
         }
@@ -7996,7 +7996,7 @@
             float : left;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko &amp;&amp; !apf.isGecko3"><![CDATA[
+    <a:style condition="ppc.isGecko &amp;&amp; !ppc.isGecko3"><![CDATA[
         .datagrid .headings{
             padding-top : 2px;
             height : 15px;
@@ -8442,14 +8442,14 @@
             margin : -1px;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE"><![CDATA[
+    <a:style condition="ppc.isIE"><![CDATA[
         .spreadsheet .headings div{
         }
 
         .spreadsheet .records div span{
         }
     ]]></a:style>
-    <a:style condition="apf.isIE6"><![CDATA[
+    <a:style condition="ppc.isIE6"><![CDATA[
         .spreadsheet{
             overflow-x : hidden;
             padding-right : 16px;
@@ -8496,7 +8496,7 @@
             height : expression(this.parentNode.offsetHeight - 2);
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!ppc.isIE"><![CDATA[
         .spreadsheet .btncustom, .spreadsheet .ddbtn{
             -moz-border-top-colors: #D4D0C8 #FFFFFF;
             -moz-border-left-colors: #D4D0C8 #FFFFFF;
@@ -8521,7 +8521,7 @@
             line-height : 11px;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko &amp;&amp; !apf.isGecko3"><![CDATA[
+    <a:style condition="ppc.isGecko &amp;&amp; !ppc.isGecko3"><![CDATA[
         .spreadsheet .headings{
             height : 18px;
         }
@@ -8567,7 +8567,7 @@
             padding : 1px 1px 0 2px;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko3">
+    <a:style condition="ppc.isGecko3">
         .spreadsheet .records .cellselected b{
             margin : -1px -1px 0 -2px;
             padding : 0 0 1px 2px;
@@ -10044,7 +10044,7 @@
         }
 
     ]]></a:style>
-    <a:style condition="apf.isIE6">
+    <a:style condition="ppc.isIE6">
 	.lowtab .btncontainer{
             bottom: 1px;
 	}
@@ -10810,7 +10810,7 @@
             overflow: hidden;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE &gt; 7"><![CDATA[
+    <a:style condition="ppc.isIE &gt; 7"><![CDATA[
         .scrollbar .btnup, .scrollbar .btndown, .scrollbar .indicator{
             border: 2px outset white;
         }
@@ -12784,7 +12784,7 @@
             background-image : url(images/new_cal_sel_big.jpg);
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko"><![CDATA[
+    <a:style condition="ppc.isGecko"><![CDATA[
         .calSlider .row .cell {
             float   : none;
             display : -moz-grid;
@@ -13199,14 +13199,14 @@
         }
         
     ]]></a:style>
-    <a:style condition="apf.isIE"><![CDATA[
+    <a:style condition="ppc.isIE"><![CDATA[
         .propedit .headings div{
         }
 
         .propedit .records div span{
         }
     ]]></a:style>
-    <a:style condition="apf.isIE6"><![CDATA[
+    <a:style condition="ppc.isIE6"><![CDATA[
         .propedit{
             overflow-x : hidden;
             padding-right : 16px;
@@ -13253,7 +13253,7 @@
             height : expression(this.parentNode.offsetHeight - 2);
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!ppc.isIE"><![CDATA[
         .propedit .btncustom, .propedit .ddbtn{
             -moz-border-top-colors: #D4D0C8 #FFFFFF;
             -moz-border-left-colors: #D4D0C8 #FFFFFF;
@@ -13292,7 +13292,7 @@
             margin-top : 17px;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko &amp;&amp; !apf.isGecko3"><![CDATA[
+    <a:style condition="ppc.isGecko &amp;&amp; !ppc.isGecko3"><![CDATA[
         .propedit .headings{
             height : 18px;
         }
@@ -13333,7 +13333,7 @@
             padding : 1px 1px 0 2px;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko3">
+    <a:style condition="ppc.isGecko3">
         .propedit .records .cellselected dl{
         }
 
@@ -13611,7 +13611,7 @@
             border-right        : 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isOpera"><![CDATA[
+    <a:style condition="ppc.isOpera"><![CDATA[
         .spinner .divfix {
             right : 20px;
         }
@@ -13791,7 +13791,7 @@
         }
 
     ]]></a:style>
-    <a:style condition="apf.isIE">
+    <a:style condition="ppc.isIE">
         .calendar .calcontent .row .cell {
             float : left;
         }

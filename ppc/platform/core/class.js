@@ -28,7 +28,7 @@
  * implemented following the W3C specification, similar to the
  * {@link http://en.wikipedia.org/wiki/DOM_Events event system of the HTML DOM}.
  *
- * @class apf.Class
+ * @class ppc.Class
  *
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -44,9 +44,9 @@
  * - value (`Mixed`): The value it has after the change
  *
  */
-apf.Class = function(){};
+ppc.Class = function(){};
 
-apf.Class.prototype = new (function(){
+ppc.Class.prototype = new (function(){
     // privates
     var FUN   = "function",
         OBJ   = "object",
@@ -84,7 +84,7 @@ apf.Class.prototype = new (function(){
         //this.$removalQueue = [];
 
         if (this.nodeType != 2) //small little hack
-            this.$uniqueId = apf.all.push(this) - 1;
+            this.$uniqueId = ppc.all.push(this) - 1;
 
         this.$captureStack = {};
         this.$eventsStack  = {};
@@ -101,7 +101,7 @@ apf.Class.prototype = new (function(){
         delete this.$initStack;
         delete this.$bufferEvents;
 
-        if (struct && (struct.htmlNode || this.nodeFunc == apf.NODE_HIDDEN)) {
+        if (struct && (struct.htmlNode || this.nodeFunc == ppc.NODE_HIDDEN)) {
             this.$pHtmlNode = struct.htmlNode;
 
             /*#ifdef __SUPPORT_GWT
@@ -112,7 +112,7 @@ apf.Class.prototype = new (function(){
                     this.ownerDocument.$domParser.$continueParsing(this);
 
                 // #ifdef __WITH_QUEUE
-                apf.queue.empty();
+                ppc.queue.empty();
                 // #endif
             // #endif
         }
@@ -120,7 +120,7 @@ apf.Class.prototype = new (function(){
         return this;
     };
 
-    this.implement = apf.implement;
+    this.implement = ppc.implement;
 
     // **** Property Binding **** //
 
@@ -157,7 +157,7 @@ apf.Class.prototype = new (function(){
                 return;
 
             //#ifdef __WITH_LANG_SUPPORT
-            apf.$lm_has_lang = false;
+            ppc.$lm_has_lang = false;
             //#endif
             isBeingCalled = true;
 
@@ -168,10 +168,10 @@ apf.Class.prototype = new (function(){
 
                         //#ifdef __WITH_LANG_SUPPORT
                         //@todo apf3.0
-                        if (apf.$lm_has_lang && !isLang) {
+                        if (ppc.$lm_has_lang && !isLang) {
                             isLang = true;
                             //@todo should auto remove
-                            apf.language.addProperty(bObject, bProp, fParsed);
+                            ppc.language.addProperty(bObject, bProp, fParsed);
                         }
                         //#endif
 
@@ -183,7 +183,7 @@ apf.Class.prototype = new (function(){
                 }
             }
             catch(e) {
-                apf.console.warn("[331] Could not execute binding for property "
+                ppc.console.warn("[331] Could not execute binding for property "
                     + bProp + "\n\n" + e.message);
 
                 isBeingCalled = false;
@@ -197,10 +197,10 @@ apf.Class.prototype = new (function(){
 
             //#ifdef __WITH_LANG_SUPPORT
             //@todo apf3.0
-            if (apf.$lm_has_lang && !isLang) {
+            if (ppc.$lm_has_lang && !isLang) {
                 isLang = true;
                 //@todo should auto remove
-                apf.language.addProperty(bObject, bProp, fParsed);
+                ppc.language.addProperty(bObject, bProp, fParsed);
             }
             //#endif
 
@@ -278,20 +278,20 @@ apf.Class.prototype = new (function(){
             (options || (options = {})).liveedit = true;
 
         //#ifdef __DEBUG
-        if (apf.config.debugLm)
+        if (ppc.config.debugLm)
             (options || (options = {})).nothrow = true;
         //#endif
 
         //Compile pValue through JSLT parser
         //#ifdef __WITH_AML_BINDINGS
-        if (pValue && pValue.dataType == apf.FUNCTION) {
+        if (pValue && pValue.dataType == ppc.FUNCTION) {
              var fParsed = pValue;
              pValue = "";
         }
         else
         //#endif
         {
-            var fParsed = apf.lm.compile(pValue, options);
+            var fParsed = ppc.lm.compile(pValue, options);
         }
 
         //Special case for model due to needed extra signalling
@@ -313,8 +313,8 @@ apf.Class.prototype = new (function(){
         //#ifdef __WITH_DATABINDING
         var check = 1;
         if (exclNr == 2 || fParsed.xpaths.length && exclNr != 1) {
-            if (!this.hasFeature(apf.__DATABINDING__)) {
-                this.implement(apf.StandardBinding);
+            if (!this.hasFeature(ppc.__DATABINDING__)) {
+                this.implement(ppc.StandardBinding);
                 if (this.$attrExcludePropBind[prop] == 1)
                     check = 0;
             }
@@ -344,11 +344,11 @@ apf.Class.prototype = new (function(){
                 }
                 catch(e){
                     if (arguments[2]) {
-                        apf.console.warn("[287] Could not execute binding test : "
+                        ppc.console.warn("[287] Could not execute binding test : "
                             + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
                     }
                     else {
-                        apf.queue.add(prop + ":" + this.$uniqueId, function(){
+                        ppc.queue.add(prop + ":" + this.$uniqueId, function(){
                             _self.$clearDynamicProperty(prop);
                             _self.$setDynamicProperty(prop, pValue, true);
                         });
@@ -358,7 +358,7 @@ apf.Class.prototype = new (function(){
 
                 if (!node || typeof node != OBJ || (!node.$regbase && node.$regbase !== 0)) {
                     bProp = o[1];
-                    node  = self[o[0]] || apf.nameserver.get("all", o[0]);
+                    node  = self[o[0]] || ppc.nameserver.get("all", o[0]);
                 }
                 else {
                     o.push(bProp);
@@ -366,17 +366,17 @@ apf.Class.prototype = new (function(){
             }
             else {
                 bProp = o[1];
-                node  = self[o[0]] || apf.nameserver.get("all", o[0]) || o[0] == "this" && this;
+                node  = self[o[0]] || ppc.nameserver.get("all", o[0]) || o[0] == "this" && this;
             }
 
             if (!node) {
                 if (arguments[2]) {
-                    apf.console.warn("[287] Could not create property binding: "
+                    ppc.console.warn("[287] Could not create property binding: "
                         + " '"  + o[0] + "' does not exist. \n"
                         + pValue.replace(/</g, "&lt;").substr(0, 400));
 
                     var _self = this;
-                    apf.nameserver.waitFor(o[0], function(){
+                    ppc.nameserver.waitFor(o[0], function(){
                         _self.$setDynamicProperty(prop, pValue);
                     })
                     return;
@@ -385,7 +385,7 @@ apf.Class.prototype = new (function(){
                     //@todo this is sloppy and not efficient - shouldn't clear
                     //and reset and should check if was changed or removed when
                     //it's set
-                    apf.queue.add(prop + ":" + this.$uniqueId, function(){
+                    ppc.queue.add(prop + ":" + this.$uniqueId, function(){
                         _self.$clearDynamicProperty(prop);
                         _self.$setDynamicProperty(prop, pValue, true);
                     });
@@ -426,7 +426,7 @@ apf.Class.prototype = new (function(){
                 return this.setProperty(prop, pValue, null, null, 10); //@todo is 10 here right?
 
             //#ifdef __WITH_LANG_SUPPORT
-            apf.$lm_has_lang = false;
+            ppc.$lm_has_lang = false;
             //#endif
 
             try {
@@ -436,8 +436,8 @@ apf.Class.prototype = new (function(){
 
                         //#ifdef __WITH_LANG_SUPPORT
                         //@todo apf3.0
-                        if (apf.$lm_has_lang)
-                            apf.language.addProperty(this, prop, fParsed); //@todo should auto remove
+                        if (ppc.$lm_has_lang)
+                            ppc.language.addProperty(this, prop, fParsed); //@todo should auto remove
                         //#endif
                     });
                 }
@@ -446,7 +446,7 @@ apf.Class.prototype = new (function(){
                 }
             }
             catch(e){
-                apf.console.warn("[331] Could not execute binding test or: "
+                ppc.console.warn("[331] Could not execute binding test or: "
                     + pValue.replace(/</g, "&lt;") + "\n\n" + e.message);
                 return;
             }
@@ -456,8 +456,8 @@ apf.Class.prototype = new (function(){
 
             //#ifdef __WITH_LANG_SUPPORT
             //@todo apf3.0
-            if (apf.$lm_has_lang)
-                apf.language.addProperty(this, prop, fParsed); //@todo should auto remove
+            if (ppc.$lm_has_lang)
+                ppc.language.addProperty(this, prop, fParsed); //@todo should auto remove
             //#endif
         }
     };
@@ -470,7 +470,7 @@ apf.Class.prototype = new (function(){
 
         //#ifdef __WITH_LANG_SUPPORT
         //@todo apf3.0
-        apf.language.removeProperty(this, prop);
+        ppc.language.removeProperty(this, prop);
         //#endif
 
         if (this.$inheritProperties)
@@ -562,7 +562,7 @@ apf.Class.prototype = new (function(){
             var isChanged = (typeof value == OBJ)
                 ? value != (typeof oldvalue == OBJ ? oldvalue : null)
                 : (this.$booleanProperties && this.$booleanProperties[prop]
-                    ? oldvalue != apf.isTrue(value)
+                    ? oldvalue != ppc.isTrue(value)
                     : String(oldvalue) !== String(value));
         } catch(e){
             var isChanged = true;
@@ -581,28 +581,28 @@ apf.Class.prototype = new (function(){
                     //Check if rule has single xpath
                     if (r.cvalue.type == 3) {
                         //#ifdef __ENABLE_UIRECORDER_HOOK
-                        if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
-                            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                        if (ppc.uirecorder && ppc.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
+                            if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
                                 if (this.ownerDocument && this.$aml && this.$amlLoaded)
-                                    apf.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue);
+                                    ppc.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue);
                             }
                         }
                         //#endif
 
                         //Set the xml value - this should probably use execProperty
-                        return apf.setNodeValue(
+                        return ppc.setNodeValue(
                             this.$getDataNode(prop.toLowerCase(), this.xmlRoot, true),
                             value, true);
                     }
                 }
                 //#ifdef __WITH_OFFLINE_STATE_REALTIME
-                else if (typeof apf.offline != UNDEF) {
-                    if (apf.loaded && apf.offline.state.enabled) {
-                        apf.offline.state.set(this, prop, typeof value == OBJ
+                else if (typeof ppc.offline != UNDEF) {
+                    if (ppc.loaded && ppc.offline.state.enabled) {
+                        ppc.offline.state.set(this, prop, typeof value == OBJ
                             ? value.name
                             : value);
                     }
-                    else if (apf.offline.enabled) {
+                    else if (ppc.offline.enabled) {
 
                     }
                 }
@@ -616,10 +616,10 @@ apf.Class.prototype = new (function(){
                 return;
 
             //#ifdef __ENABLE_UIRECORDER_HOOK
-            if (apf.uirecorder && apf.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
-                if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+            if (ppc.uirecorder && ppc.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
+                if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
                     if (this.ownerDocument && this.$aml && this.$amlLoaded)
-                        apf.uirecorder.capture.capturePropertyChange(this, prop, this[prop], oldvalue);
+                        ppc.uirecorder.capture.capturePropertyChange(this, prop, this[prop], oldvalue);
                 }
             }
             //#endif
@@ -659,7 +659,7 @@ apf.Class.prototype = new (function(){
         */
         //@todo this whole section should be about attribute inheritance and moved
         //      to AmlElement
-        if ((aci || (aci = apf.config.$inheritProperties))[prop]) {
+        if ((aci || (aci = ppc.config.$inheritProperties))[prop]) {
             //@todo this is actually wrong. It should be about removing attributes.
             var resetting = value === "" || typeof value == "undefined";
             if (inherited != 10 && !value) {
@@ -720,7 +720,7 @@ apf.Class.prototype = new (function(){
 
     // *** Event Handling ****/
 
-    apf.$eventDepth = 0;
+    ppc.$eventDepth = 0;
     this.$eventDepth = 0;
 
     /**
@@ -736,10 +736,10 @@ apf.Class.prototype = new (function(){
     //var allowEvents = {"DOMNodeInsertedIntoDocument":1,"DOMNodeRemovedFromDocument":1};
         var arr, result, rValue, i, l;
 
-        if (!apf.AmlEvent)
+        if (!ppc.AmlEvent)
             return;
 
-        apf.$eventDepth++;
+        ppc.$eventDepth++;
         this.$eventDepth++;
 
         e = options && options.name ? options : e;
@@ -761,7 +761,7 @@ apf.Class.prototype = new (function(){
                 //Capture support
                 if (arr = this.$captureStack[eventName]) {
                     for (i = 0, l = arr.length; i < l; i++) {
-                        rValue = arr[i].call(this, e || (e = new apf.AmlEvent(eventName, options)));
+                        rValue = arr[i].call(this, e || (e = new ppc.AmlEvent(eventName, options)));
                         if (typeof rValue != UNDEF)
                             result = rValue;
                     }
@@ -776,14 +776,14 @@ apf.Class.prototype = new (function(){
             else {
                 if (this["on" + eventName]) {
                     result = this["on" + eventName].call(this, e
-                        || (e = new apf.AmlEvent(eventName, options))); //Backwards compatibility
+                        || (e = new ppc.AmlEvent(eventName, options))); //Backwards compatibility
                 }
 
                 if (arr = this.$eventsStack[eventName]) {
                     for (i = 0, l = arr.length; i < l; i++) {
                         if (!arr[i]) continue;
                         rValue = arr[i].call(this, e
-                            || (e = new apf.AmlEvent(eventName, options)));
+                            || (e = new ppc.AmlEvent(eventName, options)));
                         if (typeof rValue != UNDEF)
                             result = rValue;
                     }
@@ -798,8 +798,8 @@ apf.Class.prototype = new (function(){
         }*/
 
         //#ifdef __WITH_EVENT_BUBBLING
-        if ((e && e.bubbles && !e.cancelBubble || !e && options && options.bubbles) && this != apf) {
-            rValue = (this.parentNode || this.ownerElement || apf).dispatchEvent(eventName, options, e);
+        if ((e && e.bubbles && !e.cancelBubble || !e && options && options.bubbles) && this != ppc) {
+            rValue = (this.parentNode || this.ownerElement || ppc).dispatchEvent(eventName, options, e);
             // || (e = new apf.AmlEvent(eventName, options))
 
             if (typeof rValue != UNDEF)
@@ -807,25 +807,25 @@ apf.Class.prototype = new (function(){
         }
         //#endif
 
-        if (--apf.$eventDepth == 0 && this.ownerDocument
+        if (--ppc.$eventDepth == 0 && this.ownerDocument
           && !this.ownerDocument.$domParser.$parseContext
-          && !apf.isDestroying && apf.loaded
+          && !ppc.isDestroying && ppc.loaded
           //#ifdef __DEBUG
           && eventName != "debug"
           //#endif
-          && apf.queue
+          && ppc.queue
         ) {
-            apf.queue.empty();
+            ppc.queue.empty();
         }
 
         this.$eventDepth--;
 
         //#ifdef __ENABLE_UIRECORDER_HOOK
-        if (apf.uirecorder && apf.uirecorder.captureDetails) {
+        if (ppc.uirecorder && ppc.uirecorder.captureDetails) {
             if (["debug"].indexOf(eventName) == -1 && (!e || e.currentTarget == this)) { // ,"DOMNodeRemoved","DOMNodeRemovedFromDocument","DOMNodeInsertedIntoDocument"
-                //if (apf.uirecorder.isLoaded) { // skip init loading and drawing of elements
-                    if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) { // only capture events when recording
-                        apf.uirecorder.capture.captureEvent(eventName, e || (e = new apf.AmlEvent(eventName, options)));
+                //if (ppc.uirecorder.isLoaded) { // skip init loading and drawing of elements
+                    if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) { // only capture events when recording
+                        ppc.uirecorder.capture.captureEvent(eventName, e || (e = new ppc.AmlEvent(eventName, options)));
                     }
                 //}
                 // when eventName == "load" all elements are loaded and drawn
@@ -862,8 +862,8 @@ apf.Class.prototype = new (function(){
 
     var realAddEventListener = function(eventName, callback, useCapture){
         //#ifdef __PROFILER
-        if (apf.profiler)
-            apf.profiler.wrapFunction(Profiler_functionTemplate());
+        if (ppc.profiler)
+            ppc.profiler.wrapFunction(Profiler_functionTemplate());
         //#endif
 
         if (eventName.substr(0, 2) == "on")
@@ -934,11 +934,11 @@ apf.Class.prototype = new (function(){
 
         this.dispatchEvent("DOMNodeRemoved", {
             relatedNode  : this.parentNode,
-            bubbles      : !apf.isDestroying
+            bubbles      : !ppc.isDestroying
         });
         this.dispatchEvent("DOMNodeRemovedFromDocument");
 
-        apf.all[this.$uniqueId] = undefined;
+        ppc.all[this.$uniqueId] = undefined;
 
         // != 2 && this.nodeType != 3
         if (!this.nodeFunc && !this.nodeType) { //If this is not a AmlNode, we're done.
@@ -985,7 +985,7 @@ apf.Class.prototype = new (function(){
         //Remove from focus list - Should be in AmlNode
         //#ifdef __WITH_FOCUS
         if (this.$focussable && this.focussable)
-            apf.window.$removeFocus(this);
+            ppc.window.$removeFocus(this);
         //#endif
 
         //#ifdef __WITH_PROPERTY_BINDING
@@ -1015,7 +1015,7 @@ apf.Class.prototype = new (function(){
 
         //#ifdef __DEBUG
         if (deep !== false && this.childNodes && this.childNodes.length) {
-            apf.console.warn("You have destroyed an Aml Node without destroying "
+            ppc.console.warn("You have destroyed an Aml Node without destroying "
                            + "it's children. Please be aware that if you don't "
                            + "maintain a reference, memory might leak");
         }
@@ -1038,11 +1038,11 @@ apf.Class.prototype = new (function(){
         }
 
         //#ifdef __WITH_NAMESERVER
-        apf.nameserver.remove(this.localName, this);
+        ppc.nameserver.remove(this.localName, this);
         //#endif
     };
 })();
 
-apf.extend(apf, new apf.Class().$init());
-apf.Init.run("class");
+ppc.extend(ppc, new ppc.Class().$init());
+ppc.Init.run("class");
 // #endif

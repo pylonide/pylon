@@ -42,9 +42,9 @@
 			else
 				doTest();
 		}
-		// APF stub
+		// PPC stub
 		Array.prototype.dataType = 1;
-		apf = {
+		ppc = {
 			ARRAY:1,
 			SUCCESS:1,
 			xmldb:{
@@ -73,7 +73,7 @@
 			language:{words:{}},
 			console:{error:logw, warn:logw},
 			testmodel:function(xmlStr){
-				var xmlData = apf.getXml( xmlStr ); 
+				var xmlData = ppc.getXml( xmlStr ); 
 				return {
 					data : xmlData,
 					copy : xmlData.cloneNode(true),
@@ -95,7 +95,7 @@
 				};
 			},
 			getXml:function(str){
-					return apf.getXmlDom(str).documentElement;
+					return ppc.getXmlDom(str).documentElement;
 			},
 			getXmlDom:function(str){
 				var p;
@@ -123,12 +123,12 @@
 					  t = Array(d+2).join('   '), u  =Array(d+1).join('   ');
 					  if(o.constructor == Array){
 						  s[l++]="[\n";
-						  for(k = 0;k<o.length;k++)s[l++]=t,apf.dump(o[k],s,d+1),l=s.length,s[l++]=",\n";
+						  for(k = 0;k<o.length;k++)s[l++]=t,ppc.dump(o[k],s,d+1),l=s.length,s[l++]=",\n";
 						  s[l]="\n", s[l++]=u, s[l++]="]";
 					  }else{
 						  s[l++]="{\n";
 						  for(k in o)s[l++]=t,s[l++]=k.match(/[^a-zA-Z0-9_]/)?'"'+k+'"':k,
-							 s[l++]=':',apf.dump(o[k],s,d+1),l=s.length,l=s.length,s[l++]=",\n";
+							 s[l++]=':',ppc.dump(o[k],s,d+1),l=s.length,l=s.length,s[l++]=",\n";
 						  s[l]="\n", s[l++]=u, s[l++]="}";
 					  }
 				  }else s[l++] = 'null';break;

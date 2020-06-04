@@ -1,7 +1,7 @@
 <html>
  <head>
      <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
-    <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="ppc_stub.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
@@ -10,7 +10,7 @@
     var ctx, g;
 
     function init(testIdx){
-        ctx = new apf.vector.vml('drawnode',800,600,0,0);
+        ctx = new ppc.vector.vml('drawnode',800,600,0,0);
         g = ctx.group({x:0,y:0,w:800,h:600});
         
         drawConnections();

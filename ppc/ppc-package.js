@@ -1,4 +1,4 @@
-// used by apf-node below
+// used by ppc-node below
 XPath = require('xpath');
 DOMParser = require('xmldom').DOMParser;
 
@@ -7,7 +7,7 @@ var Fs = require("fs");
 boot();
 
 function boot() {
-    require("./platform/apf-node");
+    require("./platform/ppc-node");
 
     require("./lib/proc");
     require("./lib/files");
@@ -22,7 +22,7 @@ function boot() {
 
     var argv = process.argv;
 
-    var project = (argv.length == 3) ? argv[2] : "apf_release.apr";
+    var project = (argv.length == 3) ? argv[2] : "default.ppp";
     console.log("using file: " + __dirname + "/projects/" + project);
 
     if (!Fs.existsSync(project)) {

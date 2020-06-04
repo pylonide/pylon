@@ -1,4 +1,4 @@
-apf.drawctx = function(){
+ppc.drawctx = function(){
 };
 
 (function(drawctx){
@@ -9,7 +9,7 @@ apf.drawctx = function(){
 	(function(node){
 		this.constructor = node;
 		// code cache and expression parser 
-		var pe = parse_expression||apf.lm.parseExpression, pf = parseFloat, c = {}
+		var pe = parse_expression||ppc.lm.parseExpression, pf = parseFloat, c = {}
         
         function parse_expression(x){
             x.slice(1,-1);
@@ -101,24 +101,24 @@ apf.drawctx = function(){
 		};
 	}).call(this.node.prototype, this.node);
     
-}).call(apf.drawctx.prototype, apf.drawctx);
+}).call(ppc.drawctx.prototype, ppc.drawctx);
  
-apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
+ppc.drawctx_vml = function(dom_parent,w,h,x,y,color){
 	if( typeof(dom_parent) == 'string' )
 		dom_parent = document.getElementById(dom_parent);
 	this.$dom_parent = dom_parent || document.body;
 
 	var pos = "left:"+x+"px;top:"+y+"px;width:"+w+"px;height:"+h+"px;";
 	var css = "av\\:fill {behavior: url(#default#VML);} av\\:stroke {behavior: url(#default#VML);} av\\:shape {behavior: url(#default#VML);} av\\:group {behavior: url(#default#VML);} av\\:path {behavior: url(#default#VML);}"
-	var img = "<img class='apfdrawSS' src='images/spacer.gif' style='z-index:10000;position:absolute;background:url(images/spacer.gif);"+pos+"'/>";
+	var img = "<img class='ppcdrawSS' src='images/spacer.gif' style='z-index:10000;position:absolute;background:url(images/spacer.gif);"+pos+"'/>";
 	var ns = "<xml:namespace ns='urn:schemas-microsoft-com:vml' prefix='av'/> ";
 	if(color)color = "background-color:"+color+";";
 	else color = "background:transparent;";
 	
-	if(!apf.isIE8){
-		apf.importCssString(css);
+	if(!ppc.isIE8){
+		ppc.importCssString(css);
 		this.$dom_parent.innerHTML += img +
-			"<div class='apfdrawClipper' style='margin:0;padding:0;position2:absolute;display:inline-block;"+color+
+			"<div class='ppcdrawClipper' style='margin:0;padding:0;position2:absolute;display:inline-block;"+color+
 				pos+"overflow:hidden;'>"+ns+
 			"</div>";
  		this.$vml_root = this.$dom_parent.lastChild;
@@ -246,7 +246,7 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 
         
                 if( m&0x0020000 || (this.$isset^s)&0x00c0000 ){ //o modified or fo/so had they set status changed
-                    //apf.logw(this.dbgmsk(s));
+                    //ppc.logw(this.dbgmsk(s));
                     if(!(_t=s&0x00c0000)) // fo/so both not set
                         this.$c_fo = d&0x0020000?"if( (_t = ("+this.$o+"))!=this.$_fo)v.firstChild.opacity = v.lastChild.opacity = this.$_fo = _t":(v.firstChild.opacity = v.lastChild.opacity = this.$o,""),
                         this.$c_so = "";
@@ -287,7 +287,7 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 	};
 	
 	this.group_node = function(parent, style){ 
-		if(parent instanceof apf.drawctx_vml)
+		if(parent instanceof ppc.drawctx_vml)
 			this.$ctx = parent, parent = null;
 		else
 			this.$ctx = parent.$ctx;
@@ -396,14 +396,14 @@ apf.drawctx_vml = function(dom_parent,w,h,x,y,color){
 					(this.$stroke?"<av:stroke color='"+this.$stroke+"'/>":""),*/
 		};
 	}).call(this.shape_node.prototype = new this.node_vml, this.shape_node);
-}).call(apf.drawctx_vml.prototype = new apf.drawctx, apf.drawctx_vml);
+}).call(ppc.drawctx_vml.prototype = new ppc.drawctx, ppc.drawctx_vml);
 
 function draw(){
-	var ctx = new apf.drawctx_vml('drawnode',800,600,0,0,'white');
+	var ctx = new ppc.drawctx_vml('drawnode',800,600,0,0,'white');
     var a = ['red','green','blue'], t = 0;
     self.t = 
 	var r=[];
-	apf.profile_loop(1,function(){
+	ppc.profile_loop(1,function(){
 		for(var i = 0;i<15;i++)
 			r[i] = ctx.rect(i*32,20,160,160,{f:"{lin(t,'red','green','blue')}"}));
 		ctx.repaint();

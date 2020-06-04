@@ -1,4 +1,4 @@
-var apf = {
+var ppc = {
     supportVML : document.all?true:false,
     supportSVG : document.all?false:true,
 	SUCCESS:1,
@@ -34,14 +34,14 @@ var apf = {
 	},
 	$profiler : {},
 	profile_start:function(id){
-		apf.$profiler[id] = (new Date()).getTime();
+		ppc.$profiler[id] = (new Date()).getTime();
 	},
 	profile_end:function(id){
-		return (new Date()).getTime() - apf.$profiler[id];
+		return (new Date()).getTime() - ppc.$profiler[id];
 	},
 	profile_log : function(id,txt,delta,out){
-        var t = "Profiling run "+(txt?txt:"")+" "+((new Date()).getTime() - apf.$profiler[id] - (delta||0))+" ms"
-        if(!out) apf.logw(t);
+        var t = "Profiling run "+(txt?txt:"")+" "+((new Date()).getTime() - ppc.$profiler[id] - (delta||0))+" ms"
+        if(!out) ppc.logw(t);
         else document.title = t;
             
 	},
@@ -50,10 +50,10 @@ var apf = {
         var delta = (new Date()).getTime();
         for(var i = 0;i<times;i++) test();
         delta = (new Date()).getTime() - delta;
-		apf.profile_start("loop");
+		ppc.profile_start("loop");
 		for(var i = 0;i<times;i++)
 			func();
-		apf.profile_log("loop",null,delta,out);
+		ppc.profile_log("loop",null,delta,out);
 	},
 	logw:function( txt ){
 		// lets find our log div
@@ -106,7 +106,7 @@ var apf = {
 		var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
 
 		//#ifdef __WITH_OPACITY_RUNTIME_FIX
-		if (!apf.supportOpacity) {
+		if (!ppc.supportOpacity) {
 			cssString = cssString.replace(/opacity[ \s]*\:[ \s]*([\d\.]+)/g,
 				function(m, m1){
 					return "filter:progid:DXImageTransform.Microsoft.Alpha(opacity=" + (m1*100) + ")";
@@ -114,7 +114,7 @@ var apf = {
 		}
 		//#endif
 
-		if (apf.canCreateStyleNode) {
+		if (ppc.canCreateStyleNode) {
 			//var head  = document.getElementsByTagName("head")[0];
 			var style = doc.createElement("style");
 			style.appendChild(doc.createTextNode(cssString));
@@ -140,12 +140,12 @@ var apf = {
 			  t = Array(d+2).join('   '), u  =Array(d+1).join('   ');
 			  if(o.constructor == Array){
 				  s[l++]="[\n";
-				  for(k = 0;k<o.length;k++)s[l++]=t,apf.dump(o[k],s,d+1),l=s.length,s[l++]=",\n";
+				  for(k = 0;k<o.length;k++)s[l++]=t,ppc.dump(o[k],s,d+1),l=s.length,s[l++]=",\n";
 				  s[l]="\n", s[l++]=u, s[l++]="]";
 			  }else{
 				  s[l++]="{\n";
 				  for(k in o)s[l++]=t,s[l++]=k.match(/[^a-zA-Z0-9_]/)?'"'+k+'"':k,
-					 s[l++]=':',apf.dump(o[k],s,d+1),l=s.length,l=s.length,s[l++]=",\n";
+					 s[l++]=':',ppc.dump(o[k],s,d+1),l=s.length,l=s.length,s[l++]=",\n";
 				  s[l]="\n", s[l++]=u, s[l++]="}";
 			  }
 		  }else s[l++] = 'null';break;
@@ -155,8 +155,8 @@ var apf = {
 	  return d?0:s.join('');
 	}
 };
-apf.console.error = apf.logw;
-apf.console.warn = apf.logw;
+ppc.console.error = ppc.logw;
+ppc.console.warn = ppc.logw;
 
  if (typeof HTMLElement!="undefined") {
     if (!HTMLElement.prototype.insertAdjacentElement) {
@@ -186,7 +186,7 @@ apf.console.warn = apf.logw;
         Text.prototype.insertAdjacentHTML =
         HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
             var r = this.ownerDocument.createRange();
-            r.setStartBefore(apf.isWebkit
+            r.setStartBefore(ppc.isWebkit
                 ? document.body
                 : (self.document ? document.body : this));
             var parsedHTML = r.createContextualFragment(htmlStr);
@@ -194,7 +194,7 @@ apf.console.warn = apf.logw;
         };
     }
 
-    if (!HTMLBodyElement.prototype.insertAdjacentHTML) //apf.isWebkit)
+    if (!HTMLBodyElement.prototype.insertAdjacentHTML) //ppc.isWebkit)
         HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML;
 
     if (!HTMLElement.prototype.insertAdjacentText) {

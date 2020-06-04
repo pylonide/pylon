@@ -2,7 +2,7 @@
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>GeoLocation testing</title>
-        <script type="text/javascript" src="../apf.js"></script>
+        <script type="text/javascript" src="../ppc.js"></script>
         <script src="http://code.google.com/apis/gears/gears_init.js" type="text/javascript" charset="utf-8"></script>
         <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
     </head>
@@ -25,7 +25,7 @@
                     btnTest.setCaption("Get Location!");
                     return;
                 }
-                if (!apf.hasGeoLocation()) {
+                if (!ppc.hasGeoLocation()) {
                     document.getElementById("status").innerHTML = "Functionality not available";
                     return;
                 }
@@ -38,7 +38,7 @@
             function retrieve() {
                 clearInterval(testing);
                 document.getElementById("status").innerHTML = "Retrieving location...";
-                apf.geolocation.getCurrentPosition(show_position, function(){
+                ppc.geolocation.getCurrentPosition(show_position, function(){
                     document.getElementById("status").innerHTML = "Couldn't get location";
                 });
                 testing = setInterval(retrieve, 10000);

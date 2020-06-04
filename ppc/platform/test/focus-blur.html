@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <script src="../apf.js"></script>
+        <script src="../ppc.js"></script>
     </head>
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
@@ -103,18 +103,18 @@
         <a:button onclick="showEvents()">Get Events</a:button>   
         <a:script>//<!--
             function record() {
-                apf.uirecorder.record();
+                ppc.uirecorder.record();
             }
             function stop() {
                 setTimeout(function() {
-                    apf.uirecorder.stop();
+                    ppc.uirecorder.stop();
                 }, 500);
             }
             function showEvents() {
-                var resultXml = apf.getXml("<results />");
+                var resultXml = ppc.getXml("<results />");
                 var detailTypes = {"events": "event"};
-                for (var test, ti = 0, tl = apf.uirecorder.testListXml.childNodes.length; ti < tl; ti++) {
-                    test = apf.uirecorder.testListXml.childNodes[ti];
+                for (var test, ti = 0, tl = ppc.uirecorder.testListXml.childNodes.length; ti < tl; ti++) {
+                    test = ppc.uirecorder.testListXml.childNodes[ti];
                     
                     // loop through actions
                     for (var action, ai = 0, al = test.childNodes.length; ai < al; ai++) {
@@ -123,7 +123,7 @@
                         if (action.childNodes && action.childNodes.length) {
                             for (var elNode, element, ei = 0, el = action.childNodes.length; ei < el; ei++) {
                                 element = action.childNodes[ei];
-                                elNode = apf.uirecorder.testListXml.ownerDocument.createElement("element");
+                                elNode = ppc.uirecorder.testListXml.ownerDocument.createElement("element");
                                 elNode.setAttribute("caption", element.getAttribute("name"));
                                 
                                 var details;
@@ -133,7 +133,7 @@
                                             detail = element.selectSingleNode(type).childNodes[di];
             
                                             if (["focus","blur"].indexOf(detail.getAttribute("name")) == -1) continue;
-                                            node = apf.uirecorder.testListXml.ownerDocument.createElement("event");
+                                            node = ppc.uirecorder.testListXml.ownerDocument.createElement("event");
                                             node.setAttribute("caption", detail.getAttribute("caption"));
                                             elNode.appendChild(node);
                                         }                                    

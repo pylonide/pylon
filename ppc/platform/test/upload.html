@@ -2,7 +2,7 @@
 <html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>Uploadr</title>
-        <script type="text/javascript" src="../apf.js"></script>
+        <script type="text/javascript" src="../ppc.js"></script>
     </head>
     <body>
         <a:skin src="../skins.xml" />
@@ -15,9 +15,9 @@
           model      = "mdlUpload"
           button     = "btnSelect"
           target     = "upload.php"
-          onerror    = "apf.console.log('ERROR EVENT RECEIVED', event)"
-          onqueue    = "apf.console.log('QUEUE EVENT RECEIVED', event)"
-          onuploaded = "apf.console.log('UPLOADED EVENT RECEIVED', event)" />
+          onerror    = "ppc.console.log('ERROR EVENT RECEIVED', event)"
+          onqueue    = "ppc.console.log('QUEUE EVENT RECEIVED', event)"
+          onuploaded = "ppc.console.log('UPLOADED EVENT RECEIVED', event)" />
         <br /><br />
 
         <a:list id="lstFiles" model="mdlUpload" canrename="false" onremove="uplAvatar.remove(event)" width="200">
@@ -30,7 +30,7 @@
           min      = "0"
           max      = "100"
           value    = "{uplAvatar.percent}"
-          visible  = "{uplAvatar.state == apf.upload.STARTED}">
+          visible  = "{uplAvatar.state == ppc.upload.STARTED}">
         </a:progressbar>
 
         <!--?lm
