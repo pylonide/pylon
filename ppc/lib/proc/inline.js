@@ -4,8 +4,8 @@ var Path = require("path"),
 /**
  * Parse an HTML file and inline all the AML specific stuff.
  */
-apf.process.handler.inline = function(x){
-    var s      = apf.settings,
+ppc.process.handler.inline = function(x){
+    var s      = ppc.settings,
         file   = Path.normalize(s.parseAttribute(x.getAttribute("in"))),
         output = Path.normalize(s.parseAttribute(x.getAttribute("out"))),
         type   = s.parseAttribute(x.getAttribute("type")),
@@ -20,7 +20,7 @@ apf.process.handler.inline = function(x){
             var s = Fs.readFileSync(path + "/" + href, "utf8").toString();
         }
         catch(ex) {
-            apf.console.error("Stylesheet not found: " + path + "/" + href, "inline");
+            ppc.console.error("Stylesheet not found: " + path + "/" + href, "inline");
             return m;
         }
         return '<style type="text/css">' + s.replace(/(skinimg|images)\//g, "style/$1/") + '</style>';
@@ -39,7 +39,7 @@ apf.process.handler.inline = function(x){
                     t    = inlineInclude(Fs.readFileSync(file, "utf8").toString(), path).replace(/<\/?a:application[^>]*?>/g, "");
             }
             catch(ex) {
-                apf.console.error("Include file not found: " + path + "/" + src, "inline");
+                ppc.console.error("Include file not found: " + path + "/" + src, "inline");
                 return m;
             }
             return t;

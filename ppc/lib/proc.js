@@ -24,24 +24,24 @@ var Fs = require("fs");
 /**
  * @parser
  */
-apf.ProcParser = {
+ppc.ProcParser = {
     processNodes : [],
     
     parse : function(x){
-        apf.console.info("Start parsing");
-        // apf.Latometer.start();
+        ppc.console.info("Start parsing");
+        // ppc.Latometer.start();
 
         if (typeof x == "string")
-            x = apf.getXml(x);
+            x = ppc.getXml(x);
 
         this.$pml = x;
         
-        apf.isParsing = true;
+        ppc.isParsing = true;
         
         // #ifdef __DEBUG
         //Check for children in Jml node
         if (!x.childNodes.length)
-            throw new Error(apf.formatErrorString(1014, null,
+            throw new Error(ppc.formatErrorString(1014, null,
                 "Process parser", 
                 "JML Parser got Markup without any children"));
         // #endif
@@ -51,15 +51,15 @@ apf.ProcParser = {
         
         if (this.processNodes.length) {
             for (var o, i = 0, l = this.processNodes.length; i < l; i++) {
-                apf.console.info("Processing process node " + i);
+                ppc.console.info("Processing process node " + i);
 
-                o = new apf.process();
+                o = new ppc.process();
                 o.loadPml(this.processNodes[i]);
             }
         }
         //#ifdef __DEBUG
         else {
-            apf.console.error("Missing processnode, won't execute anything");
+            ppc.console.error("Missing processnode, won't execute anything");
         }
         //#endif
         
@@ -67,9 +67,9 @@ apf.ProcParser = {
         this.inited = true;
         
         // #ifdef __DEBUG
-        apf.Latometer.end();
-        apf.Latometer.addPoint("Total load time");
-        apf.Latometer.start(true);
+        ppc.Latometer.end();
+        ppc.Latometer.addPoint("Total load time");
+        ppc.Latometer.start(true);
         // #endif
     },
     
@@ -86,12 +86,12 @@ apf.ProcParser = {
             tagName = oNode.localName;
 
             if (tagName != "process")
-                apf.console.info("Parsing " + tagName);
+                ppc.console.info("Parsing " + tagName);
             
             if (tagName == "process"){
                 this.processNodes.push(oNode);
             }
-            else if (oHandler = apf[tagName]) {
+            else if (oHandler = ppc[tagName]) {
                 oHandler.loadPml(oNode);
             }
             else if (handler[tagName]) {
@@ -100,21 +100,21 @@ apf.ProcParser = {
                     o.loadPml(oNode);
             }
             else
-                apf.console.warn("Missing handler for:" + tagName);
+                ppc.console.warn("Missing handler for:" + tagName);
         }
     },
     
     handler : {
         "include" : function(q){
             var fd  = o3.fs.get(q.getAttribute("src")),
-                xml = apf.getXml(fd.data);
-            apf.ProcParser.parseChildren(xml);
+                xml = ppc.getXml(fd.data);
+            ppc.ProcParser.parseChildren(xml);
         },
         
         "script" : function(q){
             if (q.firstChild) {
                 var scode = q.firstChild.nodeValue;
-                apf.exec(scode);
+                ppc.exec(scode);
             }
         },
         
@@ -124,7 +124,7 @@ apf.ProcParser = {
     }
 };
 
-apf.ProjectBase = function(){
+ppc.ProjectBase = function(){
     this.$init(true);
 };
 (function() {
@@ -135,24 +135,24 @@ apf.ProjectBase = function(){
             a = attr[i];
             value = a.nodeValue;
             name  = a.nodeName;            
-            this[name] = apf.settings.parseAttribute(value);
+            this[name] = ppc.settings.parseAttribute(value);
         }
         if (this.$loadPml)
             this.$loadPml(x);
     }
-}).call(apf.ProjectBase.prototype = new apf.Class());
+}).call(ppc.ProjectBase.prototype = new ppc.Class());
 
-apf.process = function() {
+ppc.process = function() {
     this.$init(true);
 };
 (function(){
     this.$loadPml = function(x){
-        apf.ProcParser.parseChildren(x, apf.process.handler);
+        ppc.ProcParser.parseChildren(x, ppc.process.handler);
     };
-}).call(apf.process.prototype = new apf.ProjectBase());
-apf.process.handler = {};
+}).call(ppc.process.prototype = new ppc.ProjectBase());
+ppc.process.handler = {};
 
-apf.settingsCls = function() {
+ppc.settingsCls = function() {
     this.$init();
 };
 (function() {
@@ -175,25 +175,25 @@ apf.settingsCls = function() {
             }
         });
     };
-}).call(apf.settingsCls.prototype = new apf.ProjectBase());
+}).call(ppc.settingsCls.prototype = new ppc.ProjectBase());
 
-apf.settings = new apf.settingsCls();
+ppc.settings = new ppc.settingsCls();
 
-apf.existOrExit = function(){
+ppc.existOrExit = function(){
     for (var file, i = 0, l = arguments.length; i < l; i++) {
         file = arguments[i];
         if (!file.exists) {
-            apf.console.error("File not found: " + file.path);
+            ppc.console.error("File not found: " + file.path);
             exit();
         }
     }
 };
 
-apf.getXmlSafe = function(file){
-    return apf.getXml(file.data.replace(/<\?xml.*$/m,""));
+ppc.getXmlSafe = function(file){
+    return ppc.getXml(file.data.replace(/<\?xml.*$/m,""));
 };
 
-apf.shell_exec = function(command, func, path){
+ppc.shell_exec = function(command, func, path){
     var result = "", proc;
     var auto = jdshell.CreateComponent("automate");
     if(!(proc = auto.CreateProcess(command, "conredir"))){

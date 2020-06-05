@@ -1,6 +1,6 @@
-apf.process.handler.refguide = function(oParser){
-    apf.makeClass(this);
-    this.inherit(apf.ProjectBase);
+ppc.process.handler.refguide = function(oParser){
+    ppc.makeClass(this);
+    this.inherit(ppc.ProjectBase);
 
     var parser = this;
     var files = [];
@@ -10,7 +10,7 @@ apf.process.handler.refguide = function(oParser){
     var bcused = {};
 
     function Doc(filename, type){
-        this.output = apf.xmldb.getXml("<" + type + " />");
+        this.output = ppc.xmldb.getXml("<" + type + " />");
         files.push(this);
         /*if (!state[type])
             state[type] = [];
@@ -80,7 +80,7 @@ apf.process.handler.refguide = function(oParser){
         }
         
         this.create = function(type, name, pNode, desc){
-            if (name && !name.match) apf.console.warn(arguments.callee.caller.toString());
+            if (name && !name.match) ppc.console.warn(arguments.callee.caller.toString());
             if(name && name.match(/^__/)) return;
             
             if(!pNode) pNode = this.output;
@@ -100,7 +100,7 @@ apf.process.handler.refguide = function(oParser){
                     if (notMoved && list[i].moved)
                         continue;
 
-                    //if(type == "inherit" && !oParser.data.global.baseclasses[list[i].replace(/^apf\./, "")])
+                    //if(type == "inherit" && !oParser.data.global.baseclasses[list[i].replace(/^ppc\./, "")])
                         //continue;
 
                     if (list[i].metadata && list[i].metadata["private"] || list[i]["private"] 
@@ -111,7 +111,7 @@ apf.process.handler.refguide = function(oParser){
                     }
 
                     if (!this.handler[type])
-                        apf.console.error("Could not find handler for " + type);
+                        ppc.console.error("Could not find handler for " + type);
 
                     node = this.handler[type].call(this, list[i], pNode, type);
                     if (node) {
@@ -151,7 +151,7 @@ apf.process.handler.refguide = function(oParser){
                         
                     //if(this.handler[type] && (!done[type] || !done[type][name])) 
                     if (!this.handler[type])
-                        apf.console.error("Could not find handler for " + type);
+                        ppc.console.error("Could not find handler for " + type);
 
                     node = this.handler[type].call(this, item, pNode, type);
                     if (node) {
@@ -202,7 +202,7 @@ apf.process.handler.refguide = function(oParser){
                 var m = data.match(/^\s*(?:\{(.*?)\})?(?:[ \s\n\r]+([\S\s]*))?$/);
                 if (!m) {
                     if (!info.name) {
-                        //apf.console.error("Found object without a name", info);
+                        //ppc.console.error("Found object without a name", info);
                         return;
                     }
 
@@ -233,7 +233,7 @@ apf.process.handler.refguide = function(oParser){
                   || "{Unkown} " + info.name;
                 var m = data.match(/^\s*\{(.*?)\}[ \s]+(\!)?([\[\]\$\w-]+)(?:[ \s\n\r]+([\S\s]*))?$/);
                 if (!m) {
-                    apf.console.warn("Invalid property format: " + data);
+                    ppc.console.warn("Invalid property format: " + data);
                     return;
                 }
     
@@ -257,7 +257,7 @@ apf.process.handler.refguide = function(oParser){
             "attribute" : function(data, pNode, type) {
                 var m = data.match(/^\s*\{(.*?)\}[ \s]+(\!)?([\[\]\w-]+)(?:[ \s\n\r]+([\S\s]*))?$/);
                 if (!m) {
-                    apf.console.warn("Invalid attribute format: " + data);
+                    ppc.console.warn("Invalid attribute format: " + data);
                     return;
                 }
     
@@ -296,7 +296,7 @@ apf.process.handler.refguide = function(oParser){
             "binding" : function(data, pNode, type) {
                 /*var m = data.match(/^\s*([\w-]+)(?:[ \s\n\r]+([\S\s]*))?$/);
                 if (!m) {
-                    apf.console.warn("Invalid binding format: " + data + "\n");
+                    ppc.console.warn("Invalid binding format: " + data + "\n");
                     return;
                 }
                 
@@ -326,7 +326,7 @@ apf.process.handler.refguide = function(oParser){
             "event" : function(data, pNode, type) {
                 var m = data.match(/^\s*([\w-]+)(?:[ \s\n\r]+([\S\s]*))?$/);
                 if (!m) {
-                    apf.console.warn("Invalid event format: " + data + "\n");
+                    ppc.console.warn("Invalid event format: " + data + "\n");
                     return;
                 }
     
@@ -364,7 +364,7 @@ apf.process.handler.refguide = function(oParser){
                 for (i = 0; i < params.length; i++){
                     m = params[i].match(/^\s*\{(.*?)\}[ \s]+(\!)?([\[\]\w-]+)(?:[ \s\n\r]+([\S\s]*))?$/);
                     if (!m) {
-                        apf.console.warn("Invalid parameter format" + params[i] + "\n");
+                        ppc.console.warn("Invalid parameter format" + params[i] + "\n");
                         return;
                     }
                     
@@ -422,7 +422,7 @@ apf.process.handler.refguide = function(oParser){
             },
 
             "inherit" : function(data, pNode, type) {
-                var name = data.trim().replace(/^apf\./, "");
+                var name = data.trim().replace(/^ppc\./, "");
                 this.create("inherit", name, pNode);
                 if (!bcused[name]) bcused[name] = [];
                 bcused[name].push([this.data.name, this.filename]);
@@ -435,7 +435,7 @@ apf.process.handler.refguide = function(oParser){
 
             //.cloneNode(true)
             var file = o3.fs.get(parser.output + "xml/" + filename + ".xml");
-            file.data = this.output.xml;//.replace(/[\t\r\n]/g, "");//apf.formatXML();
+            file.data = this.output.xml;//.replace(/[\t\r\n]/g, "");//ppc.formatXML();
             o3.out(".");
 
             for (var i = 0; i < this.alias.length; i++) {
@@ -475,10 +475,10 @@ apf.process.handler.refguide = function(oParser){
                     file = o3.fs.get(parser.output + "xml/" + filename.replace(/^\w+\./, pbase.shift() + ".") + ".xml");
                 }
                 if (!file.exists || !file.data) {
-                    apf.console.warn("Missing file: " + filename + ".xml");
-                    return apf.getXml("<empty />");
+                    ppc.console.warn("Missing file: " + filename + ".xml");
+                    return ppc.getXml("<empty />");
                 }
-                var data = apf.getXml(file.data);
+                var data = ppc.getXml(file.data);
                 self.cache[filename] = data;
 
                 return data;
@@ -494,7 +494,7 @@ apf.process.handler.refguide = function(oParser){
                 return false;
             }
 
-            apf.console.info("Processing " + filename + ".xml");
+            ppc.console.info("Processing " + filename + ".xml");
             var file = o3.fs.get(parser.output + "html/" + filename + ".html");
             if (file.exists) return;
             file.data = parser.$jslt.apply(parser.$jsltdoc, xml);
@@ -520,7 +520,7 @@ apf.process.handler.refguide = function(oParser){
                     continue;
                 
                 file = o3.fs.get(parser.output + "xml/" + filename.replace(/\.([\w-]+)$/, "." + this.alias[i] + ".xml"));
-                xml = apf.getXml(file.data);
+                xml = ppc.getXml(file.data);
 
                 file = o3.fs.get(parser.output + "html/" + file.name.replace(/\.xml$/, "") + ".html");
                 file.data = parser.$jslt.apply(parser.$jsltdoc, xml);
@@ -680,7 +680,7 @@ apf.process.handler.refguide = function(oParser){
         var dpriv = data.metadata.default_private;
         this.createList("event", data.metadata.event);
         this.createList("property", data.properties, null, dpriv);
-        this.createList("object", data.objects, null, dpriv, data.name == "apf");
+        this.createList("object", data.objects, null, dpriv, data.name == "ppc");
         //this.createList("property", data.servers);
         this.createList("method", data.methods, null, dpriv);
         this.createList("attribute", data.metadata.attribute);
@@ -731,8 +731,8 @@ apf.process.handler.refguide = function(oParser){
     this.generate = function(){
         var data = oParser.data.global;
         
-        var apf = new KernelModule(data.objects.apf);
-        addState("Namespace", apf);
+        var ppc = new KernelModule(data.objects.ppc);
+        addState("Namespace", ppc);
         for(var name in data.controls) {
             addState("Elements", new Component(data.controls[name]));
         }
@@ -745,11 +745,11 @@ apf.process.handler.refguide = function(oParser){
         for(var name in data.parsers){
             addState("Parsers", new KernelModule(data.parsers[name]));
         }
-        for(var name in data.objects.apf.objects) {
-            if (!data.objects.apf.objects[name].moved && !data.objects.apf.objects[name].metadata["private"] )
-                addState("Objects", new KernelModule(data.objects.apf.objects[name]));
+        for(var name in data.objects.ppc.objects) {
+            if (!data.objects.ppc.objects[name].moved && !data.objects.ppc.objects[name].metadata["private"] )
+                addState("Objects", new KernelModule(data.objects.ppc.objects[name]));
         }
-        var terms = data.objects.apf.metadata.term;
+        var terms = data.objects.ppc.metadata.term;
         for(var i = 0; i < terms.length; i++) {
             addState("Glossary", new Term(terms[i]));
         }
@@ -759,7 +759,7 @@ apf.process.handler.refguide = function(oParser){
             var bc = data.baseclasses[name];
             if (bc.metadata.inherits) {
                 for (var x = 0; x < bc.metadata.inherits.length; x++){
-                    var xname = bc.metadata.inherits[x].trim().split("apf.")[1];
+                    var xname = bc.metadata.inherits[x].trim().split("ppc.")[1];
                     if (!bcused[xname]) bcused[xname] = [];
                     bcused[xname].push([bc.name, "baseclass." + bc.name.toLowerCase()]);
                 }
@@ -772,13 +772,13 @@ apf.process.handler.refguide = function(oParser){
     
     var docFrag, itemSequence, fOutput;
     this.$loadPml = function(x){
-        apf.console.info("Generating refguide xml.");
+        ppc.console.info("Generating refguide xml.");
         this.generate();
         
-        apf.console.info("Saving xml files...");
+        ppc.console.info("Saving xml files...");
 
         //Proces queue
-        var index = apf.getXml("<sections />");
+        var index = ppc.getXml("<sections />");
         var doc = index.ownerDocument;
         for (var i = 0; i < files.length; i++) {
             files[i].save();
@@ -786,9 +786,9 @@ apf.process.handler.refguide = function(oParser){
 
         if (this.jslt) {
             o3.out("\n");
-            apf.console.info("Saving html files...");
+            ppc.console.info("Saving html files...");
 
-            this.$jslt = new apf.JsltImplementation();
+            this.$jslt = new ppc.JsltImplementation();
             this.$jsltdoc = o3.fs.get(this.jslt).data;
 
            for (var i = 0; i < files.length; i++) {
@@ -800,7 +800,7 @@ apf.process.handler.refguide = function(oParser){
         //indexer.start();
         
         o3.out("\n");
-        apf.console.info("Saving index file...");
+        ppc.console.info("Saving index file...");
         var prop, item, subitem;
         var seq = ["Namespace", "Elements", "Teleport", "Baseclasses", "Attributes", "Events", "Properties", "Methods", "Bindings", "Actions", "Parsers", "Objects", "Glossary"];
         //for (var prop in state) {
@@ -824,7 +824,7 @@ apf.process.handler.refguide = function(oParser){
                     subitem.setAttribute("p", names.join("."));
                 /*if (state[prop][i].output) {
                     subitem.setAttribute("description", 
-                      apf.getXmlValue(state[prop][i].output, "description")
+                      ppc.getXmlValue(state[prop][i].output, "description")
                         .replace(/[\n\r\s]+/mg, " "));//metadata.description[0].split(".")[0].replace(/[\n\r\s]+/g, " "));
                 }*/
             }
@@ -832,7 +832,7 @@ apf.process.handler.refguide = function(oParser){
 
         o3.fs.get(this.output + "nav.xml").data = index.xml.replace(/(<.*>)|[\s \n\r]/g, "$1");
 
-        apf.console.info("done.");
+        ppc.console.info("done.");
     }
 }
 
@@ -909,17 +909,17 @@ function XmlIndexer(rootPath){
     this.start = function(){
         //if(!confirm("This will take several minutes during which this window might not respond. Are you sure you want to continue?")) return;
         
-        apf.console.info("Creating search index...");
+        ppc.console.info("Creating search index...");
         createSearchIndex(rootPath);
-        apf.console.info("done.");
+        ppc.console.info("done.");
         
         /*var strXML = o3.fs.root.GetChild(rootPath + "search.xml").data;
         if(!strXML) alert("Could not read Index file.");
-        else DBINDEX = apf.xmldb.getXml(strXML);*/
+        else DBINDEX = ppc.xmldb.getXml(strXML);*/
     
-        apf.console.info("Creating file index...");
+        ppc.console.info("Creating file index...");
         createFileIndex(rootPath);
-        apf.console.info("done.");
+        ppc.console.info("done.");
     }
     
     function createSearchIndex(directory){
@@ -932,7 +932,7 @@ function XmlIndexer(rootPath){
             var filename = files[i][0];//.name;//files[i].split("\\")[1].split(".")[0];
             
             if(path.match(/elements/)){
-                var xmldoc = apf.xmldb.getXml(files[i][1]);
+                var xmldoc = ppc.xmldb.getXml(files[i][1]);
                 //var nodelist = strXML.selectNodes("//Inherited");
                 var nodelist = xmldoc.getElementsByTagName("inherit");
                 
@@ -945,7 +945,7 @@ function XmlIndexer(rootPath){
         }
             
         //Generate XML Document
-        wordXMLdoc = apf.xmldb.getXml("<words />").ownerDocument;
+        wordXMLdoc = ppc.xmldb.getXml("<words />").ownerDocument;
         
         for(var i=0;i<files.length;i++){
             createIndex(files[i], wordXMLdoc.xml, inheritLookup);

@@ -17,7 +17,7 @@
  *      remap: Remap symbols 
  *      format: reformat the source
  *
- *      codeinmap: store the first line of code in the mapfile
+ *      codeinmap: store the first line of code in the mppcile
  *
  *      genline: generate line numbers in the output
  *      leavenl: leave newlines in the output
@@ -38,27 +38,27 @@
  * <p:encoder
  *    flags    = "jsmode|codeinmap|cisproc|warncodeinstring|remap|gensemi"
  *    debug    = "leavenl|genline|"
- *    fixedsym = "{cwd}/apf_sym.txt"
+ *    fixedsym = "{cwd}/ppc_sym.txt"
  *    remapsym = "{tmp}/{name}.map" 
  *    input    = "{tmp}/{name}_combined.js"
  *    output   = "(out)/{name}_debug.js" />
  */
-apf.process.handler.encoder = function(x){
+ppc.process.handler.encoder = function(x){
     var parser = createComponent("scriptparser");
     parser.onlog = function(e){
-        apf.console.info(e.message);
+        ppc.console.info(e.message);
     };
 
-    var s        = apf.settings,
+    var s        = ppc.settings,
         ffixed   = fs.get(s.parseAttribute(x.getAttribute("fixedsym"))),
         fremap   = fs.get(s.parseAttribute(x.getAttribute("remapsym"))),
         finput   = fs.get(s.parseAttribute(x.getAttribute("input"))),
         foutput  = fs.get(s.parseAttribute(x.getAttribute("output"))),
-        noinc    = apf.isTrue(s.parseAttribute(x.getAttribute("noinc"))),
+        noinc    = ppc.isTrue(s.parseAttribute(x.getAttribute("noinc"))),
         flags    = s.parseAttribute(x.getAttribute("flags")),
         dumptree = s.parseAttribute(x.getAttribute("dumptree"));
 
-    apf.existOrExit(fixedsym, remapsym, finput);
+    ppc.existOrExit(fixedsym, remapsym, finput);
 
     // load old remapping symbols
     if (fremap.exists)
@@ -79,7 +79,7 @@ apf.process.handler.encoder = function(x){
     if (!data)
         return;
 
-    apf.console.info(finput.path + "\n");
+    ppc.console.info(finput.path + "\n");
 
     if (jspkg.contains(finput.path))
         return;
@@ -115,5 +115,5 @@ apf.process.handler.encoder = function(x){
 
     parser = null;
 
-    apf.console.info("Encoder done.");
+    ppc.console.info("Encoder done.");
 };

@@ -1,6 +1,6 @@
-apf.process.handler.xsd = function(oParser){
-    apf.makeClass(this);
-    this.inherit(apf.ProjectBase);
+ppc.process.handler.xsd = function(oParser){
+    ppc.makeClass(this);
+    this.inherit(ppc.ProjectBase);
     
     var parser = this;
     var groups = {
@@ -40,10 +40,10 @@ apf.process.handler.xsd = function(oParser){
         if (!bc) return false;
 
         for(var i=0;i<bc.length;i++){
-            if (!oParser.data.global.baseclasses[bc[i].replace(/^apf\./, "")])
+            if (!oParser.data.global.baseclasses[bc[i].replace(/^ppc\./, "")])
                 continue;
             
-            if (oParser.data.global.baseclasses[bc[i].replace(/^apf\./, "")][type][name])
+            if (oParser.data.global.baseclasses[bc[i].replace(/^ppc\./, "")][type][name])
                 return true;
         }
         
@@ -53,7 +53,7 @@ apf.process.handler.xsd = function(oParser){
     this.save = function(){
         var template = this.template.cloneNode(true);
     
-        apf.console.info("Saving xsd " + fOutput.path);
+        ppc.console.info("Saving xsd " + fOutput.path);
     
         function remove(node){
             node.parentNode.removeChild(node);
@@ -78,7 +78,7 @@ apf.process.handler.xsd = function(oParser){
         var nodes = template.selectNodes("//complexType[not(node()[2])]");
         for(var i=0;i<nodes.length;i++) remove(nodes[i]);
 
-        fOutput.data = template.xml//apf.formatXML();
+        fOutput.data = template.xml//ppc.formatXML();
     }
     
     this.__addClass = function(item){
@@ -235,7 +235,7 @@ apf.process.handler.xsd = function(oParser){
         if (item.metadata.inherits){
             point = t;//.selectSingleNode(".//element[@name='" + type + "']/complexType/sequence/choice");
             for(var i=0;i<item.metadata.inherits.length;i++){
-                var str = item.metadata.inherits[i].replace(/^apf\./, "") + "-" + type;
+                var str = item.metadata.inherits[i].replace(/^ppc\./, "") + "-" + type;
                 if (this.template.selectSingleNode(".//group[@name='" + str + "']"))
                     point.appendChild(this.templateDoc.createElement("group")).setAttribute("ref", str);
             }
@@ -247,7 +247,7 @@ apf.process.handler.xsd = function(oParser){
 
         if (item.metadata.inherits){
             for(var i=0;i<item.metadata.inherits.length;i++){
-                var str = item.metadata.inherits[i].replace(/^apf\./, "") + "-attributes";
+                var str = item.metadata.inherits[i].replace(/^ppc\./, "") + "-attributes";
                 if (this.template.selectSingleNode(".//attributeGroup[@name='" + str + "']"))
                     point.appendChild(this.templateDoc.createElement("attributeGroup")).setAttribute("ref", str);
             }
@@ -259,13 +259,13 @@ apf.process.handler.xsd = function(oParser){
         //create elements based on type
 
         if (item.metadata.inherits && (item.name == "radiobutton" 
-          || item.metadata.inherits.contains("apf.DataBinding")
-          || item.metadata.inherits.contains("apf.MultiLevelBinding")
+          || item.metadata.inherits.contains("ppc.DataBinding")
+          || item.metadata.inherits.contains("ppc.MultiLevelBinding")
           || hasProperties(item.bindings) || hasProperties(item.actions))){
             template = this.template.selectSingleNode("element[@name='component-smartbinding']");
             t = this.template.appendChild(template.cloneNode(true));
             
-            if (item.metadata.inherits.contains("apf.MultiSelect"))
+            if (item.metadata.inherits.contains("ppc.MultiSelect"))
                 t.selectSingleNode("complexType/sequence").appendChild(itemSequence.cloneNode(true)).removeAttribute("id");
             
             this.addBaseStuff(item, t, "bindings");
@@ -381,7 +381,7 @@ apf.process.handler.xsd = function(oParser){
         if (item.metadata.alias){
             for(var i=0;i<item.metadata.alias.length;i++){
                 this.template.appendChild(t.cloneNode(true))
-                    .setAttribute("name", item.metadata.alias[i].replace(/^apf\./, ""));
+                    .setAttribute("name", item.metadata.alias[i].replace(/^ppc\./, ""));
             }
         }
     }
@@ -391,8 +391,8 @@ apf.process.handler.xsd = function(oParser){
         
         //process addnode and create groups
         
-        //Loop through all classes of apf
-        var t, item, context = data.objects.apf.classes;
+        //Loop through all classes of ppc
+        var t, item, context = data.objects.ppc.classes;
         for(item in context){
             //ignore private
             if (context[item].metadata.private) continue
@@ -407,7 +407,7 @@ apf.process.handler.xsd = function(oParser){
             this.__addClass(context[item]);
         }
         
-        //Loop through all the baseclass of apf
+        //Loop through all the baseclass of ppc
         var t, item, context = data.baseclasses;
         for(item in context){
             this.__addBaseClass(context[item]);
@@ -426,9 +426,9 @@ apf.process.handler.xsd = function(oParser){
         }*/
         
         //Defines
-        if (data.objects.apf.metadata.define){
-            for(var str, node, i=0;i<data.objects.apf.metadata.define.length;i++){
-                this.__addClass(data.objects.apf.metadata.define[i]);
+        if (data.objects.ppc.metadata.define){
+            for(var str, node, i=0;i<data.objects.ppc.metadata.define.length;i++){
+                this.__addClass(data.objects.ppc.metadata.define[i]);
             }
         }
         
@@ -463,18 +463,18 @@ apf.process.handler.xsd = function(oParser){
             var file = cwd.get("template.xsd");
             
             if (!file.exists)
-                apf.console.error("File not found: template.xsd");
+                ppc.console.error("File not found: template.xsd");
         //}
         
-        apf.console.info("Reading template.");
+        ppc.console.info("Reading template.");
 
         //Load        
-        this.templateDoc = apf.getXmlDom(file.data);
+        this.templateDoc = ppc.getXmlDom(file.data);
         this.template = this.templateDoc.documentElement;
         docFrag = this.template.selectSingleNode("annotation[@id='docFrag']");
         itemSequence = this.template.selectSingleNode("sequence[@id='itemSequence']");
 
-        apf.console.info("Generating xsd.")
+        ppc.console.info("Generating xsd.")
         this.generate();
         
         //Proces queue

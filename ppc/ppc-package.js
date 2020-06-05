@@ -32,6 +32,6 @@ function boot() {
             return process.exit(1);
         }
     }
-    apf.ProcParser.parse(Fs.readFileSync(project, "utf8"));
-    apf.unload();
+    ppc.ProcParser.parse(Fs.readFileSync(project, "utf8"));
+    ppc.unload();
 }

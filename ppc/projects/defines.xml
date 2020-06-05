@@ -27,7 +27,7 @@
     </p:define>
     <p:define name="__SUPPORT_GWT"
       match="gwt"
-      short="Support APF-GWT"
+      short="Support PPC-GWT"
       desc="">
         <p:define name="__AMLVIEWPORT"
           match=""
@@ -288,7 +288,7 @@
           desc="" />
         <p:define name="__WITH_CLASS"
           match=""
-          short="APF Class constructor"
+          short="PPC Class constructor"
           desc="Baseclass for any object offering property binding, event handling, constructor and destructor hooks." />
         <p:define name="__WITH_NAMESERVER"
           match=""
@@ -720,7 +720,7 @@
         <p:define name="__PARSER_LM"
           match=""
           short="LM Parser"
-          desc="Live Markup is an extension to Javascript, and it allows APF to have a simple consistent syntax for all attribute values and templates. Live markup is used for templating, rpc, data binding, property binding, formatting and even events. Live Markup generates text-output via the default-output of statements, and APF maintains knowledge of all properties and data used to create this output allowing for a Live update when any of this information changes. Nearly all attributes in APF are processed as a live markup ' ' string Some attributes (like events) and &lt;?lm ?&gt; blocks are processed as code." />
+          desc="Live Markup is an extension to Javascript, and it allows PPC to have a simple consistent syntax for all attribute values and templates. Live markup is used for templating, rpc, data binding, property binding, formatting and even events. Live Markup generates text-output via the default-output of statements, and APF maintains knowledge of all properties and data used to create this output allowing for a Live update when any of this information changes. Nearly all attributes in APF are processed as a live markup ' ' string Some attributes (like events) and &lt;?lm ?&gt; blocks are processed as code." />
         <!--p:define name="__PARSER_JSLT"
           match=""
           short="JSLT Parser"
