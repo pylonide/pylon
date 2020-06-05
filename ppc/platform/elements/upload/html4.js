@@ -34,12 +34,12 @@
  * @since       3.0
  */
 
-apf.upload.html4 = function(oUpload) {
+ppc.upload.html4 = function(oUpload) {
     this.oUpload = oUpload;
     this.$files  = {};
 };
 
-apf.upload.html4.isSupported = function() {
+ppc.upload.html4.isSupported = function() {
     return true;
 };
 
@@ -101,7 +101,7 @@ apf.upload.html4.isSupported = function() {
             _self.$iframe.style.display = "none";
 
             // Add IFrame onload event
-            apf.addListener(_self.$iframe, "load", function(e){
+            ppc.addListener(_self.$iframe, "load", function(e){
                 e = e || window.event;
                 var el,
                     n    = e.srcElement || e.target,
@@ -113,7 +113,7 @@ apf.upload.html4.isSupported = function() {
                 catch (ex) {
                     // Probably a permission denied error
                     _self.dispatchEvent("error", {
-                        code    : apf.upload.ERROR_CODES.SECURITY_ERROR,
+                        code    : ppc.upload.ERROR_CODES.SECURITY_ERROR,
                         message : "Security error.",
                         file    : file
                     });
@@ -130,7 +130,7 @@ apf.upload.html4.isSupported = function() {
 
                 // Assume no error
                 if (result != "") {
-                    file.status  = apf.upload.DONE;
+                    file.status  = ppc.upload.DONE;
                     file.loaded  = 1025;
                     file.percent = 100;
 
@@ -155,7 +155,7 @@ apf.upload.html4.isSupported = function() {
             _self.$form.appendChild(_self.$iframe);
 
             // Change iframe name
-            //if (apf.isIE)
+            //if (ppc.isIE)
                 //window.frames[_self.$iframe.id].name = _self.$iframe.name;
 
             // Create container for iframe
@@ -187,7 +187,7 @@ apf.upload.html4.isSupported = function() {
                 // set input styles
                 input.style.width  = "100%",
                 input.style.height = "100%",
-                apf.setOpacity(input, 0);
+                ppc.setOpacity(input, 0);
 
                 // add change event
                 input.onchange = function(e) {
@@ -214,11 +214,11 @@ apf.upload.html4.isSupported = function() {
     this.refresh = function() {
         if (this.$inputContainer) {
             var oBtn = this.oUpload.$button.$ext,
-                pos  = apf.getAbsolutePosition(oBtn, this.$inputContainer.offsetParent);
+                pos  = ppc.getAbsolutePosition(oBtn, this.$inputContainer.offsetParent);
             
             //#ifdef __DEBUG
-            if (apf.isIE && oBtn.offsetWidth > 81) {
-                apf.console.warn("Button found for upload element with a width "
+            if (ppc.isIE && oBtn.offsetWidth > 81) {
+                ppc.console.warn("Button found for upload element with a width "
                                + "greater than 81 pixels. This sadly will not work: "
                                + this.oUpload.$button.serialize());
             }
@@ -226,13 +226,13 @@ apf.upload.html4.isSupported = function() {
             
             this.$inputContainer.style.left   = pos[0] + "px",
             this.$inputContainer.style.top    = pos[1] + "px",
-            this.$inputContainer.style.width  = (apf.isIE ? "81px" : oBtn.offsetWidth  + "px"),
+            this.$inputContainer.style.width  = (ppc.isIE ? "81px" : oBtn.offsetWidth  + "px"),
             this.$inputContainer.style.height = oBtn.offsetHeight + "px";
         }
     };
 
     this.upload = function(file) {
-        var u = apf.upload;
+        var u = ppc.upload;
         // File upload finished
         if (file.status & u.DONE || file.status & u.FAILED || this.oUpload.state & u.STOPPED)
             return;
@@ -266,5 +266,5 @@ apf.upload.html4.isSupported = function() {
         if (file.input)
             file.input.parentNode.removeChild(file.input);
     };
-}).call(apf.upload.html4.prototype = new apf.Class());
+}).call(ppc.upload.html4.prototype = new ppc.Class());
 // #endif

@@ -27,8 +27,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.services = function(struct, tagName){
-    this.$init(tagName || "services", apf.NODE_VISIBLE, struct);
+ppc.services = function(struct, tagName){
+    this.$init(tagName || "services", ppc.NODE_VISIBLE, struct);
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(aml){
         var pNode = this.parentNode;
@@ -37,7 +37,7 @@ apf.services = function(struct, tagName){
     });
 };
 
-apf.services.prototype = new apf.AmlElement();
-apf.aml.setElement("services", apf.services);
+ppc.services.prototype = new ppc.AmlElement();
+ppc.aml.setElement("services", ppc.services);
 
 // #endif

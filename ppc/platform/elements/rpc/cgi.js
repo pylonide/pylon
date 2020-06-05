@@ -23,7 +23,7 @@
 
 /**
  * Implementation of the Common Gateway Interface (CGI) as a module for the RPC
- * plugin of apf.teleport.
+ * plugin of ppc.teleport.
  * Example:
  * Ajax.org Markup Language
  * <code>
@@ -67,9 +67,9 @@
  *
  * @constructor
  *
- * @inherits apf.Teleport
- * @inherits apf.http
- * @inherits apf.rpc
+ * @inherits ppc.Teleport
+ * @inherits ppc.http
+ * @inherits ppc.rpc
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -77,7 +77,7 @@
  *
  * @default_private
  */
-apf.cgi = function(){
+ppc.cgi = function(){
     this.supportMulticall = false;
     this.namedArguments   = true;
 
@@ -95,7 +95,7 @@ apf.cgi = function(){
             vars = [];
 
         function recur(o, stack){
-            if (o && o.dataType == apf.ARRAY) {
+            if (o && o.dataType == ppc.ARRAY) {
                 for (var j = 0; j < o.length; j++)
                     recur(o[j], stack + "%5B" + j + "%5D");//" + j + "
             }
@@ -103,7 +103,7 @@ apf.cgi = function(){
                 if (o.nodeType) {
                     try{
                         var s = o.outerHTML || o.serialize && o.serialize() 
-                          || apf.getCleanCopy(o).xml;
+                          || ppc.getCleanCopy(o).xml;
                     }
                     catch(e){
                         var s = "Could not serialize object";
@@ -113,7 +113,7 @@ apf.cgi = function(){
                 else {
                     for (prop in o) {
                         //#ifdef __SUPPORT_SAFARI2
-                        if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
+                        if (ppc.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
                             continue;
                         //#endif
     
@@ -137,7 +137,7 @@ apf.cgi = function(){
         else {
             for (prop in args) {
                 //#ifdef __SUPPORT_SAFARI2
-                if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
+                if (ppc.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                     continue;
                 //#endif
 

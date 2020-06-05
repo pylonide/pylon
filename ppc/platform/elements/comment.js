@@ -24,17 +24,17 @@
 /**
  * All elements within the comment tag are ignored by the parser.
  *
- * @class apf.comment
+ * @class ppc.comment
  * @define comment
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.comment = function(){
-    this.$init("comment", apf.NODE_HIDDEN);
+ppc.comment = function(){
+    this.$init("comment", ppc.NODE_HIDDEN);
 };
 
-apf.comment.prototype = new apf.AmlComment();
-apf.aml.setElement("comment", apf.comment);
+ppc.comment.prototype = new ppc.AmlComment();
+ppc.aml.setElement("comment", ppc.comment);
 
 // #endif

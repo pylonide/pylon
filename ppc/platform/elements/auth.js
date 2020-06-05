@@ -31,7 +31,7 @@
  * combinations. It will queue all requests that require authentication until
  * the application is logged in again and will then empty the queue.
  * Example:
- * This example sets up apf.auth with two services that it can log into. 
+ * This example sets up ppc.auth with two services that it can log into. 
  * <code>
  *  <a:appsettings>
  *      <a:auth>
@@ -45,7 +45,7 @@
  *  </a:appsettings>
  * </code>
  * Example:
- * A login window with different states managed by apf.auth
+ * A login window with different states managed by ppc.auth
  * <code>
  *   <a:appsettings>
  *       <a:auth 
@@ -129,7 +129,7 @@
  * @event authrequired  Fires when log in credentials are required, either because they are incorrect, or because they are unavailable.
  *   bubbles: yes
  *
- * @inherits apf.Class
+ * @inherits ppc.Class
  *
  * @attribute {String}  login           the {@link term.datainstruction data instruction} on how to log in to a service.
  * @attribute {String}  logout          the {@link term.datainstruction data instruction} on how to log out of a service.
@@ -148,13 +148,13 @@
  * @attribute {String} name     the unique identifier of the service
  * @attribute {String} login    the {@link term.datainstruction data instruction} on how to log in to a service
  * @attribute {String} logout   the {@link term.datainstruction data instruction} on how to log out of a service
- * @see apf.appsettings
+ * @see ppc.appsettings
  *
  * @default_private
  */
 
-apf.auth = function(struct, tagName){
-    this.$init(tagName || "auth", apf.NODE_HIDDEN, struct);
+ppc.auth = function(struct, tagName){
+    this.$init(tagName || "auth", ppc.NODE_HIDDEN, struct);
 
     this.$services    = {};
     this.$cache       = {};
@@ -162,7 +162,7 @@ apf.auth = function(struct, tagName){
     this.$credentials = null;
 };
 
-apf.aml.setElement("auth", apf.auth);
+ppc.aml.setElement("auth", ppc.auth);
 
 (function(){
     this.autostart     = true;
@@ -184,7 +184,7 @@ apf.aml.setElement("auth", apf.auth);
     this.inProcess  = 0;
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         login   : 1,
         logout  : 1
     }, this.$attrExcludePropBind);
@@ -224,10 +224,10 @@ apf.aml.setElement("auth", apf.auth);
 
         if (this.autostart && !this.$hasHost) {
             var _self = this;
-            apf.addEventListener("load", function(){
-                apf.addEventListener("login", function(){
+            ppc.addEventListener("load", function(){
+                ppc.addEventListener("login", function(){
                     _self.authRequired();
-                    apf.removeEventListener("load", arguments.callee);
+                    ppc.removeEventListener("load", arguments.callee);
                 });
             });
         }
@@ -261,7 +261,7 @@ apf.aml.setElement("auth", apf.auth);
 
     var knownHttpAuthErrors = {401:1, 403:1}
     function failFunction(e){
-        var st = (e.state == apf.TIMEOUT || !knownHttpAuthErrors[e.status]
+        var st = (e.state == ppc.TIMEOUT || !knownHttpAuthErrors[e.status]
             ? self[this["error-state"]]
             : self[this["fail-state"]]) || self[this["fail-state"]]
 
@@ -300,7 +300,7 @@ apf.aml.setElement("auth", apf.auth);
 
         //#ifdef __WITH_NAMESERVER
         if (e.data && this.model) {
-            this.model = apf.nameserver.get("model", this.model);
+            this.model = ppc.nameserver.get("model", this.model);
             if (this.model)
                 this.model.load(e.data);
         }
@@ -379,7 +379,7 @@ apf.aml.setElement("auth", apf.auth);
             return false;
 
         //#ifdef __DEBUG
-        apf.console.info("Retrying login...", "auth");
+        ppc.console.info("Retrying login...", "auth");
         //#endif
 
         //@todo shouldn't I be using inProces here?
@@ -408,17 +408,17 @@ apf.aml.setElement("auth", apf.auth);
             _self   = options.userdata = this;
 
         //#ifdef __WITH_OFFLINE
-        options.ignoreOffline = true; //We don't want to be cached by apf.offline
+        options.ignoreOffline = true; //We don't want to be cached by ppc.offline
         //#endif
 
         //#ifdef __DEBUG
-        apf.console.info("Logging " + type + " on service '"
+        ppc.console.info("Logging " + type + " on service '"
             + service + "'", "auth");
         //#endif
 
         //Execute login call
         options.callback = function(data, state, extra){
-            if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
+            if (state == ppc.TIMEOUT && extra.retries < ppc.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
 
             /*
@@ -426,7 +426,7 @@ apf.aml.setElement("auth", apf.auth);
                 here to test the data for login information
             */
             var result = _self.dispatchEvent("log" + type + "check",
-                apf.extend({
+                ppc.extend({
                     state   : state,
                     data    : data,
                     service : service,
@@ -435,7 +435,7 @@ apf.aml.setElement("auth", apf.auth);
 
                 loginFailed = typeof result == "boolean"
                     ? !result
-                    : !(state == apf.SUCCESS || type == "out" && extra.status == 401);
+                    : !(state == ppc.SUCCESS || type == "out" && extra.status == 401);
 
             if (loginFailed) {
                 _self.inProcess = 0; //Idle
@@ -444,14 +444,14 @@ apf.aml.setElement("auth", apf.auth);
                     return _self.authRequired();
 
                 //#ifdef __DEBUG
-                apf.console.info("Log " + type + " failure for service '"
+                ppc.console.info("Log " + type + " failure for service '"
                     + service + "'", "auth");
                 //#endif
 
-                var commError = new Error(apf.formatErrorString(0, null,
+                var commError = new Error(ppc.formatErrorString(0, null,
                     "Logging " + type, "Error logging in: " + extra.message));
 
-                if (_self.dispatchEvent("log" + type + "fail", apf.extend({
+                if (_self.dispatchEvent("log" + type + "fail", ppc.extend({
                     error    : commError,
                     service  : service,
                     state    : state,
@@ -491,7 +491,7 @@ apf.aml.setElement("auth", apf.auth);
             if (callback)
                 callback();
 
-            _self.dispatchEvent("log" + type + "success", apf.extend({}, extra, {
+            _self.dispatchEvent("log" + type + "success", ppc.extend({}, extra, {
                 state   : state,
                 service : service,
                 data    : data,
@@ -501,13 +501,13 @@ apf.aml.setElement("auth", apf.auth);
             }));
 
             //#ifdef __DEBUG
-            apf.console.info("Log " + type + " success for service '"
+            ppc.console.info("Log " + type + " success for service '"
                 + service + "'", "auth");
             //#endif
             
             _self.setProperty("authenticated", true);
         };
-        apf.saveData(xmlNode.getAttribute("log" + type), options);
+        ppc.saveData(xmlNode.getAttribute("log" + type), options);
     };
 
     this.clearQueue = function(){
@@ -537,7 +537,7 @@ apf.aml.setElement("auth", apf.auth);
             //#ifdef __DEBUG
             //Dunno what's up, lets tell the developer
             else
-                apf.console.warn("Unable to retry queue item after "
+                ppc.console.warn("Unable to retry queue item after "
                   + "successfull logging in. It seems the protocol that sent "
                   + "the message doesn't allow it.");
             //#endif
@@ -601,9 +601,9 @@ apf.aml.setElement("auth", apf.auth);
             /*
                 Apparently our credentials aren't valid anymore,
                 or retry is turned off. If this event returns false
-                the developer will call apf.auth.login() at a later date.
+                the developer will call ppc.auth.login() at a later date.
             */
-            var result = this.dispatchEvent("authrequired", apf.extend({
+            var result = this.dispatchEvent("authrequired", ppc.extend({
                 bubbles : true,
                 data    : options && options.data
             }, options));
@@ -619,5 +619,5 @@ apf.aml.setElement("auth", apf.auth);
         }
     };
 
-}).call(apf.auth.prototype = new apf.AmlElement());
+}).call(ppc.auth.prototype = new ppc.AmlElement());
 //#endif

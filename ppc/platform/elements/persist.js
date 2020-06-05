@@ -61,19 +61,19 @@
  * @since       3.0
  * @constructor
  *
- * @inherits apf.Class
- * @inherits apf.BaseComm
- * @inherits apf.http
+ * @inherits ppc.Class
+ * @inherits ppc.BaseComm
+ * @inherits ppc.http
  * 
  *
  * @default_private
  */
 
-apf.persist = function(struct, tagName){
-    this.$init(tagName || "persist", apf.NODE_HIDDEN, struct);
+ppc.persist = function(struct, tagName){
+    this.$init(tagName || "persist", ppc.NODE_HIDDEN, struct);
     
     var _self = this;
-    apf.addEventListener("exit", function(e){
+    ppc.addEventListener("exit", function(e){
         if (_self.listening)
             _self.disconnect();
     });
@@ -100,14 +100,14 @@ apf.persist = function(struct, tagName){
         if (extra.http.readyState && (extra.status == 401 
          || extra.status == 403 
          || extra.status == 500)) {
-            oError = new Error(apf.formatErrorString(10000, amlNode,
+            oError = new Error(ppc.formatErrorString(10000, amlNode,
                 "Persist protocol",
                 extra.statusText + " in " + amlNode.name
                 + "[" + amlNode.tagName + "] \nUrl: " + extra.url
                 + "\nInfo: " + extra.message));
         }
         else {
-            oError = new Error(apf.formatErrorString(10001, amlNode,
+            oError = new Error(ppc.formatErrorString(10001, amlNode,
                 "Polling in persist protocol",
                 "Connection dissapeared " + amlNode.name
                 + "[" + amlNode.tagName + "] \nUrl: " + extra.url
@@ -176,14 +176,14 @@ apf.persist = function(struct, tagName){
             ignoreOffline : true,
             method        : "GET",
             callback      : function(message, state, extra){
-                if (state != apf.SUCCESS) {
+                if (state != ppc.SUCCESS) {
                     var knownError = extra.http.readyState 
                       && (extra.status == 401 
                       || extra.status == 403 
                       || extra.status == 500);
 
-                    if (state == apf.TIMEOUT || !knownError
-                      && extra.retries < (_self.maxretries || apf.maxHttpRetries)) {
+                    if (state == ppc.TIMEOUT || !knownError
+                      && extra.retries < (_self.maxretries || ppc.maxHttpRetries)) {
                         setTimeout(function(){
                             extra.tpModule.retry(extra.id);
                         }, _self.retryinterval);
@@ -198,11 +198,11 @@ apf.persist = function(struct, tagName){
                     _self.$poll(); //continue polling
                     
                     if (message) {
-                        var data = apf.unserialize(message);
+                        var data = ppc.unserialize(message);
                         var body = [];
                         for (var i = 0, l = data.length; i < l; i++) {
                             if (!data[i]) {
-                                apf.console.warn("empty message received!");
+                                ppc.console.warn("empty message received!");
                                 continue;
                             }
                             
@@ -238,17 +238,17 @@ apf.persist = function(struct, tagName){
     //add a listener to a document
     this.join     = function(uri, callback){
         if (!this.sessionId) {
-            apf.console.warn("Could not start RDB session, missing session id.");
+            ppc.console.warn("Could not start RDB session, missing session id.");
             return false;
         }
         
         var _self = this;
-        this.get(this.host + new apf.url(uri).path + "?sid=" + this.sessionId, {
+        this.get(this.host + new ppc.url(uri).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "LOCK",
             callback      : function(data, state, extra){
-                if (state != apf.SUCCESS)
+                if (state != ppc.SUCCESS)
                     return _self.$handleError(data, state, extra, callback);
                 else {
                     if (callback)
@@ -261,12 +261,12 @@ apf.persist = function(struct, tagName){
     //remove a listener to a document
     this.leave  = function(uri){
         var _self = this;
-        this.get(this.host + new apf.url(uri).path + "?sid=" + this.sessionId, {
+        this.get(this.host + new ppc.url(uri).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "UNLOCK",
             callback      : function(data, state, extra){
-                if (state != apf.SUCCESS)
+                if (state != ppc.SUCCESS)
                     return _self.$handleError(data, state, extra); //, callback
             }
         });
@@ -276,13 +276,13 @@ apf.persist = function(struct, tagName){
     this.sendUpdate = function(uri, message){
         var _self = this;
         this.contentType = "application/json";
-        this.get(this.host + new apf.url(uri).path + "?sid=" + this.sessionId, {
+        this.get(this.host + new ppc.url(uri).path + "?sid=" + this.sessionId, {
             nocache       : true,
             ignoreOffline : true,
             method        : "PUT",
             data          : message,
             callback      : function(data, state, extra){
-                if (state != apf.SUCCESS)
+                if (state != ppc.SUCCESS)
                     return _self.$handleError(data, state, extra);
             }
         });
@@ -324,15 +324,15 @@ apf.persist = function(struct, tagName){
                                 ? "&token=" + encodeURIComponent(token)
                                 : ""),
             callback      : function(data, state, extra){
-                if (state != apf.SUCCESS)
+                if (state != ppc.SUCCESS)
                     return _self.$handleError(data, state, extra, callback);
                 else {
-                    data = apf.unserialize(data);
+                    data = ppc.unserialize(data);
                     _self.setProperty("sessionId", data.sId || data.pId);
                     
                     if (!_self.sessionId) {
                         extra.message = "Did not get a session id from the server";
-                        return _self.$handleError(data, apf.ERROR, extra, callback);
+                        return _self.$handleError(data, ppc.ERROR, extra, callback);
                     }
                     else {
                         var m = data.availableMethods;
@@ -373,7 +373,7 @@ apf.persist = function(struct, tagName){
             ignoreOffline : true,
             method        : "POST",
             callback      : function(data, state, extra){
-                if (state != apf.SUCCESS) {
+                if (state != ppc.SUCCESS) {
                     //@todo startlisten here?
                     
                     return _self.$handleError(data, state, extra, callback);
@@ -421,7 +421,7 @@ apf.persist = function(struct, tagName){
                 method        : "POST",
                 data          : out.join("&"),
                 callback      : function(data, state, extra){
-                    if (state != apf.SUCCESS)
+                    if (state != ppc.SUCCESS)
                         return _self.$handleError(data, state, extra, callback);
                     else {
                         if (typeof callback == "function")
@@ -454,15 +454,15 @@ apf.persist = function(struct, tagName){
                 }
                 else {
                     //#ifdef __DEBUG
-                    throw new Error(apf.formatErrorString(0, null, "Saving/Loading data", 
+                    throw new Error(ppc.formatErrorString(0, null, "Saving/Loading data", 
                         "Invalid XMPP method '" + method + "'"));
                     //#endif
                 }
             break;
         }
     };
-}).call(apf.persist.prototype = new apf.Teleport());
+}).call(ppc.persist.prototype = new ppc.Teleport());
 
-apf.aml.setElement("persist", apf.persist);
+ppc.aml.setElement("persist", ppc.persist);
 
 // #endif

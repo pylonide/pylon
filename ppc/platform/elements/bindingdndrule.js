@@ -26,8 +26,8 @@
  * @attribute {String} action
  * @attribute {Boolean} copy
  */
-apf.BindingDndRule = function(struct, tagName){
-    this.$init(tagName, apf.NODE_HIDDEN, struct);
+ppc.BindingDndRule = function(struct, tagName){
+    this.$init(tagName, ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -37,25 +37,25 @@ apf.BindingDndRule = function(struct, tagName){
         
         var compileData;
         if (prop == "value")
-            compileData = apf.lm.compile(this[prop], {
+            compileData = ppc.lm.compile(this[prop], {
                 xpathmode  : 3
             });
         else if (prop == "match")
-            compileData = apf.lm.compile(this[prop], {
+            compileData = ppc.lm.compile(this[prop], {
                 xpathmode  : 3,
                 injectself : true
             });
         else if (prop == "target")
-            compileData = apf.lm.compile(this[prop], {
+            compileData = ppc.lm.compile(this[prop], {
                 xpathmode  : 2,
                 injectself : true
             });
         else if (prop == "action")
-            compileData = apf.lm.compile(this[prop], {
+            compileData = ppc.lm.compile(this[prop], {
                 nostring : true
             });
         else if (prop == "copy")
-            compileData = apf.lm.compile(this[prop], {
+            compileData = ppc.lm.compile(this[prop], {
                 withopt  : true,
                 nostring : true
             });
@@ -66,7 +66,7 @@ apf.BindingDndRule = function(struct, tagName){
     }
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         target   : 1,
         parent   : 1,
         action   : 1,
@@ -81,7 +81,7 @@ apf.BindingDndRule = function(struct, tagName){
     }
     
     this.$noderegister = function(e){
-         apf.GuiElement.propHandlers["drop"].call(e.amlNode, true);
+         ppc.GuiElement.propHandlers["drop"].call(e.amlNode, true);
     }
     
     //@todo removal
@@ -100,15 +100,15 @@ apf.BindingDndRule = function(struct, tagName){
             
             var nodes = pNode.$amlNodes;
             for (var i = 0; i < nodes.length; i++)
-                apf.GuiElement.propHandlers["drop"].call(nodes[i], true);
+                ppc.GuiElement.propHandlers["drop"].call(nodes[i], true);
         }
         else {
-            apf.GuiElement.propHandlers["drop"].call(pNode, true);
+            ppc.GuiElement.propHandlers["drop"].call(pNode, true);
         }
     });
-}).call(apf.BindingDndRule.prototype = new apf.BindingRule());
+}).call(ppc.BindingDndRule.prototype = new ppc.BindingRule());
 
-apf.aml.setElement("drag", apf.BindingDndRule);
-apf.aml.setElement("drop", apf.BindingDndRule);
+ppc.aml.setElement("drag", ppc.BindingDndRule);
+ppc.aml.setElement("drop", ppc.BindingDndRule);
 // #endif
 

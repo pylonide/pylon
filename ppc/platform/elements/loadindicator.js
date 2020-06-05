@@ -49,8 +49,8 @@
  * @since       2.0
  *
  */
-apf.loadindicator = function(struct, tagName){
-    this.$init(tagName || "loadindicator", apf.NODE_VISIBLE, struct);
+ppc.loadindicator = function(struct, tagName){
+    this.$init(tagName || "loadindicator", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
@@ -156,7 +156,7 @@ apf.loadindicator = function(struct, tagName){
             this.spinnerspeed = spinnerspeed;
         }
     };
-}).call(apf.loadindicator.prototype = new apf.Presentation());
+}).call(ppc.loadindicator.prototype = new ppc.Presentation());
 
-apf.aml.setElement("loadindicator", apf.loadindicator);
+ppc.aml.setElement("loadindicator", ppc.loadindicator);
 // #endif

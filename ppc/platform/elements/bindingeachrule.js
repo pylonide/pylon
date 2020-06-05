@@ -154,22 +154,22 @@
  *   - `upper-first`:    Upper case characters are higher.
  *   - `lower-first`:    Lower case characters are higher.
  */
-apf.BindingEachRule = function(struct, tagName){
-    this.$init(tagName, apf.NODE_HIDDEN, struct);
+ppc.BindingEachRule = function(struct, tagName){
+    this.$init(tagName, ppc.NODE_HIDDEN, struct);
     
     var _self = this;
     this.$noderegister = function(e){
         e.amlNode.$handleBindingRule(_self.match, "each");
     
         //#ifdef __WITH_SORTING
-        e.amlNode.$sort = _self.sort ? new apf.Sort(_self) : null;
+        e.amlNode.$sort = _self.sort ? new ppc.Sort(_self) : null;
         //#endif
     }
 };
 
 (function(){
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         "sort"         : 1,
         "data-type"    : 1,
         "date-format"  : 1,
@@ -187,11 +187,11 @@ apf.BindingEachRule = function(struct, tagName){
     this.$propHandlers["case-order"]  = function(value, prop){
         delete this["c" + prop];
         
-        //@todo apf3.0 change sort
+        //@todo ppc3.0 change sort
     }
     
     this.$updateEach = function(value){
-        var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
+        var pNode = this.parentNode;//@todo ppc3.0 get a list via $bindings
         if (pNode.localName == "bindings") {
             var nodes = pNode.$amlNodes,
                 i     = 0,
@@ -218,7 +218,7 @@ apf.BindingEachRule = function(struct, tagName){
         var model;
         if (each.indexOf("::") > -1) {
             var parsed = each.split("::"); //@todo could be optimized
-            if (!apf.xPathAxis[parsed[0]]) {
+            if (!ppc.xPathAxis[parsed[0]]) {
                 model = parsed[0];
                 each  = parsed[1];
             }
@@ -282,14 +282,14 @@ apf.BindingEachRule = function(struct, tagName){
             this.$updateEach(this.match);
     });
     
-    //@todo apf3.0 optimize
+    //@todo ppc3.0 optimize
     var f;
     this.addEventListener("DOMNodeInserted", f = function(e){
         if (e.currentTarget != this)
             return;
 
         var match = this.$getFilteredMatch(this.filter);
-        var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
+        var pNode = this.parentNode;//@todo ppc3.0 get a list via $bindings
         if (pNode.localName == "bindings") {
             pNode.addEventListener("noderegister", this.$noderegister);
             
@@ -300,7 +300,7 @@ apf.BindingEachRule = function(struct, tagName){
                 nodes[i].$handleBindingRule(match, "each");
     
                 //#ifdef __WITH_SORTING
-                nodes[i].$sort = this.sort ? new apf.Sort(this) : null;
+                nodes[i].$sort = this.sort ? new ppc.Sort(this) : null;
                 //#endif
             }
         }
@@ -308,7 +308,7 @@ apf.BindingEachRule = function(struct, tagName){
             pNode.$handleBindingRule(match, "each");
     
             //#ifdef __WITH_SORTING
-            pNode.$sort = this.sort ? new apf.Sort(this) : null;
+            pNode.$sort = this.sort ? new ppc.Sort(this) : null;
             //#endif
         }
     });
@@ -317,13 +317,13 @@ apf.BindingEachRule = function(struct, tagName){
         if (e.currentTarget != this)
             return;
         
-        //@todo apf3.0 how does this conflict with setting it through an attribute.
+        //@todo ppc3.0 how does this conflict with setting it through an attribute.
         //this.$clearDynamicProperty("each");
         //pNode.setProperty("each", null);//@todo double?
         //@todo remove model?
         
         //@todo this should be near $handleBindingRule...
-        var pNode = this.parentNode;//@todo apf3.0 get a list via $bindings
+        var pNode = this.parentNode;//@todo ppc3.0 get a list via $bindings
         if (pNode.localName == "bindings") {
             pNode.removeEventListener("noderegister", this.$noderegister);
             
@@ -331,7 +331,7 @@ apf.BindingEachRule = function(struct, tagName){
                 i     = 0,
                 l     = nodes.length;
             for (; i < l; ++i) {
-                //delete nodes[i].each; //@todo apf3.x is already set by new one
+                //delete nodes[i].each; //@todo ppc3.x is already set by new one
     
                 //#ifdef __WITH_SORTING
                 delete nodes[i].$sort;
@@ -339,7 +339,7 @@ apf.BindingEachRule = function(struct, tagName){
             }
         }
         else {
-            //delete pNode.each; //@todo apf3.x is already set by new one
+            //delete pNode.each; //@todo ppc3.x is already set by new one
             
             //#ifdef __WITH_SORTING
             delete pNode.$sort;
@@ -349,8 +349,8 @@ apf.BindingEachRule = function(struct, tagName){
     
     this.addEventListener("DOMNodeInsertedIntoDocument", f);
     
-}).call(apf.BindingEachRule.prototype = new apf.BindingRule());
+}).call(ppc.BindingEachRule.prototype = new ppc.BindingRule());
 
-apf.aml.setElement("each", apf.BindingEachRule);
+ppc.aml.setElement("each", ppc.BindingEachRule);
 // #endif
 

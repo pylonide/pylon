@@ -144,7 +144,7 @@ package
                 else args = [Escaper.escape(args)];
             }
             
-            ExternalInterface.call('apf.flash.callMethod', this.playerID || 1, 'event', functionName, args || []);
+            ExternalInterface.call('ppc.flash.callMethod', this.playerID || 1, 'event', functionName, args || []);
         }
         
         private function empty(fake:* = null):void
@@ -522,9 +522,9 @@ package
             if (!options.verbose) return;
             labelName = '[FLASH-VERBOSE] ' + labelName;
             if (message)
-                ExternalInterface.call('apf.console.info', labelName + ':', Escaper.escape(message));
+                ExternalInterface.call('ppc.console.info', labelName + ':', Escaper.escape(message));
             else
-                ExternalInterface.call('apf.console.info', labelName);
+                ExternalInterface.call('ppc.console.info', labelName);
         }
         
     }

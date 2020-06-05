@@ -22,7 +22,7 @@
 // #ifdef __TP_XMPP_MUC
 
 /**
- * Interface implementing a Multi User Chat service for the apf.xmpp object.
+ * Interface implementing a Multi User Chat service for the ppc.xmpp object.
  * The Multi User Chat class is a class that contains all the functions needed
  * to start, end, join, leave any XMPP/ Jabber chat room, and more.
  * @link http://xmpp.org/extensions/xep-0045.html
@@ -31,25 +31,25 @@
  * @version     %I%, %G%
  * @since       3.0
  * @classDescription This class intantiates a new XMPP MUC object
- * @return {apf.xmpp.Roster} A new XMPP MUC object
+ * @return {ppc.xmpp.Roster} A new XMPP MUC object
  * @type {Object}
  * @constructor
  */
-apf.xmpp_muc = function(){
+ppc.xmpp_muc = function(){
     var _self   = this,
         mucVars = {
             created: {} // list of room ID's that the user created him/herself
         },
         // keep reference to access class constants in function scope chain
-        oXmpp   = apf.xmpp,
+        oXmpp   = ppc.xmpp,
         // munge often-used strings
         SID     = "SID",
         JID     = "JID",
         CONN    = "connected";
-    this.$mucRoster = new apf.xmpp_roster(this["muc-model"], {muc: true}, this.resource);
+    this.$mucRoster = new ppc.xmpp_roster(this["muc-model"], {muc: true}, this.resource);
 
     /*
-     * Wrapper function for apf.xmpp.$doXmlRequest. Since all MUC request are 
+     * Wrapper function for ppc.xmpp.$doXmlRequest. Since all MUC request are 
      * asynchronous - responses to each call return via the message poll/ push -
      * the only variable left for each request is the text body.
      * 
@@ -168,17 +168,17 @@ apf.xmpp_muc = function(){
             cb = mucVars[f];
         delete mucVars[f];
         switch (iType) {
-            case apf.xmpp_muc.ROOM_CREATE:
-            case apf.xmpp_muc.ROOM_EXISTS:
+            case ppc.xmpp_muc.ROOM_CREATE:
+            case ppc.xmpp_muc.ROOM_EXISTS:
                 if (typeof cb == "function")
                     cb(true);
                 break;
-            case apf.xmpp_muc.ROOM_NOTFOUND:
+            case ppc.xmpp_muc.ROOM_NOTFOUND:
                 if (typeof cb == "function")
                     cb(false);
                 break;
-            case apf.xmpp_muc.ROOM_JOINED:
-            case apf.xmpp_muc.ROOM_LEFT:
+            case ppc.xmpp_muc.ROOM_JOINED:
+            case ppc.xmpp_muc.ROOM_LEFT:
                 var oEnt = this.$mucRoster.getEntityByJID(oData.fullJID, {
                     room       : sRoom,
                     roomJID    : oData.roomJID,
@@ -416,7 +416,7 @@ apf.xmpp_muc = function(){
     //#ifdef __WITH_RDB
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
-            throw new Error(apf.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
+            throw new Error(ppc.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
         var sRoom = this.$mucRoster.sanitizeJID(sSession + "@" + this["muc-host"]);
         this.joinOrCreateRoom(sRoom, this.$serverVars["roster"].username, function() {
             if (mucVars.created[sRoom]) {
@@ -431,7 +431,7 @@ apf.xmpp_muc = function(){
 
     this.endRDB = function(sSession) {
         if (!sSession)
-            throw new Error(apf.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
+            throw new Error(ppc.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
         var oOwner = this.$mucRoster.getRoomOwner(sSession);
         if (!oOwner || oOwner.nick != this.$serverVars["roster"].username)
             this.leaveRoom(sSession);
@@ -488,17 +488,17 @@ apf.xmpp_muc = function(){
     //#endif
 };
 
-apf.xmpp_muc.ROOM_CREATE    = 1;
-apf.xmpp_muc.ROOM_EXISTS    = 2;
-apf.xmpp_muc.ROOM_NOTFOUND  = 3;
-apf.xmpp_muc.ROOM_JOINED    = 4;
-apf.xmpp_muc.ROOM_LEFT      = 5;
-apf.xmpp_muc.ROOM_RDB       = 6;
+ppc.xmpp_muc.ROOM_CREATE    = 1;
+ppc.xmpp_muc.ROOM_EXISTS    = 2;
+ppc.xmpp_muc.ROOM_NOTFOUND  = 3;
+ppc.xmpp_muc.ROOM_JOINED    = 4;
+ppc.xmpp_muc.ROOM_LEFT      = 5;
+ppc.xmpp_muc.ROOM_RDB       = 6;
 
-apf.xmpp_muc.ACTION_SUBJECT = 0x0001;
-apf.xmpp_muc.ACTION_KICK    = 0x0002;
-apf.xmpp_muc.ACTION_BAN     = 0x0004;
-apf.xmpp_muc.ACTION_GRANT   = 0x0008;
-apf.xmpp_muc.ACTION_REVOKE  = 0x0010;
+ppc.xmpp_muc.ACTION_SUBJECT = 0x0001;
+ppc.xmpp_muc.ACTION_KICK    = 0x0002;
+ppc.xmpp_muc.ACTION_BAN     = 0x0004;
+ppc.xmpp_muc.ACTION_GRANT   = 0x0008;
+ppc.xmpp_muc.ACTION_REVOKE  = 0x0010;
 
 // #endif

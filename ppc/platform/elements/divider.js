@@ -22,12 +22,12 @@
 
 /**
  * Element displaying a divider. For use in toolbars, menus, and such.
- * @class apf.divider
+ * @class ppc.divider
  * @define divider
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  */
-apf.divider = function(struct, tagName){
-    this.$init(tagName || "divider", apf.NODE_VISIBLE, struct);
+ppc.divider = function(struct, tagName){
+    this.$init(tagName || "divider", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
@@ -36,10 +36,10 @@ apf.divider = function(struct, tagName){
     this.minwidth = 0;
     this.minheight = 0;
 
-    this.implement(apf.ChildValue);
+    this.implement(ppc.ChildValue);
     this.$childProperty = "caption";
     
-    //@todo apf3.0 fix this
+    //@todo ppc3.0 fix this
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
         if (!this.$amlLoaded)
             return;
@@ -75,7 +75,7 @@ apf.divider = function(struct, tagName){
             this.$pHtmlNode = this.parentNode.$buttons;
         
         if (this.$isLeechingSkin) {
-            this.$ext = apf.insertHtmlNode(
+            this.$ext = ppc.insertHtmlNode(
                 this.parentNode.$getLayoutNode("divider"), this.$pHtmlNode);
         }
         else {
@@ -83,8 +83,8 @@ apf.divider = function(struct, tagName){
             this.$caption = this.$getLayoutNode("main", "caption", this.$ext);
         }
     };
-}).call(apf.divider.prototype = new apf.Presentation);
+}).call(ppc.divider.prototype = new ppc.Presentation);
 
-apf.aml.setElement("divider", apf.divider);
+ppc.aml.setElement("divider", ppc.divider);
 
 //#endif

@@ -79,20 +79,20 @@
  *  vgForm.validate();
  * ```
  *
- * @class apf.errorbox
+ * @class ppc.errorbox
  * @define errorbox
  * 
  * @allowchild {anyxhtml}
  *
  *
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.errorbox = function(struct, tagName){
-    this.$init(tagName || "errorbox", apf.NODE_VISIBLE, struct);
+ppc.errorbox = function(struct, tagName){
+    this.$init(tagName || "errorbox", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -107,10 +107,10 @@ apf.errorbox = function(struct, tagName){
             host.$ext;
 
         document.body.appendChild(this.$ext);
-        /*var pos = apf.getAbsolutePosition(refHtml, document.body);
+        /*var pos = ppc.getAbsolutePosition(refHtml, document.body);
 
         if (document != refHtml.ownerDocument) {
-            var pos2 = apf.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
+            var pos2 = ppc.getAbsolutePosition(refHtml.ownerDocument.parentWindow.frameElement, document.body);
             pos[0] += pos2[0];
             pos[1] += pos2[1];
         }*/
@@ -121,7 +121,7 @@ apf.errorbox = function(struct, tagName){
         //this.$ext.style.top  = y + "px"
 
         this.show();
-        apf.popup.show(this.$uniqueId, {
+        ppc.popup.show(this.$uniqueId, {
             x       : x,
             y       : y,
             animate : false,
@@ -158,8 +158,8 @@ apf.errorbox = function(struct, tagName){
             this.oClose.onclick = function(){
                 _self.hide();
 
-                if (apf.document.activeElement)
-                    apf.document.activeElement.focus(true, {mouse:true});
+                if (ppc.document.activeElement)
+                    ppc.document.activeElement.focus(true, {mouse:true});
             };
         }
         
@@ -167,16 +167,16 @@ apf.errorbox = function(struct, tagName){
             (e || event).cancelBubble = true;
             
             //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug)
-                apf.window.$focusfix();
+            if (ppc.hasFocusBug)
+                ppc.window.$focusfix();
             //#endif
         }
 
-        apf.popup.setContent(this.$uniqueId, this.$ext, "", null, null);
+        ppc.popup.setContent(this.$uniqueId, this.$ext, "", null, null);
     };
     
     this.$loadAml = function(x){
-        if (!apf.isTrue(this.getAttribute("visible")))
+        if (!ppc.isTrue(this.getAttribute("visible")))
             this.hide();
     };
     
@@ -186,9 +186,9 @@ apf.errorbox = function(struct, tagName){
         
         this.$ext.onmousedown = null;
         
-        apf.popup.removeContent(this.$uniqueId);
+        ppc.popup.removeContent(this.$uniqueId);
     };
-}).call(apf.errorbox.prototype = new apf.Presentation());
+}).call(ppc.errorbox.prototype = new ppc.Presentation());
 
-apf.aml.setElement("errorbox", apf.errorbox);
+ppc.aml.setElement("errorbox", ppc.errorbox);
 // #endif

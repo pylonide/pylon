@@ -22,7 +22,7 @@
 // #ifdef __TP_XMPP_ROSTER
 
 /**
- * Element implementing a Roster service for the apf.xmpp object.
+ * Element implementing a Roster service for the ppc.xmpp object.
  * The Roster is a centralised registry for Jabber ID's (JID) to which
  * the user subscribed. Whenever the presence info of a JID changes, the roster
  * will get updated accordingly.
@@ -32,11 +32,11 @@
  * @version     %I%, %G%
  * @since       3.0
  * @classDescription This class intantiates a new XMPP Roster object
- * @return {apf.xmpp.Roster} A new XMPP Roster object
+ * @return {ppc.xmpp.Roster} A new XMPP Roster object
  * @type {Object}
  * @constructor
  */
-apf.xmpp_roster = function(model, modelContent, res) {
+ppc.xmpp_roster = function(model, modelContent, res) {
     this.resource = res;
     this.username = this.host = this.fullJID = "";
 
@@ -50,9 +50,9 @@ apf.xmpp_roster = function(model, modelContent, res) {
     if (typeof model == "string") {
         //#ifdef __WITH_NAMESERVER
         var sModel = model;
-        if (!(model = apf.nameserver.get(sModel))) {
-            model = apf.setReference(sModel,
-                apf.nameserver.register("model", sModel, new apf.model()));
+        if (!(model = ppc.nameserver.get(sModel))) {
+            model = ppc.setReference(sModel,
+                ppc.nameserver.register("model", sModel, new ppc.model()));
             if (model === 0)
                 model = self[sModel];
             else
@@ -153,12 +153,12 @@ apf.xmpp_roster = function(model, modelContent, res) {
             oEnt    = this.getEntity(node, host, resource),
             bareJID = node + "@" + host;
         if (!resource) {
-            apf.console.warn("No resource provided for Jabber entity '" + bareJID
+            ppc.console.warn("No resource provided for Jabber entity '" + bareJID
                 + "'. Roster may get corrupted this way!", "xmpp");
         }
         else if (oEnt) {
             //adding of an additional 'resource'...except for chat rooms
-            if (!apf.isArray(oEnt))
+            if (!ppc.isArray(oEnt))
                 oEnt = [oEnt];
             for (var i = 0, l = oEnt.length; i < l; ++i) {
                 if (!oEnt[i] || oEnt[i].resource) continue;
@@ -169,7 +169,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
             }
         }
 
-        if (apf.isArray(oEnt))
+        if (ppc.isArray(oEnt))
             oEnt = oEnt[0];
 
         // Auto-add new users with status TYPE_UNAVAILABLE
@@ -192,12 +192,12 @@ apf.xmpp_roster = function(model, modelContent, res) {
                 role        : options.role || null,
                 group       : options.group || "",
                 status      : (bIsRoom || (bMuc && resource))
-                    ? apf.xmpp.TYPE_AVAILABLE
-                    : apf.xmpp.TYPE_UNAVAILABLE
+                    ? ppc.xmpp.TYPE_AVAILABLE
+                    : ppc.xmpp.TYPE_UNAVAILABLE
             });
         }
         else {
-            this.update(apf.extend(oEnt, options));
+            this.update(ppc.extend(oEnt, options));
         }
 
         return oEnt;
@@ -217,7 +217,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
         if (bMuc && oEnt.room && oEnt.role == "none") {
             // a contact is leaving the chatroom
             if (oEnt.xml) {
-                apf.xmldb.removeNode(oEnt.xml);
+                ppc.xmldb.removeNode(oEnt.xml);
                 aEntities.remove(oEnt);
             }
             return oEnt;
@@ -240,7 +240,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
                     room = oEnt.roomJID ? oEnt.roomJID.split("@") : null,
                     node = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[0] : oEnt.node,
                     host = (oEnt.room && !oEnt.isRoom && oEnt.isRDB) ? room[1] : oEnt.host;
-                apf.xmldb.appendChild((oEnt.room && !oEnt.isRoom)
+                ppc.xmldb.appendChild((oEnt.room && !oEnt.isRoom)
                     ? (oRoom = this.getEntity(node, host, null, true)) ? oRoom.xml : model.data
                     : model.data, oEnt.xml);
             }
@@ -266,7 +266,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
                 oEnt.xml.setAttribute(i, oEnt[i]);
         }
 
-        apf.xmldb.applyChanges("synchronize", oEnt.xml);
+        ppc.xmldb.applyChanges("synchronize", oEnt.xml);
 
         return oEnt;
     };
@@ -296,8 +296,8 @@ apf.xmpp_roster = function(model, modelContent, res) {
         oMsg.setAttribute("from", sJID);
         oMsg.appendChild(oDoc.createTextNode(sMsg));
 
-        apf.xmldb.appendChild((oRoom ? oRoom.xml : oEnt.xml), oMsg);
-        apf.xmldb.applyChanges("synchronize", oEnt.xml);
+        ppc.xmldb.appendChild((oRoom ? oRoom.xml : oEnt.xml), oMsg);
+        ppc.xmldb.applyChanges("synchronize", oEnt.xml);
 
         // only send events to messages from contacts, not the acount itself
         return !(oEnt.node == this.username && oEnt.host == this.host);
@@ -310,7 +310,7 @@ apf.xmpp_roster = function(model, modelContent, res) {
      */
     this.getLastAvailableEntity = function() {
         for (var i = aEntities.length - 1; i >= 0; i--) {
-            if (aEntities[i].status !== apf.xmpp.TYPE_UNAVAILABLE)
+            if (aEntities[i].status !== ppc.xmpp.TYPE_UNAVAILABLE)
                 return aEntities[i];
         }
 

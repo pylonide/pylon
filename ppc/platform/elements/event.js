@@ -27,16 +27,16 @@
  * the popup will dissapear automatically. When the mouse hovers over the popup
  * it doesn't dissapear.
  * 
- * @class apf.event
+ * @class ppc.event
  * @define event
- * @inherits apf.AmlElement
+ * @inherits ppc.AmlElement
  *
  */
 /**
  * @event click Fires when the user clicks on the representation of this event.
  */
-apf.event = function(struct, tagName){
-    this.$init(tagName || "event", apf.NODE_HIDDEN, struct);
+ppc.event = function(struct, tagName){
+    this.$init(tagName || "event", ppc.NODE_HIDDEN, struct);
 };
 
 (function() {
@@ -59,7 +59,7 @@ apf.event = function(struct, tagName){
     };
 
     this.$loadAml = function(x) {};
-}).call(apf.event.prototype = new apf.AmlElement());
+}).call(ppc.event.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("event", apf.event);
+ppc.aml.setElement("event", ppc.event);
 // #endif

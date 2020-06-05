@@ -60,7 +60,7 @@
  *                  //Process xml settings
  *              }
  *          }
- *          BillHistory.prototype = new apf.portal.Docklet();
+ *          BillHistory.prototype = new ppc.portal.Docklet();
  *      ]]></a:script>
  *
  *      <!-- the edit panel of the window -->
@@ -79,9 +79,9 @@
  * @allowchild {smartbinding}
  *
  *
- * @inherits apf.MultiSelect
- * @inherits apf.DataAction
- * @inherits apf.Cache
+ * @inherits ppc.MultiSelect
+ * @inherits ppc.DataAction
+ * @inherits ppc.Cache
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -93,17 +93,17 @@
  * @binding column    Determines the column in which the docklet is created.
  * @binding caption   Determines the caption of the docklet.
  */
-apf.portal = function(struct, tagName){
-    this.$init(tagName || "portal", apf.NODE_VISIBLE, struct);
+ppc.portal = function(struct, tagName){
+    this.$init(tagName || "portal", ppc.NODE_VISIBLE, struct);
     
     this.$columns   = [];
 };
 
 (function(){
     this.implement(
-        //apf.Cache,
+        //ppc.Cache,
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
     );
 
@@ -111,11 +111,11 @@ apf.portal = function(struct, tagName){
     this.buttons         = "edit|min|close";
 
     this.$deInitNode = function(xmlNode, htmlNode){
-        cacheDocklet.call(this, apf.findHost(htmlNode));
+        cacheDocklet.call(this, ppc.findHost(htmlNode));
     };
 
     this.$updateNode = function(xmlNode, htmlNode){
-        var docklet = apf.findHost(htmlNode);
+        var docklet = ppc.findHost(htmlNode);
         docklet.setProperty("buttons", this.$applyBindRule("buttons", xmlNode) || "");
         docklet.draggable = this.$applyBindRule("draggable", xmlNode);
     };
@@ -147,10 +147,10 @@ apf.portal = function(struct, tagName){
         
         //more hack stuff
         //determine docklet xml position by the html position
-        var nr = apf.xmldb.getChildNumber(docklet.oExt), 
+        var nr = ppc.xmldb.getChildNumber(docklet.oExt), 
         	  nodes = dataNode.selectNodes("../node()[@column='" + colNr + "']");
         if (nodes[nr] != dataNode) {
-        		var jmlNode = apf.findHost(docklet.oExt.nextSibling);
+        		var jmlNode = ppc.findHost(docklet.oExt.nextSibling);
         		dataNode.parentNode.insertBefore(dataNode, jmlNode && jmlNode.dataNode || null);
         }
         
@@ -190,19 +190,19 @@ apf.portal = function(struct, tagName){
                     continue;
                     
                 pHtmlNode.appendChild(node);
-                amlNode = apf.findHost(node);
+                amlNode = ppc.findHost(node);
                 amlNode.$pHtmlNode = pHtmlNode;
-                amlNode.dataNode.setAttribute("column", 0); //@todo wrong!! apf3.0
+                amlNode.dataNode.setAttribute("column", 0); //@todo wrong!! ppc3.0
             }
 
-            apf.destroyHtmlNode(col);
+            ppc.destroyHtmlNode(col);
         }
         
         for (var last, col, size, i = 0; i < this.$columnWidths.length; i++) {
             size = this.$columnWidths[i];
             if (!this.$columns[i]) {
                 this.$getNewContext("column");
-                col = apf.insertHtmlNode(this.$getLayoutNode("column"), this.$int, this.$int.lastChild);
+                col = ppc.insertHtmlNode(this.$getLayoutNode("column"), this.$int, this.$int.lastChild);
                 this.$columns.push(col);
         
                 col.isColumn = true;
@@ -218,7 +218,7 @@ apf.portal = function(struct, tagName){
 
             size.match(/(%|px|pt)/);
             var unit = RegExp.$1 || "px";
-            col.style.width = (parseInt(size) - (apf.isIE && apf.isIE < 8 && last ? 1 : 0)) + unit;
+            col.style.width = (parseInt(size) - (ppc.isIE && ppc.isIE < 8 && last ? 1 : 0)) + unit;
         }
     }
 
@@ -257,7 +257,7 @@ apf.portal = function(struct, tagName){
         if (docklet.oSettings) {
             var nodes = docklet.oSettings.childNodes;
             while(nodes.length) {
-                amlNode = apf.findHost(widget.fragSettings.appendChild(nodes[0]));
+                amlNode = ppc.findHost(widget.fragSettings.appendChild(nodes[0]));
                 if (amlNode)
                     amlNodes.push(amlNode.removeNode(null, true));
             }
@@ -266,7 +266,7 @@ apf.portal = function(struct, tagName){
         //Cache oInt
         var nodes = docklet.$int.childNodes;
         while(nodes.length) {
-            amlNode = apf.findHost(widget.fragInt.appendChild(nodes[0]));
+            amlNode = ppc.findHost(widget.fragInt.appendChild(nodes[0]));
             if (amlNode) 
                 amlNodes.push(amlNode.removeNode(null, true));
         }
@@ -276,7 +276,7 @@ apf.portal = function(struct, tagName){
         
         widget.amlNodes = amlNodes;
         docklet.oSettings = docklet.$int = null;
-        docklet.childNodes = [];//@todo hack!! apf3.0 - the childNodes array isnt cleaned correctly. The parsing sees this as that all the children are already rendered
+        docklet.childNodes = [];//@todo hack!! ppc3.0 - the childNodes array isnt cleaned correctly. The parsing sees this as that all the children are already rendered
         dockwin_cache.push(docklet);
         
         //Remove from document
@@ -294,7 +294,7 @@ apf.portal = function(struct, tagName){
                 if (col.childNodes[j].nodeType != 1)
                     continue;
                 
-                fragment.push(cacheDocklet.call(this, apf.findHost(col.childNodes[j])));
+                fragment.push(cacheDocklet.call(this, ppc.findHost(col.childNodes[j])));
             }
         }
 
@@ -324,7 +324,7 @@ apf.portal = function(struct, tagName){
             var xmlEmpty = this.$getLayoutNode("empty");
             if (!xmlEmpty) return;
 
-            oEmpty = apf.insertHtmlNode(xmlEmpty, this.$int);
+            oEmpty = ppc.insertHtmlNode(xmlEmpty, this.$int);
         }
         else {
             if(!this.oInt.lastChild)
@@ -335,7 +335,7 @@ apf.portal = function(struct, tagName){
         
         var empty  = this.$getLayoutNode("empty", "caption", oEmpty);
         if (empty)
-            apf.setNodeValue(empty, msg || "");
+            ppc.setNodeValue(empty, msg || "");
         if (oEmpty)
             oEmpty.setAttribute("id", "empty" + this.$uniqueId);
     };
@@ -381,7 +381,7 @@ apf.portal = function(struct, tagName){
             if (docklet.oSettings)
                 docklet.oSettings.appendChild(widget.fragSettings);
             
-            var amlNodes = widget.amlNodes || [];//@todo temp workaround apf3.0
+            var amlNodes = widget.amlNodes || [];//@todo temp workaround ppc3.0
             for (var i = 0, l = amlNodes.length; i < l; i++)
                 if (amlNodes[i].hasFeature)
                     docklet.appendChild(amlNodes[i], null, true);
@@ -392,7 +392,7 @@ apf.portal = function(struct, tagName){
                 widget.dockletClass.load(dataNode, docklet);
         }
         else {
-            var uId = apf.all.length;
+            var uId = ppc.all.length;
             var col = [];
             strXml = strXml.replace(/\b(id|actiontracker|group)="([^"]*)"|\b(id|actiontracker|group)='([^']*)''/g, 
               function(m, n1, id1, n2, id2){
@@ -425,7 +425,7 @@ apf.portal = function(struct, tagName){
     
             //Create dockletClass
             if (!self[name])
-                throw new Error("could not find docklet class '" + name + "'"); //@todo proper error apf3.0
+                throw new Error("could not find docklet class '" + name + "'"); //@todo proper error ppc3.0
     
             //instantiate class
             var dockletClass = new self[name]().$init();
@@ -462,7 +462,7 @@ apf.portal = function(struct, tagName){
             docklet.parentNode = this;
             pHtmlNode.appendChild(docklet.$ext);
             docklet.$pHtmlNode = pHtmlNode;
-            //docklet.setProperty("skin", this.$applyBindRule("skin", dataNode) || "docklet"); //@todo (apf3.0) or something like that
+            //docklet.setProperty("skin", this.$applyBindRule("skin", dataNode) || "docklet"); //@todo (ppc3.0) or something like that
             
             var skin = this.$applyBindRule("dockskin", dataNode) || "docklet";
             if (docklet.skin != skin)
@@ -472,14 +472,14 @@ apf.portal = function(struct, tagName){
         //Creating
         else {
             //, null, true
-            docklet = new apf.modalwindow({
+            docklet = new ppc.modalwindow({
                 htmlNode  : pHtmlNode,
-                skinset   : apf.getInheritedAttribute(this.parentNode, "skinset"),
+                skinset   : ppc.getInheritedAttribute(this.parentNode, "skinset"),
                 skin      : this.$applyBindRule("dockskin", dataNode) || "docklet",
                 draggable : true,
                 visible   : true
             });
-            docklet.implement(apf.modalwindow.widget);
+            docklet.implement(ppc.modalwindow.widget);
             docklet.parentNode = this;
             
             docklet.$create();
@@ -502,7 +502,7 @@ apf.portal = function(struct, tagName){
         }
         
         docklet.dataNode = dataNode;
-        apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), dataNode, docklet.$ext, this)
+        ppc.xmldb.nodeConnect(ppc.xmldb.getXmlDocId(dataNode), dataNode, docklet.$ext, this)
         
         if (this.$hasBindRule("buttons"))
             docklet.setProperty("buttons", this.$applyBindRule("buttons", dataNode) || this.buttons);
@@ -534,7 +534,7 @@ apf.portal = function(struct, tagName){
             pHtmlNode = this.$columns[this.$applyBindRule("column", dataNode) || 0];
             
             if (!pHtmlNode) //@todo
-                throw new Error(apf.formatErrorString(0, this, "Building docklet",
+                throw new Error(ppc.formatErrorString(0, this, "Building docklet",
                     "Cannot find column to hook docklet on. Seems like a timing error"));
         }
 
@@ -549,15 +549,15 @@ apf.portal = function(struct, tagName){
             docklet.$getLayoutNode("main", "container", docklet.$ext)
                 .innerHTML = "<div class='loading'>Loading...</div>";
             
-            //@todo this should be getData (apf3.0)
-            var model = new apf.model(), _self = this;
+            //@todo this should be getData (ppc3.0)
+            var model = new ppc.model(), _self = this;
             model.$loadFrom(srcUrl, {callback: function(data, state, extra){
                 //if (this.isLoaded)
                     //return true;
 
                 //@todo retry
-                if (!data || state != apf.SUCCESS) {
-                    createWidget.call(_self, "error", "<a:docklet xmlns:a='" + apf.ns.apf + "' name='dockerror'>\
+                if (!data || state != ppc.SUCCESS) {
+                    createWidget.call(_self, "error", "<a:docklet xmlns:a='" + ppc.ns.ppc + "' name='dockerror'>\
                         <a:script><![CDATA[\
                             function dockerror(){\
                                 this.init = this.load = function(x,d){\
@@ -579,7 +579,7 @@ apf.portal = function(struct, tagName){
                 var strXml = data;//xmlNode.xml || xmlNode.serialize();
 
                 //#ifdef __SUPPORT_SAFARI2
-                if (apf.isSafariOld) {
+                if (ppc.isSafariOld) {
                     strXml = strXml.replace(/name/, "name='"
                         + xmlNode.getAttribute("name") + "'");
                     xml_cache[srcUrl] = strXml;
@@ -610,7 +610,7 @@ apf.portal = function(struct, tagName){
     
     this.addEventListener("xmlupdate", function(e){
         //if (e.action.match(/add|insert|move/))
-            //apf.AmlParser.parseLastPass();
+            //ppc.AmlParser.parseLastPass();
         
         var cols = this.$applyBindRule("columns", this.xmlRoot)
         if (cols && cols != this.columns)
@@ -642,29 +642,29 @@ apf.portal = function(struct, tagName){
             document.elementFromPointAdd(this.$ext);
     };
 // #ifdef __WITH_MULTISELECT
-}).call(apf.portal.prototype = new apf.MultiSelect());
+}).call(ppc.portal.prototype = new ppc.MultiSelect());
 /* #elseif __WITH_DATABINDING
-}).call(apf.portal.prototype = new apf.MultiselectBinding());
+}).call(ppc.portal.prototype = new ppc.MultiselectBinding());
    #else
-}).call(apf.portal.prototype = new apf.Presentation());
+}).call(ppc.portal.prototype = new ppc.Presentation());
 #endif*/
 
-apf.aml.setElement("portal",    apf.portal);
-apf.aml.setElement("src",       apf.BindingRule);
-apf.aml.setElement("column",    apf.BindingRule);
-//apf.aml.setElement("state",     apf.BindingRule);
-apf.aml.setElement("draggable", apf.BindingRule);
-apf.aml.setElement("dockskin",  apf.BindingRule);
-apf.aml.setElement("buttons",   apf.BindingRule);
-apf.aml.setElement("caption",   apf.BindingRule);
-apf.aml.setElement("traverse",  apf.BindingRule);
+ppc.aml.setElement("portal",    ppc.portal);
+ppc.aml.setElement("src",       ppc.BindingRule);
+ppc.aml.setElement("column",    ppc.BindingRule);
+//ppc.aml.setElement("state",     ppc.BindingRule);
+ppc.aml.setElement("draggable", ppc.BindingRule);
+ppc.aml.setElement("dockskin",  ppc.BindingRule);
+ppc.aml.setElement("buttons",   ppc.BindingRule);
+ppc.aml.setElement("caption",   ppc.BindingRule);
+ppc.aml.setElement("traverse",  ppc.BindingRule);
 
 /**
  * @constructor
  */
-apf.portal.Docklet = function(){}
-apf.portal.Docklet.prototype = new apf.Class();
-apf.portal.Docklet.prototype.create = function(xmlSettings, oWidget, oPortal){
+ppc.portal.Docklet = function(){}
+ppc.portal.Docklet.prototype = new ppc.Class();
+ppc.portal.Docklet.prototype.create = function(xmlSettings, oWidget, oPortal){
     this.xmlSettings = xmlSettings
     this.oWidget = oWidget;
 

@@ -24,7 +24,7 @@
 /*
  * @private
  */
-apf.WinServer = {
+ppc.WinServer = {
     count : 9000,
     wins  : [],
 
@@ -128,7 +128,7 @@ apf.WinServer = {
  * </a:application> 
  * ```
  *
- * @class apf.window 
+ * @class ppc.window 
  * @define window
  * @container
  * @allowchild {elements}, {smartbinding}, {anyaml}
@@ -138,8 +138,8 @@ apf.WinServer = {
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Presentation
- * @inheritsElsewhere apf.Transaction
+ * @inherits ppc.Presentation
+ * @inheritsElsewhere ppc.Transaction
  *
  */
  /**
@@ -166,21 +166,21 @@ apf.WinServer = {
  *   - `edit` ([[Boolean]]):        Specifies whether the window is in the edit state.
  *   - `closed` ([[Boolean]]):      Specifies whether the window is closed.
  */
-apf.toolwindow  = function(struct, tagName){
-    this.$init(tagName || "toolwindow", apf.NODE_VISIBLE, struct);
+ppc.toolwindow  = function(struct, tagName){
+    this.$init(tagName || "toolwindow", ppc.NODE_VISIBLE, struct);
 };
 
-apf.modalwindow = function(struct, tagName){
-    this.$init(tagName || "modalwindow", apf.NODE_VISIBLE, struct);
+ppc.modalwindow = function(struct, tagName){
+    this.$init(tagName || "modalwindow", ppc.NODE_VISIBLE, struct);
 };
 
-apf.AmlWindow = function(struct, tagName){
-    this.$init(tagName || "window", apf.NODE_VISIBLE, struct);
+ppc.AmlWindow = function(struct, tagName){
+    this.$init(tagName || "window", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
-        apf.BaseStateButtons
+        ppc.BaseStateButtons
     );
 
     this.$isWindowContainer = true;
@@ -189,7 +189,7 @@ apf.AmlWindow = function(struct, tagName){
     this.visible           = false;
     this.showdragging      = false;
     this.kbclose           = false;
-    this.$focussable       = apf.KEYBOARD;
+    this.$focussable       = ppc.KEYBOARD;
     this.$editableCaption  = ["title"];
 
     // *** Public Methods *** //
@@ -236,10 +236,10 @@ apf.AmlWindow = function(struct, tagName){
         
         var iFrom  = 0,
             iTo    = 0,
-            innerW = (apf.isIE
+            innerW = (ppc.isIE
                 ? this.$ext.offsetParent.offsetWidth
                 : window.innerWidth),
-            innerH = (apf.isIE
+            innerH = (ppc.isIE
                 ? this.$ext.offsetParent.offsetHeight
                 : window.innerHeight),
             cX     = Math.max(0, ((innerW - this.$ext.offsetWidth)  / 2)),
@@ -268,13 +268,13 @@ apf.AmlWindow = function(struct, tagName){
                 break;
         }
         
-        apf.tween.single(this.$ext, {
-            steps   : apf.isIphone ? 5 : 30,
+        ppc.tween.single(this.$ext, {
+            steps   : ppc.isIphone ? 5 : 30,
             interval: 10,
             from    : iFrom,
             to      : iTo,
             type    : sType,
-            anim    : apf.tween.EASEIN
+            anim    : ppc.tween.EASEIN
         });
         return this;
     };
@@ -299,13 +299,13 @@ apf.AmlWindow = function(struct, tagName){
                 break;
             case "bottom":
                 iFrom = this.$ext.offsetTop;
-                iTo = (apf.isIE
+                iTo = (ppc.isIE
                     ? this.$ext.offsetParent.offsetHeight
                     : window.innerHeight) + this.$ext.offsetHeight + pad;
                 break;
             case "right":
                 iFrom = this.$ext.offsetLeft;
-                iTo   = (apf.isIE
+                iTo   = (ppc.isIE
                     ? this.$ext.offsetParent.offsetWidth
                     : window.innerWidth) + this.$ext.offsetLeft + pad;
                 sType = "left";
@@ -313,13 +313,13 @@ apf.AmlWindow = function(struct, tagName){
         }
 
         var _self = this;
-        apf.tween.single(this.$ext, {
-            steps   : apf.isIphone ? 5 : 30,
+        ppc.tween.single(this.$ext, {
+            steps   : ppc.isIphone ? 5 : 30,
             interval: 10,
             from    : iFrom,
             to      : iTo,
             type    : sType,
-            anim    : apf.tween.EASEOUT,
+            anim    : ppc.tween.EASEOUT,
             onfinish: function() { _self.setProperty("visible", false); }
         });
         return this;
@@ -328,7 +328,7 @@ apf.AmlWindow = function(struct, tagName){
     //#endif
 
     this.bringToFront = function(){
-        apf.WinServer.setTop(this);
+        ppc.WinServer.setTop(this);
         return this;
     };
 
@@ -351,7 +351,7 @@ apf.AmlWindow = function(struct, tagName){
     this.$propHandlers["modal"] = function(value){
         if (value) {
             if (this.visible)
-                apf.plane.show(this.$ext, false, null, null, {
+                ppc.plane.show(this.$ext, false, null, null, {
                     color       : "black", 
                     opacity     : this.cover && this.cover.getAttribute("opacity") || 0.5,
                     protect     : this.$uniqueId,
@@ -359,7 +359,7 @@ apf.AmlWindow = function(struct, tagName){
                 });
         }
         else { 
-            apf.plane.hide(this.$uniqueId);
+            ppc.plane.hide(this.$uniqueId);
         }
     };
 
@@ -386,17 +386,17 @@ apf.AmlWindow = function(struct, tagName){
         if (!this.oIcon) return;
 
         this.oIcon.style.display = value ? "" : "none";
-        apf.skins.setIcon(this.oIcon, value, this.iconPath);
+        ppc.skins.setIcon(this.oIcon, value, this.iconPath);
     };
     
     this.$afterRender = function(){
         if (this.center && !this.left && !this.top && !this.right && !this.bottom && !this.anchors) {
             //#ifdef __WITH_LAYOUT
-            apf.layout.processQueue();
+            ppc.layout.processQueue();
             //#endif
     
             var size = !this.$ext.offsetParent || this.$ext.offsetParent.tagName == "BODY"
-                ? [apf.getWindowWidth(), apf.getWindowHeight()]
+                ? [ppc.getWindowWidth(), ppc.getWindowHeight()]
                 : [this.$ext.offsetParent.offsetWidth, this.$ext.offsetParent.offsetHeight, 0, 0];
     
             if (size.length == 2) {
@@ -424,12 +424,12 @@ apf.AmlWindow = function(struct, tagName){
 
     var hEls = [], wasVisible;
     this.$propHandlers["visible"] = function(value){
-        if (apf.isTrue(value)){
+        if (ppc.isTrue(value)){
             if (this.dispatchEvent("beforeshow") === false)
                 return (this.visible = false);
             
             if (this.modal){
-                apf.plane.show(this.$ext, false, null, null, {
+                ppc.plane.show(this.$ext, false, null, null, {
                     color       : "black", 
                     opacity     : this.cover && this.cover.getAttribute("opacity") || 0.5,
                     protect     : this.$uniqueId,
@@ -444,20 +444,20 @@ apf.AmlWindow = function(struct, tagName){
             //if (this.modal) 
                 //this.$ext.style.position = "fixed";
             
-            if (!apf.canHaveHtmlOverSelects && this.hideselects) {
+            if (!ppc.canHaveHtmlOverSelects && this.hideselects) {
                 hEls = [];
                 var nodes = document.getElementsByTagName("select");
                 for (var i = 0; i < nodes.length; i++) {
-                    var oStyle = apf.getStyle(nodes[i], "display");
+                    var oStyle = ppc.getStyle(nodes[i], "display");
                     hEls.push([nodes[i], oStyle]);
                     nodes[i].style.display = "none";
                 }
             }
 
             //if (this.modal)
-                //this.$ext.style.zIndex = apf.plane.$zindex - 1;
+                //this.$ext.style.zIndex = ppc.plane.$zindex - 1;
             
-            if (apf.isIE) {
+            if (ppc.isIE) {
                 var cls = this.$ext.className;
                 this.$ext.className = "rnd" + Math.random();
                 this.$ext.className = cls;
@@ -470,18 +470,18 @@ apf.AmlWindow = function(struct, tagName){
         }
         else { 
             if (this.modal)
-                apf.plane.hide(this.$uniqueId);
+                ppc.plane.hide(this.$uniqueId);
 
             this.$ext.style.display = "none";
 
-            if (!apf.canHaveHtmlOverSelects && this.hideselects) {
+            if (!ppc.canHaveHtmlOverSelects && this.hideselects) {
                 for (var i = 0; i < hEls.length; i++) {
                     hEls[i][0].style.display = hEls[i][1];
                 }
             }
 
             if (this.hasFocus())
-                apf.window.moveNext(true, this, true);//go backward to detect modals
+                ppc.window.moveNext(true, this, true);//go backward to detect modals
 
             this.visible = false;
             
@@ -489,8 +489,8 @@ apf.AmlWindow = function(struct, tagName){
         }
         
         //#ifdef __WITH_LAYOUT
-        if (apf.layout && this.$int)
-            apf.layout.forceResize(this.$int); //@todo this should be recursive down
+        if (ppc.layout && this.$int)
+            ppc.layout.forceResize(this.$int); //@todo this should be recursive down
         //#endif
 
         wasVisible = value;
@@ -504,7 +504,7 @@ apf.AmlWindow = function(struct, tagName){
 
     //#ifdef __WITH_KEYBOARD
     //#ifdef __SUPPORT_IPHONE
-    if (!apf.isIphone) {
+    if (!ppc.isIphone) {
     //#endif
     this.addEventListener("keydown", function(e){
         var key      = e.keyCode;
@@ -512,7 +512,7 @@ apf.AmlWindow = function(struct, tagName){
         var shiftKey = e.shiftKey;
 
         /*if (key > 36 && key < 41) {
-            if (this.hasFeature && this.hasFeature(apf.__ANCHORING__))
+            if (this.hasFeature && this.hasFeature(ppc.__ANCHORING__))
                 this.$disableAnchoring();
         }*/
 
@@ -565,8 +565,8 @@ apf.AmlWindow = function(struct, tagName){
                 return;
         }
         //#ifdef __WITH_LAYOUT
-        if (apf.hasSingleRszEvent)
-            apf.layout.forceResize(this.$int);
+        if (ppc.hasSingleRszEvent)
+            ppc.layout.forceResize(this.$int);
         //#endif
         return retValue;
     }, true);
@@ -585,7 +585,7 @@ apf.AmlWindow = function(struct, tagName){
     // *** Init *** //
 
     this.$draw = function(){
-        this.popout = apf.isTrue(this.getAttribute("popout"));
+        this.popout = ppc.isTrue(this.getAttribute("popout"));
         if (this.popout)
             this.$pHtmlNode = document.body;
 
@@ -605,7 +605,7 @@ apf.AmlWindow = function(struct, tagName){
             this.oIcon.style.display = "none";
 
         //#ifdef __SUPPORT_IPHONE
-        if (!apf.isIphone) {
+        if (!ppc.isIphone) {
         //#endif
         
         var _self = this;
@@ -616,7 +616,7 @@ apf.AmlWindow = function(struct, tagName){
     
                 //because of some issue I don't understand oExt.onmousedown is not called
                 if (!_self.$isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
-                    apf.WinServer.setTop(_self);
+                    ppc.WinServer.setTop(_self);
     
                 if (_self.$lastState.maximized)
                     return false;
@@ -633,14 +633,14 @@ apf.AmlWindow = function(struct, tagName){
 
         this.$ext.onmousedown = function(){
             //#ifdef __WITH_FOCUS
-            var p = apf.document.activeElement;
+            var p = ppc.document.activeElement;
             if (p && p.$focusParent != _self && p.$focusParent.modal)
                 return false;
             //#endif
             
             //Set ZIndex on oExt mousedown
             if (!_self.$isWidget && (!_self.aData || !_self.dockable || _self.aData.hidden == 3))
-                apf.WinServer.setTop(_self);
+                ppc.WinServer.setTop(_self);
 
             if (!_self.$lastState.normal)
                 return false;
@@ -656,17 +656,17 @@ apf.AmlWindow = function(struct, tagName){
 
         /*var v;
         if (!((v = this.getAttribute("visible")).indexOf("{") > -1 || v.indexOf("[") > -1)) {
-            this.$aml.setAttribute("visible", "{" + apf.isTrue(v) + "}");
+            this.$aml.setAttribute("visible", "{" + ppc.isTrue(v) + "}");
         }*/
     };
 
     this.$loadAml = function(x){
-        apf.WinServer.setTop(this);
+        ppc.WinServer.setTop(this);
 
         this.$int = this.$getLayoutNode("main", "container", this.$ext);
 
         //#ifdef __SUPPORT_IPHONE
-        if (!apf.isIphone) {
+        if (!ppc.isIphone) {
         //#endif
             if (this.oTitle) {
                 var _self = this;
@@ -684,7 +684,7 @@ apf.AmlWindow = function(struct, tagName){
     
             if (typeof this.draggable == "undefined") {
                 (this.$propHandlers.draggable
-                    || apf.GuiElement.propHandlers.draggable).call(this, true);
+                    || ppc.GuiElement.propHandlers.draggable).call(this, true);
                 this.draggable = true;
             }
 
@@ -707,7 +707,7 @@ apf.AmlWindow = function(struct, tagName){
         //#ifdef __WITH_FOCUS
         else if (this.modal) {
             var _self = this;
-            apf.queue.add("focus", function(){
+            ppc.queue.add("focus", function(){
                 _self.focus(false, {mouse:true});
             });
         }
@@ -762,7 +762,7 @@ apf.AmlWindow = function(struct, tagName){
         if (this.oDrag) {
             this.oDrag.host = null;
             this.oDrag.onmousedown = null;
-            apf.destroyHtmlNode(this.oDrag);
+            ppc.destroyHtmlNode(this.oDrag);
             this.oDrag = null;
         }
 
@@ -773,11 +773,11 @@ apf.AmlWindow = function(struct, tagName){
             this.$ext.onmousemove = null;
         }
     };
-}).call(apf.modalwindow.prototype = new apf.Presentation());
+}).call(ppc.modalwindow.prototype = new ppc.Presentation());
 
-apf.AmlWindow.prototype = apf.toolwindow.prototype = apf.modalwindow.prototype;
+ppc.AmlWindow.prototype = ppc.toolwindow.prototype = ppc.modalwindow.prototype;
 
-apf.aml.setElement("toolwindow",  apf.toolwindow);
-apf.aml.setElement("modalwindow", apf.modalwindow);
-apf.aml.setElement("window",      apf.modalwindow);
+ppc.aml.setElement("toolwindow",  ppc.toolwindow);
+ppc.aml.setElement("modalwindow", ppc.modalwindow);
+ppc.aml.setElement("window",      ppc.modalwindow);
 // #endif

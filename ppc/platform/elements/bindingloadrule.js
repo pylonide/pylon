@@ -24,22 +24,22 @@
 /*
  * @todo docs
  */
-apf.BindingLoadRule = function(struct, tagName){
-    this.$init(tagName, apf.NODE_HIDDEN, struct);
+ppc.BindingLoadRule = function(struct, tagName){
+    this.$init(tagName, ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         get   : 1
     }, this.$attrExcludePropBind);
 
     this.$propHandlers["get"] = function(value, prop){
         delete this["c" + prop];
     }
-}).call(apf.BindingLoadRule.prototype = new apf.BindingRule());
+}).call(ppc.BindingLoadRule.prototype = new ppc.BindingRule());
 
-apf.aml.setElement("load", apf.BindingLoadRule);
-apf.aml.setElement("insert", apf.BindingLoadRule);
+ppc.aml.setElement("load", ppc.BindingLoadRule);
+ppc.aml.setElement("insert", ppc.BindingLoadRule);
 // #endif
 

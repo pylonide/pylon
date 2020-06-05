@@ -29,17 +29,17 @@
  * Buttons placed inside this element can contain an action
  * attribute specifying whether they behave as next, previous or finish(submit)
  * buttons. This element is *not<* neccesary for simple forms, like the
- * normal HTML webforms (see {@link apf.Validation}). This element should
+ * normal HTML webforms (see {@link ppc.Validation}). This element should
  * be used when multi page forms are required, or a wizard style form.
  *
- * @class apf.xforms
+ * @class ppc.xforms
  * @define submitform, xforms
  * @allowchild page, {elements}, {anyaml}
  *
  *
- * @inherits apf.StandardBinding
- * @inherits apf.BaseTab
- * @inherits apf.ValidationGroup
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.BaseTab
+ * @inherits ppc.ValidationGroup
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -50,21 +50,21 @@
  * 
  */
 // @todo please refactor. This element should be cleared of most its 'features' its all bollocks.
-apf.xforms     = function(struct, tagName){
-    this.$init(tagName || "xforms", apf.NODE_VISIBLE, struct);
+ppc.xforms     = function(struct, tagName){
+    this.$init(tagName || "xforms", ppc.NODE_VISIBLE, struct);
 };
 
-apf.submitform = function(struct, tagName){
-    this.$init(tagName || "submitform", apf.NODE_VISIBLE, struct);
+ppc.submitform = function(struct, tagName){
+    this.$init(tagName || "submitform", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction,
+        ppc.DataAction,
         //#endif
-        apf.BaseTab,
-        apf.ValidationGroup
+        ppc.BaseTab,
+        ppc.ValidationGroup
     );
 
     this.$focussable     = false;
@@ -113,7 +113,7 @@ apf.submitform = function(struct, tagName){
 
             var message = this.getPage().getAttribute("loadmessage");
             if (message)
-                (apf.queryNode(this.loadState, "div[@class='msg']")
+                (ppc.queryNode(this.loadState, "div[@class='msg']")
                   || this.loadState).innerHTML = message;
         }
     };
@@ -148,7 +148,7 @@ apf.submitform = function(struct, tagName){
         this.set(this.activepagenr + 1);//nextpagenr
         //this.activepagenr = nextpagenr;
 
-        //if(!no_error && !nextpage) throw new Error(apf.formatErrorString(1006, this, "Form", "End of pages reached."));
+        //if(!no_error && !nextpage) throw new Error(ppc.formatErrorString(1006, this, "Form", "End of pages reached."));
 
         //nextpage.show();
         //if(nextpage.$rendered) this.hideLoader();
@@ -178,7 +178,7 @@ apf.submitform = function(struct, tagName){
         //this.getPage().hide();
         //this.activepagenr = active;
 
-        //if(!prevpage) throw new Error(apf.formatErrorString(1006, this, "Form", "End of pages reached."));
+        //if(!prevpage) throw new Error(ppc.formatErrorString(1006, this, "Form", "End of pages reached."));
 
         //prevpage.show();
 
@@ -268,7 +268,7 @@ apf.submitform = function(struct, tagName){
             objEl.setInactive();
         }
 
-        if (objEl.nodeFunc == apf.NODE_VISIBLE)
+        if (objEl.nodeFunc == ppc.NODE_VISIBLE)
             objEl.setZIndex(--this.zCount);
 
         if (this.listsHeldBack[name]) {
@@ -342,12 +342,12 @@ apf.submitform = function(struct, tagName){
 
         /*
             new Function(
-                "apf.lookup(" + this.$uniqueId + ").showLoader(true);setTimeout("apf.lookup(" + this.$uniqueId + ")." + action + "()", 10)"
+                "ppc.lookup(" + this.$uniqueId + ").showLoader(true);setTimeout("ppc.lookup(" + this.$uniqueId + ")." + action + "()", 10)"
             );
 
             action == "previous" ?
-                "apf.lookup(" + this.$uniqueId + ")." + action + "()" :
-                "apf.lookup(" + this.$uniqueId + ").showLoader();setTimeout("apf.lookup(" + this.$uniqueId + ")." + action + "()", 10)"
+                "ppc.lookup(" + this.$uniqueId + ")." + action + "()" :
+                "ppc.lookup(" + this.$uniqueId + ").showLoader();setTimeout("ppc.lookup(" + this.$uniqueId + ")." + action + "()", 10)"
             );
         */
     };
@@ -411,7 +411,7 @@ apf.submitform = function(struct, tagName){
                         var nodes = this.xmlRoot.selectSingleNode("node()[@lid='" + lid + "']");
 
                         for(var i=0;i<nodes.length;i++){
-                            apf.xmldb.removeNode(nodes[i]);
+                            ppc.xmldb.removeNode(nodes[i]);
                         }
                     }*/
                 }
@@ -433,14 +433,14 @@ apf.submitform = function(struct, tagName){
 
     this.processLoadRule = function(xmlCommNode, isList, data){
         //Extend with Method etc
-        if (!apf.teleport.hasLoadRule(xmlCommNode)) return;
+        if (!ppc.teleport.hasLoadRule(xmlCommNode)) return;
 
         this.dispatchEvent(isList ? "beforeloadlist" : "beforeloadvalue");
 
         //Process basedon arguments
         var nodes = xmlCommNode.childNodes;//selectNodes("node()[@arg-type | @arg-nr]"); //Safari bugs on this XPath... hack!
         if (nodes.length) {
-            var arr, arg = xmlCommNode.getAttribute(apf.teleport.lastRuleFound.args);
+            var arr, arg = xmlCommNode.getAttribute(ppc.teleport.lastRuleFound.args);
             arg = arg ? arg.split(";") : [];
 
             if (xmlCommNode.getAttribute("argarray"))
@@ -450,7 +450,7 @@ apf.submitform = function(struct, tagName){
                 if (nodes[j].getAttribute("argtype").match(/fixed|param|nocheck/)) { //Where does item come from??? || item == nodes[j].getAttribute("element")
                     var el    = self[nodes[j].getAttribute("element")];
                     var xpath = el.getMainBindXpath();
-                    var xNode = apf.createNodeFromXpath(this.xmlRoot, xpath);
+                    var xNode = ppc.createNodeFromXpath(this.xmlRoot, xpath);
                     var nType = xNode.nodeType;
                     (arr || arg)[nodes[j].getAttribute("argnr") || j] =
                         "xpath:" + xpath + (nType == 1 ? "/text()" : "");
@@ -458,7 +458,7 @@ apf.submitform = function(struct, tagName){
                 else
                     if(nodes[j].getAttribute("argtype") == "xpath") {
                         (arr || arg)[nodes[j].getAttribute("argnr") || j] =
-                            "xpath:" + nodes[j].getAttribute("select");//apf.queryValue(this.xmlRoot, );
+                            "xpath:" + nodes[j].getAttribute("select");//ppc.queryValue(this.xmlRoot, );
                     }
             }
 
@@ -466,19 +466,19 @@ apf.submitform = function(struct, tagName){
                 arg[xmlCommNode.getAttribute("argarray")] = "(" + arr.join(",") + ")";
             }
 
-            xmlCommNode.setAttribute(apf.teleport.lastRuleFound.args, arg.join(";"));
+            xmlCommNode.setAttribute(ppc.teleport.lastRuleFound.args, arg.join(";"));
         }
 
         //this.xmlRoot.firstChild
         //if(confirm("do you want to debug?")) throw new Error();
 
         var jNode = self[xmlCommNode.getAttribute("element")];
-        if (jNode && jNode.nodeFunc == apf.NODE_VISIBLE)
+        if (jNode && jNode.nodeFunc == ppc.NODE_VISIBLE)
             jNode.$setStyleClass(jNode.$ext, "loading", ["loaded"]);
 
-        //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", apf.getUniqueId());
-        apf.teleport.callMethodFromNode(xmlCommNode, this.xmlRoot,
-            Function('data', 'state', 'extra', 'apf.lookup(' + this.$uniqueId
+        //if(!isList && !data[0].getAttribute("lid")) data[0].setAttribute("lid", ppc.getUniqueId());
+        ppc.teleport.callMethodFromNode(xmlCommNode, this.xmlRoot,
+            Function('data', 'state', 'extra', 'ppc.lookup(' + this.$uniqueId
                 + ').' + (isList ? 'loadLists' : 'loadValues')
                 + '(data, state, extra)'), null, data);
     };
@@ -497,7 +497,7 @@ apf.submitform = function(struct, tagName){
                     forceActive = true;
                 else
                     if (nodes[i].getAttribute("ref") && this.xmlRoot
-                      && apf.queryValue(this.xmlRoot
+                      && ppc.queryValue(this.xmlRoot
                       .selectSingleNode(nodes[i].getAttribute("ref"))) != "") {
                         forceActive = true;
                         nodes[i].setAttribute("show", "true");
@@ -542,29 +542,29 @@ apf.submitform = function(struct, tagName){
         }
         catch(e) {
             return false;
-            //throw new Error(apf.formatErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
+            //throw new Error(ppc.formatErrorString(1009, this, "Form", "Invalid conditional statement [" + strCondition + "] : " + e.message));
         }
     };
 
     this.loadValues = function(data, state, extra){
-        if (state != apf.SUCCESS) {
-            if (extra.retries < apf.maxHttpRetries)
+        if (state != ppc.SUCCESS) {
+            if (extra.retries < ppc.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
-                throw new Error(apf.formatErrorString(1010, this, "LoadVaLue", "Could not load values with LoadValue query :\n\n" + extra.message));
+                throw new Error(ppc.formatErrorString(1010, this, "LoadVaLue", "Could not load values with LoadValue query :\n\n" + extra.message));
         }
 
         if (extra.userdata[0].getAttribute("returntype") == "array") {
             //integrate array
             for (var i = 0; i < data.length; i++) {
                 var pnode = this.xmlRoot.selectSingleNode("//" + data[i][0]);
-                apf.xmldb.setTextNode(pnode, data[i][1] || "");
+                ppc.xmldb.setTextNode(pnode, data[i][1] || "");
             }
         }
         else {
             //integrate xml
             if (typeof data != "object")
-                data = apf.getXmlDom(data).documentElement;
+                data = ppc.getXmlDom(data).documentElement;
             var nodes     = data.childNodes;
             var strUnique = extra.userdata[0].getAttribute("unique");
 
@@ -578,24 +578,24 @@ apf.submitform = function(struct, tagName){
                     : null;
                 if (node) {
                     //Move all this into the xmldb
-                    apf.xmldb.copyConnections(node, xmlNode);
-                    apf.xmldb.notifyListeners(xmlNode);
+                    ppc.xmldb.copyConnections(node, xmlNode);
+                    ppc.xmldb.notifyListeners(xmlNode);
 
                     //node.setAttribute("lid", data.getAttribute("lid"));
 
                     //hack!! - should be recursive
                     var valueNode = xmlNode.selectSingleNode("value");
                     if (valueNode) {
-                        apf.xmldb.copyConnections(node
+                        ppc.xmldb.copyConnections(node
                             .selectSingleNode("value"), valueNode);
-                        apf.xmldb.notifyListeners(valueNode);
+                        ppc.xmldb.notifyListeners(valueNode);
                     }
                 }
 
                 this.xmlRoot.insertBefore(xmlNode, node); //consider using replaceChild here
                 if (node)
                     this.xmlRoot.removeChild(node);
-                apf.xmldb.applyChanges("attribute", xmlNode);
+                ppc.xmldb.applyChanges("attribute", xmlNode);
             }
         }
 
@@ -603,11 +603,11 @@ apf.submitform = function(struct, tagName){
     };
 
     this.loadLists = function(data, state, extra){
-        if (state != apf.SUCCESS){
-            if (extra.retries < apf.maxHttpRetries)
+        if (state != ppc.SUCCESS){
+            if (extra.retries < ppc.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
-                throw new Error(apf.formatErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
+                throw new Error(ppc.formatErrorString(1011, this, "Load List", "Could not load data with LoadList query :\n\n" + extra.message));
         }
 
         if (!self[extra.userdata[0].getAttribute("element")])
@@ -616,9 +616,9 @@ apf.submitform = function(struct, tagName){
 
         //set style
         var jNode = self[extra.userdata[0].getAttribute("element")];
-        if (jNode && jNode.nodeFunc == apf.NODE_VISIBLE) {
+        if (jNode && jNode.nodeFunc == ppc.NODE_VISIBLE) {
             jNode.$setStyleClass(jNode.$ext, "loaded", ["loading"]);
-            $setTimeout("var jNode = apf.lookup(" + jNode.$uniqueId + ");\
+            $setTimeout("var jNode = ppc.lookup(" + jNode.$uniqueId + ");\
                 jNode.$setStyleClass(jNode.$ext, '', ['loading', 'loaded']);", 500);
         }
 
@@ -662,7 +662,7 @@ apf.submitform = function(struct, tagName){
 
             //Hack!!! maybe each
             if (el.length) {
-                throw new Error(apf.formatErrorString(this, "clearing form",
+                throw new Error(ppc.formatErrorString(this, "clearing form",
                     "Found controls without a name or with a name that isn't unique. Please give all elements of your submitform an id: '" + name + "'"));
             }
 
@@ -686,8 +686,8 @@ apf.submitform = function(struct, tagName){
     this.smartBinding = {};
 
     this.$load = function(XMLRoot, id){
-        apf.xmldb.addNodeListener(XMLRoot, this);
-        //this.setConnections(apf.xmldb.getElement(XMLRoot, 0), "select");
+        ppc.xmldb.addNodeListener(XMLRoot, this);
+        //this.setConnections(ppc.xmldb.getElement(XMLRoot, 0), "select");
         //this.setConnections(XMLRoot, "select");
     };
 
@@ -703,13 +703,13 @@ apf.submitform = function(struct, tagName){
     function onafterload(){
         //Clear all error states
         for (var name in this.elements) {
-            if (apf.isWebkit && (!this.elements[name]
+            if (ppc.isWebkit && (!this.elements[name]
               || !this.elements[name].$amlLoaders))
                 continue;
 
             //Hack!!! maybe each
             if (this.elements[name].length) {
-                throw new Error(apf.formatErrorString(1012, this, "clearing form",
+                throw new Error(ppc.formatErrorString(1012, this, "clearing form",
                 "Found controls without a name or with a name that isn't unique("
                 + name + "). Please give all elements of your submitform an id: '"
                 + name + "'"));
@@ -746,10 +746,10 @@ apf.submitform = function(struct, tagName){
 
         if (this.nQuest && this.xmlRoot.childNodes.length > 0) {
             var element = this.nQuest.getAttribute("final"),
-                amlNode = self[element].$aml;//apf.queryNode(".//node()[@id='" + element + "']", this.$aml);
+                amlNode = self[element].$aml;//ppc.queryNode(".//node()[@id='" + element + "']", this.$aml);
 
-            if (amlNode && !apf.getBoundValue(amlNode, this.xmlRoot)) {
-                var fNextQNode = apf.xmldb
+            if (amlNode && !ppc.getBoundValue(amlNode, this.xmlRoot)) {
+                var fNextQNode = ppc.xmldb
                     .selectSingleNode(".//node()[@checknext='true']", this.$aml);
                 if (!fNextQNode) return;
                 self[fNextQNode.getAttribute("id")].dispatchEvent("afterchange");
@@ -785,12 +785,12 @@ apf.submitform = function(struct, tagName){
     /* *********
         INIT
     **********/
-    this.implement(apf.GuiElement); /** @inherits apf.GuiElement */
+    this.implement(ppc.GuiElement); /** @inherits ppc.GuiElement */
 
     this.addOther = function(tagName, oAml){
         if (tagName == "loadstate") {
-            var htmlNode   = apf.getFirstElement(oAml);
-            this.loadState = apf.insertHtmlNode(htmlNode, this.$int);
+            var htmlNode   = ppc.getFirstElement(oAml);
+            this.loadState = ppc.insertHtmlNode(htmlNode, this.$int);
             this.loadState.style.display = "none";
         }
     };
@@ -842,7 +842,7 @@ apf.submitform = function(struct, tagName){
         this.method        = (this.getAttribute("method") || "get").toLowerCase();
         this.useComponents = this.getAttribute("usecomponents") || true;
 
-        apf.setModel(x.getAttribute("model"), this);
+        ppc.setModel(x.getAttribute("model"), this);
 
         this.$loadChildren(function(xmlPage) {
             this.validation = xmlPage.getAttribute("validation") || "true";
@@ -850,13 +850,13 @@ apf.submitform = function(struct, tagName){
         });
     };
 // #ifdef __WITH_DATABINDING
-}).call(apf.submitform.prototype = new apf.StandardBinding());
+}).call(ppc.submitform.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.submitform.prototype = new apf.Presentation());
+}).call(ppc.submitform.prototype = new ppc.Presentation());
 #endif*/
 
-apf.xforms.prototype = apf.submitform.prototype;
+ppc.xforms.prototype = ppc.submitform.prototype;
 
-apf.aml.setElement("xforms", apf.xforms);
-apf.aml.setElement("submitform", apf.submitform);
+ppc.aml.setElement("xforms", ppc.xforms);
+ppc.aml.setElement("submitform", ppc.submitform);
 // #endif

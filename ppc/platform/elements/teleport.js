@@ -21,6 +21,6 @@
 
 // #ifdef __AMLTELEPORT || __INC_ALL
 
-apf.aml.setElement("teleport", apf.AmlElement);
+ppc.aml.setElement("teleport", ppc.AmlElement);
 
 // #endif

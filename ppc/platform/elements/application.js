@@ -28,13 +28,13 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.application = function(){
-    this.$init("application", apf.NODE_HIDDEN);
+ppc.application = function(){
+    this.$init("application", ppc.NODE_HIDDEN);
     
-    if (!apf.isO3) {    
+    if (!ppc.isO3) {    
         this.$int        = document.body;
         this.$tabList    = []; //Prevents documentElement from being focussed
-        this.$focussable = apf.KEYBOARD;
+        this.$focussable = ppc.KEYBOARD;
         this.focussable  = true;
         this.visible     = true;
         this.$isWindowContainer = true;
@@ -42,10 +42,10 @@ apf.application = function(){
         this.blur  = function(){ this.dispatchEvent("blur"); };
     
         //#ifdef __WITH_FOCUS
-        apf.window.$addFocus(this);
+        ppc.window.$addFocus(this);
         //#endif
     }
 };
-apf.application.prototype = new apf.AmlElement();
-apf.aml.setElement("application", apf.application);
+ppc.application.prototype = new ppc.AmlElement();
+ppc.aml.setElement("application", ppc.application);
 // #endif

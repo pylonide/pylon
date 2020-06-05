@@ -74,8 +74,8 @@
  * </a:application>
  * ```
  * 
- * @class apf.button
- * @inherits apf.BaseButton
+ * @class ppc.button
+ * @inherits ppc.BaseButton
  * @define button
  *
  *
@@ -83,23 +83,23 @@
  * @version     %I%, %G%
  * @since       0.4
  * @form
- * @inherits apf.BaseButton
+ * @inherits ppc.BaseButton
  */
-apf.submit  = function(struct, tagName){
-    this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
+ppc.submit  = function(struct, tagName){
+    this.$init(tagName || "submit", ppc.NODE_VISIBLE, struct);
 };
 
 
-apf.trigger = function(struct, tagName){
-    this.$init(tagName || "trigger", apf.NODE_VISIBLE, struct);
+ppc.trigger = function(struct, tagName){
+    this.$init(tagName || "trigger", ppc.NODE_VISIBLE, struct);
 };
 
-apf.reset   = function(struct, tagName){
-    this.$init(tagName || "reset", apf.NODE_VISIBLE, struct);
+ppc.reset   = function(struct, tagName){
+    this.$init(tagName || "reset", ppc.NODE_VISIBLE, struct);
 };
 
-apf.button  = function(struct, tagName){
-    this.$init(tagName || "button", apf.NODE_VISIBLE, struct);
+ppc.button  = function(struct, tagName){
+    this.$init(tagName || "button", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
@@ -111,7 +111,7 @@ apf.button  = function(struct, tagName){
 
     // *** Properties and Attributes *** //
 
-    this.$focussable  = apf.KEYBOARD; // This object can get the focus
+    this.$focussable  = ppc.KEYBOARD; // This object can get the focus
     this.value        = null;
     
     this.$init(function(){
@@ -119,7 +119,7 @@ apf.button  = function(struct, tagName){
         var forceFocus, _self = this, lastDefaultParent;
         this.$propHandlers["default"] = function(value){
             if (parseInt(value) != value)
-                value = apf.isTrue(value) ? 1 : 0;
+                value = ppc.isTrue(value) ? 1 : 0;
 
             this["default"] = parseInt(value);
             
@@ -152,7 +152,7 @@ apf.button  = function(struct, tagName){
             e.defaultButtonSet = true;
     
             if (this.$useExtraDiv)
-                _self.$ext.appendChild(apf.button.$extradiv);
+                _self.$ext.appendChild(ppc.button.$extradiv);
     
             _self.$setStyleClass(_self.$ext, _self.$baseCSSname + "Default");
     
@@ -162,8 +162,8 @@ apf.button  = function(struct, tagName){
         }
     
         function removeDefault(e){
-            if (this.$useExtraDiv && apf.button.$extradiv.parentNode == _self.$ext)
-                _self.$ext.removeChild(apf.button.$extradiv);
+            if (this.$useExtraDiv && ppc.button.$extradiv.parentNode == _self.$ext)
+                _self.$ext.removeChild(ppc.button.$extradiv);
     
             _self.$setStyleClass(_self.$ext, "", [_self.$baseCSSname + "Default"]);
     
@@ -175,9 +175,9 @@ apf.button  = function(struct, tagName){
         function btnKeyDown(e){
             var ml;
     
-            var f = apf.document.activeElement;
+            var f = ppc.document.activeElement;
             if (f) {
-                if (f.hasFeature(apf.__MULTISELECT__))
+                if (f.hasFeature(ppc.__MULTISELECT__))
                     return;
     
                 ml = f.multiline;
@@ -189,7 +189,7 @@ apf.button  = function(struct, tagName){
             if (ml && ml != "optional" && e.keyCode == 13
               && e.ctrlKey || (!ml || ml == "optional")
               && e.keyCode == 13 && !e.ctrlKey && !e.shiftKey && !e.altKey) {
-                apf.preventDefault(e.htmlEvent);
+                ppc.preventDefault(e.htmlEvent);
                 _self.$ext.onmouseup(e.htmlEvent, true);
             }
         }
@@ -200,8 +200,8 @@ apf.button  = function(struct, tagName){
         this.$enable = function(){
             if (this["default"]) {
                 setDefault({});
-                if (apf.document.activeElement)
-                    apf.document.activeElement.focus(true);
+                if (ppc.document.activeElement)
+                    ppc.document.activeElement.focus(true);
             }
             
             if (this.state && this.value)
@@ -272,7 +272,7 @@ apf.button  = function(struct, tagName){
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG
         if (!this.oIcon)
-            return apf.console.warn("No icon defined in the Button skin", "button");
+            return ppc.console.warn("No icon defined in the Button skin", "button");
         /* #else
         if (!this.oIcon) return;
         #endif */
@@ -282,7 +282,7 @@ apf.button  = function(struct, tagName){
         else
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Icon"]);
 
-        apf.skins.setIcon(this.oIcon, value, this.iconPath);
+        ppc.skins.setIcon(this.oIcon, value, this.iconPath);
     };
 
     this.$propHandlers["value"] = function(value){
@@ -345,17 +345,17 @@ apf.button  = function(struct, tagName){
      */
     this.$propHandlers["hotkey"] = function(value){
         if (this.$hotkey)
-            apf.setNodeValue(this.$hotkey, value);
+            ppc.setNodeValue(this.$hotkey, value);
 
         if (this.$lastHotkey) {
-            apf.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
+            ppc.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
             delete this.$lastHotkey[0];
         }
 
         if (value) {
             this.$lastHotkey = [value];
             var _self = this;
-            apf.hotkeys.register(value, this.$lastHotkey[1] = function(){
+            ppc.hotkeys.register(value, this.$lastHotkey[1] = function(){
                 //hmm not very scalable...
                 _self.$setState("Over", {});
 
@@ -371,7 +371,7 @@ apf.button  = function(struct, tagName){
         }
 
         if (this.tooltip)
-            apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
+            ppc.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
     }
     //#endif
 
@@ -382,7 +382,7 @@ apf.button  = function(struct, tagName){
         return;
         var key = e.keyCode;
 
-        var next, nr = apf.getChildNumber(this);
+        var next, nr = ppc.getChildNumber(this);
         if (key == 37) { //left
             next = nr == 0
                 ? this.parentNode.childNodes.length - 1
@@ -408,7 +408,7 @@ apf.button  = function(struct, tagName){
 
         //#ifdef __DEBUG
         if (!menu) {
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Showing submenu",
                 "Could not find submenu '" + this.submenu + "'"));
         }
@@ -433,8 +433,8 @@ apf.button  = function(struct, tagName){
             if (this.parentNode.hasMoved)
                 this.value = false;
 
-            if (apf.hasFocusBug)
-                apf.window.$focusfix();
+            if (ppc.hasFocusBug)
+                ppc.window.$focusfix();
 
             return false;
         }
@@ -447,7 +447,7 @@ apf.button  = function(struct, tagName){
         this.parentNode.hasMoved = false;
 
         if (e && e.htmlEvent)
-            apf.stopPropagation(e.htmlEvent);
+            ppc.stopPropagation(e.htmlEvent);
 
         return false;
     }
@@ -471,13 +471,13 @@ apf.button  = function(struct, tagName){
 
         //#ifdef __DEBUG
         if (!menu) {
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Showing submenu",
                 "Could not find submenu '" + this.submenu + "'"));
         }
         //#endif
 
-        //var pos = apf.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
+        //var pos = ppc.getAbsolutePosition(this.$ext, menu.$ext.offsetParent);
 
 //        menu.display(pos[0],
 //            pos[1] + this.$ext.offsetHeight, true, this,
@@ -486,7 +486,7 @@ apf.button  = function(struct, tagName){
         menu.display(null, null, true, this,
             null, null, this.$ext.offsetWidth - 2);
 
-        //apf.window.$focus(this);
+        //ppc.window.$focus(this);
         this.$focus();
 
         this.parentNode.hasMoved = true;
@@ -555,7 +555,7 @@ apf.button  = function(struct, tagName){
      * Sets the text displayed as a caption of this element.
      *
      * @param  {String}  value   The string to display.
-     * @see    apf.Validation
+     * @see    ppc.Validation
      */
     this.setCaption = function(value){
         this.setProperty("caption", value, false, true);
@@ -640,7 +640,7 @@ apf.button  = function(struct, tagName){
 
     this.addEventListener("$skinchange", function(e){
         if (this.tooltip)
-            apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
+            ppc.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
     });
 
     this.$draw  = function(){
@@ -651,7 +651,7 @@ apf.button  = function(struct, tagName){
             if (typeof this.focussable == "undefined")
                 this.focussable = false;
             
-            this.$focussable = apf.KEYBOARD;
+            this.$focussable = ppc.KEYBOARD;
         }
 
         //Build Main Skin
@@ -659,9 +659,9 @@ apf.button  = function(struct, tagName){
         this.oIcon    = this.$getLayoutNode("main", "icon", this.$ext);
         this.oCaption = this.$getLayoutNode("main", "caption", this.$ext);
 
-        this.$useExtraDiv = apf.isTrue(this.$getOption("main", "extradiv"));
-        if (!apf.button.$extradiv && this.$useExtraDiv) {
-            (apf.button.$extradiv = document.createElement("div"))
+        this.$useExtraDiv = ppc.isTrue(this.$getOption("main", "extradiv"));
+        if (!ppc.button.$extradiv && this.$useExtraDiv) {
+            (ppc.button.$extradiv = document.createElement("div"))
                 .className = "extradiv"
         }
 
@@ -685,7 +685,7 @@ apf.button  = function(struct, tagName){
         //this.$blur();
 
         //if (this.$focussable !== true && this.hasFocus())
-            //apf.window.$focusLast(this.$focusParent);
+            //ppc.window.$focusLast(this.$focusParent);
     });
     //#endif
 
@@ -701,7 +701,7 @@ apf.button  = function(struct, tagName){
 
         var _self = this;
         $setTimeout(function(){
-            (apf.button.actions[action] || apf.K).call(_self);
+            (ppc.button.actions[action] || ppc.K).call(_self);
         });
     });
     //#endif
@@ -731,7 +731,7 @@ apf.button  = function(struct, tagName){
         if (this.submission) {
             var submission = self[this.submission];
             if (!submission)
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Submission",
                     "Could not find submission to execute action on '"
                     + this.submission + "'", this.$aml));
@@ -744,7 +744,7 @@ apf.button  = function(struct, tagName){
             if (this.target) {
                 //#ifdef __DEBUG
                 if (!self[this.target])
-                    throw new Error(apf.formatErrorString(0, this,
+                    throw new Error(ppc.formatErrorString(0, this,
                         "Clicking on Button",
                         "Could not find target to execute action on '"
                         + this.target + "' with action '"
@@ -767,7 +767,7 @@ apf.button  = function(struct, tagName){
                     target = this.getModel();
                     //#ifdef __DEBUG
                     if (!target)
-                        throw new Error(apf.formatErrorString(0, this,
+                        throw new Error(ppc.formatErrorString(0, this,
                             "Clicking on Button",
                             "Could not find target to for action '"
                             + this.action + "'", this.$aml));
@@ -777,7 +777,7 @@ apf.button  = function(struct, tagName){
 
         //#ifdef __DEBUG
         if (!target[this.action])
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Clicking on Button",
                 "Could not find action on target.", this.$aml));
         //#endif
@@ -789,23 +789,23 @@ apf.button  = function(struct, tagName){
     //this.form.registerButton(this.action, this);
 
     #endif*/
-}).call(apf.button.prototype = new apf.BaseButton());
+}).call(ppc.button.prototype = new ppc.BaseButton());
 
 // submit, trigger, reset, button
-apf.submit.prototype  =
-apf.trigger.prototype =
-apf.reset.prototype   = apf.button.prototype;
+ppc.submit.prototype  =
+ppc.trigger.prototype =
+ppc.reset.prototype   = ppc.button.prototype;
 
-apf.aml.setElement("submit",  apf.submit);
-apf.aml.setElement("trigger", apf.trigger);
-apf.aml.setElement("reset",   apf.reset);
-apf.aml.setElement("button",  apf.button);
+ppc.aml.setElement("submit",  ppc.submit);
+ppc.aml.setElement("trigger", ppc.trigger);
+ppc.aml.setElement("reset",   ppc.reset);
+ppc.aml.setElement("button",  ppc.button);
 
 //#ifdef __ENABLE_BUTTON_ACTIONS
-apf.submit.action   =
-apf.trigger.actions =
-apf.reset.actions   =
-apf.button.actions  = {
+ppc.submit.action   =
+ppc.trigger.actions =
+ppc.reset.actions   =
+ppc.button.actions  = {
     // #ifdef __WITH_ACTIONTRACKER
     "undo" : function(action){
         var tracker;
@@ -820,11 +820,11 @@ apf.button.actions  = {
                 at = (node = node.parentNode).$at;
         }
 
-        (tracker || apf.window.$at)[action || "undo"]();
+        (tracker || ppc.window.$at)[action || "undo"]();
     },
 
     "redo" : function(){
-        apf.button.actions.undo.call(this, "redo");
+        ppc.button.actions.undo.call(this, "redo");
     },
     //#endif
 
@@ -834,7 +834,7 @@ apf.button.actions  = {
             self[this.target].remove()
         //#ifdef __DEBUG
         else
-            apf.console.warn("Target to remove wasn't found or specified:'"
+            ppc.console.warn("Target to remove wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
@@ -844,7 +844,7 @@ apf.button.actions  = {
             self[this.target].add()
         //#ifdef __DEBUG
         else
-            apf.console.warn("Target to add wasn't found or specified:'"
+            ppc.console.warn("Target to add wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
@@ -854,7 +854,7 @@ apf.button.actions  = {
             self[this.target].startRename()
         //#ifdef __DEBUG
         else
-            apf.console.warn("Target to rename wasn't found or specified:'"
+            ppc.console.warn("Target to rename wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     },
@@ -866,7 +866,7 @@ apf.button.actions  = {
             ? self[this.target]
             : this.parentNode;
 
-        var vg = parent.$validgroup || new apf.ValidationGroup();
+        var vg = parent.$validgroup || new ppc.ValidationGroup();
         if (!vg.childNodes.length)
             vg.childNodes = parent.childNodes.slice();
 
@@ -875,7 +875,7 @@ apf.button.actions  = {
             for (var node, i = 0, l = nodes.length; i < l; i++) {
                 node = nodes[i];
 
-                if (node.hasFeature(apf.__VALIDATION__)
+                if (node.hasFeature(ppc.__VALIDATION__)
                   && !node.$validgroup && !node.form) {
                     node.setProperty("validgroup", vg);
                 }
@@ -897,7 +897,7 @@ apf.button.actions  = {
 
         if (!vars.username || !vars.password) {
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Clicking the login button",
                 "Could not find the username or password box"));
             //#endif
@@ -905,16 +905,16 @@ apf.button.actions  = {
             return;
         }
 
-        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf,"auth")[0];
+        var auth = this.ownerDocument.getElementsByTagNameNS(ppc.ns.ppc,"auth")[0];
         if (!auth)
             return;
        
         auth.logIn(vars.username, vars.password);
-        //apf.auth.login(vars.username, vars.password);
+        //ppc.auth.login(vars.username, vars.password);
     },
 
     "logout" : function(){
-        var auth = this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        var auth = this.ownerDocument.getElementsByTagNameNS(ppc.ns.ppc, "auth")[0];
         if (!auth)
             return;
 
@@ -936,7 +936,7 @@ apf.button.actions  = {
             if (!parent.$validgroup) {
                 parent.$validgroup = parent.validgroup
                     ? self[parent.validgroup]
-                    : new apf.ValidationGroup();
+                    : new ppc.ValidationGroup();
             }
 
             vg = parent.$validgroup;
@@ -961,10 +961,10 @@ apf.button.actions  = {
             loopChildren(parent.childNodes);
 
             if (!model) {
-                model = apf.globalModel;
+                model = ppc.globalModel;
                 if (!model) {
                     //#ifdef __DEBUG
-                    throw new Error(apf.formatErrorString(0, this,
+                    throw new Error(ppc.formatErrorString(0, this,
                         "Finding a model to submit",
                         "Could not find a model to submit."));
                     //#endif
@@ -986,7 +986,7 @@ apf.button.actions  = {
     },
 
     "reset" : function(){
-        apf.button.actions["submit"].call(this, true);
+        ppc.button.actions["submit"].call(this, true);
     },
     //#endif
 
@@ -999,11 +999,11 @@ apf.button.actions  = {
         }
         else {
             var node = this.parentNode;
-            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
+            while (node && !node.hasFeature(ppc.__TRANSACTION__)) {
                 node = node.parentNode;
             }
 
-            if (node && !node.hasFeature(apf.__TRANSACTION__))
+            if (node && !node.hasFeature(ppc.__TRANSACTION__))
                 return;
         }
 
@@ -1019,11 +1019,11 @@ apf.button.actions  = {
         }
         else {
             var node = this.parentNode;
-            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
+            while (node && !node.hasFeature(ppc.__TRANSACTION__)) {
                 node = node.parentNode;
             }
 
-            if (node && !node.hasFeature(apf.__TRANSACTION__))
+            if (node && !node.hasFeature(ppc.__TRANSACTION__))
                 return;
         }
 
@@ -1040,11 +1040,11 @@ apf.button.actions  = {
         }
         else {
             var node = this.parentNode;
-            while (node && !node.hasFeature(apf.__TRANSACTION__)) {
+            while (node && !node.hasFeature(ppc.__TRANSACTION__)) {
                 node = node.parentNode;
             }
 
-            if (node && !node.hasFeature(apf.__TRANSACTION__))
+            if (node && !node.hasFeature(ppc.__TRANSACTION__))
                 return;
         }
 
@@ -1067,7 +1067,7 @@ apf.button.actions  = {
             parent.close();
         //#ifdef __DEBUG
         else
-            apf.console.warn("Target to close wasn't found or specified:'"
+            ppc.console.warn("Target to close wasn't found or specified:'"
                              + this.target + "'");
         //#endif
     }

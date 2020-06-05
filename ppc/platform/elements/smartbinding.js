@@ -28,8 +28,8 @@
  *
  * The {@link term.smartbinding smartbinding} element specifies how data is transformed and rendered 
  * in databound elements. It also specifies how changes on the bound data are 
- * send to their original data source ({@link apf.actions actions}) and
- * which {@link term.datanode data nodes} can be dragged and dropped ({@link apf.DragDrop dragdrop}).
+ * send to their original data source ({@link ppc.actions actions}) and
+ * which {@link term.datanode data nodes} can be dragged and dropped ({@link ppc.DragDrop dragdrop}).
  * 
  * #### Remarks
  *
@@ -41,7 +41,7 @@
  * 
  * Smartbindings enable many other features in a Ajax.org Platform
  * application. Actions done by the user can be undone by calling 
- * {@link apf.actiontracker.undo} of the element. The 
+ * {@link ppc.actiontracker.undo} of the element. The 
  * Remote Databinding element can send changes on data to other clients.
  *
  * This element is created especially for reuse. Multiple elements can reference
@@ -171,9 +171,9 @@
  * @allowchild bindings, actions, ref, action, dragdrop, model
  *
  *
- * @class apf.smartbinding
- * @apfclass
- * @inherits apf.AmlElement
+ * @class ppc.smartbinding
+ * @ppcclass
+ * @inherits ppc.AmlElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -181,8 +181,8 @@
  *
  * @default_private
  */
-apf.smartbinding = function(struct, tagName){
-    this.$init(tagName || "smartbinding", apf.NODE_HIDDEN, struct);
+ppc.smartbinding = function(struct, tagName){
+    this.$init(tagName || "smartbinding", ppc.NODE_HIDDEN, struct);
 
     this.$bindNodes = {};
 };
@@ -191,12 +191,12 @@ apf.smartbinding = function(struct, tagName){
     this.$supportedProperties = ["bindings", "actions", "model"];
     this.$handlePropSet = function(prop, value, force){
         switch(prop) {
-            //@todo apf3 change this to use apf.setModel();
+            //@todo ppc3 change this to use ppc.setModel();
             case "model":
                 //#ifdef __WITH_NAMESERVER
                 if (typeof value == "string")
-                    value = apf.nameserver.get("model", value);
-                this.model          = apf.nameserver.register("model", this.name, value);
+                    value = ppc.nameserver.get("model", value);
+                this.model          = ppc.nameserver.register("model", this.name, value);
                 //this.modelBaseXpath = xpath;
                 
                 var amlNode;
@@ -220,7 +220,7 @@ apf.smartbinding = function(struct, tagName){
                     ? value 
                     : 
                     //#ifdef __WITH_NAMESERVER
-                    apf.nameserver.lookup("bindings", value);
+                    ppc.nameserver.lookup("bindings", value);
                     /* #else
                     {}
                     #endif */
@@ -236,7 +236,7 @@ apf.smartbinding = function(struct, tagName){
                     ? value 
                     :
                     //#ifdef __WITH_NAMESERVER
-                    apf.nameserver.lookup("actions", value);
+                    ppc.nameserver.lookup("actions", value);
                     /* #else
                     {}
                     #endif */
@@ -249,8 +249,8 @@ apf.smartbinding = function(struct, tagName){
         this[prop] = value;
         
         //#ifdef __DEBUG
-        /*if (!apf.nameserver.get(name, attr[i].nodeValue))
-            throw new Error(apf.formatErrorString(1036, this, 
+        /*if (!ppc.nameserver.get(name, attr[i].nodeValue))
+            throw new Error(ppc.formatErrorString(1036, this, 
                 "Connecting " + name, 
                 "Could not find " + name + " by name '" 
                 + attr[i].nodeValue + "'"));*/
@@ -303,7 +303,7 @@ apf.smartbinding = function(struct, tagName){
      */
     this.load = function(xmlNode){
         //@todo fix this
-        new apf.model().register(this).load(xmlNode);
+        new ppc.model().register(this).load(xmlNode);
     };
     
     this.clear = function(state){
@@ -335,7 +335,7 @@ apf.smartbinding = function(struct, tagName){
      * ```xml
      *  <a:smartbinding id="sbExample" actions="actExample" />
      * ```
-     * @see apf.actions
+     * @see ppc.actions
      * @see term.action
      * @see term.smartbinding
      *
@@ -348,7 +348,7 @@ apf.smartbinding = function(struct, tagName){
      * ```xml
      *  <a:smartbinding id="sbExample" bindings="bndExample" />
      * ```
-     * @see apf.DragDrop
+     * @see ppc.DragDrop
      * @see term.smartbinding
      *
      * @attribute {String} model    the id of the model element that provides 
@@ -376,22 +376,22 @@ apf.smartbinding = function(struct, tagName){
      *
      *  <a:tree bindings="bndFolders" />
      * ```
-     * @see apf.smartbinding
+     * @see ppc.smartbinding
      * @allowchild {bindings}
      *
      *
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        if (this.parentNode.hasFeature(apf.__DATABINDING__))
+        if (this.parentNode.hasFeature(ppc.__DATABINDING__))
             this.register(this.parentNode);
 
         //#ifdef __DEBUG
-        apf.console.info(this.name
+        ppc.console.info(this.name
             ? "Creating SmartBinding [" + this.name + "]"
             : "Creating implicitly assigned SmartBinding");
         //#endif
     });
-}).call(apf.smartbinding.prototype = new apf.AmlElement());
+}).call(ppc.smartbinding.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("smartbinding", apf.smartbinding);
+ppc.aml.setElement("smartbinding", ppc.smartbinding);
 // #endif

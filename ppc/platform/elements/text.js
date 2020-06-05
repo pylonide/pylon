@@ -58,12 +58,12 @@
  * </a:application>
  * ```
  * 
- * @class apf.text
+ * @class ppc.text
  * @define text
  *
  * @form
- * @inherits apf.Cache
- * @inherits apf.StandardBinding
+ * @inherits ppc.Cache
+ * @inherits ppc.StandardBinding
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -71,8 +71,8 @@
  * 
  */
 // @todo Please refactor this object
-apf.text = function(struct, tagName){
-    this.$init(tagName || "text", apf.NODE_VISIBLE, struct);
+ppc.text = function(struct, tagName){
+    this.$init(tagName || "text", ppc.NODE_VISIBLE, struct);
     
     this.$nodes = [];
 };
@@ -80,9 +80,9 @@ apf.text = function(struct, tagName){
 (function(){
     this.implement(
         // #ifdef __WITH_CACHE
-        apf.Cache,
+        ppc.Cache,
         // #endif
-        apf.ChildValue
+        ppc.ChildValue
     );
 
     this.$focussable       = true; // This object can't get the focus
@@ -124,9 +124,9 @@ apf.text = function(struct, tagName){
         if (value) {
             //this.addEventListener("resize", this.$resize);
             this.$scrolldown = true;
-            apf.addListener(this.$scrollArea, "scroll", this.$scrollFunc = function(){
+            ppc.addListener(this.$scrollArea, "scroll", this.$scrollFunc = function(){
                 _self.$scrolldown = this.scrollTop >= this.scrollHeight
-                    - this.offsetHeight + apf.getVerBorders(this);
+                    - this.offsetHeight + ppc.getVerBorders(this);
             });
             this.addEventListener("scroll", this.$scroll);
             this.addEventListener("afterload", this.$scroll);
@@ -147,7 +147,7 @@ apf.text = function(struct, tagName){
             this.removeEventListener("afterload", this.$scroll);
             clearInterval(this.$textTimer);
             if (this.$scrollArea)
-                apf.removeListener(this.$scrollArea, "scoll", this.$scrollFunc);
+                ppc.removeListener(this.$scrollArea, "scoll", this.$scrollFunc);
         }
     }
     
@@ -161,7 +161,7 @@ apf.text = function(struct, tagName){
         }
         
         this.$scrolldown = html.scrollTop >= html.scrollHeight
-            - html.offsetHeight + apf.getVerBorders(html);
+            - html.offsetHeight + ppc.getVerBorders(html);
     };
     
     /*this.$resize = function(){
@@ -197,7 +197,7 @@ apf.text = function(struct, tagName){
         value = value.replace(/\<\?xml version="1\.0" encoding="UTF-16"\?\>/, "");
         
         if (forceAdd) {
-            apf.insertHtmlNodes(null, this.$container, null, value);
+            ppc.insertHtmlNodes(null, this.$container, null, value);
             if (!this.value) this.value = "";
             this.value += value;
         }
@@ -205,7 +205,7 @@ apf.text = function(struct, tagName){
             this.$container.innerHTML = value;//.replace(/<img[.\r\n]*?>/ig, "")
 
         //Iframe bug fix for IE (leaves screen white);
-        if (apf.cannotSizeIframe && this.oIframe)
+        if (ppc.cannotSizeIframe && this.oIframe)
             this.oIframe.style.width = this.oIframe.offsetWidth + "px";
 
         if (this.scrolldown && this.$scrolldown)
@@ -213,7 +213,7 @@ apf.text = function(struct, tagName){
     };
     
     this.$eachHandler = function(value) {
-        this.$attrExcludePropBind = apf.extend({}, this.$attrExcludePropBind);
+        this.$attrExcludePropBind = ppc.extend({}, this.$attrExcludePropBind);
         this.$attrExcludePropBind.value = value ? 2 : 0;
     };
     this.addEventListener("prop.each", this.$eachHandler);
@@ -307,10 +307,10 @@ apf.text = function(struct, tagName){
                 beforeNode.insertAdjacentHTML("beforebegin", html);
             else 
                 this.$container.insertAdjacentHTML("beforeend", html);
-            //apf.insertHtmlNode(oItem, htmlParentNode, beforeNode);
+            //ppc.insertHtmlNode(oItem, htmlParentNode, beforeNode);
             
             //Iframe bug fix for IE (leaves screen white);
-            if (apf.cannotSizeIframe && this.oIframe)
+            if (ppc.cannotSizeIframe && this.oIframe)
                 this.oIframe.style.width = this.oIframe.offsetWidth + "px";
     
             if (this.scrolldown && this.$scrolldown)
@@ -321,14 +321,14 @@ apf.text = function(struct, tagName){
     }
     
     this.$fill = function(){
-        //apf.insertHtmlNode(null, this.$container, null, this.$nodes.join(""));
+        //ppc.insertHtmlNode(null, this.$container, null, this.$nodes.join(""));
         this.$container.insertAdjacentHTML("beforeend", this.$nodes.join(""));
         this.$nodes = [];
     }
     
     this.$deInitNode = 
     this.$updateNode =
-    this.$moveNode   = apf.K;
+    this.$moveNode   = ppc.K;
 
     // *** Init *** //
 
@@ -336,13 +336,13 @@ apf.text = function(struct, tagName){
         this.$ext = this.$getExternal();
         this.$container = this.$getLayoutNode("main", "container", this.$ext);
 
-        if (apf.hasCssUpdateScrollbarBug && !apf.getStyle(this.$container, "padding"))
+        if (ppc.hasCssUpdateScrollbarBug && !ppc.getStyle(this.$container, "padding"))
             this.$fixScrollBug();
 
         this.$scrollArea = this.oFocus ? this.oFocus.parentNode : this.$container;
 
         if (this.$container.tagName.toLowerCase() == "iframe") {
-            if (apf.isIE) {
+            if (ppc.isIE) {
                 this.oIframe = this.$container;
                 var iStyle = this.skin.selectSingleNode("iframe_style");
                 this.oIframe.contentWindow.document.write(
@@ -352,7 +352,7 @@ apf.text = function(struct, tagName){
                         <script>\
                             document.onkeydown = function(e){\
                                 if (!e) e = event;\
-                                if (" + 'top.apf.disableF5' + " && e.keyCode == 116) {\
+                                if (" + 'top.ppc.disableF5' + " && e.keyCode == 116) {\
                                     e.keyCode = 0;\
                                     return false;\
                                 }\
@@ -376,14 +376,14 @@ apf.text = function(struct, tagName){
 
     this.addEventListener("DOMNodeRemovedFromDocument", function() {
         clearInterval(this.$textTimer);
-        apf.destroyHtmlNode(this.oDrag);
+        ppc.destroyHtmlNode(this.oDrag);
         
         if (this.$scrollArea)
             this.$scrollArea.onscoll = this.$scrollArea = null;
 
         this.oDrag = this.oIframe = this.oFocus = this.$container = this.$ext = null;
     });
-}).call(apf.text.prototype = new apf.StandardBinding());
+}).call(ppc.text.prototype = new ppc.StandardBinding());
 
-apf.aml.setElement("text", apf.text);
+ppc.aml.setElement("text", ppc.text);
 // #endif

@@ -47,13 +47,13 @@
  * This component is used in the accordian element to create its sections. In
  * the statusbar, the panel element is an alias of `bar`.
  *
- * @class apf.splitbutton
+ * @class ppc.splitbutton
  * @define splitbutton
  * @container
  * @allowchild button
  * @allowchild {elements}, {anyaml}
  *
- * @inherits apf.GuiElement
+ * @inherits ppc.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -68,8 +68,8 @@
 /**
  * @attribute {String} title   Describes the content in a panel
  */
-apf.splitbutton = function(struct, tagName){
-    this.$init(tagName || "splitbutton", apf.NODE_VISIBLE, struct);
+ppc.splitbutton = function(struct, tagName){
+    this.$init(tagName || "splitbutton", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -109,7 +109,7 @@ apf.splitbutton = function(struct, tagName){
     };
 
     this.$propHandlers["class"] = function(value){
-        apf.setStyleClass(this.$ext, value, this.$lastClassValue ? [this.$lastClassValue] : null);
+        ppc.setStyleClass(this.$ext, value, this.$lastClassValue ? [this.$lastClassValue] : null);
         this.$lastClassValue = value;
     };
 
@@ -122,8 +122,8 @@ apf.splitbutton = function(struct, tagName){
                 _self.dispatchEvent("submenu.init");
                 self[value].addEventListener("display", function(){
                     var split = this.opener.parentNode;
-                    var diff = apf.getAbsolutePosition(split.$button2.$ext)[0]
-                        - apf.getAbsolutePosition(split.$button1.$ext)[0];
+                    var diff = ppc.getAbsolutePosition(split.$button2.$ext)[0]
+                        - ppc.getAbsolutePosition(split.$button1.$ext)[0];
 
                     this.$ext.style.marginLeft = "-" + diff + "px";
                 });
@@ -140,14 +140,14 @@ apf.splitbutton = function(struct, tagName){
 
         var skin = this["button-skin"] || this.getAttribute("skin") || this.localName;
 
-        this.$button1 = new apf.button({
+        this.$button1 = new ppc.button({
             htmlNode: this.$ext,
             parentNode: this,
             skinset: this.getAttribute("skinset"),
             skin: skin,
             "class": "main",
             onmouseover: function() {
-                apf.setStyleClass(this.$ext, "primary");
+                ppc.setStyleClass(this.$ext, "primary");
                 if (_self.$button2.disabled)
                     return;
                 _self.$button2.$setState("Over", {});
@@ -155,7 +155,7 @@ apf.splitbutton = function(struct, tagName){
                 _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
-                apf.setStyleClass(this.$ext, "", ["primary"]);
+                ppc.setStyleClass(this.$ext, "", ["primary"]);
                 if (_self.$button2.disabled)
                     return;
                 _self.$button2.$setState("Out", {});
@@ -167,25 +167,25 @@ apf.splitbutton = function(struct, tagName){
             }
         });
 
-        this.$button2 = new apf.button({
+        this.$button2 = new ppc.button({
             htmlNode: this.$ext,
             parentNode: this,
             skinset: this.getAttribute("skinset"),
             skin: skin,
             "class": "arrow",
             onmouseover: function() {
-                apf.setStyleClass(this.$ext, "primary");
+                ppc.setStyleClass(this.$ext, "primary");
                 _self.$button1.$setState("Over", {});
 
                 _self.dispatchEvent("mouseover", { button: this });
             },
             onmouseout: function() {
                 if(!_self.$button2.value) {
-                    apf.setStyleClass(this.$ext, "", ["primary"]);
+                    ppc.setStyleClass(this.$ext, "", ["primary"]);
                     _self.$button1.$setState("Out", {});
                 }
                 else {
-                    apf.setStyleClass(this.$ext, "primary");
+                    ppc.setStyleClass(this.$ext, "primary");
                     _self.$button1.$setState("Over", {});
                 }
 
@@ -201,8 +201,8 @@ apf.splitbutton = function(struct, tagName){
 
     };
 
-}).call(apf.splitbutton.prototype = new apf.GuiElement());
+}).call(ppc.splitbutton.prototype = new ppc.GuiElement());
 
-apf.aml.setElement("splitbutton",  apf.splitbutton);
+ppc.aml.setElement("splitbutton",  ppc.splitbutton);
 
 // #endif

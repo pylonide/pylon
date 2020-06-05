@@ -28,9 +28,9 @@
  *
  * @define browser
  *
- * @inheritsElsewhere apf.XForms
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
+ * @inheritsElsewhere ppc.XForms
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
  * 
  * @event load
  * @event error
@@ -65,19 +65,19 @@
  *    value  = "[mdlBrowser::@url]" />
  * </code>
  */
-apf.browser = function(struct, tagName){
-    this.$init(tagName || "browser", apf.NODE_VISIBLE, struct);
+ppc.browser = function(struct, tagName){
+    this.$init(tagName || "browser", ppc.NODE_VISIBLE, struct);
 };
 (function(){
     this.implement(
         // #ifdef __WITH_XFORMS
-        //apf.XForms,
+        //ppc.XForms,
         // #endif
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         // #ifdef __WITH_DATABINDING
-        ,apf.StandardBinding
+        ,ppc.StandardBinding
         // #endif
     );
 
@@ -95,7 +95,7 @@ apf.browser = function(struct, tagName){
             this.$browser.src = "about:blank";
         }
     };
-    this.$propHandlers["border"] = apf.Presentation.prototype.$propHandlers["border"];
+    this.$propHandlers["border"] = ppc.Presentation.prototype.$propHandlers["border"];
 
     this.getValue = function() {
         return this.value || this.src;
@@ -159,7 +159,7 @@ apf.browser = function(struct, tagName){
             parentNode = this.$pHtmlNode;
 
         //Build Main Skin
-        if (apf.cannotSizeIframe) {
+        if (ppc.cannotSizeIframe) {
             //parentNode.appendChild(document.createElement("iframe"));//
             var _iframe = document.createElement("iframe");
                 _iframe.setAttribute("frameborder","0");
@@ -182,20 +182,20 @@ apf.browser = function(struct, tagName){
             this.$ext.style.border = "1px solid #999";
             this.$ext.style.background = "white";
         }
-        this.$ext.className = "apfbrowser"
+        this.$ext.className = "ppcbrowser"
         
         if (this.getAttribute("style"))
             this.$ext.setAttribute("style", this.getAttribute("style"));
         
         var _self = this;
-        apf.addListener(this.$browser, "load", function(){
+        ppc.addListener(this.$browser, "load", function(){
             var loc = this.contentWindow.location.href;
             _self.dispatchEvent("load", {href: loc});
             if (loc)
                 _self.setProperty("src", loc);
         });
 
-        apf.addListener(this.$browser, "error", function(){
+        ppc.addListener(this.$browser, "error", function(){
             _self.dispatchEvent("error");
             if (this.contentWindow.location.href)
                  _self.setProperty("src", this.contentWindow.location.href);
@@ -205,7 +205,7 @@ apf.browser = function(struct, tagName){
         this.$ext.host = this;
         //this.$browser.host = this;
     };
-}).call(apf.browser.prototype = new apf.GuiElement());
+}).call(ppc.browser.prototype = new ppc.GuiElement());
 
-apf.aml.setElement("browser", apf.browser);
+ppc.aml.setElement("browser", ppc.browser);
 // #endif

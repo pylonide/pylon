@@ -40,8 +40,8 @@
  *  //--></a:script>
  * ```
  *
- * @class apf.script
- * @inherits apf.AmlElement
+ * @class ppc.script
+ * @inherits ppc.AmlElement
  * @define script
  * @logic
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -54,8 +54,8 @@
  *
  *
  */
-apf.script = function(){
-    this.$init("script", apf.NODE_HIDDEN);
+ppc.script = function(){
+    this.$init("script", ppc.NODE_HIDDEN);
 };
 
 (function(){
@@ -64,22 +64,22 @@ apf.script = function(){
             this.type = this.getAttribute("type");
 
         if (!this.type || this.type == "text/javascript") {
-            if (apf.isOpera) {
+            if (ppc.isOpera) {
                 $setTimeout(function(){
-                    apf.window.loadCodeFile(apf.hostPath
+                    ppc.window.loadCodeFile(ppc.hostPath
                         + value);
                 }, 1000);
             }
             else {
-                apf.window.loadCodeFile(apf.getAbsolutePath(apf.hostPath,
+                ppc.window.loadCodeFile(ppc.getAbsolutePath(ppc.hostPath,
                     value));
             }
         }
         else {
             var _self = this;
-            apf.ajax(value, {callback: function(data, state, extra){
-                if (state != apf.SUCCESS) {
-                    return apf.console.warn("Could not load script " + value);
+            ppc.ajax(value, {callback: function(data, state, extra){
+                if (state != ppc.SUCCESS) {
+                    return ppc.console.warn("Could not load script " + value);
                 }
                 
                 _self.$execute(data);
@@ -89,18 +89,18 @@ apf.script = function(){
     
     this.$execute = function(code, e){
         if (!this.type || this.type == "text/javascript") {
-            apf.jsexec(code);
+            ppc.jsexec(code);
         }
         else if (this.type.indexOf("livemarkup") > -1
           || this.type.indexOf("lm") > -1) { //@todo this is wrong, it should start in code mode
-            var func = apf.lm.compile(code, {event: true, parsecode: true, funcglobal: true, nostring: true});
+            var func = ppc.lm.compile(code, {event: true, parsecode: true, funcglobal: true, nostring: true});
             func(e || {});
         }
     }
     
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget.nodeType == 3 || e.currentTarget.nodeType == 4) {
-            this.$execute(e.currentTarget.nodeValue, apf.isIE && window.event);
+            this.$execute(e.currentTarget.nodeValue, ppc.isIE && window.event);
         }
     });
     
@@ -115,8 +115,8 @@ apf.script = function(){
         
         this.$execute(code);
     });
-}).call(apf.script.prototype = new apf.AmlElement());
+}).call(ppc.script.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("script", apf.script);
+ppc.aml.setElement("script", ppc.script);
 
 // #endif

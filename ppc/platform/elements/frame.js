@@ -40,7 +40,7 @@
  * </a:application>
  * ```
  *
- * @class apf.frame
+ * @class ppc.frame
  * @define frame
  * @container
  * @allowchild {elements}, {anyaml}
@@ -50,22 +50,22 @@
  * @version     %I%, %G%
  * @since       0.9
  *
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  */
-apf.panel    = function(struct, tagName){
-    this.$init(tagName || "panel", apf.NODE_VISIBLE, struct);
+ppc.panel    = function(struct, tagName){
+    this.$init(tagName || "panel", ppc.NODE_VISIBLE, struct);
 };
 
-apf.fieldset = function(struct, tagName){
-    this.$init(tagName || "fieldset", apf.NODE_VISIBLE, struct);
+ppc.fieldset = function(struct, tagName){
+    this.$init(tagName || "fieldset", ppc.NODE_VISIBLE, struct);
 };
 
-apf.frame    = function(struct, tagName){
-    this.$init(tagName || "submit", apf.NODE_VISIBLE, struct);
+ppc.frame    = function(struct, tagName){
+    this.$init(tagName || "submit", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
-    this.implement(apf.BaseStateButtons);
+    this.implement(ppc.BaseStateButtons);
 
     this.$focussable     = false;
     
@@ -97,7 +97,7 @@ apf.frame    = function(struct, tagName){
 
         if (oIcon.nodeType == 1)
             oIcon.style.display = value ? "block" : "none";
-        apf.skins.setIcon(oIcon, value, this.iconPath);
+        ppc.skins.setIcon(oIcon, value, this.iconPath);
     };
 
     /**
@@ -156,13 +156,13 @@ apf.frame    = function(struct, tagName){
         return this.$activeElements;
     }
     //#endif
-}).call(apf.frame.prototype = new apf.Presentation());
+}).call(ppc.frame.prototype = new ppc.Presentation());
 
-apf.panel.prototype    =
-apf.fieldset.prototype = apf.frame.prototype;
+ppc.panel.prototype    =
+ppc.fieldset.prototype = ppc.frame.prototype;
 
-apf.aml.setElement("panel", apf.panel);
-apf.aml.setElement("fieldset", apf.fieldset);
-apf.aml.setElement("frame", apf.frame);
+ppc.aml.setElement("panel", ppc.panel);
+ppc.aml.setElement("fieldset", ppc.fieldset);
+ppc.aml.setElement("frame", ppc.frame);
 
 // #endif

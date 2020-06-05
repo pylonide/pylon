@@ -26,19 +26,19 @@
  * @version     %I%, %G%
  */
 
-apf.flowchart = function(struct, tagName){
-    this.$init(tagName || "flowchart", apf.NODE_VISIBLE, struct);
+ppc.flowchart = function(struct, tagName){
+    this.$init(tagName || "flowchart", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction,
+        ppc.DataAction,
         //#endif
         //#ifdef __WITH_CACHE
-        apf.Cache,
+        ppc.Cache,
         //#endif
-        apf.Rename
+        ppc.Rename
     );
     
     this.$supportedProperties.push("wa-width", "wa-height");
@@ -135,7 +135,7 @@ apf.flowchart = function(struct, tagName){
         //#ifdef __WITH_KEYBOARD
         this.addEventListener("keydown", onkeydown_, true);
 
-        apf.addEventListener("contextmenu", function() {return false;});
+        ppc.addEventListener("contextmenu", function() {return false;});
         //#endif
 
         function $afterRenameMode() {
@@ -226,7 +226,7 @@ apf.flowchart = function(struct, tagName){
         if (!htmlNode)
             return;
 
-        var objBlock = apf.flow.isBlock(htmlNode);
+        var objBlock = ppc.flow.isBlock(htmlNode);
 
         if (objBlock) {
             /*if (this.$flowVars.resizeManager) {
@@ -656,10 +656,10 @@ apf.flowchart = function(struct, tagName){
         
         
 
-        this.objCanvas = new apf.flow.getCanvas(this.$container);
-        apf.flow.init();
+        this.objCanvas = new ppc.flow.getCanvas(this.$container);
+        ppc.flow.init();
         
-        //apf.flow.onconnectionrename = function(e) {
+        //ppc.flow.onconnectionrename = function(e) {
         //   _self.$beforeRename(e);
         //}
         
@@ -680,11 +680,11 @@ apf.flowchart = function(struct, tagName){
 
     //this.$dragdrop = function(el, dragdata, candrop) {
     this.addEventListener("dragdrop", function(e){
-        /*var blockPos  = apf.getAbsolutePosition(e.indicator),
-            canvasPos = apf.getAbsolutePosition(this.objCanvas.htmlElement);
+        /*var blockPos  = ppc.getAbsolutePosition(e.indicator),
+            canvasPos = ppc.getAbsolutePosition(this.objCanvas.htmlElement);
 
-        apf.setNodeValue(this.$getDataNode("top",  e.data[0], true), parseInt(e.top) - canvasPos[1]);
-        apf.setNodeValue(this.$getDataNode("left", e.data[0], true), blockPos[0] - canvasPos[0]);*/
+        ppc.setNodeValue(this.$getDataNode("top",  e.data[0], true), parseInt(e.top) - canvasPos[1]);
+        ppc.setNodeValue(this.$getDataNode("left", e.data[0], true), blockPos[0] - canvasPos[0]);*/
     });
 
     this.$updateModifier = function(xmlNode, htmlNode) {
@@ -744,11 +744,11 @@ apf.flowchart = function(struct, tagName){
 
                 if (!found) {
                     if (fv.objBlocks[blockId] && fv.objBlocks[cCurrent[i].ref]) {
-                        var ConToDel = apf.flow.findConnector(
+                        var ConToDel = ppc.flow.findConnector(
                             fv.objBlocks[blockId], cCurrent[i].output,
                             fv.objBlocks[cCurrent[i].ref], cCurrent[i].input);
                         if (ConToDel)
-                            apf.flow.removeConnector(ConToDel.connector.htmlElement);
+                            ppc.flow.removeConnector(ConToDel.connector.htmlElement);
                         fv.xmlConnections[blockId].removeIndex(i);
                     }
                 }
@@ -788,7 +788,7 @@ apf.flowchart = function(struct, tagName){
                         xmlNode : cNew[i]
                     });
 
-                    new apf.flow.addConnector(this.objCanvas,
+                    new ppc.flow.addConnector(this.objCanvas,
                         fv.objBlocks[blockId], fv.objBlocks[ref], {
                             output : output,
                             input  : input,
@@ -800,7 +800,7 @@ apf.flowchart = function(struct, tagName){
                     fv.xmlConnections[blockId] = r;
                 }
                 else {
-                    apf.console.info("Destination block doesn't exist.");
+                    ppc.console.info("Destination block doesn't exist.");
                 }
             }
         }
@@ -862,7 +862,7 @@ apf.flowchart = function(struct, tagName){
             };
         }
         else {
-            throw new Error(apf.formErrorString(this, "Unknown block template", "Block type: " + blockType));
+            throw new Error(ppc.formErrorString(this, "Unknown block template", "Block type: " + blockType));
         }
     };
 
@@ -938,11 +938,11 @@ apf.flowchart = function(struct, tagName){
 
         //Selecting event
         blockNodes.elSelect.setAttribute(this.itemSelectEvent ||
-            "onmousedown", 'var o = apf.lookup('
+            "onmousedown", 'var o = ppc.lookup('
             + this.$uniqueId
             + '); o.select(this, event.ctrlKey, event.shiftKey)');
 
-        apf.xmldb.nodeConnect(this.documentId, xmlNode, blockNodes.elBlock, this);
+        ppc.xmldb.nodeConnect(this.documentId, xmlNode, blockNodes.elBlock, this);
 
         //Get connections
         var xmlConnections = [],
@@ -970,7 +970,7 @@ apf.flowchart = function(struct, tagName){
     };
 
     this.$fill = function() {
-        apf.insertHtmlNodes(this.nodes, this.$container);
+        ppc.insertHtmlNodes(this.nodes, this.$container);
         
         /*this.$flowVars.blocks[id] = {
             xmlNode        : xmlNode,
@@ -983,10 +983,10 @@ apf.flowchart = function(struct, tagName){
         
         for (var id in fv.blocks) {
             var xmlBlock    = fv.blocks[id].xmlNode,
-                htmlElement = apf.xmldb.findHtmlNode(xmlBlock, this),
+                htmlElement = ppc.xmldb.findHtmlNode(xmlBlock, this),
                 objBlock;
                 
-                if (!apf.flow.isBlock(htmlElement)) {
+                if (!ppc.flow.isBlock(htmlElement)) {
                     fv.blocks[id].blockNodes = {
                         elImageContainer : this.$getLayoutNode("item", "imagecontainer", htmlElement),
                         elImage          : this.$getLayoutNode("item", "image", htmlElement),
@@ -997,7 +997,7 @@ apf.flowchart = function(struct, tagName){
                     connections = connections.concat(fv.blocks[id].xmlConnections);
                 }
                 else {
-                    throw new Error(apf.formErrorString(this, "Block exists", "Block id: " + id));
+                    throw new Error(ppc.formErrorString(this, "Block exists", "Block id: " + id));
                 }
         }
         
@@ -1011,11 +1011,11 @@ apf.flowchart = function(struct, tagName){
             fv = this.$flowVars;
         for (id in fv.xmlBlocks) {
             var xmlBlock    = fv.xmlBlocks[id],
-                htmlElement = apf.xmldb.findHtmlNode(xmlBlock, this),
+                htmlElement = ppc.xmldb.findHtmlNode(xmlBlock, this),
                 type        = this.$flowVars.xmlBlocks[id].getAttribute("type") || null,
                 inputList   = {};
 
-            var objBlock = apf.flow.isBlock(htmlElement);
+            var objBlock = ppc.flow.isBlock(htmlElement);
             var _self    = this;
 
             if (objBlock) {
@@ -1024,7 +1024,7 @@ apf.flowchart = function(struct, tagName){
                 objBlock.initBlock();
             }
             else {
-                objBlock = apf.flow.addBlock(htmlElement, this.objCanvas, other);
+                objBlock = ppc.flow.addBlock(htmlElement, this.objCanvas, other);
 
                 if (objBlock) {
                     objBlock.oncreateconnection = function(sXmlNode, sInput, dXmlNode, dInput) {
@@ -1042,14 +1042,14 @@ apf.flowchart = function(struct, tagName){
             var c = fv.xmlConnections[id] || [];
 
             for (i = 0, l = c.length; i < l; i++) {
-                var con = apf.flow.findConnector(fv.objBlocks[id], c[i].output,
+                var con = ppc.flow.findConnector(fv.objBlocks[id], c[i].output,
                                                  fv.objBlocks[c[i].ref], c[i].input);
                 if (!con) {
                     if (fv.objBlocks[id] && fv.objBlocks[c[i].ref]) {
                         //it's called because connection labels must be aligned
                         fv.objBlocks[id].onMove();
                         
-                        new apf.flow.addConnector(this.objCanvas, fv.objBlocks[id],
+                        new ppc.flow.addConnector(this.objCanvas, fv.objBlocks[id],
                                                   fv.objBlocks[c[i].ref], {
                             output  : c[i].output,
                             input   : c[i].input,
@@ -1087,7 +1087,7 @@ apf.flowchart = function(struct, tagName){
         // Try to draw rest of connections
         for (i = fv.connToPaint.length - 1; i >= 0 ; i--) {
             if (fv.objBlocks[fv.connToPaint[i].id] && fv.objBlocks[fv.connToPaint[i].id2]) {
-                new apf.flow.addConnector(this.objCanvas,
+                new ppc.flow.addConnector(this.objCanvas,
                                           fv.objBlocks[fv.connToPaint[i].id],
                                           fv.objBlocks[fv.connToPaint[i].id2], {
                     output  : fv.connToPaint[i].output,
@@ -1118,13 +1118,13 @@ apf.flowchart = function(struct, tagName){
     this.$loadAml = function(x) {
         // Loading template
         var _self = this;
-        apf.getData(this.getAttribute("template"), {callback: 
+        ppc.getData(this.getAttribute("template"), {callback: 
             function(data, state, extra) {
-                if (state == apf.SUCCESS) {
+                if (state == ppc.SUCCESS) {
                     _self.loadTemplate(data);
                 }
                 else {
-                    apf.console.info("An error has occurred: " + extra.message, 2);
+                    ppc.console.info("An error has occurred: " + extra.message, 2);
                     return;
                 }
             }
@@ -1134,7 +1134,7 @@ apf.flowchart = function(struct, tagName){
             fv    = this.$flowVars;
 
         // Resize
-        fv.resizeManager = new apf.resize();
+        fv.resizeManager = new ppc.resize();
 
         fv.resizeManager.onresizedone = function(w, h, t , l) {
             _self.resize(_self.selected, w, h, t, l);
@@ -1143,18 +1143,18 @@ apf.flowchart = function(struct, tagName){
         fv.resizeManager.onresize = function(htmlElement, t, l, w, h) {
             if (!htmlElement)
                 return;
-            var objBlock = apf.flow.isBlock(htmlElement);
+            var objBlock = ppc.flow.isBlock(htmlElement);
             objBlock.moveTo(t, l);
             objBlock.resize(w, h);
             objBlock.updateOutputs();
             objBlock.onMove();
         };
 
-        apf.flow.onaftermove = function(dt, dl) {
+        ppc.flow.onaftermove = function(dt, dl) {
             _self.moveTo(_self.selected, dl, dt);
         };
 
-        apf.flow.onblockmove = function() {
+        ppc.flow.onblockmove = function() {
             fv.resizeManager.show();
         };*/
     };
@@ -1169,7 +1169,7 @@ apf.flowchart = function(struct, tagName){
      */
     this.loadTemplate = function(xmlRootNode) {
         if (typeof xmlRootNode != "object")
-            xmlRootNode = apf.getXmlDom(xmlRootNode);
+            xmlRootNode = ppc.getXmlDom(xmlRootNode);
         if (xmlRootNode.nodeType == 9)
             xmlRootNode = xmlRootNode.documentElement;
         if (xmlRootNode.nodeType == 3 || xmlRootNode.nodeType == 4)
@@ -1187,27 +1187,27 @@ apf.flowchart = function(struct, tagName){
         return this.$flowVars.xmlTemplate ? true : false;
     };
 
-}).call(apf.flowchart.prototype = new apf.BaseList());
+}).call(ppc.flowchart.prototype = new ppc.BaseList());
 
-apf.aml.setElement("flowchart",   apf.flowchart);
+ppc.aml.setElement("flowchart",   ppc.flowchart);
 
-apf.aml.setElement("resize",      apf.BindingRule);
-apf.aml.setElement("left",        apf.BindingRule);
-apf.aml.setElement("top",         apf.BindingRule);
-apf.aml.setElement("id",          apf.BindingRule);
-apf.aml.setElement("width",       apf.BindingRule);
-apf.aml.setElement("height",      apf.BindingRule);
-apf.aml.setElement("flipv",       apf.BindingRule);
-apf.aml.setElement("fliph",       apf.BindingRule);
-apf.aml.setElement("rotation",    apf.BindingRule);
-apf.aml.setElement("lock",        apf.BindingRule);
-apf.aml.setElement("type",        apf.BindingRule);
-apf.aml.setElement("cap-pos",     apf.BindingRule);
-apf.aml.setElement("zindex",      apf.BindingRule);
-apf.aml.setElement("connection",  apf.BindingRule);
-apf.aml.setElement("ref",         apf.BindingRule);
-apf.aml.setElement("name",    apf.BindingRule);
-apf.aml.setElement("blockoutput", apf.BindingRule);
-apf.aml.setElement("blockinput",  apf.BindingRule);
-apf.aml.setElement("blocklabel",  apf.BindingRule);
+ppc.aml.setElement("resize",      ppc.BindingRule);
+ppc.aml.setElement("left",        ppc.BindingRule);
+ppc.aml.setElement("top",         ppc.BindingRule);
+ppc.aml.setElement("id",          ppc.BindingRule);
+ppc.aml.setElement("width",       ppc.BindingRule);
+ppc.aml.setElement("height",      ppc.BindingRule);
+ppc.aml.setElement("flipv",       ppc.BindingRule);
+ppc.aml.setElement("fliph",       ppc.BindingRule);
+ppc.aml.setElement("rotation",    ppc.BindingRule);
+ppc.aml.setElement("lock",        ppc.BindingRule);
+ppc.aml.setElement("type",        ppc.BindingRule);
+ppc.aml.setElement("cap-pos",     ppc.BindingRule);
+ppc.aml.setElement("zindex",      ppc.BindingRule);
+ppc.aml.setElement("connection",  ppc.BindingRule);
+ppc.aml.setElement("ref",         ppc.BindingRule);
+ppc.aml.setElement("name",    ppc.BindingRule);
+ppc.aml.setElement("blockoutput", ppc.BindingRule);
+ppc.aml.setElement("blockinput",  ppc.BindingRule);
+ppc.aml.setElement("blocklabel",  ppc.BindingRule);
 //#endif

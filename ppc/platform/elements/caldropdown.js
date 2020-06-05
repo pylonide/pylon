@@ -44,7 +44,7 @@
  * @version     %I%, %G%
  * @since       1.0
  * 
- * @inherits apf.DataAction
+ * @inherits ppc.DataAction
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -84,7 +84,7 @@
  * </code>
  */
 
-apf.caldropdown = function(struct, tagName){
+ppc.caldropdown = function(struct, tagName){
     this.$animType        = 1;
     this.$animSteps       = 5;
     this.$animSpeed       = 20;
@@ -132,19 +132,19 @@ apf.caldropdown = function(struct, tagName){
                         {name : "December",  number : 31}]
     };
     
-    this.$init(tagName || "caldropdown", apf.NODE_VISIBLE, struct);
+    this.$init(tagName || "caldropdown", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         //#ifdef __WITH_DATABINDING
-        //,apf.StandardBinding
+        //,ppc.StandardBinding
         //#endif
         //#ifdef __WITH_XFORMS
-        //,apf.XForms
+        //,ppc.XForms
         //#endif
     );
 
@@ -228,12 +228,12 @@ apf.caldropdown = function(struct, tagName){
             return;
         }
 
-        var date = apf.date.getDateTime(value, this.outputFormat);
+        var date = ppc.date.getDateTime(value, this.outputFormat);
 
         //#ifdef __DEBUG
         if (!date || isNaN(date)) {
             return;
-            /*throw new Error(apf.formErrorString(this, "Parsing date",
+            /*throw new Error(ppc.formErrorString(this, "Parsing date",
                 "Invalid date: " + value));*/
         }
         //#endif
@@ -377,7 +377,7 @@ apf.caldropdown = function(struct, tagName){
         this.isOpen = true;
 
         this.oSlider.style.display = "block";
-        this.oSlider.style[apf.supportOverflowComponent
+        this.oSlider.style[ppc.supportOverflowComponent
             ? "overflowY"
             : "overflow"] = "hidden";
 
@@ -392,11 +392,11 @@ apf.caldropdown = function(struct, tagName){
             ? this.$ext.offsetWidth - 1
             : 0) + "px";
 
-        apf.caldropdown.cache["oSlider"].host = this;
+        ppc.caldropdown.cache["oSlider"].host = this;
 
         this.redraw(this.$calVars.month, this.$calVars.year);
 
-        apf.popup.show(this.$uniqueId, {
+        ppc.popup.show(this.$uniqueId, {
             x       : 0,
             y       : this.$ext.offsetHeight,
             animate : true,
@@ -404,7 +404,7 @@ apf.caldropdown = function(struct, tagName){
             width   : this.$ext.offsetWidth + 1,
             height  : this.$sliderHeight,
             callback: function(container) {
-                container.style[apf.supportOverflowComponent
+                container.style[ppc.supportOverflowComponent
                     ? "overflowY"
                     : "overflow"] = "hidden";
             }
@@ -427,12 +427,12 @@ apf.caldropdown = function(struct, tagName){
 
         this.isOpen = false;
         if (this.selected) {
-            var htmlNode = apf.xmldb.findHtmlNode(this.selected, this);
+            var htmlNode = ppc.xmldb.findHtmlNode(this.selected, this);
             if (htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
 
         this.$setStyleClass(this.$ext, '', [this.$baseCSSname + "Down"]);
-        apf.popup.hide();
+        ppc.popup.hide();
         return false;
     };
 
@@ -457,7 +457,7 @@ apf.caldropdown = function(struct, tagName){
             : "")
 
         //#ifdef __AMLSUBMITFORM || __INC_ALL
-        if (this.hasFeature(apf.__VALIDATION__) && this.form) {
+        if (this.hasFeature(ppc.__VALIDATION__) && this.form) {
             this.validate(true);
         }
         //#endif
@@ -475,7 +475,7 @@ apf.caldropdown = function(struct, tagName){
     };
 
     this.$focus = function(){
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
         this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
     }
 
@@ -516,9 +516,9 @@ apf.caldropdown = function(struct, tagName){
         c.currentMonth = month;
         c.currentYear  = year;
 
-        var _width     = apf.caldropdown.cache["oSlider"].host.$ext.offsetWidth,
+        var _width     = ppc.caldropdown.cache["oSlider"].host.$ext.offsetWidth,
             temp       = Math.floor((_width - 36) / 8) * 8 + 32 
-                         - apf.getDiff(this.oNavigation)[0],
+                         - ppc.getDiff(this.oNavigation)[0],
             w_days     = new Date(year, 0, 1).getDay();
 
         if (temp >= 0)
@@ -551,13 +551,13 @@ apf.caldropdown = function(struct, tagName){
         for (i = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("today") != -1) {
                 if (_width < 300) {
-                    var shortTodayText = apf.language.getWord("sub.calendar.shortToday") || "T";
+                    var shortTodayText = ppc.language.getWord("sub.calendar.shortToday") || "T";
                     rows[i].innerHTML   = shortTodayText;
                     rows[i].style.width = "8px";
                     rows[i].setAttribute("title", shortTodayText);
                 }
                 else {
-                    var TodayText = apf.language.getWord("sub.calendar.today") || "Today";
+                    var TodayText = ppc.language.getWord("sub.calendar.today") || "Today";
                     rows[i].innerHTML   = TodayText;
                     rows[i].style.width = "32px";
                     rows[i].setAttribute("title", TodayText);
@@ -613,8 +613,8 @@ apf.caldropdown = function(struct, tagName){
             if ((rows[i].className || "").indexOf("row") == -1)
                 continue;
 
-            rows[i].style.width = (d_width - apf.getDiff(rows[i])[0]) + "px";
-            if (!apf.isGecko) {
+            rows[i].style.width = (d_width - ppc.getDiff(rows[i])[0]) + "px";
+            if (!ppc.isGecko) {
                 rows[i].style.paddingTop = "1px";
             }
 
@@ -701,7 +701,7 @@ apf.caldropdown = function(struct, tagName){
             newYear++;
         }
 
-        apf.caldropdown.cache["oSlider"].host.change(new Date(newYear, (newMonth - 1), nr, c.hours,
+        ppc.caldropdown.cache["oSlider"].host.change(new Date(newYear, (newMonth - 1), nr, c.hours,
             c.minutes, c.seconds).format(this.outputFormat));
     };
 
@@ -792,10 +792,10 @@ apf.caldropdown = function(struct, tagName){
         //Build Main Skin
         this.$ext = this.$getExternal(null, null, function(oExt) {
             oExt.setAttribute("onmouseover", 
-                'var o = apf.lookup(' + this.$uniqueId + ');\
+                'var o = ppc.lookup(' + this.$uniqueId + ');\
                  o.$setStyleClass(o.$ext, o.$baseCSSname + "Over", null, true);');
             oExt.setAttribute("onmouseout", 
-                'var o = apf.lookup('+ this.$uniqueId + ');\
+                'var o = ppc.lookup('+ this.$uniqueId + ');\
                  if (o.isOpen) return;\
                  o.$setStyleClass(o.$ext, "", [o.$baseCSSname + "Over"], true);');
 
@@ -803,13 +803,13 @@ apf.caldropdown = function(struct, tagName){
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown",
-                    'apf.lookup(' + this.$uniqueId + ').slideToggle(event, true);');
+                    'ppc.lookup(' + this.$uniqueId + ').slideToggle(event, true);');
             }
 
             //Label
             var oLabel  = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
-                oLabel.parentNode.setAttribute("onmousedown", 'apf.lookup('
+                oLabel.parentNode.setAttribute("onmousedown", 'ppc.lookup('
                     + this.$uniqueId + ').slideToggle(event, true);');
             }
         });
@@ -822,17 +822,17 @@ apf.caldropdown = function(struct, tagName){
         if (this.$button)
             this.$button = this.$getLayoutNode("main", "button", this.$ext);
 
-        if (apf.caldropdown.cache) {
-            var cal          = apf.caldropdown.cache;
+        if (ppc.caldropdown.cache) {
+            var cal          = ppc.caldropdown.cache;
             this.oSlider     = cal["oSlider"];
             this.oNavigation = cal["oNavigation"];
             this.oDow        = cal["oDow"];
 
-            apf.caldropdown.cache.refcount++;
+            ppc.caldropdown.cache.refcount++;
 
             //Set up the popup
-            this.$pHtmlDoc = apf.popup.setContent(this.$uniqueId, this.oSlider,
-            apf.skins.getCssString(this.skinName));
+            this.$pHtmlDoc = ppc.popup.setContent(this.$uniqueId, this.oSlider,
+            ppc.skins.getCssString(this.skinName));
         }
         else {
             this.oSlider = this.$getExternal("container", null, function(oExt1) {
@@ -847,16 +847,16 @@ apf.caldropdown = function(struct, tagName){
                         var oCell = this.$getLayoutNode("cell");
                         if (j > 0) {
                             oCell.setAttribute("onmouseout",
-                                "apf.lookup(" + this.$uniqueId 
+                                "ppc.lookup(" + this.$uniqueId 
                                 + ").$setStyleClass(this, '', ['hover'], true);");
                             oCell.setAttribute("onmouseover",
                                 "if (this.className.indexOf('disabled') > -1 \
                                    || this.className.indexOf('active') > -1) \
                                      return;\
-                                 apf.lookup(" + this.$uniqueId 
+                                 ppc.lookup(" + this.$uniqueId 
                                  + ").$setStyleClass(this, 'hover', null, true);");
                             oCell.setAttribute("onmousedown",
-                                "var o = apf.lookup(" + this.$uniqueId + ");\
+                                "var o = ppc.lookup(" + this.$uniqueId + ");\
                                  if (o.disabled) return;\
                                  if (this.className.indexOf('prev') > -1) \
                                      o.selectDay(this.innerHTML, 'prev');\
@@ -881,14 +881,14 @@ apf.caldropdown = function(struct, tagName){
                         var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                         this.$setStyleClass(btn, buttons[i]);
                         if (buttons[i] !== "status") {
-                            btn.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId 
+                            btn.setAttribute("onmousedown", 'var o = ppc.lookup(' + this.$uniqueId 
                                 + '); if (o.disabled) return; o.' 
-                                + buttons[i] + '();apf.setStyleClass(this, "down");');
-                            btn.setAttribute("onmouseup", 'apf.lookup(' + this.$uniqueId 
+                                + buttons[i] + '();ppc.setStyleClass(this, "down");');
+                            btn.setAttribute("onmouseup", 'ppc.lookup(' + this.$uniqueId 
                                 + ').$setStyleClass(this, "", ["down"], true);');
-                            btn.setAttribute("onmouseover", 'apf.lookup(' + this.$uniqueId 
+                            btn.setAttribute("onmouseover", 'ppc.lookup(' + this.$uniqueId 
                                 + ').$setStyleClass(this, "hover", null, true);');
-                            btn.setAttribute("onmouseout",  'apf.lookup(' + this.$uniqueId 
+                            btn.setAttribute("onmouseout",  'ppc.lookup(' + this.$uniqueId 
                                 + ').$setStyleClass(this, "", ["hover"], true);');
                         }
                     }
@@ -910,8 +910,8 @@ apf.caldropdown = function(struct, tagName){
         
 
         //Set up the popup
-        this.$pHtmlDoc    = apf.popup.setContent(this.$uniqueId, this.oSlider,
-            apf.skins.getCssString(this.skinName));
+        this.$pHtmlDoc    = ppc.popup.setContent(this.$uniqueId, this.oSlider,
+            ppc.skins.getCssString(this.skinName));
 
         document.body.appendChild(this.oSlider);
 
@@ -919,13 +919,13 @@ apf.caldropdown = function(struct, tagName){
         //Types: 1=One dimensional List, 2=Two dimensional List
         this.listtype    = parseInt(this.$getLayoutNode("main", "type")) || 1;
 
-        if (!apf.caldropdown.cache) {
-            apf.caldropdown.cache = {
+        if (!ppc.caldropdown.cache) {
+            ppc.caldropdown.cache = {
                 "oSlider"     : this.oSlider,
                 "oNavigation" : this.oNavigation,
                 "oDow"        : this.oDow
             };
-            apf.caldropdown.cache.refcount = 0;
+            ppc.caldropdown.cache.refcount = 0;
         }
     };
 
@@ -950,7 +950,7 @@ apf.caldropdown = function(struct, tagName){
             }
         }
         else {
-            date = apf.date.getDateTime(this.value, this.outputFormat);
+            date = ppc.date.getDateTime(this.value, this.outputFormat);
             c.day   = date.getDate();
             c.month = date.getMonth();
             c.year  = date.getFullYear();
@@ -964,20 +964,20 @@ apf.caldropdown = function(struct, tagName){
     };
 
     this.$destroy = function() {
-        apf.popup.removeContent(this.$uniqueId);
-        apf.destroyHtmlNode(this.oSlider);
+        ppc.popup.removeContent(this.$uniqueId);
+        ppc.destroyHtmlNode(this.oSlider);
         this.oSlider = null;
 
-        if (apf.caldropdown.cache) {
-            if (apf.caldropdown.cache.refcount == 0)
-                apf.caldropdown.cache = null;
+        if (ppc.caldropdown.cache) {
+            if (ppc.caldropdown.cache.refcount == 0)
+                ppc.caldropdown.cache = null;
             else
-                apf.caldropdown.cache.refcount--;
+                ppc.caldropdown.cache.refcount--;
         }
     };
-}).call(apf.caldropdown.prototype = new apf.StandardBinding());
+}).call(ppc.caldropdown.prototype = new ppc.StandardBinding());
 
-apf.config.$inheritProperties["initial-message"] = 1;
+ppc.config.$inheritProperties["initial-message"] = 1;
 
-apf.aml.setElement("caldropdown", apf.caldropdown);
+ppc.aml.setElement("caldropdown", ppc.caldropdown);
 // #endif

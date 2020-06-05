@@ -108,13 +108,13 @@
  * </a:application>
  * ```
  *
- * @class apf.dropdown
+ * @class ppc.dropdown
  * @define dropdown
  * @form
  * @allowchild item, {smartbinding}
  *
  *
- * @inherits apf.BaseList
+ * @inherits ppc.BaseList
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -129,8 +129,8 @@
  *  @cancelable Prevents the dropdown from sliding up
  *
  */
-apf.dropdown = function(struct, tagName){
-    this.$init(tagName || "dropdown", apf.NODE_VISIBLE, struct);
+ppc.dropdown = function(struct, tagName){
+    this.$init(tagName || "dropdown", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -143,7 +143,7 @@ apf.dropdown = function(struct, tagName){
     
     this.dragdrop      = false;
     this.reselectable  = true;
-    this.$focussable   = apf.KEYBOARD;
+    this.$focussable   = ppc.KEYBOARD;
     this.autoselect    = false;
     this.multiselect   = false;
     this.disableremove = true;
@@ -208,11 +208,11 @@ apf.dropdown = function(struct, tagName){
         this.isOpen = true;
 
         this.$propHandlers["maxitems"].call(this, this.xmlRoot && this.each 
-            ? this.getTraverseNodes().length : this.childNodes.length); //@todo apf3.0 count element nodes
+            ? this.getTraverseNodes().length : this.childNodes.length); //@todo ppc3.0 count element nodes
         
         this.oSlider.style.display = "block";
         if (!this.ignoreOverflow) {
-            this.oSlider.style[apf.supportOverflowComponent
+            this.oSlider.style[ppc.supportOverflowComponent
                 ? "overflowY"
                 : "overflow"] = "visible";
             this.$container.style.overflowY = "hidden";
@@ -222,13 +222,13 @@ apf.dropdown = function(struct, tagName){
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
         
-        //var pos = apf.getAbsolutePosition(this.$ext);
+        //var pos = ppc.getAbsolutePosition(this.$ext);
         this.oSlider.style.height = (this.sliderHeight - 1)     + "px";
         this.oSlider.style.width  = (this.$ext.offsetWidth - 2 - this.widthdiff) + "px";
 
         var _self = this;
-        var _popupCurEl = apf.popup.getCurrentElement();
-        apf.popup.show(this.$uniqueId, {
+        var _popupCurEl = ppc.popup.getCurrentElement();
+        ppc.popup.show(this.$uniqueId, {
             x             : 0,
             y             : this.$ext.offsetHeight,
             animate       : true,
@@ -236,7 +236,7 @@ apf.dropdown = function(struct, tagName){
             ref           : this.$ext,
             width         : this.$ext.offsetWidth - this.widthdiff,
             height        : this.containerHeight,
-            allowTogether : (_popupCurEl && apf.isChildOf(_popupCurEl.$ext, _self.$ext)),
+            allowTogether : (_popupCurEl && ppc.isChildOf(_popupCurEl.$ext, _self.$ext)),
             callback      : function(container){
                 if (!_self.ignoreOverflow) {
                     _self.$container.style.overflowY = "auto";
@@ -255,19 +255,19 @@ apf.dropdown = function(struct, tagName){
         
         this.isOpen = false;
         if (this.selected) {
-            var htmlNode = apf.xmldb.findHtmlNode(this.selected, this);
+            var htmlNode = ppc.xmldb.findHtmlNode(this.selected, this);
             if(htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
         
         this.$setStyleClass(this.$ext, '', [this.$baseCSSname + "Down"]);
-        if (apf.popup.last == this.$uniqueId)
-            apf.popup.hide();
+        if (ppc.popup.last == this.$uniqueId)
+            ppc.popup.hide();
         return false;
     };
     
     // *** Private methods and event handlers *** //
 
-    //@todo apf3.0 why is this function called 6 times on init.
+    //@todo ppc3.0 why is this function called 6 times on init.
     this.$setLabel = function(value){
         //#ifdef __SUPPORT_WEBKIT
         this.oLabel.innerHTML = value || this["initial-message"] || "";
@@ -313,7 +313,7 @@ apf.dropdown = function(struct, tagName){
     };
     
     /*this.$focus = function(){
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
         this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
     }*/
     
@@ -416,22 +416,22 @@ apf.dropdown = function(struct, tagName){
 
         //Build Main Skin
         this.$ext = this.$getExternal(null, null, function(oExt){
-            oExt.setAttribute("onmouseover", 'var o = apf.lookup(' + this.$uniqueId
+            oExt.setAttribute("onmouseover", 'var o = ppc.lookup(' + this.$uniqueId
                 + ');o.$setStyleClass(o.$ext, o.$baseCSSname + "Over", null, true);');
-            oExt.setAttribute("onmouseout", 'var o = apf.lookup(' + this.$uniqueId
+            oExt.setAttribute("onmouseout", 'var o = ppc.lookup(' + this.$uniqueId
                 + ');if(o.isOpen) return;o.$setStyleClass(o.$ext, "", [o.$baseCSSname + "Over"], true);');
             
             //Button
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
-                oButton.setAttribute("onmousedown", 'apf.lookup('
+                oButton.setAttribute("onmousedown", 'ppc.lookup('
                     + this.$uniqueId + ').slideToggle(event, true);');
             }
             
             //Label
             var oLabel = this.$getLayoutNode("main", "label", oExt);
             if (this.clickOpen == "both") {
-                oLabel.parentNode.setAttribute("onmousedown", 'apf.lookup('
+                oLabel.parentNode.setAttribute("onmousedown", 'ppc.lookup('
                     + this.$uniqueId + ').slideToggle(event, true);');
             }
         });
@@ -446,14 +446,14 @@ apf.dropdown = function(struct, tagName){
         if (this.$button)
             this.$button = this.$getLayoutNode("main", "button", this.$ext);
         
-        this.oSlider = apf.insertHtmlNode(this.$getLayoutNode("container"),
+        this.oSlider = ppc.insertHtmlNode(this.$getLayoutNode("container"),
             document.body);
         this.$container = this.$getLayoutNode("container", "contents", this.oSlider);
         this.$container.host = this;
         
         //Set up the popup
-        this.$pHtmlDoc = apf.popup.setContent(this.$uniqueId, this.oSlider,
-            apf.skins.getCssString(this.skinName));
+        this.$pHtmlDoc = ppc.popup.setContent(this.$uniqueId, this.oSlider,
+            ppc.skins.getCssString(this.skinName));
         
         //Get Options form skin
         //Types: 1=One dimensional List, 2=Two dimensional List
@@ -461,7 +461,7 @@ apf.dropdown = function(struct, tagName){
         
         this.itemHeight     = this.$getOption("main", "item-height") || 18.5;
         this.widthdiff      = this.$getOption("main", "width-diff") || 0;
-        this.ignoreOverflow = apf.isTrue(this.$getOption("main", "ignore-overflow")) || false;
+        this.ignoreOverflow = ppc.isTrue(this.$getOption("main", "ignore-overflow")) || false;
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(){
@@ -473,8 +473,8 @@ apf.dropdown = function(struct, tagName){
     });
     
     this.$destroy = function(){
-        apf.popup.removeContent(this.$uniqueId);
-        apf.destroyHtmlNode(this.oSlider);
+        ppc.popup.removeContent(this.$uniqueId);
+        ppc.destroyHtmlNode(this.oSlider);
         this.oSlider = null;
     };
 
@@ -490,9 +490,9 @@ apf.dropdown = function(struct, tagName){
         return this.$activeElements;
     }
     //#endif
-}).call(apf.dropdown.prototype = new apf.BaseList());
+}).call(ppc.dropdown.prototype = new ppc.BaseList());
 
-apf.config.$inheritProperties["initial-message"] = 1;
+ppc.config.$inheritProperties["initial-message"] = 1;
 
-apf.aml.setElement("dropdown", apf.dropdown);
+ppc.aml.setElement("dropdown", ppc.dropdown);
 // #endif

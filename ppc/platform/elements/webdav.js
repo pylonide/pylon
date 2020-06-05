@@ -95,16 +95,16 @@
  * @since       1.0
  * @constructor
  *
- * @inherits apf.Class
- * @inherits apf.BaseComm
- * @inherits apf.http
+ * @inherits ppc.Class
+ * @inherits ppc.BaseComm
+ * @inherits ppc.http
  *
  *
  * @default_private
  */
 
-apf.webdav = function(struct, tagName){
-    this.$init(tagName || "webdav", apf.NODE_HIDDEN, struct);
+ppc.webdav = function(struct, tagName){
+    this.$init(tagName || "webdav", ppc.NODE_HIDDEN, struct);
 
     this.$locks       = {};
     this.$lockedStack = [];
@@ -211,7 +211,7 @@ apf.webdav = function(struct, tagName){
         var _self = this;
         return this.get(sPath || this.$server, {
             callback: function(data, state, extra) {
-                if (state != apf.SUCCESS) {
+                if (state != ppc.SUCCESS) {
                     var oError;
 
                     oError = WebDAVError.call(_self, "Url: " + extra.url + "\nInfo: " + extra.message);
@@ -235,10 +235,10 @@ apf.webdav = function(struct, tagName){
                   && sResponse.substr(0, 14) == "<?xml version=") {
                     try {
                         data = (extra.http.responseXML && extra.http.responseXML.documentElement)
-                            ? apf.xmlParseError(extra.http.responseXML)
-                            : apf.getXmlDom(extra.http.responseText);
+                            ? ppc.xmlParseError(extra.http.responseXML)
+                            : ppc.getXmlDom(extra.http.responseText);
 
-                        if (!apf.supportNamespaces)
+                        if (!ppc.supportNamespaces)
                             data.setProperty("SelectionLanguage", "XPath");
 
                         data = data.documentElement;
@@ -286,13 +286,13 @@ apf.webdav = function(struct, tagName){
 
         var cb = this.$getVar("auth-callback");
         if (cb) {
-            cb(null, apf.ERROR, extra);
+            cb(null, ppc.ERROR, extra);
             unregister.call(this, "auth-callback");
         }
 
         // #ifdef __DEBUG
         try{
-            apf.console.error(extra.message.toString() + " (username: " + extra.username
+            ppc.console.error(extra.message.toString() + " (username: " + extra.username
                               + ", server: " + extra.server + ")", "webdav");
         }
         catch(ex){}
@@ -321,12 +321,12 @@ apf.webdav = function(struct, tagName){
 
         var cb = this.$getVar("auth-callback");
         if (cb) {
-            cb(null, apf.ERROR, extra);
+            cb(null, ppc.ERROR, extra);
             unregister.call(this, "auth-callback");
         }
 
         // #ifdef __DEBUG
-        apf.console.error(extra.message + " (username: " + extra.username
+        ppc.console.error(extra.message + " (username: " + extra.username
                           + ", server: " + extra.server + ")", "webdav");
         // #endif
 
@@ -341,7 +341,7 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function WebDAVError(sMsg) {
-        return new Error(apf.formatErrorString(0, this,
+        return new Error(ppc.formatErrorString(0, this,
                          "WebDAV Communication error", sMsg));
     }
 
@@ -355,7 +355,7 @@ apf.webdav = function(struct, tagName){
      */
     function onAuth(callback) {
         var oDoc, authRequired = false;
-        if (apf.isIE) {
+        if (ppc.isIE) {
             try {
                 oDoc = new ActiveXObject("Msxml2.DOMDocument");
             }
@@ -369,7 +369,7 @@ apf.webdav = function(struct, tagName){
         }
 
         try {
-            if (apf.isIE) { // only support IE for now, other browsers cannot detect 401's silently yet...
+            if (ppc.isIE) { // only support IE for now, other browsers cannot detect 401's silently yet...
                 oDoc.async = false;
                 oDoc.load(this.$rootPath);
             }
@@ -379,7 +379,7 @@ apf.webdav = function(struct, tagName){
         }
 
         var auth = this.ownerDocument
-           && this.ownerDocument.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+           && this.ownerDocument.getElementsByTagNameNS(ppc.ns.ppc, "auth")[0];
         if (authRequired) {
             auth.authRequired(callback);
         }
@@ -404,7 +404,7 @@ apf.webdav = function(struct, tagName){
         this.$regVar("auth-password", password);
         this.$regVar("auth-callback", callback);
 
-        var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        var auth = ppc.document.getElementsByTagNameNS(ppc.ns.ppc, "auth")[0];
         if (!auth)
             return;
 
@@ -444,7 +444,7 @@ apf.webdav = function(struct, tagName){
      */
     this.exists = function(sPath, callback) {
         this.getProperties(sPath, 0, function(data, state, extra) {
-            callback(state === apf.SUCCESS);
+            callback(state === ppc.SUCCESS);
         });
     };
 
@@ -463,7 +463,7 @@ apf.webdav = function(struct, tagName){
             var iStatus = parseInt(extra.status, 10);
             if (iStatus == 403) { //Forbidden
                 var oError = WebDAVError.call(this, "Unable to read file. Server says: "
-                             + apf.webdav.STATUS_CODES["403"]);
+                             + ppc.webdav.STATUS_CODES["403"]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -521,7 +521,7 @@ apf.webdav = function(struct, tagName){
               || iStatus == 415 || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to create directory '" + sPath
                              + "'. Server says: "
-                             + apf.webdav.STATUS_CODES[String(iStatus)]);
+                             + ppc.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -573,15 +573,15 @@ apf.webdav = function(struct, tagName){
         var _self = this;
         this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.status, 10);
-            if (state != apf.SUCCESS) {
+            if (state != ppc.SUCCESS) {
                 var oError = WebDAVError.call(this, "Unable to write to file. Server says: "
-                             + apf.webdav.STATUS_CODES[String(iStatus)]);
+                             + ppc.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
                   }) === false && !callback)
                     throw oError;
-                return callback && callback.call(this, data, apf.ERROR, extra);
+                return callback && callback.call(this, data, ppc.ERROR, extra);
             }
             else {
                 _self.getProperties(sPath, 0, callback);
@@ -604,7 +604,7 @@ apf.webdav = function(struct, tagName){
      */
     this.copy = function(sFrom, sTo, bOverwrite, bLock, callback) {
         if (!sTo || sFrom == sTo)
-            return (callback && callback("", apf.SUCCESS, {}));
+            return (callback && callback("", ppc.SUCCESS, {}));
 
         if (bLock) {
             var oLock = this.lock(sFrom);
@@ -630,7 +630,7 @@ apf.webdav = function(struct, tagName){
               || iStatus == 507) {
                 var oError = WebDAVError.call(this, "Unable to copy file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
-                             + apf.webdav.STATUS_CODES[String(iStatus)]);
+                             + ppc.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -655,7 +655,7 @@ apf.webdav = function(struct, tagName){
     this.rename =
     this.move = function(sFrom, sTo, bOverwrite, bLock, callback) {
         if (!sTo || sFrom == sTo)
-            return (callback && callback("", apf.SUCCESS, {}));
+            return (callback && callback("", ppc.SUCCESS, {}));
 
         if (bLock) {
             var oLock = this.lock(sFrom);
@@ -680,7 +680,7 @@ apf.webdav = function(struct, tagName){
               || iStatus == 423 || iStatus == 424 || iStatus == 501 || iStatus == 502 || iStatus == 500) {
                 var oError = WebDAVError.call(this, "Unable to move file '" + sFrom
                              + "' to '" + sTo + "'. Server says: "
-                             + apf.webdav.STATUS_CODES[String(iStatus)]);
+                             + ppc.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -720,7 +720,7 @@ apf.webdav = function(struct, tagName){
             if (iStatus == 400 || iStatus == 423 || iStatus == 424) { //Failed dependency (collections only)
                 var oError = WebDAVError.call(this, "Unable to remove file '" + sPath
                              + "'. Server says: "
-                             + apf.webdav.STATUS_CODES[String(iStatus)]);
+                             + ppc.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -735,11 +735,11 @@ apf.webdav = function(struct, tagName){
 
     this.report = function(sPath, reportName, oProperties, callback) {
         var aCont = ['<?xml version="1.0" encoding="utf-8" ?>',
-            '<D:' + reportName + ' xmlns:D="', apf.webdav.NS.D, '">'];
+            '<D:' + reportName + ' xmlns:D="', ppc.webdav.NS.D, '">'];
         if (oProperties) {
             for (var prop in oProperties) {
                 aCont.push("<D:" + prop, (oProperties[prop]
-                    ? ">" + apf.escapeXML(oProperties[prop]) + "</D:" + prop + ">"
+                    ? ">" + ppc.escapeXML(oProperties[prop]) + "</D:" + prop + ">"
                     : "/>"));
             }
         }
@@ -749,10 +749,10 @@ apf.webdav = function(struct, tagName){
 
         return this.doRequest(function(data, state, extra) {
             var iStatus = parseInt(extra.status, 10);
-            if (state != apf.SUCCESS) {
+            if (state != ppc.SUCCESS) {
                 var oError = WebDAVError.call(this, "Unable to fetch report on '" + sPath
                              + "'. Server says: "
-                             + apf.webdav.STATUS_CODES[String(iStatus)]);
+                             + ppc.webdav.STATUS_CODES[String(iStatus)]);
                 if (this.dispatchEvent("error", {
                     error   : oError,
                     bubbles : true
@@ -796,7 +796,7 @@ apf.webdav = function(struct, tagName){
         if (sLock)
             oHeaders["If"] = "<" + sLock + ">";
         var xml = '<?xml version="1.0" encoding="utf-8"?>'
-                + '<D:lockinfo xmlns:D="' + apf.webdav.NS.D + '">'
+                + '<D:lockinfo xmlns:D="' + ppc.webdav.NS.D + '">'
                 +     '<D:lockscope><D:exclusive /></D:lockscope>'
                 +     '<D:locktype><D:write /></D:locktype>'
                 +     '<D:owner><D:href>'
@@ -863,7 +863,7 @@ apf.webdav = function(struct, tagName){
             unregisterLock.call(this, extra.url.replace(this.$server, ""));
             var oError = WebDAVError.call(this, "Unable to apply lock to '" + sPath
                          + "'. Server says: "
-                         + apf.webdav.STATUS_CODES[String(iStatus)]);
+                         + ppc.webdav.STATUS_CODES[String(iStatus)]);
             if (this.dispatchEvent("error", {
                 error   : oError,
                 bubbles : true
@@ -871,7 +871,7 @@ apf.webdav = function(struct, tagName){
                 throw oError;
         }
 
-        var NS     = apf.webdav.NS,
+        var NS     = ppc.webdav.NS,
             oOwner = $xmlns(data, "owner",     NS.ns0)[0],
             oToken = $xmlns(data, "locktoken", NS.D)[0];
         oLock.path    = sPath;
@@ -952,7 +952,7 @@ apf.webdav = function(struct, tagName){
         this.method = "PROPFIND";
         // XXX maybe we want to change this to allow getting selected props
         var xml = '<?xml version="1.0" encoding="utf-8" ?>'
-                + '<D:propfind xmlns:D="' + apf.webdav.NS.D + '">'
+                + '<D:propfind xmlns:D="' + ppc.webdav.NS.D + '">'
                 +       '<D:allprop />'
                 + '</D:propfind>';
         oHeaders = oHeaders || {};
@@ -976,7 +976,7 @@ apf.webdav = function(struct, tagName){
 
         this.doRequest(function(data, state, extra) {
             // #ifdef __DEBUG
-            apf.console.dir(data);
+            ppc.console.dir(data);
             // #endif
         }, sPath, buildPropertiesBlock.call(this, oPropsSet, oPropsDel),
            sLock ? {"If": "<" + sLock + ">"} : null, true);
@@ -992,7 +992,7 @@ apf.webdav = function(struct, tagName){
      */
     function buildPropertiesBlock(oPropsSet, oPropsDel) {
         var aOut = ['<?xml version="1.0" encoding="utf-8" ?>',
-            '<D:propertyupdate xmlns:D="', apf.webdav.NS.D, '">'];
+            '<D:propertyupdate xmlns:D="', ppc.webdav.NS.D, '">'];
 
         var bHasProps = false, ns, i, j;
         for (ns in oPropsSet) {
@@ -1043,9 +1043,9 @@ apf.webdav = function(struct, tagName){
             return callback ? callback.call(this, null, state, extra) : notAuth.call(this);
 
         if (typeof oXml == "string")
-            oXml = apf.getXml(oXml);
+            oXml = ppc.getXml(oXml);
 
-        var aResp = $xmlns(oXml, "response", apf.webdav.NS.D);
+        var aResp = $xmlns(oXml, "response", ppc.webdav.NS.D);
         var aOut = [];
         if (aResp.length) //we got a valid result set, so assume that any possible AUTH has succeeded
             this.$regVar("authenticated", true);
@@ -1053,7 +1053,7 @@ apf.webdav = function(struct, tagName){
         var sPath;
         for (var sa = [], data, i = 0, j = aResp.length; i < j; i++) {
             // Exclude requesting URL if it matches node's HREF (same node)
-            sPath = decodeURIComponent($xmlns(aResp[i], "href", apf.webdav.NS.D)[0].firstChild.nodeValue);
+            sPath = decodeURIComponent($xmlns(aResp[i], "href", ppc.webdav.NS.D)[0].firstChild.nodeValue);
             if (sPath === extra.url)
                 continue;
 
@@ -1091,7 +1091,7 @@ apf.webdav = function(struct, tagName){
      * @private
      */
     function parseItem(oNode, extra) {
-        var NS      = apf.webdav.NS,
+        var NS      = ppc.webdav.NS,
             sPath   = decodeURIComponent($xmlns(oNode, "href", NS.D)[0].firstChild
                       .nodeValue.replace(/[\\\/]+$/, "")),
             sName   = sPath.split("/").pop(),
@@ -1104,7 +1104,7 @@ apf.webdav = function(struct, tagName){
             sType  = $xmlns(oNode, "collection", NS.D).length > 0 ? "folder" : "file",
             aCType = $xmlns(oNode, "getcontenttype", NS.D),
             aExec  = $xmlns(oNode, "executable", NS.lp2);
-        oItem = this.$fsCache[sPath] = apf.extend(this.$fsCache[sPath] || {}, {
+        oItem = this.$fsCache[sPath] = ppc.extend(this.$fsCache[sPath] || {}, {
             path        : sPath,
             type        : sType,
             size        : parseInt(sType == "file"
@@ -1124,9 +1124,9 @@ apf.webdav = function(struct, tagName){
         if (extra)
             extra.data = oItem;
 
-        var aXml = ["<" + sType + " path=\"" + apf.escapeXML(sPath) +
+        var aXml = ["<" + sType + " path=\"" + ppc.escapeXML(sPath) +
             "\" type=\"" + sType + "\" size=\"" + oItem.size + "\" name=\"" +
-            apf.escapeXML(oItem.name) + "\" contenttype=\"" + oItem.contentType +
+            ppc.escapeXML(oItem.name) + "\" contenttype=\"" + oItem.contentType +
             "\" modifieddate=\"" + oItem.lastModified + "\" creationdate=\"" +
             oItem.creationDate + "\" lockable=\"" + oItem.lockable.toString() +
             "\" hidden=\"" + bHidden.toString() + "\" executable=\"" +
@@ -1234,7 +1234,7 @@ apf.webdav = function(struct, tagName){
                 break;
             default:
                 //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
+                throw new Error(ppc.formatErrorString(0, null, "Saving/Loading data",
                     "Invalid WebDAV method '" + method + "'"));
                 //#endif
                 break;
@@ -1242,19 +1242,19 @@ apf.webdav = function(struct, tagName){
     };
 
     // #endif
-}).call(apf.webdav.prototype = new apf.Teleport());
+}).call(ppc.webdav.prototype = new ppc.Teleport());
 
-apf.aml.setElement("webdav", apf.webdav);
+ppc.aml.setElement("webdav", ppc.webdav);
 
 // Collection of shorthands for all namespaces known and used by this class
-apf.webdav.NS = {
+ppc.webdav.NS = {
     D    : "DAV:",
     ns0  : "DAV:",
     lp1  : "DAV:",
     lp2  : "http://apache.org/dav/props/"
 };
 
-apf.webdav.STATUS_CODES = {
+ppc.webdav.STATUS_CODES = {
     "100": "Continue",
     "101": "Switching Protocols",
     "102": "Processing",

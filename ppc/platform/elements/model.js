@@ -91,8 +91,8 @@
  * </a:application>
  * ```
  *
- * @class apf.model
- * @inherits apf.AmlElement
+ * @class ppc.model
+ * @inherits ppc.AmlElement
  * @define model
  * @logic
  * @allowchild [cdata], instance, load, submission
@@ -163,20 +163,20 @@
  * @param {Object} e The standard event object. It contains the following properties:
  *   - `error` ([[Error]]): the error object that is thrown when the event callback doesn't return false.
  *   - `state` ([[Number]]): the state of the call. Possible values include:
- *     - `apf.SUCCESS`:  the request was successfull
- *     - `apf.TIMEOUT`:  the request has timed out.
- *     - `apf.ERROR`:  an error has occurred while making the request.
- *     - `apf.OFFLINE`:  the request was made while the application was offline.
+ *     - `ppc.SUCCESS`:  the request was successfull
+ *     - `ppc.TIMEOUT`:  the request has timed out.
+ *     - `ppc.ERROR`:  an error has occurred while making the request.
+ *     - `ppc.OFFLINE`:  the request was made while the application was offline.
  *   - `userdata` (`Mixed`): data that the caller wanted to be available in the callback of the HTTP request.
  *   - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
  *   - `url` ([[String]]): the URL that was requested.
- *   - `tpModule` ([[apf.http]]): the teleport module that is making the request.
+ *   - `tpModule` ([[ppc.http]]): the teleport module that is making the request.
  *   - `id` ([[Number]]): the id of the request.
  *   - `message` ([[String]]): the error message.
  *
  */
-apf.model = function(struct, tagName){
-    this.$init(tagName || "model", apf.NODE_HIDDEN, struct);
+ppc.model = function(struct, tagName){
+    this.$init(tagName || "model", ppc.NODE_HIDDEN, struct);
     
     this.$amlNodes = {};
     this.$propBinds = {};
@@ -196,7 +196,7 @@ apf.model = function(struct, tagName){
     this.$state = 0;//1 = loading
 
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         submission : 1,
         src        : 1,
         session    : 1
@@ -225,7 +225,7 @@ apf.model = function(struct, tagName){
         if (value) {
             if (this.src && this.src.indexOf("rdb://") === 0) {
                 var _self = this;
-                apf.queue.add("rdb_load_" + this.$uniqueId, function(){
+                ppc.queue.add("rdb_load_" + this.$uniqueId, function(){
                     _self.unshare();
                     _self.share();
                 });
@@ -239,7 +239,7 @@ apf.model = function(struct, tagName){
         this.rdb = typeof this.remote == "string"
             ? 
             //#ifdef __WITH_NAMESERVER
-            apf.nameserver.get("remote", this.remote)
+            ppc.nameserver.get("remote", this.remote)
             /* #else
             {}
             #endif */
@@ -247,7 +247,7 @@ apf.model = function(struct, tagName){
 
         //#ifdef __DEBUG
         if (!this.rdb || !this.rdb.$sessions) {
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Loading AML into model",
                 "Could not find reference to remote databinding: '"
                 + this.remote + "'", this))
@@ -268,15 +268,15 @@ apf.model = function(struct, tagName){
      * Registers an AML element to this model in order for the AML element to
      * receive data loaded in this model.
      *
-     * @param  {apf.AmlElement}  amlNode  The AML element to be registered.
+     * @param  {ppc.AmlElement}  amlNode  The AML element to be registered.
      * @param  {String}      [xpath]  The XPath query which is executed on the
      *                                data of the model to select the node to be
      *                                loaded in the `amlNode`.
-     * @return  {apf.model}  This model
+     * @return  {ppc.model}  This model
      * @private
      */
     this.register = function(amlNode, xpath){
-        if (!amlNode || !amlNode.load) //hasFeature(apf.__DATABINDING__))
+        if (!amlNode || !amlNode.load) //hasFeature(ppc.__DATABINDING__))
             return this;
 
         var isReloading = amlNode.$model == this;
@@ -300,14 +300,14 @@ apf.model = function(struct, tagName){
         //amlNode.$model = this;
         if (this.$state == 1) {
             if (amlNode.clear && !amlNode.noloading)
-                amlNode.clear("loading");//@todo apf3.0
+                amlNode.clear("loading");//@todo ppc3.0
         }
         else if (this.data) {
             this.$loadInAmlNode(item);
             //this.$loadInAmlProp(amlNode);
         }
         else { //@experimental
-            if (amlNode.hasFeature(apf.__CACHE__)) // amlNode.clear
+            if (amlNode.hasFeature(ppc.__CACHE__)) // amlNode.clear
                 amlNode.clear("empty");
         }
 
@@ -331,7 +331,7 @@ apf.model = function(struct, tagName){
     };
 
     this.$register = function(amlNode, xpath){
-        //@todo apf3.0 update this.$propBinds;
+        //@todo ppc3.0 update this.$propBinds;
         
         this.$amlNodes[amlNode.$uniqueId].xpath = xpath;
     };
@@ -341,7 +341,7 @@ apf.model = function(struct, tagName){
      * The AML element will not receive any updates from this model, however
      * the data loaded in the AML element is not unloaded.
      *
-     * @param  {apf.AmlElement}  amlNode  The AML element to be unregistered.
+     * @param  {ppc.AmlElement}  amlNode  The AML element to be unregistered.
      * @private
      */
     this.unregister = function(amlNode){
@@ -389,7 +389,7 @@ apf.model = function(struct, tagName){
     };
     
     this.$loadInAmlProp = function(id, xmlNode){
-        var prop, node, p = this.$propBinds[id], amlNode = apf.all[id];
+        var prop, node, p = this.$propBinds[id], amlNode = ppc.all[id];
         if (!amlNode){
              delete this.$propBinds[id];
              return;
@@ -405,7 +405,7 @@ apf.model = function(struct, tagName){
             if (xmlNode && (node = p[prop].listen 
               ? xmlNode.selectSingleNode(p[prop].listen) 
               : xmlNode)) {
-                apf.xmldb.addNodeListener(xmlNode, amlNode, 
+                ppc.xmldb.addNodeListener(xmlNode, amlNode, 
                   "p|" + id + "|" + prop + "|" + this.$uniqueId);
                 
                 delete this.$proplisteners[id + prop];
@@ -444,7 +444,7 @@ apf.model = function(struct, tagName){
             bind: xpath
         };
 
-        //@todo apf3.0
+        //@todo ppc3.0
         //Optimize root point, doesnt work right now because it doesnt change the original rule
         if (optimize && false) {
             //Find xpath for bind on this model of the amlNode
@@ -475,7 +475,7 @@ apf.model = function(struct, tagName){
               (p.listen ? this.data.selectSingleNode(p.listen) : this.data);
 
             if (xmlNode) {
-                apf.xmldb.addNodeListener(xmlNode, amlNode, 
+                ppc.xmldb.addNodeListener(xmlNode, amlNode, 
                   "p|" + amlNode.$uniqueId + "|" + prop + "|" + this.$uniqueId);
                 
                 return p;
@@ -490,14 +490,14 @@ apf.model = function(struct, tagName){
     this.$unbindXmlProperty = function(amlNode, prop){
         var id = amlNode.$uniqueId;
 
-        //@todo apf3.0
+        //@todo ppc3.0
         var p = this.$propBinds[id] && this.$propBinds[id][prop];
         if (!p) return;
         
         if (this.data) {
             var xmlNode = p.listen ? this.data.selectSingleNode(p.listen) : this.data;
             if (xmlNode) {
-                apf.xmldb.removeNodeListener(xmlNode, amlNode, 
+                ppc.xmldb.removeNodeListener(xmlNode, amlNode, 
                   "p|" + id + "|" + prop + "|" + this.$uniqueId);
             }
         }
@@ -515,7 +515,7 @@ apf.model = function(struct, tagName){
      */
     this.getXml = function(){
         return this.data
-            ? apf.xmldb.cleanNode(this.data.cloneNode(true))
+            ? ppc.xmldb.cleanNode(this.data.cloneNode(true))
             : false;
     };
 
@@ -530,12 +530,12 @@ apf.model = function(struct, tagName){
         if (!this.data)
             return false;
         
-        var node = apf.createNodeFromXpath(this.data, xpath);
+        var node = ppc.createNodeFromXpath(this.data, xpath);
         if (!node)
             return null;
 
-        apf.setNodeValue(node, value, true);
-        //apf.xmldb.setTextNode(node, value);
+        ppc.setNodeValue(node, value, true);
+        //ppc.xmldb.setTextNode(node, value);
         return node;
     };
     
@@ -552,7 +552,7 @@ apf.model = function(struct, tagName){
         
         var nodes = this.data.selectNodes(xpath);
         for (var i = 0, l = nodes.length; i < l; i++)
-            apf.setNodeValue(node, value, true);
+            ppc.setNodeValue(node, value, true);
 
         return nodes;
     };
@@ -567,7 +567,7 @@ apf.model = function(struct, tagName){
         if (!this.data)
             return false;
         
-        return apf.queryValue(this.data, xpath);
+        return ppc.queryValue(this.data, xpath);
     };
 	
     /**
@@ -580,7 +580,7 @@ apf.model = function(struct, tagName){
         if (!this.data)
             return [];
         
-        return apf.queryValue(this.data, xpath);
+        return ppc.queryValue(this.data, xpath);
     };
 	
     /**
@@ -618,19 +618,19 @@ apf.model = function(struct, tagName){
      */
     this.appendXml = function(xmlNode, xpath){
         var insertNode = xpath
-          ? apf.createNodeFromXpath(this.data, xpath)
+          ? ppc.createNodeFromXpath(this.data, xpath)
           : this.data;
         if (!insertNode)
             return null;
         
         if (typeof xmlNode == "string")
-            xmlNode = apf.getXml(xmlNode);
+            xmlNode = ppc.getXml(xmlNode);
         else if (xmlNode.nodeFunc)
             xmlNode = xmlNode.getXml();
         
         if (!xmlNode) return;
 
-        xmlNode = apf.xmldb.appendChild(insertNode, xmlNode);
+        xmlNode = ppc.xmldb.appendChild(insertNode, xmlNode);
         
         this.dispatchEvent("update", {xmlNode: xmlNode});
         return xmlNode;
@@ -651,7 +651,7 @@ apf.model = function(struct, tagName){
         }
         
         if (xmlNodes.length) {
-            apf.xmldb.removeNodeList(xmlNodes);
+            ppc.xmldb.removeNodeList(xmlNodes);
         }
     };
 
@@ -670,7 +670,7 @@ apf.model = function(struct, tagName){
     this.reset = function(){
         var doc = this.data.ownerDocument;
         //doc.removeChild(this.data);
-        //var node = doc.appendChild(apf.isWebkit ? doc.importNode(this.$copy, true) : this.$copy);
+        //var node = doc.appendChild(ppc.isWebkit ? doc.importNode(this.$copy, true) : this.$copy);
         this.data.parentNode.replaceChild(this.$copy, this.data);
         this.load(this.$copy);
     };
@@ -680,7 +680,7 @@ apf.model = function(struct, tagName){
      * model. The `reset()` method returns the model to this point.
      */
     this.savePoint = function(){
-        this.$copy = apf.xmldb.getCleanCopy(this.data);
+        this.$copy = ppc.xmldb.getCleanCopy(this.data);
     };
 
     /**
@@ -704,7 +704,7 @@ apf.model = function(struct, tagName){
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var x = this.$aml;
-        if (this.parentNode && this.parentNode.hasFeature(apf.__DATABINDING__)) {
+        if (this.parentNode && this.parentNode.hasFeature(ppc.__DATABINDING__)) {
             if (!this.name)
                 this.setProperty("id", "model" + this.parentNode.$uniqueId);
             //this.parentNode.$aml.setAttribute("model", this.name); //@todo don't think this is necesary anymore...
@@ -715,21 +715,21 @@ apf.model = function(struct, tagName){
         if (!this.src) {
             var strXml, xmlNode = x;
             if (xmlNode && xmlNode.childNodes.length) {
-                if (apf.getNode(xmlNode, [0])) {
+                if (ppc.getNode(xmlNode, [0])) {
                     if ((strXml = xmlNode.xml || xmlNode.serialize()).match(/^[\s\S]*?>([\s\S]*)<[\s\S]*?$/)) {
-                        strXml = RegExp.$1; //@todo apf3.0 test this with json
-                        if (!apf.supportNamespaces)
+                        strXml = RegExp.$1; //@todo ppc3.0 test this with json
+                        if (!ppc.supportNamespaces)
                             strXml = strXml.replace(/xmlns=\"[^"]*\"/g, "");
                     }
                     
                     if (this.whitespace === false)
                         strXml = strXml.replace(/>[\s\n\r]*</g, "><");
                     
-                    return this.load(apf.getXmlDom(strXml).documentElement);
+                    return this.load(ppc.getXmlDom(strXml).documentElement);
                 }
                 // we also support JSON data loading in a model CDATA section
-                else if (apf.isJson(xmlNode.childNodes[0].nodeValue)) {
-                    return this.load(apf.getXmlDom(xmlNode.childNodes[0].nodeValue).documentElement);
+                else if (ppc.isJson(xmlNode.childNodes[0].nodeValue)) {
+                    return this.load(ppc.getXmlDom(xmlNode.childNodes[0].nodeValue).documentElement);
                 }
             }
             
@@ -739,10 +739,10 @@ apf.model = function(struct, tagName){
         }
 
         //Load data into model if allowed
-        if (!apf.isFalse(this.autoinit))
+        if (!ppc.isFalse(this.autoinit))
             this.init();
 
-        //@todo actions apf3.0
+        //@todo actions ppc3.0
 
         return this;
     });
@@ -750,7 +750,7 @@ apf.model = function(struct, tagName){
     //callback here is private
     /**
      * Loads the initial data into this model.
-     * @see apf.model.init
+     * @see ppc.model.init
      */
     this.init = function(callback){
         if (this.session) {
@@ -758,16 +758,16 @@ apf.model = function(struct, tagName){
         }
         else {
             //#ifdef __WITH_OFFLINE_MODELS
-            if (typeof apf.offline != "undefined" && apf.offline.models.enabled) {
+            if (typeof ppc.offline != "undefined" && ppc.offline.models.enabled) {
                 //Check if there's stored data
-                if (apf.offline.models.loadModel(this)) {
+                if (ppc.offline.models.loadModel(this)) {
                     return;
                 }
 
                 //Hmm we're offline, lets wait until we're online again
                 //@todo this will ruin getting data from offline resources
-                if (this.src && !apf.offline.onLine) {
-                    apf.offline.models.addToInitQueue(this);
+                if (this.src && !ppc.offline.onLine) {
+                    ppc.offline.models.addToInitQueue(this);
                     return;
                 }
             }
@@ -815,7 +815,7 @@ apf.model = function(struct, tagName){
             if (!(item = this.$amlNodes[uniqueId]) || !item.amlNode)
                 continue;
 
-            //@todo apf3.0
+            //@todo ppc3.0
             if (!item.amlNode.noloading)
                 item.amlNode.clear("loading");
         }
@@ -836,16 +836,16 @@ apf.model = function(struct, tagName){
             _self.dispatchEvent("afterretrieve");
 
             //#ifdef __WITH_OFFLINE_MODELS
-            if (state == apf.OFFLINE) {
-                apf.offline.models.addToInitQueue(this);
+            if (state == ppc.OFFLINE) {
+                ppc.offline.models.addToInitQueue(this);
                 return false;
             }
             //#endif
 
-            if (state != apf.SUCCESS) {
+            if (state != ppc.SUCCESS) {
                 var oError;
 
-                oError = new Error(apf.formatErrorString(1032,
+                oError = new Error(ppc.formatErrorString(1032,
                     _self, "Loading xml data", "Could not load data\n"
                   + "Instruction: " + instruction + "\n"
                   + "Url: " + extra.url + "\n"
@@ -880,11 +880,11 @@ apf.model = function(struct, tagName){
             }
         };
 
-        return apf.getData(instruction, options);
+        return ppc.getData(instruction, options);
     };
     
     /**
-     * Loads the data from the datasource specified for [[apf.model.init]].
+     * Loads the data from the datasource specified for [[ppc.model.init]].
      */
     this.reload = function(){
         if (!this.data)
@@ -912,13 +912,13 @@ apf.model = function(struct, tagName){
             if (xmlNode.charAt(0) == "<") { //xml
                 if (xmlNode.substr(0, 5).toUpperCase() == "<!DOC")
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
-                if (!apf.supportNamespaces)
+                if (!ppc.supportNamespaces)
                     xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
-                xmlNode = apf.getXmlDom(xmlNode, null, true).documentElement; //@todo apf3.0 whitespace issue
+                xmlNode = ppc.getXmlDom(xmlNode, null, true).documentElement; //@todo ppc3.0 whitespace issue
             }
             //#ifdef __WITH_JSON2XML
-            else if (apf.isJson(xmlNode)) {
-                xmlNode = apf.json2Xml(xmlNode).documentElement
+            else if (ppc.isJson(xmlNode)) {
+                xmlNode = ppc.json2Xml(xmlNode).documentElement
             }
             //#endif
             else
@@ -929,12 +929,12 @@ apf.model = function(struct, tagName){
             //if (!this.$queueLoading) {
                 var _self = this;
                 this.data = xmlNode; //@todo expirement //this.$copy = 
-                apf.xmldb.getXmlDocId(xmlNode, this); //@todo experiment
+                ppc.xmldb.getXmlDocId(xmlNode, this); //@todo experiment
                 
                 this.$queueLoading = true;
-                apf.queue.add("modelload" + this.$uniqueId, function(){
+                ppc.queue.add("modelload" + this.$uniqueId, function(){
                     if (_self.ownerDocument && _self.ownerDocument.$domParser.$isPaused(_self))
-                        apf.queue.add("modelload" + _self.$uniqueId, arguments.callee);
+                        ppc.queue.add("modelload" + _self.$uniqueId, arguments.callee);
                     else {
                         _self.load(xmlNode, options);
                         _self.$queueLoading = false;
@@ -944,7 +944,7 @@ apf.model = function(struct, tagName){
             return;
         }
         else if (this.$queueLoading)
-            apf.queue.remove("modelload" + this.$uniqueId);
+            ppc.queue.remove("modelload" + this.$uniqueId);
         
         this.$state = 0;
 
@@ -953,11 +953,11 @@ apf.model = function(struct, tagName){
 
         var doc = xmlNode ? xmlNode.ownerDocument : null; //Fix for safari refcount issue;
 
-        //if (apf.isIE && this.$aml && this.getAttribute("ns"))
+        //if (ppc.isIE && this.$aml && this.getAttribute("ns"))
             //doc.setProperty("SelectionNamespaces", this.getAttribute("ns"));
         
         if (xmlNode) {
-            if (!apf.supportNamespaces) {
+            if (!ppc.supportNamespaces) {
                 /* && (xmlNode.prefix || xmlNode.scopeName)) {
                 doc.setProperty("SelectionNamespaces", "xmlns:"
                      + (xmlNode.prefix || xmlNode.scopeName) + "='"
@@ -972,12 +972,12 @@ apf.model = function(struct, tagName){
                     doc.setProperty("SelectionNamespaces", xmlns.join(" "));
             }
             
-            apf.xmldb.addNodeListener(xmlNode, this); //@todo this one can be added for this.$listeners and when there are none removed
-            apf.xmldb.nodeConnect(
-                apf.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
+            ppc.xmldb.addNodeListener(xmlNode, this); //@todo this one can be added for this.$listeners and when there are none removed
+            ppc.xmldb.nodeConnect(
+                ppc.xmldb.getXmlDocId(xmlNode, this), xmlNode, null, this);
 
             if ((!options || !options.nocopy) && this.enablereset)
-                this.$copy = apf.xmldb.getCleanCopy(xmlNode);
+                this.$copy = ppc.xmldb.getCleanCopy(xmlNode);
         }
 
         this.data = xmlNode;
@@ -1028,10 +1028,10 @@ apf.model = function(struct, tagName){
         //#endif
 
         //#ifdef __ENABLE_UIRECORDER_HOOK
-        if (apf.uirecorder && apf.uirecorder.captureDetails) {
-            if (apf.uirecorder.isLoaded && (apf.uirecorder.isRecording || apf.uirecorder.isTesting)) {// only capture events when recording
+        if (ppc.uirecorder && ppc.uirecorder.captureDetails) {
+            if (ppc.uirecorder.isLoaded && (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting)) {// only capture events when recording
                 if (this.ownerDocument && this.$aml) {
-                    apf.uirecorder.capture.captureModelChange({
+                    ppc.uirecorder.capture.captureModelChange({
                         action      : action,
                         amlNode     : this,
                         xmlNode     : xmlNode,
@@ -1057,7 +1057,7 @@ apf.model = function(struct, tagName){
             if (xmlNode = b.listen ? this.data.selectSingleNode(b.listen) : this.data) {
                 delete this.$proplisteners[id];
                 
-                apf.xmldb.addNodeListener(xmlNode, p.amlNode, 
+                ppc.xmldb.addNodeListener(xmlNode, p.amlNode, 
                   "p|" + p.id + "|" + p.prop + "|" + this.$uniqueId);
                 
                 p.amlNode.$execProperty(p.prop, b.root 
@@ -1098,11 +1098,11 @@ apf.model = function(struct, tagName){
             if (!extra)
                 extra = {};
 
-            if (state != apf.SUCCESS) {
+            if (state != ppc.SUCCESS) {
                 var oError;
 
                 //#ifdef __DEBUG
-                oError = new Error(apf.formatErrorString(0,
+                oError = new Error(ppc.formatErrorString(0,
                     _self, "Inserting xml data", "Could not insert data\n"
                   + "Instruction:" + instruction + "\n"
                   + "Url: " + extra.url + "\n"
@@ -1125,7 +1125,7 @@ apf.model = function(struct, tagName){
                 options.insertPoint = _self.data.selectSingleNode(options.insertPoint);
 
             if (typeof options.clearContents == "undefined" && extra.userdata) 
-                options.clearContents = apf.isTrue(extra.userdata[1]); //@todo is this still used?
+                options.clearContents = ppc.isTrue(extra.userdata[1]); //@todo is this still used?
 
             if (options.whitespace == undefined)
                 options.whitespace = _self.whitespace;
@@ -1137,7 +1137,7 @@ apf.model = function(struct, tagName){
                 callback.call(this, extra.data, state, extra);
         };
 
-        apf.getData(instruction, options);
+        ppc.getData(instruction, options);
     };
 
     /**
@@ -1157,17 +1157,17 @@ apf.model = function(struct, tagName){
             if (xmlNode.charAt(0) == "<") {
                 if (xmlNode.substr(0, 5).toUpperCase() == "<!DOC")
                     xmlNode = xmlNode.substr(xmlNode.indexOf(">")+1);
-                if (!apf.supportNamespaces)
+                if (!ppc.supportNamespaces)
                     xmlNode = xmlNode.replace(/xmlns\=\"[^"]*\"/g, "");
                 
                 if (this.whitespace === false)
                     xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
                 
-                xmlNode = apf.getXmlDom(xmlNode).documentElement;
+                xmlNode = ppc.getXmlDom(xmlNode).documentElement;
             }
             //#ifdef __WITH_JSON2XML
-            else if (apf.isJson(xmlNode)) {
-                xmlNode = apf.json2Xml(xmlNode).documentElement
+            else if (ppc.isJson(xmlNode)) {
+                xmlNode = ppc.json2Xml(xmlNode).documentElement
             }
             //#endif
             else
@@ -1179,7 +1179,7 @@ apf.model = function(struct, tagName){
 
         //#ifdef __DEBUG
         if (!options.insertPoint) {
-            throw new Error(apf.formatErrorString(0, amlNode || _self,
+            throw new Error(ppc.formatErrorString(0, amlNode || _self,
                 "Inserting data", "Could not determine insertion point for "
               + "instruction: " + instruction));
         }
@@ -1191,10 +1191,10 @@ apf.model = function(struct, tagName){
         if (typeof options.copyAttributes == "undefined")
             options.copyAttributes = true;
         
-        var newNode = apf.mergeXml(xmlNode, options.insertPoint, options);
+        var newNode = ppc.mergeXml(xmlNode, options.insertPoint, options);
 
         //Call __XMLUpdate on all this.$listeners
-        apf.xmldb.applyChanges("insert", options.insertPoint);//parentXMLNode);
+        ppc.xmldb.applyChanges("insert", options.insertPoint);//parentXMLNode);
 
         //this.dispatchEvent("afterinsert");
 
@@ -1216,7 +1216,7 @@ apf.model = function(struct, tagName){
         if (!type)
             return this.data.xml;
 
-        return apf.convertXml(this.data, type);
+        return ppc.convertXml(this.data, type);
     };
 
     /**
@@ -1227,10 +1227,10 @@ apf.model = function(struct, tagName){
      *   - `form`, for `application/x-www-form-urlencoded` (the default)
      *   - `json`, for `application/json`
      * @param {XMLElement} [xmlNode]  The data node to send to the server.
-     * @param {Object} [options] A list of additional options to pass; these are the same as [[apf.saveData]]. Available properties include:
+     * @param {Object} [options] A list of additional options to pass; these are the same as [[ppc.saveData]]. Available properties include:
      *                           {:saveDataOptions}
      */
-    this.submit = function(instruction, type, xmlNode, options){ //@todo rewrite this for apf3.0
+    this.submit = function(instruction, type, xmlNode, options){ //@todo rewrite this for ppc3.0
         if (!instruction)
             instruction = this.submission;
         
@@ -1239,7 +1239,7 @@ apf.model = function(struct, tagName){
 
         //#ifdef __DEBUG
         if (!xmlNode) {
-            throw new Error(apf.formatErrorString(0, this, 
+            throw new Error(ppc.formatErrorString(0, this, 
                 "Submitting model",
                 "Could not submit data, because no data was passed and the "
               + "model does not have data loaded."));
@@ -1256,17 +1256,17 @@ apf.model = function(struct, tagName){
 
         var model = this;
         function cbFunc(data, state, extra){
-            if ((state == apf.TIMEOUT 
-              || (model.retryOnError && state == apf.ERROR))
-              && extra.retries < apf.maxHttpRetries) {
+            if ((state == ppc.TIMEOUT 
+              || (model.retryOnError && state == ppc.ERROR))
+              && extra.retries < ppc.maxHttpRetries) {
                 return extra.tpModule.retry(extra.id);
             }
             else {
-                if (state != apf.SUCCESS) {
+                if (state != ppc.SUCCESS) {
                     model.dispatchEvent("submiterror", extra);
                 }
                 else {
-                    model.dispatchEvent("submitsuccess", apf.extend({
+                    model.dispatchEvent("submitsuccess", ppc.extend({
                         data: data
                     }, extra));
                 }
@@ -1275,13 +1275,13 @@ apf.model = function(struct, tagName){
         
         var data;
         if (type.indexOf("xml") > -1)
-            data = apf.getXmlString(xmlNode);
+            data = ppc.getXmlString(xmlNode);
         else if (type.indexOf("form") > -1)
-            data = apf.convertXml(apf.xmldb.getCleanCopy(xmlNode), "cgiobjects");
+            data = ppc.convertXml(ppc.xmldb.getCleanCopy(xmlNode), "cgiobjects");
         else if (type.indexOf("json") > -1)
-            data = apf.convertXml(xmlNode, "json");
+            data = ppc.convertXml(xmlNode, "json");
 
-        apf.saveData(instruction, apf.extend({
+        ppc.saveData(instruction, ppc.extend({
             xmlNode  : xmlNode,
             data     : data,
             callback : cbFunc
@@ -1292,10 +1292,10 @@ apf.model = function(struct, tagName){
 
     this.$destroy = function(){
         if (this.session && this.data)
-            apf.saveData(this.session, {xmlNode: this.getXml()});
+            ppc.saveData(this.session, {xmlNode: this.getXml()});
     };
-}).call(apf.model.prototype = new apf.AmlElement());
+}).call(ppc.model.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("model", apf.model);
+ppc.aml.setElement("model", ppc.model);
 
 //#endif

@@ -20,8 +20,8 @@
  */
 // #ifdef __AMLFILLER || __INC_ALL
 
-apf.filler = function(struct, tagName){
-    this.$init(tagName || "filler", apf.NODE_VISIBLE, struct);
+ppc.filler = function(struct, tagName){
+    this.$init(tagName || "filler", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
@@ -31,8 +31,8 @@ apf.filler = function(struct, tagName){
     this.$draw = function() {
         this.$ext = this.$pHtmlNode.appendChild(this.$pHtmlNode.ownerDocument.createElement("div"));
     };
-}).call(apf.filler.prototype = new apf.GuiElement());
+}).call(ppc.filler.prototype = new ppc.GuiElement());
 
-apf.aml.setElement("filler", apf.filler);
+ppc.aml.setElement("filler", ppc.filler);
 
 //#endif

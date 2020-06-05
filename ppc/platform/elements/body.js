@@ -30,13 +30,13 @@
  */
 
 // #ifdef __AMLPORTAL
-apf.body = function(){
-    this.$init("body", apf.NODE_VISIBLE);
+ppc.body = function(){
+    this.$init("body", ppc.NODE_VISIBLE);
 };
 // #endif
 
-apf.AmlConfig = function(){
-    this.$init("config", apf.NODE_VISIBLE);
+ppc.AmlConfig = function(){
+    this.$init("config", ppc.NODE_VISIBLE);
 };
 
 (function(){
@@ -50,11 +50,11 @@ apf.AmlConfig = function(){
             : "main");
     };
 // #ifdef __AMLPORTAL
-}).call(apf.body.prototype = new apf.Presentation());
-apf.AmlConfig.prototype = apf.body.prototype;
-apf.aml.setElement("body", apf.body);
+}).call(ppc.body.prototype = new ppc.Presentation());
+ppc.AmlConfig.prototype = ppc.body.prototype;
+ppc.aml.setElement("body", ppc.body);
 /* #else
-}).call(apf.AmlConfig.prototype = new apf.Presentation());
+}).call(ppc.AmlConfig.prototype = new ppc.Presentation());
 #endif*/
-apf.aml.setElement("config", apf.AmlConfig);
+ppc.aml.setElement("config", ppc.AmlConfig);
 // #endif

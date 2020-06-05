@@ -32,8 +32,8 @@
  * @attribute {String}  css
  * @attribute {Boolean} tree
  */
-apf.BindingColumnRule = function(struct, tagName){
-    this.$init(tagName || "column", apf.NODE_VISIBLE, struct);
+ppc.BindingColumnRule = function(struct, tagName){
+    this.$init(tagName || "column", ppc.NODE_VISIBLE, struct);
     
     this.$className = "col" + this.$uniqueId;
 };
@@ -50,7 +50,7 @@ apf.BindingColumnRule = function(struct, tagName){
     this.visible    = true;
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         css         : 1,
         icon        : 1,
         caption     : 1,
@@ -73,11 +73,11 @@ apf.BindingColumnRule = function(struct, tagName){
         var pNode = this.parentNode;
         var vLeft = (pNode.$fixed) + "px";
         if (!this.$isFixedGrid) {
-            //apf.setStyleRule("." + this.$baseCSSname + " .headings ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
-            //apf.setStyleRule("." + this.$baseCSSname + " .records ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
-            apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
+            //ppc.setStyleRule("." + this.$baseCSSname + " .headings ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
+            //ppc.setStyleRule("." + this.$baseCSSname + " .records ." + hFirst.$className, "marginLeft", "-" + vLeft); //Set
+            ppc.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
                 "paddingRight", vLeft, null, this.oWin); //Set
-            apf.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
+            ppc.setStyleRule("." + pNode.$baseCSSname + " .row" + pNode.$uniqueId,
                 "marginRight", "-" + vLeft, null, pNode.oWin); //Set
         
             //headings and records have same padding-right
@@ -100,13 +100,13 @@ apf.BindingColumnRule = function(struct, tagName){
         var pNode = this.parentNode;
         
         if (this.$isPercentage) {
-            apf.setStyleRule("." + this.$className, "width", this.$width + "%");
+            ppc.setStyleRule("." + this.$className, "width", this.$width + "%");
             
-            //if (apf.z && !this.resizing)
+            //if (ppc.z && !this.resizing)
                 //this.resize(this.$width, pNode, true);
         }
         else {
-            apf.setStyleRule("." + this.$className, "width", this.$width + "px", null, pNode.oWin); //Set
+            ppc.setStyleRule("." + this.$className, "width", this.$width + "px", null, pNode.oWin); //Set
             
             if (pNode.$amlLoaded) {
                 if (this.visible)
@@ -130,7 +130,7 @@ apf.BindingColumnRule = function(struct, tagName){
             return;
 
         if (value) {
-            apf.setStyleRule("." + this.$className,
+            ppc.setStyleRule("." + this.$className,
                 "display", "inline-block", null, this.oWin);
             
             var size = this.$isPercentage
@@ -140,7 +140,7 @@ apf.BindingColumnRule = function(struct, tagName){
             this.resize(size, pNode, true);
         }
         else {
-            apf.setStyleRule("." + this.$className,
+            ppc.setStyleRule("." + this.$className,
                 "display", "none", null, this.oWin);
 
             this.resize(0, pNode, true);
@@ -163,7 +163,7 @@ apf.BindingColumnRule = function(struct, tagName){
                     : this.$ext.nextSibling;
             
             while (node && node.getAttribute("hid")) {
-                hN = apf.all[node.getAttribute("hid")];
+                hN = ppc.all[node.getAttribute("hid")];
                 if (hN.visible !== false) {
                     if (hN.$isPercentage) {
                         next.push(hN);
@@ -213,7 +213,7 @@ apf.BindingColumnRule = function(struct, tagName){
             this.$setParentFixedWidth();
         }
         else {
-            if (apf.isIE && pNode.oIframe)
+            if (ppc.isIE && pNode.oIframe)
                 this.$ext.style.width = newsize + "px";
 
             this.setProperty("width", newsize, false, true);
@@ -236,7 +236,7 @@ apf.BindingColumnRule = function(struct, tagName){
      */
     this.sort = function(pNode, initial){
         if (pNode.$lastSorted == this) {
-            apf.setStyleClass(this.$int,
+            ppc.setStyleClass(this.$int,
                 pNode.toggleSortOrder()
                     ? "ascending"
                     : "descending", ["descending", "ascending"]);
@@ -245,12 +245,12 @@ apf.BindingColumnRule = function(struct, tagName){
 
         var h;
         if (h = pNode.$lastSorted) {
-            apf.setStyleRule("." + h.$className, "background", "white"); //This breaks row coloring
-            apf.setStyleClass(h.$int, "", ["descending", "ascending"]);
+            ppc.setStyleRule("." + h.$className, "background", "white"); //This breaks row coloring
+            ppc.setStyleClass(h.$int, "", ["descending", "ascending"]);
         }
         
-        apf.setStyleRule("." + this.$className, "background", "#f3f3f3");
-        apf.setStyleClass(this.$int, "ascending", ["descending", "ascending"]);
+        ppc.setStyleRule("." + this.$className, "background", "#f3f3f3");
+        ppc.setStyleClass(this.$int, "ascending", ["descending", "ascending"]);
 
         pNode.resort({
             order : "ascending",
@@ -277,8 +277,8 @@ apf.BindingColumnRule = function(struct, tagName){
             return;
         
         var hFrom       = this,
-            childNrFrom = apf.getChildNumber(hFrom.$int),
-            childNrTo   = hTo && apf.getChildNumber(hTo.$int);
+            childNrFrom = ppc.getChildNumber(hFrom.$int),
+            childNrTo   = hTo && ppc.getChildNumber(hTo.$int);
 
         pNode.$head.insertBefore(hFrom.$int, hTo && hTo.$int || null);
 
@@ -306,18 +306,18 @@ apf.BindingColumnRule = function(struct, tagName){
         /*if (this.$first == from || this.$first == to) {
             var hReset = this.$first == from ? hFrom : hTo;
             
-            apf.setStyleRule("." + this.$baseCSSname + " .headings ."
+            ppc.setStyleRule("." + this.$baseCSSname + " .headings ."
                 + hReset.className, "marginLeft", "-5px"); //Reset
-            apf.setStyleRule("." + this.$baseCSSname + " .records ."
+            ppc.setStyleRule("." + this.$baseCSSname + " .records ."
                 + hReset.className, "marginLeft", "-5px"); //Reset
             
             this.$first = pNode.$head.firstChild.getAttribute("hid");
             var h = headings[this.$first];
             var vLeft = "-" + (this.$fixed + 5) + "px";
 
-            apf.setStyleRule("." + this.$baseCSSname + " .headings ."
+            ppc.setStyleRule("." + this.$baseCSSname + " .headings ."
                 + h.className, "marginLeft", vLeft); //Set
-            apf.setStyleRule("." + this.$baseCSSname + " .records ."
+            ppc.setStyleRule("." + this.$baseCSSname + " .records ."
                 + h.className, "marginLeft", vLeft); //Set
         }*/
     }
@@ -328,7 +328,7 @@ apf.BindingColumnRule = function(struct, tagName){
         while (pNode.$bindingRule)
             pNode = pNode.parentNode;
         
-        if (!pNode.hasFeature(apf.__PRESENTATION__))
+        if (!pNode.hasFeature(ppc.__PRESENTATION__))
             return;
             
         if (width) 
@@ -338,7 +338,7 @@ apf.BindingColumnRule = function(struct, tagName){
         //if initial
         //only needs once if this works
 
-        apf.importStylesheet([
+        ppc.importStylesheet([
             ["." + this.$className,
                 "width:" + this.$width + (this.$isPercentage ? "%;" : "px;")
                 + "text-align:" + this.align + ";display: inline-block"],
@@ -354,14 +354,14 @@ apf.BindingColumnRule = function(struct, tagName){
         /*if (this.icon) {
             this.$sortable = false;
             $head.setAttribute("style", "background-image:url("
-                + apf.getAbsolutePath(pNode.iconPath, this.icon) 
+                + ppc.getAbsolutePath(pNode.iconPath, this.icon) 
                 + ")");
             hCaption.nodeValue = "&nbsp;";
         }
         else*/
             hCaption.nodeValue = this.caption || caption || '&nbsp';
         
-        this.$ext = this.$int = apf.insertHtmlNode($head, pNode.$head || pNode.$container);
+        this.$ext = this.$int = ppc.insertHtmlNode($head, pNode.$head || pNode.$container);
         
         var dragging = false;
         var _self    = this;
@@ -376,16 +376,16 @@ apf.BindingColumnRule = function(struct, tagName){
             
             clearTimeout(this.$timer);
 
-            apf.setStyleClass(this, "hover", ["down"]);
+            ppc.setStyleClass(this, "hover", ["down"]);
         };*/
         
         this.$int.onmouseup = function(e){
             if (!e) e = event;
             
-            if (pNode.disabled || !apf.isChildOf(dragging, this, true)) 
+            if (pNode.disabled || !ppc.isChildOf(dragging, this, true)) 
                 return;
             
-            apf.setStyleClass(this, "hover", ["down"]);
+            ppc.setStyleClass(this, "hover", ["down"]);
 
             if (_self.$sortable)
                 _self.sort(pNode);
@@ -401,22 +401,22 @@ apf.BindingColumnRule = function(struct, tagName){
             if (pNode.disabled) return;
 
             //Resizing
-            var pos   = apf.getAbsolutePosition(target),
+            var pos   = ppc.getAbsolutePosition(target),
                 sLeft = pNode.$head.scrollLeft;
             var d     = e.clientX - pos[0] + sLeft;
             if (d < 4 || target.offsetWidth - d - 8 < 3
-              && apf.getChildNumber(_self.$int) < pNode.$headings.length - 1) {
+              && ppc.getChildNumber(_self.$int) < pNode.$headings.length - 1) {
                 var t = d < 4 && target.previousSibling || target;
                 
                 if (_self.$resizable) {
-                    pos   = apf.getAbsolutePosition(t);
-                    apf.setStyleClass(pNode.$pointer, "size_pointer", ["move_pointer"]);
+                    pos   = ppc.getAbsolutePosition(t);
+                    ppc.setStyleClass(pNode.$pointer, "size_pointer", ["move_pointer"]);
                     pNode.$pointer.style.display = "block";
                     pNode.$pointer.style.left    = (t.offsetLeft - sLeft - 1) + "px";
                     pNode.$pointer.style.width   = (t.offsetWidth - pNode.$widthdiff + 1) + "px";
                     
                     // #ifdef __WITH_PLANE
-                    apf.plane.show(pNode.$pointer, null, true);
+                    ppc.plane.show(pNode.$pointer, null, true);
                     // #endif
 
                     dragging = true;
@@ -426,13 +426,13 @@ apf.BindingColumnRule = function(struct, tagName){
                         document.onmouseup = 
                         document.onmousemove = null;
                         
-                        apf.all[t.getAttribute("hid")].resize(pNode.$pointer.offsetWidth, pNode);
+                        ppc.all[t.getAttribute("hid")].resize(pNode.$pointer.offsetWidth, pNode);
                         
                         dragging = false;
                         pNode.$pointer.style.display = "none";
                         
                         // #ifdef __WITH_PLANE
-                        apf.plane.hide();
+                        ppc.plane.hide();
                         // #endif
 
                     };
@@ -449,7 +449,7 @@ apf.BindingColumnRule = function(struct, tagName){
                 }
             }
             
-            apf.setStyleClass(target, "down", ["hover"]);
+            ppc.setStyleClass(target, "down", ["hover"]);
             
             //Moving
             if (!_self.$movable) {
@@ -461,7 +461,7 @@ apf.BindingColumnRule = function(struct, tagName){
                 return;
             }
             
-            apf.setStyleClass(pNode.$pointer, "move_pointer", ["size_pointer"]);
+            ppc.setStyleClass(pNode.$pointer, "move_pointer", ["size_pointer"]);
             
             var x = e.clientX - target.offsetLeft, sX = e.clientX,
                 y = e.clientY - target.offsetTop,  sY = e.clientY,
@@ -483,15 +483,15 @@ apf.BindingColumnRule = function(struct, tagName){
                 
                 var el = document.elementFromPoint(e.clientX, e.clientY);
                 if (el.parentNode == copy.parentNode) {
-                    var pos = apf.getAbsolutePosition(el);
+                    var pos = ppc.getAbsolutePosition(el);
                     var beforeNode = (e.clientX - pos[0] > el.offsetWidth / 2
                         ? el.nextSibling
                         : el);
 
-                    _self.move(beforeNode ? apf.all[beforeNode.getAttribute("hid")] : null, pNode);
+                    _self.move(beforeNode ? ppc.all[beforeNode.getAttribute("hid")] : null, pNode);
                 }
                 
-                apf.destroyHtmlNode(copy);
+                ppc.destroyHtmlNode(copy);
             };
 
             document.onmousemove = function(e){
@@ -503,7 +503,7 @@ apf.BindingColumnRule = function(struct, tagName){
                     
                     copy = target.cloneNode(true);
                     copy.style.position = "absolute";
-                    var diff = apf.getWidthDiff(target);
+                    var diff = ppc.getWidthDiff(target);
                     copy.style.width    = (target.offsetWidth - diff
                         - pNode.$widthdiff + 2) + "px";
                     copy.style.left     = target.offsetLeft;
@@ -511,7 +511,7 @@ apf.BindingColumnRule = function(struct, tagName){
                     copy.style.margin   = 0;
                     copy.removeAttribute("hid")
                     
-                    apf.setStyleClass(copy, "drag", ["ascending", "descending"]);
+                    ppc.setStyleClass(copy, "drag", ["ascending", "descending"]);
                     target.parentNode.appendChild(copy);
                 }
                 
@@ -520,7 +520,7 @@ apf.BindingColumnRule = function(struct, tagName){
                 
                 var el = document.elementFromPoint(e.clientX, e.clientY);
                 if (el.parentNode == copy.parentNode) {
-                    var pos = apf.getAbsolutePosition(el);
+                    var pos = ppc.getAbsolutePosition(el);
                     pNode.$pointer.style.left = (el.offsetLeft 
                         + ((e.clientX - pos[0] > el.offsetWidth / 2)
                             ? el.offsetWidth - 8
@@ -542,7 +542,7 @@ apf.BindingColumnRule = function(struct, tagName){
             var _self = this;
             this.$timer = setTimeout(function(){
                 pNode.$ext.style.cursor = "";
-                apf.setStyleClass(_self, "", ["hover", "down"]);
+                ppc.setStyleClass(_self, "", ["hover", "down"]);
             }, 10);
         };
         
@@ -552,22 +552,22 @@ apf.BindingColumnRule = function(struct, tagName){
                 
             if (!e) e = event;
 
-            var pos   = apf.getAbsolutePosition(this),
+            var pos   = ppc.getAbsolutePosition(this),
                 sLeft = pNode.$head.scrollLeft;
             var d = e.clientX - pos[0] + sLeft;
 
             if (d < 4 || this.offsetWidth - d - pNode.$widthdiff < 3 
-              && apf.getChildNumber(_self.$int) < pNode.$headings.length - 1) {
+              && ppc.getChildNumber(_self.$int) < pNode.$headings.length - 1) {
                 var t = d < 4 ? this.previousSibling : this;
                 pNode.$ext.style.cursor = t && _self.$resizable
-                    ? (apf.isWebkit ? "ew-resize" : "w-resize")
+                    ? (ppc.isWebkit ? "ew-resize" : "w-resize")
                     : "default";
                 
-                apf.setStyleClass(this, "", ["hover", "down"]);
+                ppc.setStyleClass(this, "", ["hover", "down"]);
             }
             else {
                 pNode.$ext.style.cursor = "default";
-                apf.setStyleClass(this, "hover", ["down"]);
+                ppc.setStyleClass(this, "hover", ["down"]);
             }
         };
 
@@ -596,8 +596,8 @@ apf.BindingColumnRule = function(struct, tagName){
         this.$int.onmouseout    = null;
     });
     
-}).call(apf.BindingColumnRule.prototype = new apf.BindingRule());
+}).call(ppc.BindingColumnRule.prototype = new ppc.BindingRule());
 
-apf.aml.setElement("column", apf.BindingColumnRule);
+ppc.aml.setElement("column", ppc.BindingColumnRule);
 // #endif
 

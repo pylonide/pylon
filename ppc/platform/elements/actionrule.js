@@ -24,8 +24,8 @@
 /** 
  * Define some action rules.
  *
- * @class apf.ActionRule
- * @inherits apf.AmlElement
+ * @class ppc.ActionRule
+ * @inherits ppc.AmlElement
  */
 // @todo Doc do all of these.
 /*
@@ -59,20 +59,20 @@
 /*
  * @attribute {Boolean} parent
  */
-apf.ActionRule = function(struct, tagName){
-    this.$init(tagName || true, apf.NODE_HIDDEN, struct);
+ppc.ActionRule = function(struct, tagName){
+    this.$init(tagName || true, ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
     this.$actionRule = true;
     
     this.compile = function(prop, options){
-        return (this["c" + prop] = apf.lm.compile(this[prop], 
+        return (this["c" + prop] = ppc.lm.compile(this[prop], 
             options || {xpathmode: 2}));
     }
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         set    : 1,
         get    : 1,
         undo   : 1,
@@ -94,7 +94,7 @@ apf.ActionRule = function(struct, tagName){
         if (e.currentTarget == this) {
             var pNode = this.parentNode;
             if (!pNode.$actions)
-                pNode.$actions = new apf.ruleList();
+                pNode.$actions = new ppc.ruleList();
             
             (pNode.$actions[this.localName] 
               || (pNode.$actions[this.localName] = [])).push(this);
@@ -103,8 +103,8 @@ apf.ActionRule = function(struct, tagName){
             if (this.attributes.getNamedItem("value"))
                 return;
             
-             //@todo apf3.0 test if proc instr and cdata needs to be serialized
-            this.value = apf.serializeChildren(this);
+             //@todo ppc3.0 test if proc instr and cdata needs to be serialized
+            this.value = ppc.serializeChildren(this);
        }
     });
 
@@ -119,29 +119,29 @@ apf.ActionRule = function(struct, tagName){
             if (this.attributes.getNamedItem("value"))
                 return;
             
-             //@todo apf3.0 test if proc instr and cdata needs to be serialized
-            this.value = apf.serializeChildren(this);
+             //@todo ppc3.0 test if proc instr and cdata needs to be serialized
+            this.value = ppc.serializeChildren(this);
        }
     });
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (!this.get)
-            this.get = apf.serializeChildren(this.$aml).trim();
+            this.get = ppc.serializeChildren(this.$aml).trim();
 
         var actions = this.parentNode.$actions 
-          || (this.parentNode.$actions = new apf.ruleList());
+          || (this.parentNode.$actions = new ppc.ruleList());
         
         (actions[this.localName] || (actions[this.localName] = [])).push(this);
     });
-}).call(apf.ActionRule.prototype = new apf.AmlElement());
+}).call(ppc.ActionRule.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("rename", apf.ActionRule);   
-apf.aml.setElement("remove", apf.ActionRule);
-apf.aml.setElement("add",    apf.ActionRule);
-apf.aml.setElement("update", apf.ActionRule);
-apf.aml.setElement("copy",   apf.ActionRule);
-apf.aml.setElement("move",   apf.ActionRule);
-apf.aml.setElement("check",  apf.ActionRule);
-apf.aml.setElement("change", apf.ActionRule);
+ppc.aml.setElement("rename", ppc.ActionRule);   
+ppc.aml.setElement("remove", ppc.ActionRule);
+ppc.aml.setElement("add",    ppc.ActionRule);
+ppc.aml.setElement("update", ppc.ActionRule);
+ppc.aml.setElement("copy",   ppc.ActionRule);
+ppc.aml.setElement("move",   ppc.ActionRule);
+ppc.aml.setElement("check",  ppc.ActionRule);
+ppc.aml.setElement("change", ppc.ActionRule);
 // #endif
 

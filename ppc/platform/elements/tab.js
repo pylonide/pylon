@@ -51,7 +51,7 @@
  * </a:application>
  * ```
  *
- * @class apf.tab
+ * @class ppc.tab
  * @define tab
  * @container
  * @allowchild page
@@ -61,28 +61,28 @@
  * @version     %I%, %G%
  * @since       0.1
  *
- * @inherits apf.BaseTab
+ * @inherits ppc.BaseTab
  */
 
-apf["switch"] = function(struct, tagName){
+ppc["switch"] = function(struct, tagName){
     this.$hasButtons = false;
-    this.$init(tagName || "switch", apf.NODE_VISIBLE, struct);
+    this.$init(tagName || "switch", ppc.NODE_VISIBLE, struct);
 };
 
-apf.pages     = function(struct, tagName){
+ppc.pages     = function(struct, tagName){
     this.$hasButtons = false;
-    this.$init(tagName || "pages", apf.NODE_VISIBLE, struct);
+    this.$init(tagName || "pages", ppc.NODE_VISIBLE, struct);
     
     this.$focussable = false;
 };
 
-apf.tab       = function(struct, tagName){
+ppc.tab       = function(struct, tagName){
     this.$hasButtons = true;
-    this.$init(tagName || "tab", apf.NODE_VISIBLE, struct);
+    this.$init(tagName || "tab", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
-    this.$focussable = apf.KEYBOARD; // This object can get the focus from the keyboard
+    this.$focussable = ppc.KEYBOARD; // This object can get the focus from the keyboard
 
     // *** Init *** //
 
@@ -91,12 +91,12 @@ apf.tab       = function(struct, tagName){
         this.$ext = this.$getExternal();
         this.$loadChildren();
     };
-}).call(apf.tab.prototype = new apf.BaseTab());
+}).call(ppc.tab.prototype = new ppc.BaseTab());
 
-apf["switch"].prototype =
-apf.pages.prototype     = apf.tab.prototype;
+ppc["switch"].prototype =
+ppc.pages.prototype     = ppc.tab.prototype;
 
-apf.aml.setElement("switch", apf["switch"]);
-apf.aml.setElement("pages",  apf.pages);
-apf.aml.setElement("tab",    apf.tab);
+ppc.aml.setElement("switch", ppc["switch"]);
+ppc.aml.setElement("pages",  ppc.pages);
+ppc.aml.setElement("tab",    ppc.tab);
 // #endif

@@ -54,7 +54,7 @@
  * </a:application>
  * ```
  * 
- * @class apf.checkbox
+ * @class ppc.checkbox
  *
  * @define checkbox
  *
@@ -63,8 +63,8 @@
  * @version     %I%, %G%
  * @since       0.4
  * @form
- * @inherits apf.BaseButton
- * @inheritsElsewhere apf.XForms
+ * @inherits ppc.BaseButton
+ * @inheritsElsewhere ppc.XForms
  *
  */
 /**
@@ -92,22 +92,22 @@
  *  <a:checkbox value="[mdlCheckbox::@answer]">Caption</a:checkbox>
  * ```
  */
-apf.checkbox = function(struct, tagName){
-    this.$init(tagName || "checkbox", apf.NODE_VISIBLE, struct);
+ppc.checkbox = function(struct, tagName){
+    this.$init(tagName || "checkbox", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
     this.implement(
         //#ifdef __WITH_XFORMS
-        //apf.XForms
+        //ppc.XForms
         //#endif
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
     );
 
     //Options
-    this.$focussable = apf.KEYBOARD; // This object can get the focus
+    this.$focussable = ppc.KEYBOARD; // This object can get the focus
     this.checked     = false;
 
     // *** Properties and Attributes *** //
@@ -122,20 +122,20 @@ apf.checkbox = function(struct, tagName){
         value = (typeof value == "string" ? value.trim() : value);
 
         if (value == "" && this["default"])
-            value = this.value = apf.isTrue(this["default"]);
+            value = this.value = ppc.isTrue(this["default"]);
 
         if (this.$values) {
             this.checked = (typeof value != "undefined" && value !== null
                 && value.toString() == this.$values[0].toString());
         }
         else {
-            this.checked = apf.isTrue(value);
+            this.checked = ppc.isTrue(value);
         }
         
         if (this.checked)
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Checked");
+            ppc.setStyleClass(this.$ext, this.$baseCSSname + "Checked");
         else
-            apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
+            ppc.setStyleClass(this.$ext, "", [this.$baseCSSname + "Checked"]);
     };
 
     /**
@@ -188,7 +188,7 @@ apf.checkbox = function(struct, tagName){
 
     /**
      * Sets the value of this element. This should be one of the values
-     * specified in the [[apf.checkbox.values]] attribute.
+     * specified in the [[ppc.checkbox.values]] attribute.
      * @param {String} value The new value of this element
      */
     this.setValue = function(value){
@@ -253,7 +253,7 @@ apf.checkbox = function(struct, tagName){
             this.dispatchEvent(strEvent, {htmlEvent: e});
 
         /*if (state == "Down")
-            apf.cancelBubble(e, this);
+            ppc.cancelBubble(e, this);
         else
             e.cancelBubble = true;*/
     };
@@ -304,7 +304,7 @@ apf.checkbox = function(struct, tagName){
         return this.$activeElements;
     }
     //#endif
-}).call(apf.checkbox.prototype = new apf.BaseButton());
+}).call(ppc.checkbox.prototype = new ppc.BaseButton());
 
-apf.aml.setElement("checkbox", apf.checkbox);
+ppc.aml.setElement("checkbox", ppc.checkbox);
 // #endif

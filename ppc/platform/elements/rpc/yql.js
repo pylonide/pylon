@@ -23,7 +23,7 @@
 
 /**
  * Implementation of the Yahoo! Query Language as a module for the RPC
- * plugin of apf.teleport.
+ * plugin of ppc.teleport.
  * Example:
  * Ajax.org Markup Language
  * <code>
@@ -53,9 +53,9 @@
  *
  * @constructor
  *
- * @inherits apf.Teleport
- * @inherits apf.http
- * @inherits apf.rpc
+ * @inherits ppc.Teleport
+ * @inherits ppc.http
+ * @inherits ppc.rpc
  *
  * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%
@@ -63,7 +63,7 @@
  *
  * @default_private
  */
-apf.yql = function(){
+ppc.yql = function(){
     this.supportMulticall = false;
     this.namedArguments   = true;
     this.nocache          = false;
@@ -77,7 +77,7 @@ apf.yql = function(){
     this.$supportedProperties.push("diagnostics", "debug", "format");
 
     this.$propHandlers["format"] = function(value) {
-        if (!apf.yql.FORMATS[value])
+        if (!ppc.yql.FORMATS[value])
             this.format = "xml";
     };
 
@@ -98,7 +98,7 @@ apf.yql = function(){
         if (options["content-type"])
             this.contentType = options["content-type"];
 
-        this.url    = apf.yql.PUBLIC + "?q=" + encodeURIComponent(this.query)
+        this.url    = ppc.yql.PUBLIC + "?q=" + encodeURIComponent(this.query)
             + "&format=" + (options.format || this.format)
             + (typeof options.callback == "string"
                 ? "&callback=" + encodeURIComponent(options.callback)
@@ -110,8 +110,8 @@ apf.yql = function(){
     };
 };
 
-apf.yql.PUBLIC  = "http://query.yahooapis.com/v1/public/yql";
-apf.yql.PRIVATE = "http://query.yahooapis.com/v1/yql";
-apf.yql.FORMATS = {"xml":1, "json":1};
+ppc.yql.PUBLIC  = "http://query.yahooapis.com/v1/public/yql";
+ppc.yql.PRIVATE = "http://query.yahooapis.com/v1/yql";
+ppc.yql.FORMATS = {"xml":1, "json":1};
 
 // #endif

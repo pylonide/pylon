@@ -23,7 +23,7 @@
 
 /**
  * Implementation of the JSON-RPC protocol as a module for the RPC
- * plugin of apf.teleport. 
+ * plugin of ppc.teleport. 
  * Example:
  * Ajax.org Markup Language
  * <code>
@@ -57,9 +57,9 @@
  *
  * @addenum rpc[@protocol]:jsonrpc
  *
- * @inherits apf.Teleport
- * @inherits apf.http
- * @inherits apf.rpc
+ * @inherits ppc.Teleport
+ * @inherits ppc.http
+ * @inherits ppc.rpc
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -67,7 +67,7 @@
  *
  * @default_private
  */
-apf.jsonrpc = function(){
+ppc.jsonrpc = function(){
     this.supportMulticall = false;
     this.multicall        = false;
     

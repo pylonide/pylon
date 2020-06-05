@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_VIDEO_VLC && (__AMLVIDEO || __INC_ALL)
 
-apf.video.TypeVlcCompat = (function() {
+ppc.video.TypeVlcCompat = (function() {
     var iVersion = 0;
 
     function getVersion() {
@@ -31,7 +31,7 @@ apf.video.TypeVlcCompat = (function() {
         var hasVlc  = false,
             version = 0;
 
-        if (apf.isWin && apf.isIE) {  //use ActiveX test
+        if (ppc.isWin && ppc.isIE) {  //use ActiveX test
             var oVlc;
             try{
                 oVlc    = new ActiveXObject("VideoLAN.VLCPlugin.2");
@@ -68,7 +68,7 @@ apf.video.TypeVlcCompat = (function() {
 
     function getHtml(id, width, height, options) {
         var i, out = [], options = options || {};
-        if (apf.isIE) {
+        if (ppc.isIE) {
             out.push('<object id="', id, '"  \
                 codebase="http://downloads.videolan.org/pub/videolan/vlc/latest/win32/axvlc.cab"  \
                 classid="clsid:9BE31822-FDAD-461B-AD51-BE1D1C159921" \
@@ -113,7 +113,7 @@ apf.video.TypeVlcCompat = (function() {
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.video.TypeVlc = function(oVideo, node, options) {
+ppc.video.TypeVlc = function(oVideo, node, options) {
     this.oVideo      = oVideo;
     this.name        = "VLC_" + this.oVideo.$uniqueId;
     this.htmlElement = node;
@@ -123,7 +123,7 @@ apf.video.TypeVlc = function(oVideo, node, options) {
     this.videoPath   = options.src;
 
     this.player    = this.pollTimer = null;
-    apf.extend(this, apf.video.TypeInterface);
+    ppc.extend(this, ppc.video.TypeInterface);
 
     this.setOptions(options);
     var _self = this;
@@ -132,11 +132,11 @@ apf.video.TypeVlc = function(oVideo, node, options) {
     }, 1);
 };
 
-apf.video.TypeVlc.isSupported = function(){
-    return apf.video.TypeVlcCompat.isAvailable();
+ppc.video.TypeVlc.isSupported = function(){
+    return ppc.video.TypeVlcCompat.isAvailable();
 };
 
-apf.video.TypeVlc.prototype = {
+ppc.video.TypeVlc.prototype = {
     /**
      * Play a Quicktime movie. Does a call to the embedded QT object to load or
      * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
@@ -258,7 +258,7 @@ apf.video.TypeVlc.prototype = {
 
         var playerId = this.name + "_Player";
 
-        this.htmlElement.innerHTML = apf.video.TypeVlcCompat.getHtml(playerId,
+        this.htmlElement.innerHTML = ppc.video.TypeVlcCompat.getHtml(playerId,
             "100%", "100%", {
                 //MRL        : "",
                 ShowDisplay: "True",
@@ -274,7 +274,7 @@ apf.video.TypeVlc.prototype = {
             _self.player.log.verbosity = 10; // disable VLC error logging
 
             _self.currItem = parseInt(_self.player.playlist.add(_self.videoPath, _self.videoPath,
-                apf.isIE ? [] : ""));
+                ppc.isIE ? [] : ""));
             if (_self.autoPlay)
                 _self.play();
         });
@@ -297,7 +297,7 @@ apf.video.TypeVlc.prototype = {
             while (iter.hasNext) {
                 var msg = iter.next();
                 var msgtype = msg.type.toString();
-                //apf.console.info(msg.message);
+                //ppc.console.info(msg.message);
             }
             // clear the log once finished to avoid clogging
             this.player.log.messages.clear();
@@ -318,7 +318,7 @@ apf.video.TypeVlc.prototype = {
                 case 3:   //PLAYING - The current media clip is playing.
                     this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"});
                     if (!this.oVideo.ready) {
-                        this.oVideo.setProperty("readyState", apf.Media.HAVE_ENOUGH_DATA);
+                        this.oVideo.setProperty("readyState", ppc.Media.HAVE_ENOUGH_DATA);
                         // @todo for now, set the downloadprogress to a maximum
                         this.oVideo.$progressHook({bytesLoaded: 100, totalBytes: 100});
                     }

@@ -37,7 +37,7 @@
  * </a:application>
  * ```
  * 
- * @class apf.vbox
+ * @class ppc.vbox
  * @layout
  * @define vbox 
  * 
@@ -77,8 +77,8 @@
  * 
  *
  *
- * @class apf.hbox
- * @inherits apf.GuiElement
+ * @class ppc.hbox
+ * @inherits ppc.GuiElement
  * @define hbox
  * @layout
  * 
@@ -87,11 +87,11 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-apf.hbox = function(struct, tagName){
-    this.$init(tagName || "hbox", apf.NODE_VISIBLE, struct);
+ppc.hbox = function(struct, tagName){
+    this.$init(tagName || "hbox", ppc.NODE_VISIBLE, struct);
 };
-apf.vbox = function(struct, tagName){
-    this.$init(tagName || "vbox", apf.NODE_VISIBLE, struct);
+ppc.vbox = function(struct, tagName){
+    this.$init(tagName || "vbox", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -151,7 +151,7 @@ apf.vbox = function(struct, tagName){
         
         var node, nodes = this.childNodes, elms = [];
         for (var i = 0, l = nodes.length; i < l; i++) {
-            if ((node = nodes[i]).nodeFunc == apf.NODE_VISIBLE 
+            if ((node = nodes[i]).nodeFunc == ppc.NODE_VISIBLE 
               && node.$ext && node.visible !== false)
                 elms.push(node);
         }
@@ -160,44 +160,44 @@ apf.vbox = function(struct, tagName){
             return;
 
         for (var last, b, el, i = elms.length - 2; i >= 0; i--) {
-            b = (el = elms[i]).margin && apf.getBox(el.margin) || [0,0,0,0];
+            b = (el = elms[i]).margin && ppc.getBox(el.margin) || [0,0,0,0];
             
             if ((!last || !last.$splitter) && !el.$splitter) {
                 b[this.$vbox ? 2 : 1] += this.padding;
 
-                if (!apf.hasFlexibleBox && i != 0 && this.align == "stretch" && this.$vbox)
+                if (!ppc.hasFlexibleBox && i != 0 && this.align == "stretch" && this.$vbox)
                     b[0] += this.padding;
             }
             
             el.$ext.style.margin = b.join("px ") + "px";
             last = el;
         }
-        b = (el = elms[elms.length - 1]).margin && apf.getBox(el.margin) || [0,0,0,0];
+        b = (el = elms[elms.length - 1]).margin && ppc.getBox(el.margin) || [0,0,0,0];
         el.$ext.style.margin = b.join("px ") + "px";
         
-        if (!apf.hasFlexibleBox)
+        if (!ppc.hasFlexibleBox)
             this.$resize();
     }
     
     this.$propHandlers["reverse"]  = function(value){
-        if (apf.hasFlexibleBox)
-            this.$int.style[apf.CSSPREFIX + "BoxDirection"] = value ? "reverse" : "normal";
+        if (ppc.hasFlexibleBox)
+            this.$int.style[ppc.CSSPREFIX + "BoxDirection"] = value ? "reverse" : "normal";
         else {
             //@todo
         }
     };
     
     this.$propHandlers["edge"]  = function(value){
-        var el = !apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
-        el.style.padding = (this.$edge = apf.getBox(value)).join("px ") + "px";
+        var el = !ppc.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
+        el.style.padding = (this.$edge = ppc.getBox(value)).join("px ") + "px";
         
-        if (!apf.hasFlexibleBox)
+        if (!ppc.hasFlexibleBox)
             this.$resize();
     };
     
     this.$propHandlers["pack"]  = function(value){
-        if (apf.hasFlexibleBox)
-            this.$int.style[apf.CSSPREFIX + "BoxPack"] = value || "start";
+        if (ppc.hasFlexibleBox)
+            this.$int.style[ppc.CSSPREFIX + "BoxPack"] = value || "start";
         else if (this.$amlLoaded) {
             if (this.$vbox) {
                 this.$int.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
@@ -207,10 +207,10 @@ apf.vbox = function(struct, tagName){
                 
                 var nodes = this.childNodes;
                 for (var i = 0, l = nodes.length; i < l; i++) {
-                    if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
+                    if ((node = nodes[i]).nodeFunc != ppc.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
                         continue;
 
-                    node.$ext.style.textAlign = apf.getStyle(node.$ext, "textAlign") || "left";
+                    node.$ext.style.textAlign = ppc.getStyle(node.$ext, "textAlign") || "left";
                 }
                 
                 this.$int.style.textAlign = value == "center" ? "center" : (value == "end" ? "right" : "left");
@@ -221,10 +221,10 @@ apf.vbox = function(struct, tagName){
     //@todo change overflow when height/width changes depending on $vbox
     
     this.$propHandlers["align"] = function(value){
-        if (apf.hasFlexibleBox) {
-            this.$int.style[apf.CSSPREFIX + "BoxAlign"] = value || "stretch";
+        if (ppc.hasFlexibleBox) {
+            this.$int.style[ppc.CSSPREFIX + "BoxAlign"] = value || "stretch";
             
-            if (apf.isGecko)
+            if (ppc.isGecko)
                 this.$int.style.overflow = "visible";
 
             //@todo this should probably be reinstated
@@ -246,13 +246,13 @@ apf.vbox = function(struct, tagName){
 
                 //(this[size] || this.anchors || (this.$vbox ? this.top && this.bottom : this.left && this.right)
                 if (stretch && !node[size]) //(node.$altExt || 
-                    node.$ext.style[size] = apf.isGecko && (this.flex || node.flex) 
+                    node.$ext.style[size] = ppc.isGecko && (this.flex || node.flex) 
                         ? (isInFixed ? "1px" : "auto")
-                        : (apf.isWebkit && input[node.$ext.tagName] 
+                        : (ppc.isWebkit && input[node.$ext.tagName] 
                             ? "100%" 
-                            : (false && apf.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
+                            : (false && ppc.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
                                 ? "0px"
-                                : "auto"));//(apf.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
+                                : "auto"));//(ppc.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
@@ -263,29 +263,29 @@ apf.vbox = function(struct, tagName){
             if (!this.$vbox) {
                 var nodes = this.childNodes;
                 for (var i = 0, l = nodes.length; i < l; i++) {
-                    if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
+                    if ((node = nodes[i]).nodeFunc != ppc.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
                         continue;
                     
                     node.$ext.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
                 }
             }
             else {
-                var el = !apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
+                var el = !ppc.hasFlexibleBox && this.$vbox ? this.$ext : this.$int;
                 el.style.textAlign = "";
                 
                 var node, nodes = this.childNodes;
                 for (var i = 0, l = nodes.length; i < l; i++) {
-                    if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
+                    if ((node = nodes[i]).nodeFunc != ppc.NODE_VISIBLE || !node.$amlLoaded) //|| node.visible === false 
                         continue;
 
                     if (node.visible !== false) {
-                        node.$ext.style.display   = value == "stretch" ? "block" : apf.INLINE;
+                        node.$ext.style.display   = value == "stretch" ? "block" : ppc.INLINE;
                         node.$br.style.display    = value == "stretch" ? "none" : "";
                         
-                        if (apf.needZoomForLayout)
+                        if (ppc.needZoomForLayout)
                             node.$ext.style.zoom = 1;
                     }
-                    node.$ext.style.textAlign = apf.getStyle(node.$ext, "textAlign") || "left";
+                    node.$ext.style.textAlign = ppc.getStyle(node.$ext, "textAlign") || "left";
                 }
                 
                 el.style.textAlign = value == "center" ? "center" : (value == "end" ? "right" : "left");
@@ -308,14 +308,14 @@ apf.vbox = function(struct, tagName){
                     if (!this.nextSibling.$splitter && !this.nextSibling.nosplitter
                       && !isFirstVisibleChild(this) && !this.nosplitter) {
                         this.parentNode.insertBefore(
-                            this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                            this.ownerDocument.createElementNS(ppc.ns.aml, "splitter"), 
                             this.nextSibling);
                     }
                 }
                 else if (this.previousSibling && !this.previousSibling.$splitter
                    && !this.previousSibling.nosplitter) {
                     this.parentNode.insertBefore(
-                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        this.ownerDocument.createElementNS(ppc.ns.aml, "splitter"), 
                         this);
                 }
             }
@@ -328,20 +328,20 @@ apf.vbox = function(struct, tagName){
                 .call(this.parentNode, this.parentNode.padding);
         }
         
-        apf.layout.forceResize(this.parentNode.$int);
+        ppc.layout.forceResize(this.parentNode.$int);
         
-        if (apf.hasFlexibleBox) {
+        if (ppc.hasFlexibleBox) {
             if (this.$altExt)
                 this.$altExt.style.display = e.value 
-                    ? (apf.isGecko ? MOZSTACK : apf.CSSPREFIX2 + "-box") 
+                    ? (ppc.isGecko ? MOZSTACK : ppc.CSSPREFIX2 + "-box") 
                     : "none";
             return;
         }
         
         if (e.value) {
             this.$ext.style.display    = this.parentNode.$vbox 
-                && this.parentNode.align == "stretch" ? "block" : apf.INLINE;
-            if (apf.needZoomForLayout)
+                && this.parentNode.align == "stretch" ? "block" : ppc.INLINE;
+            if (ppc.needZoomForLayout)
                 this.$ext.style.zoom = 1;
             if (this.$br)
                 this.$br.style.display = this.parentNode.align == "stretch" ? "none" : "";
@@ -374,7 +374,7 @@ apf.vbox = function(struct, tagName){
         //Handlers for flexible box layout
         "true" : {
             "optimize" : function(value){
-                this.optimize = apf.isTrue(value);
+                this.optimize = ppc.isTrue(value);
             },
             
             "width" : function(value){
@@ -382,7 +382,7 @@ apf.vbox = function(struct, tagName){
                 //if (this.parentNode.$vbox && this.parentNode.align == "stretch")
                     //return;
 
-                (this.$altExt || this.$ext).style.width = !apf.isNot(value) 
+                (this.$altExt || this.$ext).style.width = !ppc.isNot(value) 
                     ? (parseFloat(value) == value 
                         ? value + "px"
                         : value)
@@ -394,15 +394,15 @@ apf.vbox = function(struct, tagName){
                 //if (!this.parentNode.$vbox && this.parentNode.align == "stretch")
                     //return;
 
-                (this.$altExt || this.$ext).style.height = !apf.isNot(value) 
+                (this.$altExt || this.$ext).style.height = !ppc.isNot(value) 
                     ? (parseFloat(value) == value 
                         ? value + "px"
                         : value)
-                    : (apf.isGecko && this.flex && this.parentNode.$vbox ? "auto" : "");
+                    : (ppc.isGecko && this.flex && this.parentNode.$vbox ? "auto" : "");
             },
             
             "margin" : function(value){
-                var b = apf.getBox(value);
+                var b = ppc.getBox(value);
                 if (!isLastVisibleChild(this))
                     b[this.parentNode.$vbox ? 2 : 1] += this.parentNode.padding;
                 this.$ext.style.margin = b.join("px ") + "px";
@@ -415,25 +415,25 @@ apf.vbox = function(struct, tagName){
                         this.$altExt = this.$ext.ownerDocument.createElement("div");
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);
                         this.$altExt.appendChild(this.$ext);
-                        this.$altExt.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
-                        this.$altExt.style.display = apf.CSSPREFIX2 + "-box";
-                        this.$altExt.style[apf.CSSPREFIX + "BoxOrient"] = "vertical";
-                        this.$ext.style[apf.CSSPREFIX + "BoxFlex"]   = 1;
+                        this.$altExt.style[ppc.CSSPREFIX + "BoxSizing"] = "border-box";
+                        this.$altExt.style.display = ppc.CSSPREFIX2 + "-box";
+                        this.$altExt.style[ppc.CSSPREFIX + "BoxOrient"] = "vertical";
+                        this.$ext.style[ppc.CSSPREFIX + "BoxFlex"]   = 1;
                         var size = this.parentNode.$vbox ? "height" : "width";
                         //var osize = this.parentNode.$vbox ? "width" : "height";
                         
-                        if (apf.isWebkit) {
+                        if (ppc.isWebkit) {
                             if (!this.preventforcezero)
                                 this.$altExt.style[size] = "0px";
                         }
                     }
                     
-                    (this.$altExt || this.$ext).style[apf.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
+                    (this.$altExt || this.$ext).style[ppc.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
                 }
                 else if (this.$altExt) {
                     this.parentNode.$int.replaceChild(this.$ext, this.$altExt);
-                    this.$ext.style[apf.CSSPREFIX + "BoxFlex"] = "";
-                    if (apf.isGecko)
+                    this.$ext.style[ppc.CSSPREFIX + "BoxFlex"] = "";
+                    if (ppc.isGecko)
                         this.$ext.style.overflow = "";
                     delete this.$altExt;
                 }
@@ -449,7 +449,7 @@ apf.vbox = function(struct, tagName){
               
                 this.$ext.style.width = value
                     ? (parseFloat(value) == value 
-                        ? Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"
+                        ? Math.max(0, value - ppc.getWidthDiff(this.$ext)) + "px"
                         : value)
                     : "";
             },
@@ -461,13 +461,13 @@ apf.vbox = function(struct, tagName){
       
                 this.$ext.style.height = value 
                     ? (parseFloat(value) == value 
-                        ? Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"
+                        ? Math.max(0, value - ppc.getHeightDiff(this.$ext)) + "px"
                         : value)
                     : "";
             },
             
             "margin" : function(value){
-                var b = apf.getBox(value);
+                var b = ppc.getBox(value);
                 if (this.padding) {
                     if (!isLastVisibleChild(this))
                         b[this.parentNode.$vbox ? 2 : 1] += this.padding;
@@ -487,9 +487,9 @@ apf.vbox = function(struct, tagName){
     
     function isFirstVisibleChild(amlNode){
         var firstChild = amlNode.parentNode.firstChild;
-        while (firstChild && (firstChild.nodeFunc != apf.NODE_VISIBLE 
+        while (firstChild && (firstChild.nodeFunc != ppc.NODE_VISIBLE 
           || firstChild.visible === false 
-          || firstChild.visible == 2 && apf.isFalse(firstChild.getAttribute("visible")))) {
+          || firstChild.visible == 2 && ppc.isFalse(firstChild.getAttribute("visible")))) {
             firstChild = firstChild.nextSibling;
         }
         
@@ -498,9 +498,9 @@ apf.vbox = function(struct, tagName){
     
     function isLastVisibleChild(amlNode){
         var lastChild = amlNode.parentNode.lastChild;
-        while (lastChild && (lastChild.nodeFunc != apf.NODE_VISIBLE 
+        while (lastChild && (lastChild.nodeFunc != ppc.NODE_VISIBLE 
           || lastChild.visible === false 
-          || lastChild.visible == 2 && apf.isFalse(lastChild.getAttribute("visible")))) {
+          || lastChild.visible == 2 && ppc.isFalse(lastChild.getAttribute("visible")))) {
             lastChild = lastChild.previousSibling;
         }
         
@@ -515,28 +515,28 @@ apf.vbox = function(struct, tagName){
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
-        amlNode.$propHandlers["bottom"] = apf.K;
+        amlNode.$propHandlers["bottom"] = ppc.K;
 
-        var propHandlers = handlers[apf.hasFlexibleBox];
+        var propHandlers = handlers[ppc.hasFlexibleBox];
         for (var prop in propHandlers) {
             amlNode.$propHandlers[prop] = propHandlers[prop];
         }
 
-        if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
-            if (apf.hasFlexibleBox) {
-                //if (apf.isGecko && apf.getStyle(amlNode.$ext, "display") == "block")
+        if (amlNode.nodeFunc == ppc.NODE_VISIBLE) {
+            if (ppc.hasFlexibleBox) {
+                //if (ppc.isGecko && ppc.getStyle(amlNode.$ext, "display") == "block")
                     //amlNode.$ext.style.display = MOZSTACK; //@todo visible toggle
                 
                 //input elements are not handled correctly by firefox and webkit
-                if (amlNode.$ext.tagName == "INPUT" || apf.isWebkit && input[amlNode.$ext.tagName]) {
+                if (amlNode.$ext.tagName == "INPUT" || ppc.isWebkit && input[amlNode.$ext.tagName]) {
                     var doc = amlNode.$ext.ownerDocument;
                     amlNode.$altExt = doc.createElement("div");
                     amlNode.parentNode.$int.replaceChild(amlNode.$altExt, amlNode.$ext);
-                    amlNode.$altExt.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
+                    amlNode.$altExt.style[ppc.CSSPREFIX + "BoxSizing"] = "border-box";
                     amlNode.$altExt.appendChild(amlNode.$ext);
                     
-                    if (apf.isWebkit) {
-                        var d = apf.getDiff(amlNode.$ext);
+                    if (ppc.isWebkit) {
+                        var d = ppc.getDiff(amlNode.$ext);
                         //amlNode.$altExt.style.padding = "0 " + d[0] + "px " + d[1] + "px 0";
                         amlNode.$altExt.style.height = "100%";
                         amlNode.$altExt.style.width = "0";
@@ -548,21 +548,21 @@ apf.vbox = function(struct, tagName){
                         amlNode.$ext.style.position = "relative";
                     }
                     else {
-                        amlNode.$altExt.style.display = apf.CSSPREFIX2 + "-box";
-                        amlNode.$altExt.style[apf.CSSPREFIX + "BoxOrient"] = "horizontal";
-                        amlNode.$altExt.style[apf.CSSPREFIX + "BoxAlign"]  = "stretch";
-                        amlNode.$ext.style[apf.CSSPREFIX + "BoxFlex"] = 1;
+                        amlNode.$altExt.style.display = ppc.CSSPREFIX2 + "-box";
+                        amlNode.$altExt.style[ppc.CSSPREFIX + "BoxOrient"] = "horizontal";
+                        amlNode.$altExt.style[ppc.CSSPREFIX + "BoxAlign"]  = "stretch";
+                        amlNode.$ext.style[ppc.CSSPREFIX + "BoxFlex"] = 1;
                     }
                 }
                 else {
-                    if (apf.getStyle(amlNode.$ext, "display") == "inline")
+                    if (ppc.getStyle(amlNode.$ext, "display") == "inline")
                         amlNode.$ext.style.display = "block"; //@todo undo
                     //This is nice for positioning elements in the context of an hbox/vbox
-                    //if (apf.getStyle(amlNode.$ext, "position") == "absolute")
+                    //if (ppc.getStyle(amlNode.$ext, "position") == "absolute")
                         //amlNode.$ext.style.position = "relative"; //@todo undo
                 }
                 
-                amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
+                amlNode.$ext.style[ppc.CSSPREFIX + "BoxSizing"] = "border-box";
             }
             else {
                 if (this.$vbox) {
@@ -572,27 +572,27 @@ apf.vbox = function(struct, tagName){
                 }
                 else {
                     if (amlNode.visible !== false) {
-                        amlNode.$ext.style.display = apf.INLINE;
-                        if (apf.needZoomForLayout)
+                        amlNode.$ext.style.display = ppc.INLINE;
+                        if (ppc.needZoomForLayout)
                             amlNode.$ext.style.zoom = 1;
                     }
                     this.$int.style.whiteSpace = "";
-                    amlNode.$ext.style.whiteSpace = apf.getStyle(amlNode.$ext, "whiteSpace") || "normal";
+                    amlNode.$ext.style.whiteSpace = ppc.getStyle(amlNode.$ext, "whiteSpace") || "normal";
                     this.$int.style.whiteSpace = "nowrap";
                 }
                 
                 this.$int.style.fontSize = "0";
                 if (!amlNode.$box) {
-                    var fontSize = apf.getStyle(amlNode.$ext, "fontSize");
+                    var fontSize = ppc.getStyle(amlNode.$ext, "fontSize");
                     if (fontSize == "0px") {
                         amlNode.$ext.style.fontSize = "";
                         var pNode = this.$int.parentNode;
-                        while(apf.getStyle(pNode, "fontSize") == "0px") {
+                        while(ppc.getStyle(pNode, "fontSize") == "0px") {
                             pNode = pNode.parentNode;
                         }
-                        fontSize = apf.getStyle(pNode, "fontSize");
+                        fontSize = ppc.getStyle(pNode, "fontSize");
                     }
-                    amlNode.$ext.style.fontSize = fontSize;//apf.getStyle(amlNode.$ext, "fontSize") || "normal";
+                    amlNode.$ext.style.fontSize = fontSize;//ppc.getStyle(amlNode.$ext, "fontSize") || "normal";
                 }
                 
                 amlNode.addEventListener("resize", resizeHandler);
@@ -612,12 +612,12 @@ apf.vbox = function(struct, tagName){
                 propHandlers.flex.call(amlNode, amlNode.flex);    
                 
             //Ie somehow sets the visible flags in between registration
-            var isLast = isLastVisibleChild(amlNode); //apf.isIE ? this.lastChild == amlNode : 
+            var isLast = isLastVisibleChild(amlNode); //ppc.isIE ? this.lastChild == amlNode : 
             if (isLast || insert) {
                 this.$propHandlers["padding"].call(this, this.padding);
                 this.$propHandlers["align"].call(this, this.align);
                 
-                if (!apf.hasFlexibleBox)
+                if (!ppc.hasFlexibleBox)
                     this.$propHandlers["pack"].call(this, this.pack);
                     
                 if (amlNode.visible !== false) //insert && - removed because for new nodes that are being attached to the tree insert is not set
@@ -639,13 +639,13 @@ apf.vbox = function(struct, tagName){
                     var _self = this;
                     setTimeout(function(){
                         _self.insertBefore(
-                            _self.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                            _self.ownerDocument.createElementNS(ppc.ns.aml, "splitter"), 
                             amlNode.nextSibling);
                     });
                 }
                 else {
                     this.insertBefore(
-                        this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                        this.ownerDocument.createElementNS(ppc.ns.aml, "splitter"), 
                         amlNode.nextSibling);
                 }
             }
@@ -653,7 +653,7 @@ apf.vbox = function(struct, tagName){
         
             delete this.$noResize;
             
-            if (!apf.hasFlexibleBox && isLast)
+            if (!ppc.hasFlexibleBox && isLast)
                 this.$resize();
         }
     }
@@ -667,23 +667,23 @@ apf.vbox = function(struct, tagName){
         amlNode.$propHandlers["right"]  = 
         amlNode.$propHandlers["bottom"] = null;
         
-        var propHandlers = handlers[apf.hasFlexibleBox];
+        var propHandlers = handlers[ppc.hasFlexibleBox];
         for (var prop in propHandlers) {
             delete amlNode.$propHandlers[prop];
         }
         
         //Clear css properties and set layout
-        if (amlNode.nodeFunc == apf.NODE_VISIBLE) {
+        if (amlNode.nodeFunc == ppc.NODE_VISIBLE) {
             if (amlNode.flex) {
                 var flex = amlNode.flex;
                 propHandlers.flex.call(amlNode, 0);
                 amlNode.flex = flex;
             }
             
-            if (apf.hasFlexibleBox) {
-                amlNode.$ext.style[apf.CSSPREFIX + "BoxSizing"] = "";
+            if (ppc.hasFlexibleBox) {
+                amlNode.$ext.style[ppc.CSSPREFIX + "BoxSizing"] = "";
                 
-                if (apf.isGecko) {
+                if (ppc.isGecko) {
                     this.$int.style.overflow = "visible";
                 
                     if (amlNode.$ext.style.display == "block")
@@ -694,7 +694,7 @@ apf.vbox = function(struct, tagName){
                 amlNode.$ext.style.verticalAlign = "";
                 amlNode.$ext.style.textAlign = "";
                 amlNode.$ext.style.whiteSpace = "";
-                //amlNode.$ext.style[apf.CSSFLOAT] = "";
+                //amlNode.$ext.style[ppc.CSSFLOAT] = "";
                 
                 if (amlNode.$br) {
                     amlNode.$br.parentNode.removeChild(amlNode.$br);
@@ -747,12 +747,12 @@ apf.vbox = function(struct, tagName){
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {
             if (this.visible)
-                this.$ext.style.display = apf.CSSPREFIX2 + "-box"; //Webkit issue
+                this.$ext.style.display = ppc.CSSPREFIX2 + "-box"; //Webkit issue
             return;
         }
         
         if (e.currentTarget.nodeType != 1 
-          || e.currentTarget.nodeFunc != apf.NODE_VISIBLE)
+          || e.currentTarget.nodeFunc != ppc.NODE_VISIBLE)
             return;
 
         if (e.relatedNode == this && !e.$isMoveWithinParent) {
@@ -767,7 +767,7 @@ apf.vbox = function(struct, tagName){
 
     function myVisibleHandler(e){
         if (e.value)
-            this.$int.style.display = apf.CSSPREFIX2 + "-box";
+            this.$int.style.display = ppc.CSSPREFIX2 + "-box";
     }
     
     function myHeightHandler(e){
@@ -804,36 +804,36 @@ apf.vbox = function(struct, tagName){
         this.$ext.className = this.localName;
 
         this.$vbox = this.localName == "vbox";
-        this.$int = apf.isGecko && !(this.parentNode 
+        this.$int = ppc.isGecko && !(this.parentNode 
           && "hbox|vbox".indexOf(this.parentNode.localName) > -1) 
-          || !apf.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
+          || !ppc.hasFlexibleBox && this.$vbox //@todo reparenting for gecko needs some admin work
             ? this.$ext.appendChild(doc.createElement("div")) 
             : this.$ext;
         this.$ext.host = this;
         
-        if (apf.isGecko && !(this.parentNode 
+        if (ppc.isGecko && !(this.parentNode 
           && "hbox|vbox".indexOf(this.parentNode.localName) > -1)) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
             this.$int.style.display = "-webkit-box";
         }
-        else if (!apf.hasFlexibleBox && this.$vbox) {
-            this.$int.style.display = apf.INLINE;
-            if (apf.needZoomForLayout)
+        else if (!ppc.hasFlexibleBox && this.$vbox) {
+            this.$int.style.display = ppc.INLINE;
+            if (ppc.needZoomForLayout)
                 this.$int.style.zoom = 1;
             this.$int.style.width   = "100%";
         }
         
-        if (apf.hasFlexibleBox) {
-            this.$display = "-" + apf.CSSPREFIX +"-box";
+        if (ppc.hasFlexibleBox) {
+            this.$display = "-" + ppc.CSSPREFIX +"-box";
             
-            this.$int.style.display = apf.CSSPREFIX2 + "-box";
-            this.$int.style[apf.CSSPREFIX + "BoxOrient"] = this.localName == "hbox" ? "horizontal" : "vertical";
-            if (apf.isGecko)  { //!webkit
-                this.$int.style[apf.CSSPREFIX + "BoxSizing"] = "border-box";
+            this.$int.style.display = ppc.CSSPREFIX2 + "-box";
+            this.$int.style[ppc.CSSPREFIX + "BoxOrient"] = this.localName == "hbox" ? "horizontal" : "vertical";
+            if (ppc.isGecko)  { //!webkit
+                this.$int.style[ppc.CSSPREFIX + "BoxSizing"] = "border-box";
                 this.$int.style.verticalAlign = "top";
             }
-            this.$int.style[apf.CSSPREFIX + "BoxAlign"]  = "stretch";
+            this.$int.style[ppc.CSSPREFIX + "BoxAlign"]  = "stretch";
             
             this.addEventListener("prop.visible", myVisibleHandler);
         }
@@ -843,11 +843,11 @@ apf.vbox = function(struct, tagName){
                 this.addEventListener("prop.height", myHeightHandler);
             }
 
-            var spacer = (!apf.hasFlexibleBox && this.$vbox ? this.$ext : this.$int)
+            var spacer = (!ppc.hasFlexibleBox && this.$vbox ? this.$ext : this.$int)
                             .appendChild(doc.createElement("strong"));
             spacer.style.height        = "100%";
-            spacer.style.display       = apf.INLINE;
-            if (apf.needZoomForLayout)
+            spacer.style.display       = ppc.INLINE;
+            if (ppc.needZoomForLayout)
                 spacer.style.zoom = 1;
             //spacer.style.marginLeft    = "-4px";
             spacer.style.verticalAlign = "middle";
@@ -856,13 +856,13 @@ apf.vbox = function(struct, tagName){
         }
 
         if (this.getAttribute("class")) 
-            apf.setStyleClass(this.$ext, this.getAttribute("class"));
+            ppc.setStyleClass(this.$ext, this.getAttribute("class"));
         
         this.$originalMin = [this.minwidth || 0,  this.minheight || 0];
     };
     
     this.$resize = function(force){
-        if (!this.$amlLoaded || this.$noResize) // || apf.isIE7 && force !== true)
+        if (!this.$amlLoaded || this.$noResize) // || ppc.isIE7 && force !== true)
             return;
 
         //Protection for stretch re-resizing
@@ -871,7 +871,7 @@ apf.vbox = function(struct, tagName){
           this.$lastSize[1] == this.$int.offsetHeight)
             return;
         
-        if (!apf.window.vManager.check(this, this.$uniqueId, this.$resize))
+        if (!ppc.window.vManager.check(this, this.$uniqueId, this.$resize))
             return;
         
         this.$noResize = true;
@@ -881,7 +881,7 @@ apf.vbox = function(struct, tagName){
         
         /*if (this.$table.offsetWidth >= this.$ext.offsetWidth)
             this.$ext.style.minWidth = (this.minwidth = Math.max(0, this.$table.offsetWidth 
-                - apf.getWidthDiff(this.$ext))) + "px";
+                - ppc.getWidthDiff(this.$ext))) + "px";
         else {
             this.$ext.style.minWidth = "";
             this.minwidth = this.$originalMin[0];
@@ -889,7 +889,7 @@ apf.vbox = function(struct, tagName){
 
         if (this.$table.offsetHeight >= this.$ext.offsetHeight)
             this.$ext.style.minHeight = (this.minheight = Math.max(0, this.$table.offsetHeight 
-                - apf.getHeightDiff(this.$ext))) + "px";
+                - ppc.getHeightDiff(this.$ext))) + "px";
         else {
             this.$ext.style.minHeight = "";
             this.minheight = this.$originalMin[1];
@@ -912,7 +912,7 @@ apf.vbox = function(struct, tagName){
 
         var nodes = this.childNodes, hNodes = [], fW = 0, max = 0;
         for (var node, i = 0; i < nodes.length; i++) {
-            if ((node = nodes[i]).nodeFunc != apf.NODE_VISIBLE || node.visible === false || !node.$amlLoaded)
+            if ((node = nodes[i]).nodeFunc != ppc.NODE_VISIBLE || node.visible === false || !node.$amlLoaded)
                 continue;
 
             hNodes.push(node);
@@ -921,16 +921,16 @@ apf.vbox = function(struct, tagName){
                 //else node.$skipResizeOnce++;
                 //node.$skipResizeOnce = 1
                 //node.$ext.style[size] = ""; //@todo this is a sucky way of measuring
-                var m = node.margin && apf.getBox(node.margin);
+                var m = node.margin && ppc.getBox(node.margin);
                 if (m && this.$vbox) m.unshift();
                 var mdiff = (m ? m[0] + m[2] : 0);
-                max = Math.max(max, mdiff + Math.min(node.$ext[scroll] + apf[borders](node.$ext), node["max" + size] || 10000));
+                max = Math.max(max, mdiff + Math.min(node.$ext[scroll] + ppc[borders](node.$ext), node["max" + size] || 10000));
             }
 
             if (parseInt(node.flex))
                 total += parseFloat(node.flex);
             else {
-                var m = node.margin && apf.getBox(node.margin);
+                var m = node.margin && ppc.getBox(node.margin);
                 if (m && !this.$vbox) m.shift();
                 fW += node.$ext[ooffset] + (m ? m[0] + m[2] : 0); //this.padding + 
             }
@@ -938,7 +938,7 @@ apf.vbox = function(struct, tagName){
         if (!max && this[size]) {
             max = this[size] 
                 //- (this.$vbox ? this.$edge[0] + this.$edge[2] : this.$edge[1] + this.$edge[3]);
-                - apf[ogetDiff](this.$ext);
+                - ppc[ogetDiff](this.$ext);
         }
 
         /*
@@ -947,12 +947,12 @@ apf.vbox = function(struct, tagName){
         if (this.align == "stretch") {
             //var hasSize = this[size] || this.flex;
             var l  = hNodes.length;
-            var pH = max;//this.$int[offset] - apf[getDiff](this.$int);// - (2 * this.padding);
+            var pH = max;//this.$int[offset] - ppc[getDiff](this.$int);// - (2 * this.padding);
             for (var i = 0; i < l; i++) {
                 node = hNodes[i];
 
                 if (!node[size] && !this.$vbox || this.$vbox && input[node.$ext.tagName]) {
-                    var m = node.margin && apf.getBox(node.margin);
+                    var m = node.margin && ppc.getBox(node.margin);
                     if (m && this.$vbox) m.unshift();
                     var mdiff = (m ? m[0] + m[2] : 0);
                     
@@ -960,18 +960,18 @@ apf.vbox = function(struct, tagName){
                     if (shouldClear)
                         node.$ext.style[size] = "";
                     else
-                        node.$ext.style[size] = Math.max(0, pH - apf[getDiff](node.$ext) - mdiff) + "px";
+                        node.$ext.style[size] = Math.max(0, pH - ppc[getDiff](node.$ext) - mdiff) + "px";
                     node.$setResizeHeight = !shouldClear;*/
 
                     //!this[size] && !this.flex
                     if (max && Math.min(node.$ext[scroll], node["max" + size] || 10000) != max)
-                        node.$ext.style[size] = Math.max(0, max - apf[getDiff](node.$ext) - mdiff) + "px";
+                        node.$ext.style[size] = Math.max(0, max - ppc[getDiff](node.$ext) - mdiff) + "px";
                     else
                         node.$ext.style[size] = "";
                     
                     /*node.$ext.style[size] = !this[size] && !this.flex && node.$ext.offsetHeight == pH - mdiff
                         ? ""
-                        : Math.max(0, pH - apf[getDiff](node.$ext) - mdiff) + "px";*/
+                        : Math.max(0, pH - ppc[getDiff](node.$ext) - mdiff) + "px";*/
                 }
             }
         }
@@ -982,18 +982,18 @@ apf.vbox = function(struct, tagName){
                 this.$int.style.height = "100%";
             this.$int.style.overflow = "hidden";
             
-            var splitterCount = apf.n(this).children("a:splitter").length() * 2;
+            var splitterCount = ppc.n(this).children("a:splitter").length() * 2;
             
-            var rW = this.$int[ooffset] - apf[ogetDiff](this.$int) - fW 
+            var rW = this.$int[ooffset] - ppc[ogetDiff](this.$int) - fW 
               - ((hNodes.length - 1 - splitterCount) * this.padding);// - (2 * this.edge);
             var lW = rW, done = 0;
             for (var i = 0, l = hNodes.length; i < l; i++) {
                 if ((node = hNodes[i]).flex) {
                     var v = (i % 2 == 0 ? Math.floor : Math.ceil)((rW / total) * parseInt(node.flex));
                     done += parseInt(node.flex);
-                    var m = node.margin && apf.getBox(node.margin);
+                    var m = node.margin && ppc.getBox(node.margin);
                     if (m && !this.$vbox) m.shift();
-                    node.$ext.style[osize] = Math.max(0, (done == total ? lW : v) - apf[ogetDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
+                    node.$ext.style[osize] = Math.max(0, (done == total ? lW : v) - ppc[ogetDiff](node.$ext) - (m ? m[0] + m[2] : 0)) + "px";
                     lW -= v;
                 }
             }
@@ -1023,13 +1023,13 @@ apf.vbox = function(struct, tagName){
         if (this.align == undefined)
             this.align = "stretch";
             //this.$propHandlers.align.call(this, this.align = "stretch");
-        if (!apf.hasFlexibleBox && !this.$vbox && !this.height && this.align == "stretch")
+        if (!ppc.hasFlexibleBox && !this.$vbox && !this.height && this.align == "stretch")
             myHeightHandler.call(this, {});
     };
-}).call(apf.vbox.prototype = new apf.GuiElement());
+}).call(ppc.vbox.prototype = new ppc.GuiElement());
 
-apf.hbox.prototype = apf.vbox.prototype;
+ppc.hbox.prototype = ppc.vbox.prototype;
 
-apf.aml.setElement("hbox", apf.hbox);
-apf.aml.setElement("vbox", apf.vbox);
+ppc.aml.setElement("hbox", ppc.hbox);
+ppc.aml.setElement("vbox", ppc.vbox);
 // #endif

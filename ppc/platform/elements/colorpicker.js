@@ -33,8 +33,8 @@
  * @version     %I%, %G%
  * @since       3.0
  *
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
  *
  * @attribute {String} value the color that is selected in the color picker.
  *
@@ -51,15 +51,15 @@
  *    value = "[@color]" />
  * </code>
  */
-apf.colorpicker = function(struct, tagName){
-    this.$init(tagName || "colorpicker", apf.NODE_VISIBLE, struct);
+ppc.colorpicker = function(struct, tagName){
+    this.$init(tagName || "colorpicker", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.value       = "ff0000";
     this.changeTimer = null;
 
-    var c = apf.color;
+    var c = ppc.color;
 
     this.$supportedProperties.push("color", "red", "green", "blue", "hue",
         "saturation", "brightness", "hex", "skin-textbox", "skin-spinner");
@@ -161,7 +161,7 @@ apf.colorpicker = function(struct, tagName){
         }
         function selectorDown() {
             var el  = this,
-                pos = apf.getAbsolutePosition(el);
+                pos = ppc.getAbsolutePosition(el);
             
             function selectorMove(e) {
                 e = e || event;
@@ -173,7 +173,7 @@ apf.colorpicker = function(struct, tagName){
                 _self.saturation = parseInt(100 * (Math.max(0, Math.min(150,
                     (pageX - pos[0])))) / 150, 10);
                 _self.$change();
-                pos = apf.getAbsolutePosition(el);
+                pos = ppc.getAbsolutePosition(el);
                 return false;
             }
             document.onmousemove = selectorMove;
@@ -185,7 +185,7 @@ apf.colorpicker = function(struct, tagName){
         
         function hueDown(e) {
             var el  = this,
-                pos = apf.getAbsolutePosition(el);
+                pos = ppc.getAbsolutePosition(el);
 
             function hueMove(e) {
                 e = e || event;
@@ -193,7 +193,7 @@ apf.colorpicker = function(struct, tagName){
                 _self.hue  = parseInt(360 * (150 - Math.max(0,
                     Math.min(150, (pageY - pos[1])))) / 150, 10);
                 _self.$change();
-                pos = apf.getAbsolutePosition(el);
+                pos = ppc.getAbsolutePosition(el);
             }
             document.onmousemove = hueMove;
             document.onmouseup   = function(e) {
@@ -236,8 +236,8 @@ apf.colorpicker = function(struct, tagName){
         }
 
         //append APF widgets for additional controls
-        var skin = apf.getInheritedAttribute(this.parentNode, "skinset");
-        new apf.hbox({
+        var skin = ppc.getInheritedAttribute(this.parentNode, "skinset");
+        new ppc.hbox({
             htmlNode: this.oInputs,
             skinset: skin,
             left: 212,
@@ -245,18 +245,18 @@ apf.colorpicker = function(struct, tagName){
             width: 150,
             padding: 3,
             childNodes: [
-                new apf.vbox({
+                new ppc.vbox({
                     padding: 3,
                     edge: "0 10 0 0",
                     childNodes: [
-                        new apf.hbox({
+                        new ppc.hbox({
                             childNodes: [
-                                new apf.label({
+                                new ppc.label({
                                     width: 14,
                                     caption: "R:",
                                     "for": this.id + "_red"
                                 }),
-                                new apf.spinner({
+                                new ppc.spinner({
                                     id: this.id + "_red",
                                     skin: this["skin-spinner"],
                                     realtime: true,
@@ -268,15 +268,15 @@ apf.colorpicker = function(struct, tagName){
                                 })
                             ]
                         }),
-                        new apf.hbox({
+                        new ppc.hbox({
                             edge: "0 0 3 0",
                             childNodes: [
-                                new apf.label({
+                                new ppc.label({
                                     width: 14,
                                     caption: "G:",
                                     "for": this.id + "_green"
                                 }),
-                                new apf.spinner({
+                                new ppc.spinner({
                                     id: this.id + "_green",
                                     skin: this["skin-spinner"],
                                     realtime: true,
@@ -288,15 +288,15 @@ apf.colorpicker = function(struct, tagName){
                                 })
                             ]
                         }),
-                        new apf.hbox({
+                        new ppc.hbox({
                             edge: "0 0 3 0",
                             childNodes: [
-                                new apf.label({
+                                new ppc.label({
                                     width: 14,
                                     caption: "B:",
                                     "for": this.id + "_blue"
                                 }),
-                                new apf.spinner({
+                                new ppc.spinner({
                                     id: this.id + "_blue",
                                     skin: this["skin-spinner"],
                                     realtime: true,
@@ -310,17 +310,17 @@ apf.colorpicker = function(struct, tagName){
                         })
                     ]
                 }),
-                new apf.vbox({
+                new ppc.vbox({
                     padding: 3,
                     childNodes: [
-                        new apf.hbox({
+                        new ppc.hbox({
                             childNodes: [
-                                new apf.label({
+                                new ppc.label({
                                     width: 14,
                                     caption: "H:",
                                     "for": this.id + "_hue"
                                 }),
-                                new apf.spinner({
+                                new ppc.spinner({
                                     id: this.id + "_hue",
                                     skin: this["skin-spinner"],
                                     realtime: true,
@@ -332,15 +332,15 @@ apf.colorpicker = function(struct, tagName){
                                 })
                             ]
                         }),
-                        new apf.hbox({
+                        new ppc.hbox({
                             edge: "0 0 3 0",
                             childNodes: [
-                                new apf.label({
+                                new ppc.label({
                                     width: 14,
                                     caption: "S:",
                                     "for": this.id + "_saturation"
                                 }),
-                                new apf.spinner({
+                                new ppc.spinner({
                                     id: this.id + "_saturation",
                                     skin: this["skin-spinner"],
                                     realtime: true,
@@ -352,15 +352,15 @@ apf.colorpicker = function(struct, tagName){
                                 })
                             ]
                         }),
-                        new apf.hbox({
+                        new ppc.hbox({
                             edge: "0 0 3 0",
                             childNodes: [
-                                new apf.label({
+                                new ppc.label({
                                     width: 14,
                                     caption: "B:",
                                     "for": this.id + "_brightness"
                                 }),
-                                new apf.spinner({
+                                new ppc.spinner({
                                     id: this.id + "_brightness",
                                     skin: this["skin-spinner"],
                                     realtime: true,
@@ -377,7 +377,7 @@ apf.colorpicker = function(struct, tagName){
             ]
         });
 
-        new apf.label({
+        new ppc.label({
             htmlNode: this.oInputs,
             skinset: skin,
             left: 212,
@@ -387,7 +387,7 @@ apf.colorpicker = function(struct, tagName){
             "for": this.id + "_hex"
         });
 
-        this.$input = new apf.textbox({
+        this.$input = new ppc.textbox({
             htmlNode: this.oInputs,
             skinset: skin,
             skin: this["skin-textbox"],
@@ -412,11 +412,11 @@ apf.colorpicker = function(struct, tagName){
             this.oNewColor = this.oCustomColor = this.oInputs = null;
     };
 // #ifdef __WITH_DATABINDING
-}).call(apf.colorpicker.prototype = new apf.StandardBinding());
+}).call(ppc.colorpicker.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.colorpicker.prototype = new apf.Presentation());
+}).call(ppc.colorpicker.prototype = new ppc.Presentation());
 #endif */
 
-apf.aml.setElement("colorpicker", apf.colorpicker);
+ppc.aml.setElement("colorpicker", ppc.colorpicker);
 
 // #endif

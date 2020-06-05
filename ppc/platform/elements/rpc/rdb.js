@@ -24,7 +24,7 @@
 
 /**
  * Implementation of the Remote DataBinding (RDB) RPC protocol as a module for the
- * RPC plugin of apf.teleport.
+ * RPC plugin of ppc.teleport.
  * Example:
  * Ajax.org Markup Language
  * <code>
@@ -66,9 +66,9 @@
  *
  * @constructor
  *
- * @inherits apf.Teleport
- * @inherits apf.http
- * @inherits apf.rpc
+ * @inherits ppc.Teleport
+ * @inherits ppc.http
+ * @inherits ppc.rpc
  *
  * @author      Mike de Boer (mike AT ajax DOT org)
  * @version     %I%, %G%
@@ -76,7 +76,7 @@
  *
  * @default_private
  */
-apf.rdb = function(){
+ppc.rdb = function(){
     this.supportMulticall = false;
     this.namedArguments   = true;
 
@@ -96,7 +96,7 @@ apf.rdb = function(){
             vars     = {};
 
         function recur(o, stack){
-            if (o && o.dataType == apf.ARRAY) {
+            if (o && o.dataType == ppc.ARRAY) {
                 for (var j = 0, l = o.length; j < l; j++)
                     recur(o[j], stack);
             }
@@ -105,7 +105,7 @@ apf.rdb = function(){
                     var s;
                     try {
                         s = o.outerHTML || o.serialize && o.serialize() 
-                          || apf.getCleanCopy(o).xml;
+                          || ppc.getCleanCopy(o).xml;
                     }
                     catch(e){
                         s = "Could not serialize object";
@@ -115,7 +115,7 @@ apf.rdb = function(){
                 else {
                     for (prop in o) {
                         //#ifdef __SUPPORT_SAFARI2
-                        if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
+                        if (ppc.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
                             continue;
                         //#endif
     
@@ -139,7 +139,7 @@ apf.rdb = function(){
         else {
             for (prop in args) {
                 //#ifdef __SUPPORT_SAFARI2
-                if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
+                if (ppc.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                     continue;
                 //#endif
 
@@ -155,14 +155,14 @@ apf.rdb = function(){
         // url, ignored.
         //#ifdef __DEBUG
         if (!this["remote"]) {
-            throw new Error(apf.formatErrorString(0, this, "Sending RDB-RPC request",
+            throw new Error(ppc.formatErrorString(0, this, "Sending RDB-RPC request",
                 "No remote element found. Please specify one prior to making a request."));
         }
         //#endif
 
         if (!this.$remote) {
             //#ifdef __WITH_NAMESERVER
-            this.$remote = apf.nameserver.get(this.remote) || self[this.remote];
+            this.$remote = ppc.nameserver.get(this.remote) || self[this.remote];
             // #ifdef __DEBUG
             var _self = this;
             this.$remote.transport.addEventListener("rpcresult", function(e) {
@@ -172,7 +172,7 @@ apf.rdb = function(){
                 if (!log) return;
                 log.response({
                     http: {
-                        getAllResponseHeaders: apf.K,
+                        getAllResponseHeaders: ppc.K,
                         status: e.status,
                         statusText: "",
                         responseText: JSON.stringify(e.data)
@@ -190,7 +190,7 @@ apf.rdb = function(){
             var data = options.data || "";
             this.queue[id] = {options: options};
             
-            apf.console.teleport(this.queue[id].log = new apf.teleportLog({
+            ppc.console.teleport(this.queue[id].log = new ppc.teleportLog({
                 id      : id,
                 tp      : this,
                 type    : "rpc",
@@ -213,7 +213,7 @@ apf.rdb = function(){
      * @param {Function}       callback  called when the http call returns.
      */
     this.submitForm = function(form, callback){
-        return false; //@todo apf3.0 is this still an implemented feature?
+        return false; //@todo ppc3.0 is this still an implemented feature?
         if (!this['postform'])
             this.addMethod('postform', callback);
 

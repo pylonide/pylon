@@ -36,11 +36,11 @@
  * @since       0.4
  */
 
-apf.Chart     = function(struct, tagName){
-    this.$init(tagName || "chart", apf.NODE_VISIBLE, struct);
+ppc.Chart     = function(struct, tagName){
+    this.$init(tagName || "chart", ppc.NODE_VISIBLE, struct);
 };
 
-apf.aml.setElement("chart", apf.Chart);
+ppc.aml.setElement("chart", ppc.Chart);
  
 (function(){
      //var space    = { x:1000000, w:-2000000, y:1000000, h:-2000000};    
@@ -75,7 +75,7 @@ apf.aml.setElement("chart", apf.Chart);
         if (!this.childNodes) //We're being destroyed
             return;
 
-        if (!this.$ext.offsetHeight && (apf.isIE || !this.$ext.offsetWidth)) //We're not visible, so let's not bother
+        if (!this.$ext.offsetHeight && (ppc.isIE || !this.$ext.offsetWidth)) //We're not visible, so let's not bother
             return;
         
 		// check if we need to initialize or resize
@@ -83,10 +83,10 @@ apf.aml.setElement("chart", apf.Chart);
 			this.$doinit = false;
 			this.$doresize = false;
             this.$copyPos();
-			apf.draw.initRoot(this);
+			ppc.draw.initRoot(this);
 		}else if (this.$doresize){
             this.$copyPos();
-            apf.draw.resizeRoot(this);
+            ppc.draw.resizeRoot(this);
 		}
         for(var n, i = 0;i<this.childNodes.length;i++){
             if((n=this.childNodes[i]).$drawAxis){
@@ -97,7 +97,7 @@ apf.aml.setElement("chart", apf.Chart);
     }
 
     this.$copyPos = function(t, m){
-        //@todo apf3.x @rik the height is resetted to 0 here. I don't know why.
+        //@todo ppc3.x @rik the height is resetted to 0 here. I don't know why.
         
 		this.left = 0, this.top = 0; 
         var w,h,
@@ -142,7 +142,7 @@ apf.aml.setElement("chart", apf.Chart);
             if(!bt)return;
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
             //interact = true;
-            var pos = apf.getAbsolutePosition(_self.$ext,document.documentElement);
+            var pos = ppc.getAbsolutePosition(_self.$ext,document.documentElement);
                 lx = e.clientX-pos[0] + document.documentElement.scrollLeft, 
                 ly = e.clientY-pos[1] + document.documentElement.scrollTop;
             ox = lx , oy = ly;
@@ -179,7 +179,7 @@ apf.aml.setElement("chart", apf.Chart);
 			if(this.$doinit)return;
             if (!e) e = event;
             bt = 0;
-            var pos = apf.getAbsolutePosition(_self.$ext,document.documentElement);
+            var pos = ppc.getAbsolutePosition(_self.$ext,document.documentElement);
             var x = e.clientX - pos[0] + document.documentElement.scrollLeft,
                 y = e.clientY - pos[1] + document.documentElement.scrollTop;
             for(var t, i = stack.length-1;i>=0;i--)
@@ -191,7 +191,7 @@ apf.aml.setElement("chart", apf.Chart);
 			if(this.$doinit)return;
             //if (!interact) return;
             if (!e) e = event;
-            var pos = apf.getAbsolutePosition(_self.$ext,document.documentElement);
+            var pos = ppc.getAbsolutePosition(_self.$ext,document.documentElement);
             var dx = (-lx + (lx=e.clientX-pos[0] + document.documentElement.scrollLeft)),
                 dy = (-ly + (ly=e.clientY-pos[1] + document.documentElement.scrollTop));
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
@@ -211,7 +211,7 @@ apf.aml.setElement("chart", apf.Chart);
             }
         }
 
-        //@todo should use apf's abstraction for scrollwheel
+        //@todo should use ppc's abstraction for scrollwheel
 		var wheelEvent = function(e) {
 			if(this.$doinit)return;
             if(!e) e = window.event;
@@ -221,7 +221,7 @@ apf.aml.setElement("chart", apf.Chart);
                 (e.detail ? -e.detail / 3 : 0);
             var keys = e.shiftKey?1:0 + e.ctrlKey?2:0 + e.altKey?4:0;
             if(d){
-                var pos = apf.getAbsolutePosition(_self.$ext,document.documentElement);
+                var pos = ppc.getAbsolutePosition(_self.$ext,document.documentElement);
                 // lets find if we are over a graph
                 var x = e.clientX - pos[0] + document.documentElement.scrollLeft,
                     y = e.clientY - pos[1] + document.documentElement.scrollTop;
@@ -236,20 +236,20 @@ apf.aml.setElement("chart", apf.Chart);
             if(e.preventDefault) e.preventDefault();
             e.returnValue = false;
         }
-        if (!apf.supportVML && this.$ext.addEventListener){
+        if (!ppc.supportVML && this.$ext.addEventListener){
             this.$ext.addEventListener('DOMMouseScroll', wheelEvent, false);
         }
         this.$ext.onmousewheel = wheelEvent;
 
         //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.$ext, "resize", "var o = apf.all[" + this.$uniqueId + "];\
+        ppc.layout.setRules(this.$ext, "resize", "var o = ppc.all[" + this.$uniqueId + "];\
             if (o) o.$resize()", true);
-        apf.layout.queue(this.$ext);
+        ppc.layout.queue(this.$ext);
         //#endif
     }
 	
     this.$loadAml = function(x){
-        apf.draw.initDriver();
+        ppc.draw.initDriver();
 		
         if (this.anim > 0){
 			var _self = this;
@@ -261,7 +261,7 @@ apf.aml.setElement("chart", apf.Chart);
     
     this.$destroy = function() {
         //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.$ext, "resize");
+        ppc.layout.removeRule(this.$ext, "resize");
         //#endif
         
         this.$ext.onmousedown   = 
@@ -274,6 +274,6 @@ apf.aml.setElement("chart", apf.Chart);
         window.clearTimeout(this.$timer);
         window.clearInterval(this.$animTimer);
     };
-}).call(apf.Chart.prototype = new apf.Presentation());
+}).call(ppc.Chart.prototype = new ppc.Presentation());
 
 // #endif

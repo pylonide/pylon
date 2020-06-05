@@ -34,20 +34,20 @@
  * @since       3.0
  */
 
-apf.upload.flash = function(oUpload) {
+ppc.upload.flash = function(oUpload) {
     this.oUpload = oUpload;
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH = (apf.config.resourcePath || apf.basePath)
+    this.DEFAULT_SWF_PATH = (ppc.config.resourcePath || ppc.basePath)
         + "elements/upload/Swiff.Uploader.swf?noCache=".appendRandomNumber(5);
     /* #else
-    this.DEFAULT_SWF_PATH = (apf.config.resourcePath || apf.basePath)
+    this.DEFAULT_SWF_PATH = (ppc.config.resourcePath || ppc.basePath)
         + "resources/Swiff.Uploader.swf?noCache=".appendRandomNumber(5);
     #endif */
-    this.$playerId = apf.flash.addPlayer(this);
+    this.$playerId = ppc.flash.addPlayer(this);
 };
 
-apf.upload.flash.isSupported = function() {
-    return !apf.isIE && apf.flash.isAvailable("9.0.0");
+ppc.upload.flash.isSupported = function() {
+    return !ppc.isIE && ppc.flash.isAvailable("9.0.0");
 };
 
 (function() {
@@ -68,7 +68,7 @@ apf.upload.flash.isSupported = function() {
                     oFilter["*." + filter.join(", *.")] = "*." + filter.join("; *.");
                 }
 
-                apf.flash.remote(this.$player, "initialize", {
+                ppc.flash.remote(this.$player, "initialize", {
                     typeFilter     : oFilter,
                     multiple       : this.oUpload.multiple,
                     queued         : 1,
@@ -85,7 +85,7 @@ apf.upload.flash.isSupported = function() {
                     fileSizeMin    : 1,
                     fileSizeMax    : this.oUpload.maxfilesize,
                     allowDuplicates: false,
-                    timeLimit      : apf.isLinux ? 0 : 30,
+                    timeLimit      : ppc.isLinux ? 0 : 30,
                     policyFile     : null
                 });
             break;
@@ -123,7 +123,7 @@ apf.upload.flash.isSupported = function() {
                 //Function to execute when a file is uploaded or failed with an error.
                 var httpStatus = o.response && o.response.error ? 500 : 200;
 
-                file.status = httpStatus == 500 ? apf.upload.FAILED : apf.upload.DONE;
+                file.status = httpStatus == 500 ? ppc.upload.FAILED : ppc.upload.DONE;
                 file.loaded = httpStatus == 500 ? 0 : file.size;
                 this.oUpload.$progress(file);
                 this.oUpload.$fileDone(file, {
@@ -134,7 +134,7 @@ apf.upload.flash.isSupported = function() {
                 // Is error status
                 if (httpStatus >= 400) {
                     this.oUpload.dispatchEvent("error", {
-                        code    : apf.upload.ERROR_CODES.HTTP_ERROR,
+                        code    : ppc.upload.ERROR_CODES.HTTP_ERROR,
                         message : "HTTP Error: " + o.response.error + ", " + o.response.text,
                         file    : file,
                         status  : httpStatus
@@ -183,8 +183,8 @@ apf.upload.flash.isSupported = function() {
         oCont.style.width      = "100px",
         oCont.style.height     = "100px",
         oCont.style.zIndex     = 99999;
-        apf.flash.embed({
-            // apf.flash#embed properties
+        ppc.flash.embed({
+            // ppc.flash#embed properties
             context          : this,
             htmlNode         : oCont,
             onError          : function(e) {
@@ -212,9 +212,9 @@ apf.upload.flash.isSupported = function() {
     this.refresh = function() {
         var oBtn    = this.oUpload.$button.$ext;
         if (!oBtn) return;
-        var btnPos  = apf.getAbsolutePosition(oBtn),
+        var btnPos  = ppc.getAbsolutePosition(oBtn),
             btnDims = [oBtn.offsetWidth, oBtn.offsetHeight],
-            contPos = apf.getAbsolutePosition(oCont);
+            contPos = ppc.getAbsolutePosition(oCont);
 
         if (btnPos[0] != contPos[0])
             oCont.style.left   = btnPos[0] + "px";
@@ -227,11 +227,11 @@ apf.upload.flash.isSupported = function() {
     };
 
     this.upload = function(file) {
-        apf.flash.remote(this.$player, "fileStart", file.id);
+        ppc.flash.remote(this.$player, "fileStart", file.id);
     };
 
     this.removeFile = function(file) {
-        apf.flash.remote(this.$player, "fileRemove", file.id);
+        ppc.flash.remote(this.$player, "fileRemove", file.id);
     };
-}).call(apf.upload.flash.prototype = new apf.Class());
+}).call(ppc.upload.flash.prototype = new ppc.Class());
 // #endif

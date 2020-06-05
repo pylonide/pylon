@@ -39,12 +39,12 @@
  * her entire undo/redo stack. Furthermore, all changes done whilst being offline
  * will be synchronized to the data store when the application comes online.
  *
- * @class apf.actiontracker
+ * @class ppc.actiontracker
  * @define actiontracker
  * @logic
  *
- * @inherits apf.Class
- * @inherits apf.AmlElement
+ * @inherits ppc.Class
+ * @inherits ppc.AmlElement
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
@@ -63,7 +63,7 @@
  *   - `args` ([[Array]]): The arguments for the action
  *   - `[xmlActionNode]` ([[XMLNode]]): The rules to synchronize the changes to the server
  *                              for both execution and undo.
- *   - `[amlNode]` ([[apf.AmlNode]]): The GUI element that triggered the action
+ *   - `[amlNode]` ([[ppc.AmlNode]]): The GUI element that triggered the action
  *   - `[selNode]` ([[XMLNode]]):        The relevant {@link term.datanode data node} to
  *                              which the action node works on
  *   - `[timestamp]` ([[Number]]): The start of the action that is now executed.
@@ -75,15 +75,15 @@
  *     - `error` ([[Error]]): The error object that is thrown when the event
  *                                callback doesn't return false.
  *     - `state` ([[Number]]): The state of the call. It can be one of the following values:
- *       - `apf.SUCCESS`:  The request was successfull
- *       - `apf.TIMEOUT`:  The request has timed out.
- *       - `apf.ERROR`:    An error has occurred while making the request.
- *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *       - `ppc.SUCCESS`:  The request was successfull
+ *       - `ppc.TIMEOUT`:  The request has timed out.
+ *       - `ppc.ERROR`:    An error has occurred while making the request.
+ *       - `ppc.OFFLINE`:  The request was made while the application was offline.
  *     - `userdata` (`Mixed`): Data that the caller wanted to be available in
  *                                the callback of the HTTP request.
  *     - `http` ([[XMLHttpRequest]]): the object that executed the actual HTTP request.
  *     - `url` ([[String]]): The URL that was requested.
- *     - `tpModule` ([[apf.http]]): The teleport module that is making the request.
+ *     - `tpModule` ([[ppc.http]]): The teleport module that is making the request.
  *     - `id` ([[Number]]): The id of the request.
  *     - `message` ([[String]]): The error message.
  * @see term.locking
@@ -93,20 +93,20 @@
  * @bubbles
  * @param {Object} e The standard event object. It contains the following property:
  *     - `state` ([[Number]]): The state of the call. It can be one of the following values:
- *       - `apf.SUCCESS`:  The request was successfull
- *       - `apf.TIMEOUT`:  The request has timed out.
- *       - `apf.ERROR`:    An error has occurred while making the request.
- *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *       - `ppc.SUCCESS`:  The request was successfull
+ *       - `ppc.TIMEOUT`:  The request has timed out.
+ *       - `ppc.ERROR`:    An error has occurred while making the request.
+ *       - `ppc.OFFLINE`:  The request was made while the application was offline.
  *     - `userdata` (`Mixed`): Data that the caller wanted to be available in
  *                                the callback of the HTTP request.
  *     - `http` ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
  *     - `url` ([[String]]): The URL that was requested.
- *     - `tpModule` ([[apf.http]]): The teleport module that is making the request.
+ *     - `tpModule` ([[ppc.http]]): The teleport module that is making the request.
  *     - `id` ([[Number]]): The id of the request.
  *
  */
-apf.actiontracker = function(struct, tagName){
-    this.$init(tagName || "actiontracker", apf.NODE_HIDDEN, struct);
+ppc.actiontracker = function(struct, tagName){
+    this.$init(tagName || "actiontracker", ppc.NODE_HIDDEN, struct);
 
     this.$undostack = [];
     this.$redostack = [];
@@ -142,19 +142,19 @@ apf.actiontracker = function(struct, tagName){
      */
     /** 
      *  @attribute {Number}  position   Sets or gets the position within the total length (the same
-     *                                  value as [[apf.actiontracker.undolength]]). Use this attribute
+     *                                  value as [[ppc.actiontracker.undolength]]). Use this attribute
      *                                  to bind a slider's value attribute to.
      */
     /** 
      *  @attribute {Boolean} realtime   Sets or gets whether changes are immediately sent to
-     * the datastore, or held back until [[apf.actiontracker.purge]] is called.
+     * the datastore, or held back until [[ppc.actiontracker.purge]] is called.
      */
     this.$booleanProperties = {};
     this.$booleanProperties["realtime"] = true;
     this.$supportedProperties = ["realtime", "undolength", "redolength", "alias", "length", "position"];
     this.$handlePropSet = function(prop, value, force){
         if (this.$booleanProperties[prop])
-            value = apf.isTrue(value);
+            value = ppc.isTrue(value);
 
         //Read only properties
         switch (prop) {
@@ -182,7 +182,7 @@ apf.actiontracker = function(struct, tagName){
             //#endif
             //#ifdef __WITH_ALIAS
             case "alias":
-                apf.GuiElement.propHandlers.alias.call(this, value);
+                ppc.GuiElement.propHandlers.alias.call(this, value);
             //#endif
             default:
                 this[prop] = value;
@@ -236,17 +236,17 @@ apf.actiontracker = function(struct, tagName){
      *                        executing or undoing the action.
      */
     this.define = function(action, func){
-        apf.actiontracker.actions[action] = func;
+        ppc.actiontracker.actions[action] = func;
     };
 
     /**
      * Searches for the action tracker that functions as a parent for this one.
-     * @return {apf.actiontracker} Returns the parent action tracker
+     * @return {ppc.actiontracker} Returns the parent action tracker
      */
     this.getParent = function(){
         return this.parentNode && this.parentNode.getActionTracker
             ? this.parentNode.getActionTracker(true)
-            : (apf.window.$at != this ? apf.window.$at : null);
+            : (ppc.window.$at != this ? ppc.window.$at : null);
     };
 
     this.getDone = function(time) {
@@ -280,7 +280,7 @@ apf.actiontracker = function(struct, tagName){
      *   - `args` ([[Array]]): The arguments for the action
      *   - `[xmlActionNode]` ([[XMLNode]]): The rules to synchronize the changes to the
      *                              server for both execution and undo.
-     *   - `[amlNode]` ([[apf.AmlNode]]): The GUI element that triggered the action
+     *   - `[amlNode]` ([[ppc.AmlNode]]): The GUI element that triggered the action
      *   - `[selNode]` ([[XMLNode]]):      The relevant {@link term.datanode data node}
      *                              to which the action node works on
      *   - `[timestamp]` ([[Number]]): The start of the action that is now executed.
@@ -292,9 +292,9 @@ apf.actiontracker = function(struct, tagName){
             return false;
 
         //Execute action
-        var UndoObj = new apf.UndoData(options, this);
+        var UndoObj = new ppc.UndoData(options, this);
         if (options.action && !options.transaction)
-            apf.actiontracker.actions[options.action](UndoObj, false, this);
+            ppc.actiontracker.actions[options.action](UndoObj, false, this);
 
         if (!this.$paused) {
             //Add action to stack
@@ -304,8 +304,8 @@ apf.actiontracker = function(struct, tagName){
         this.setProperty("undolength", this.$undostack.length);
 
         //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-        if (typeof apf.offline != "undefined") {
-            var t = apf.offline.transactions;
+        if (typeof ppc.offline != "undefined") {
+            var t = ppc.offline.transactions;
             if (t.doStateSync) {
                 t.addAction(this, UndoObj, "undo");
                 t.clearActions(this, "redo");
@@ -352,9 +352,9 @@ apf.actiontracker = function(struct, tagName){
 
     //deprecated??
     /*this.$addActionGroup = function(done, rpc){
-        var UndoObj = new apf.UndoData("group", null, [
-            //@todo apf.copyArray is deprecated and no longer exists
-            apf.copyArray(done, UndoData), apf.copyArray(rpc, UndoData)
+        var UndoObj = new ppc.UndoData("group", null, [
+            //@todo ppc.copyArray is deprecated and no longer exists
+            ppc.copyArray(done, UndoData), ppc.copyArray(rpc, UndoData)
         ]);
         this.$undostack.push(UndoObj);
         this.setProperty("undolength", this.$undostack.length);
@@ -368,7 +368,7 @@ apf.actiontracker = function(struct, tagName){
         this.dispatchEvent("afterchange", {action: "group", done: done});
     };*/
 
-    // @todo I don't really know if this stacking into the parent is still used, for instance for apf.Transaction. please think about it.
+    // @todo I don't really know if this stacking into the parent is still used, for instance for ppc.Transaction. please think about it.
     /**
      * Synchronizes all held back changes to the data store.
      * 
@@ -405,12 +405,12 @@ apf.actiontracker = function(struct, tagName){
      * immediately and reverted on rollback.
      *
      *
-     * For more information, see {@link apf.actiontracker.commit} and
-     * {@link apf.actiontracker.rollback}
+     * For more information, see {@link ppc.actiontracker.commit} and
+     * {@link ppc.actiontracker.rollback}
      */
     this.begin = function(dataNode, bClear){
         var id;
-        //Currently only supports nodes inheriting from apf.Class
+        //Currently only supports nodes inheriting from ppc.Class
         //In the future this same method should be used for xml dom elements
         //that support the mutation events
         if (dataNode && (dataNode.$regbase || dataNode.$regbase === 0)) {
@@ -437,11 +437,11 @@ apf.actiontracker = function(struct, tagName){
             //have mutation events yet. One way is to add an a_at="" attribute
             //that can be looked up to find actiontracker listeners.
 
-            id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(dataNode), dataNode);
+            id = ppc.xmldb.nodeConnect(ppc.xmldb.getXmlDocId(dataNode), dataNode);
 
             //Set listener
             if (dataNode)
-                apf.xmldb.addNodeListener(dataNode, this); //should be unique for for xml node xmldb.xmlIdTag
+                ppc.xmldb.addNodeListener(dataNode, this); //should be unique for for xml node xmldb.xmlIdTag
 
             if (this.$transtack[id] && !bClear) {
                 //throw new Error("Existing transaction found!");
@@ -458,7 +458,7 @@ apf.actiontracker = function(struct, tagName){
 
                     //Find transaction
                     if (options.selNode)
-                        inTrans = this.$transtack[options.selNode.getAttribute(apf.xmldb.xmlIdTag)];
+                        inTrans = this.$transtack[options.selNode.getAttribute(ppc.xmldb.xmlIdTag)];
 
                     //Either stack or execute immediately
                     if (inTrans)
@@ -488,7 +488,7 @@ apf.actiontracker = function(struct, tagName){
             //undo all changes (in reverse order)
             for (var s, i = stack.length - 1; i >= 0; i--) {
                 s = stack[i];
-                apf.actiontracker.actions[s.action].call(s, true, this);
+                ppc.actiontracker.actions[s.action].call(s, true, this);
             }
 
             dataNode.removeEventListener("DOMCharacterDataModified", domCharMod);
@@ -498,7 +498,7 @@ apf.actiontracker = function(struct, tagName){
             delete dataNode.$stack;
         }
         else
-            id = dataNode.getAttribute(apf.xmldb.xmlIdTag);
+            id = dataNode.getAttribute(ppc.xmldb.xmlIdTag);
 
         delete this.$transtack[id];
     };
@@ -533,7 +533,7 @@ apf.actiontracker = function(struct, tagName){
             delete dataNode.$stack;
         }
         else {
-            id = dataNode.getAttribute(apf.xmldb.xmlIdTag);
+            id = dataNode.getAttribute(ppc.xmldb.xmlIdTag);
             stack = this.$transtack[id];
 
             if (stack.length)
@@ -550,7 +550,7 @@ apf.actiontracker = function(struct, tagName){
     this.pause = function(dataNode, bContinue){
         var id = dataNode && (dataNode.$regbase || dataNode.$regbase === 0)
             ? dataNode.$uniqueId
-            : dataNode.getAttribute(apf.xmldb.xmlIdTag);
+            : dataNode.getAttribute(ppc.xmldb.xmlIdTag);
 
         var stack = this.$transtack[id];
         if (!stack) {
@@ -591,7 +591,7 @@ apf.actiontracker = function(struct, tagName){
             ? e.relatedNode
             : e.currentTarget;
 
-        if (context.nodeName.substr(0,2) != "a_") //ignore special apf attr
+        if (context.nodeName.substr(0,2) != "a_") //ignore special ppc attr
             this.$stack.push({
                 action : context.nodeType == 2
                   ? "setAttribute"
@@ -621,7 +621,7 @@ apf.actiontracker = function(struct, tagName){
             });
         }
         else if (n.nodeType == 2) {
-            if (n.nodeName.substr(0,2) != "a_") //ignore special apf attr
+            if (n.nodeName.substr(0,2) != "a_") //ignore special ppc attr
                 this.$stack.push({
                     action : "setAttribute",
                     args   : [n.ownerElement, n.nodeName, n.nodeValue],
@@ -707,15 +707,15 @@ apf.actiontracker = function(struct, tagName){
             redoStack.push(UndoObj); //@todo check: moved from outside if(single)
 
             //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-            if (typeof apf.offline != "undefined" && apf.offline.transactions.doStateSync) {
-                apf.offline.transactions.removeAction(this, true, undo ? "undo" : "redo");
-                apf.offline.transactions.addAction(this, UndoObj, undo ? "redo" : "undo");
+            if (typeof ppc.offline != "undefined" && ppc.offline.transactions.doStateSync) {
+                ppc.offline.transactions.removeAction(this, true, undo ? "undo" : "redo");
+                ppc.offline.transactions.addAction(this, UndoObj, undo ? "redo" : "undo");
             }
             //#endif
 
             //Undo Client Side Action
             if (UndoObj.action)
-                apf.actiontracker.actions[UndoObj.action](UndoObj, undo, this);
+                ppc.actiontracker.actions[UndoObj.action](UndoObj, undo, this);
 
             if (!rollback) {
                 if (UndoObj.multiple)
@@ -750,7 +750,7 @@ apf.actiontracker = function(struct, tagName){
                 undoStack.length--;
 
                 //#ifdef __DEBUG
-                apf.console.error("The actiontracker is in an invalid \
+                ppc.console.error("The actiontracker is in an invalid \
                                    state. The entire undo and redo stack will \
                                    be cleared to prevent further corruption\
                                    This is a serious error, please contact \
@@ -761,8 +761,8 @@ apf.actiontracker = function(struct, tagName){
                 this.$redostack = [];
 
                 //#ifdef __WITH_OFFLINE_STATE && __WITH_OFFLINE_TRANSACTIONS
-                if (typeof apf.offline != "undefined") {
-                    var t = apf.offline.transactions;
+                if (typeof ppc.offline != "undefined") {
+                    var t = ppc.offline.transactions;
                     if (t.doStateSync)
                         t.clear("undo|redo");
                 }
@@ -783,13 +783,13 @@ apf.actiontracker = function(struct, tagName){
     }
 
     this.$receive = function(data, state, extra, UndoObj, callback){
-        if (state == apf.TIMEOUT
+        if (state == ppc.TIMEOUT
           && extra.tpModule.retryTimeout(extra, state, this) === true)
             return true;
 
-        if (state != apf.SUCCESS) {
+        if (state != ppc.SUCCESS) {
             //Tell anyone that wants to hear about our failure :(
-            if (this.dispatchEvent("actionfail", apf.extend(extra, {
+            if (this.dispatchEvent("actionfail", ppc.extend(extra, {
                   state   : state,
                   message : "Could not sent Action RPC request for control "
                           + this.name
@@ -817,7 +817,7 @@ apf.actiontracker = function(struct, tagName){
                        is it intuitive enough for the user that redo will
                        let the user retry the action??
             */
-            if (typeof apf.offline != "undefined" && !apf.offline.reloading)
+            if (typeof ppc.offline != "undefined" && !ppc.offline.reloading)
                 this.undo(UndoObj.id, extra.userdata, true);
 
             if (callback)
@@ -834,14 +834,14 @@ apf.actiontracker = function(struct, tagName){
                 */
                 this.$execstack = [];
 
-                var oError = new Error(apf.formatErrorString(0, this,
+                var oError = new Error(ppc.formatErrorString(0, this,
                     "Executing action",
                     "Error sending action to the server:\n"
                     + (extra.url ? "Url:" + extra.url + "\n\n" : "")
                     + extra.message));
 
-                //(UndoObj && UndoObj.xmlActionNode || extra.amlNode || apf)
-                if (this.dispatchEvent("error", apf.extend({
+                //(UndoObj && UndoObj.xmlActionNode || extra.amlNode || ppc)
+                if (this.dispatchEvent("error", ppc.extend({
                     error   : oError,
                     state   : state,
                     bubbles : true
@@ -853,7 +853,7 @@ apf.actiontracker = function(struct, tagName){
         }
         else {
             //Tell anyone that wants to hear about our success
-            this.dispatchEvent("actionsuccess", apf.extend(extra, {
+            this.dispatchEvent("actionsuccess", ppc.extend(extra, {
                 state   : state,
                 bubbles : true
             }, extra));
@@ -882,8 +882,8 @@ apf.actiontracker = function(struct, tagName){
 
             // #ifdef __WITH_OFFLINE_TRANSACTIONS
             //We want to maintain the stack for sync
-            if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled)
-                apf.offline.transactions.removeAction(this, true, "queue");
+            if (typeof ppc.offline != "undefined" && ppc.offline.transactions.enabled)
+                ppc.offline.transactions.removeAction(this, true, "queue");
             //#endif
 
             //#ifdef __WITH_RDB
@@ -904,7 +904,7 @@ apf.actiontracker = function(struct, tagName){
                 this.$execstack.unshift({
                     undoObj : (undoObj.tagName
                         ? undoObj
-                        : new apf.UndoData(undoObj, this)).preparse(undo, this),
+                        : new ppc.UndoData(undoObj, this)).preparse(undo, this),
                     undo   : undo
                 });
             }
@@ -926,8 +926,8 @@ apf.actiontracker = function(struct, tagName){
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
         //We want to maintain the stack for sync
-        if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled)
-            apf.offline.transactions.addAction(this, qItem, "queue");
+        if (typeof ppc.offline != "undefined" && ppc.offline.transactions.enabled)
+            ppc.offline.transactions.addAction(this, qItem, "queue");
         //#endif
 
         //The queue was empty, yay! we're gonna exec immediately
@@ -941,7 +941,7 @@ apf.actiontracker = function(struct, tagName){
             in release mode.
         */
         if (!this.$execstack[0] || this.$execstack[0].undoObj != UndoObj){
-            throw new Error(apf.formatErrorString(0, this, "Executing Next \
+            throw new Error(ppc.formatErrorString(0, this, "Executing Next \
                 action in queue", "The execution stack was corrupted. This is \
                 a fatal error. The application should be restarted. You will \
                 lose all your changes. Please contact the administrator."));
@@ -955,8 +955,8 @@ apf.actiontracker = function(struct, tagName){
 
         // #ifdef __WITH_OFFLINE_TRANSACTIONS
         //We want to maintain the stack for sync
-        if (typeof apf.offline != "undefined" && apf.offline.transactions.enabled)
-            apf.offline.transactions.removeAction(this, null, "queue");
+        if (typeof ppc.offline != "undefined" && ppc.offline.transactions.enabled)
+            ppc.offline.transactions.removeAction(this, null, "queue");
         //#endif
 
         //Check if there is a new action to execute;
@@ -1018,17 +1018,17 @@ apf.actiontracker = function(struct, tagName){
         this.$execstack[0].undoObj.saveChange(this.$execstack[0].undo, this, callback);
     };
     //#endif
-}).call(apf.actiontracker.prototype = new apf.AmlElement());
+}).call(ppc.actiontracker.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("actiontracker", apf.actiontracker);
+ppc.aml.setElement("actiontracker", ppc.actiontracker);
 
 /* #elseif __WITH_DATAACTION
-apf.actiontracker = function(){
+ppc.actiontracker = function(){
     this.execute = function(){
         //Execute action
-        var UndoObj = new apf.UndoData();
+        var UndoObj = new ppc.UndoData();
         if (options.action)
-            apf.actiontracker.actions[options.action](UndoObj, false, this);
+            ppc.actiontracker.actions[options.action](UndoObj, false, this);
         return UndoObj;
     };
 

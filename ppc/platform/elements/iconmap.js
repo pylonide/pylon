@@ -57,8 +57,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.iconmap = function(){
-    this.$init("iconmap", apf.NODE_HIDDEN);
+ppc.iconmap = function(){
+    this.$init("iconmap", ppc.NODE_HIDDEN);
 };
 
 (function(){
@@ -67,13 +67,13 @@ apf.iconmap = function(){
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //#ifdef __DEBUG
         if (!this.id) {
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Creating icon map",
                 "Could not create iconmap. Missing id attribute", this.$aml));
         }
         //#endif
 
-        apf.skins.addIconMap({
+        ppc.skins.addIconMap({
             name   : this.id,
             src    : this.src,
             type   : this.type,
@@ -83,8 +83,8 @@ apf.iconmap = function(){
             offset : (this.offset || "0,0").splitSafe(",")
         });
     });
-}).call(apf.iconmap.prototype = new apf.AmlElement());
+}).call(ppc.iconmap.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("iconmap", apf.iconmap);
+ppc.aml.setElement("iconmap", ppc.iconmap);
 
 // #endif

@@ -39,7 +39,7 @@
  *  </a:statusbar>
  * ```
  *
- * @class apf.statusbar
+ * @class ppc.statusbar
  * @define statusbar
  * @container
  * @allowchild bar
@@ -50,8 +50,8 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-apf.statusbar = function(struct, tagName){
-    this.$init(tagName || "statusbar", apf.NODE_VISIBLE, struct);
+ppc.statusbar = function(struct, tagName){
+    this.$init(tagName || "statusbar", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -71,7 +71,7 @@ apf.statusbar = function(struct, tagName){
             return;
         
         amlNode.$propHandlers["caption"] = function(value){
-            apf.setNodeValue(
+            ppc.setNodeValue(
                 this.$getLayoutNode("bar", "caption", this.$ext), value);
         }
         amlNode.$propHandlers["icon"] = function(value){
@@ -113,7 +113,7 @@ apf.statusbar = function(struct, tagName){
             }
         }
     };
-}).call(apf.statusbar.prototype = new apf.Presentation());
+}).call(ppc.statusbar.prototype = new ppc.Presentation());
 
-apf.aml.setElement("statusbar", apf.statusbar);
+ppc.aml.setElement("statusbar", ppc.statusbar);
 // #endif

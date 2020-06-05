@@ -37,7 +37,7 @@
  * @private
  */
 
-apf.textbox.autocomplete = function(){
+ppc.textbox.autocomplete = function(){
     /*
         missing features:
         - web service based autocomplete
@@ -53,7 +53,7 @@ apf.textbox.autocomplete = function(){
         autocomplete.sort      = ac.getAttribute("sort");
         autocomplete.lastStart = -1;
         
-        this.oContainer = apf.insertHtmlNode(this.$getLayoutNode("container"),
+        this.oContainer = ppc.insertHtmlNode(this.$getLayoutNode("container"),
             this.$ext.parentNode, this.$ext.nextSibling);	
     };
     
@@ -108,7 +108,7 @@ apf.textbox.autocomplete = function(){
                 //Get data from model
                 var nodes = self[autocomplete.nodeset[0]].data.selectNodes(autocomplete.nodeset[1]);
                 for(var value, suggestData = [], i = 0; i < nodes.length; i++) {
-                    value = apf.queryValue(nodes[i], autocomplete.value);
+                    value = ppc.queryValue(nodes[i], autocomplete.value);
                     if (value)
                         suggestData.push(value.toLowerCase());
                 }
@@ -139,13 +139,13 @@ apf.textbox.autocomplete = function(){
         for (var arr = [], j = start; j < Math.min(start + autocomplete.count, suggestData.length); j++) {
             this.$getNewContext("item")
             var oItem = this.$getLayoutNode("item");
-            apf.setNodeValue(this.$getLayoutNode("item", "caption"), suggestData[j]);
+            ppc.setNodeValue(this.$getLayoutNode("item", "caption"), suggestData[j]);
             
             oItem.setAttribute("onmouseover", 'this.className = "hover"');
             oItem.setAttribute("onmouseout",  'this.className = ""');
             oItem.setAttribute("onmousedown", 'event.cancelBubble = true');
             oItem.setAttribute("onclick",
-               "var o = apf.lookup(" + this.$uniqueId + ");\
+               "var o = ppc.lookup(" + this.$uniqueId + ");\
                 o.$int.value = this.innerHTML;\
                 o.change(this.innerHTML);\
                 o.$int.select();\
@@ -154,7 +154,7 @@ apf.textbox.autocomplete = function(){
             
             arr.push(this.$getLayoutNode("item"));
         }
-        apf.insertHtmlNode(arr, this.oContainer);
+        ppc.insertHtmlNode(arr, this.oContainer);
         
         this.oContainer.style.display = "block";
     };

@@ -57,10 +57,10 @@
  * #### Remarks
  *
  * This component is used in the accordion element to create its sections. In
- * the `apf.statusbar`, the panel element is an alias of [[apf.bar]].
+ * the `ppc.statusbar`, the panel element is an alias of [[ppc.bar]].
  *
- * @class apf.bar
- * @inherits apf.Presentation
+ * @class ppc.bar
+ * @inherits ppc.Presentation
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
@@ -81,16 +81,16 @@
 /**
  * @attribute {String} title  Sets or gets the title string
  */
-apf.section = function(struct, tagName){
-    this.$init(tagName || "section", apf.NODE_VISIBLE, struct);
+ppc.section = function(struct, tagName){
+    this.$init(tagName || "section", ppc.NODE_VISIBLE, struct);
 };
 
-apf.menubar = function(struct, tagName){
-    this.$init(tagName || "menubar", apf.NODE_VISIBLE, struct);
+ppc.menubar = function(struct, tagName){
+    this.$init(tagName || "menubar", ppc.NODE_VISIBLE, struct);
 };
 
-apf.bar     = function(struct, tagName){
-    this.$init(tagName || "bar", apf.NODE_VISIBLE, struct);
+ppc.bar     = function(struct, tagName){
+    this.$init(tagName || "bar", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -102,7 +102,7 @@ apf.bar     = function(struct, tagName){
         this.$int.innerHTML = value;
     }
     
-    //@todo apf3.0 refactor
+    //@todo ppc3.0 refactor
     this.addEventListener("AMLReparent", 
         function(beforeNode, pNode, withinParent){
             if (!this.$amlLoaded)
@@ -146,13 +146,13 @@ apf.bar     = function(struct, tagName){
         
     }
     //#endif*/
-}).call(apf.bar.prototype = new apf.Presentation());
+}).call(ppc.bar.prototype = new ppc.Presentation());
 
-apf.menubar.prototype = 
-apf.section.prototype = apf.bar.prototype;
+ppc.menubar.prototype = 
+ppc.section.prototype = ppc.bar.prototype;
 
-apf.aml.setElement("bar", apf.bar);
-apf.aml.setElement("menubar", apf.menubar);
-apf.aml.setElement("section", apf.section);
+ppc.aml.setElement("bar", ppc.bar);
+ppc.aml.setElement("menubar", ppc.menubar);
+ppc.aml.setElement("section", ppc.section);
 
 // #endif

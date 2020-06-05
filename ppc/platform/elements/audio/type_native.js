@@ -34,7 +34,7 @@
  * @since       1.0
  */
 
-apf.audio.TypeNative = function(oAudio, oNode, options) {
+ppc.audio.TypeNative = function(oAudio, oNode, options) {
     this.oAudio = oAudio;
 
     this.inited = false;
@@ -50,16 +50,16 @@ apf.audio.TypeNative = function(oAudio, oNode, options) {
 
     // Initialize player
     this.player       = null;
-    apf.extend(this, apf.audio.TypeInterface);
+    ppc.extend(this, ppc.audio.TypeInterface);
 
     this.setOptions(options).createPlayer();
 };
 
-apf.audio.TypeNative.isSupported = function() {
-    return apf.hasAudio;
+ppc.audio.TypeNative.isSupported = function() {
+    return ppc.hasAudio;
 };
 
-apf.audio.TypeNative.prototype = {
+ppc.audio.TypeNative.prototype = {
     /**
      * Load an audio file.
      *
@@ -244,7 +244,7 @@ apf.audio.TypeNative.prototype = {
                 break;
             case "init":
                 this.inited = true;
-                this.oAudio.$initHook(apf.extend(evtObj, apf.flash.getSandbox(evtObj.sandboxType)));
+                this.oAudio.$initHook(ppc.extend(evtObj, ppc.flash.getSandbox(evtObj.sandboxType)));
                 break;
             case "id3":
                 this.oAudio.$metadataHook({
@@ -253,7 +253,7 @@ apf.audio.TypeNative.prototype = {
                 });
                 break;
             case "debug":
-                apf.console.log(">> SWF DBUG: " + evtObj.msg);
+                ppc.console.log(">> SWF DBUG: " + evtObj.msg);
                 break;
         }
     },
@@ -315,7 +315,7 @@ apf.audio.TypeNative.prototype = {
             _self.oAudio.$completeHook({type:"complete"});
         }, false);
         a.addEventListener("error", function(e) {
-            throw new Error(apf.formatErrorString(0, _self, "Audio playback",
+            throw new Error(ppc.formatErrorString(0, _self, "Audio playback",
                 e.message, _self.oAudio));
         }, false);
 

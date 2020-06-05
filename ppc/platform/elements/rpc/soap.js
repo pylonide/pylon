@@ -24,7 +24,7 @@
 /**
  * Implementation of the SOAP RPC protocol.
  * Implementation of the Common Gateway Interface (CGI) as a module for the RPC
- * plugin of apf.teleport. 
+ * plugin of ppc.teleport. 
  * Example:
  * Ajax.org Markup Language
  * <code>
@@ -66,7 +66,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.soap = function(){
+ppc.soap = function(){
     this.supportMulticall = false;
     this.method           = "POST";
     this.useXML           = true;
@@ -159,10 +159,10 @@ apf.soap = function(){
     this.getXSIType = function(c){
         if (!c.dataType)
             return '';
-        else if (c.dataType == apf.ARRAY)
+        else if (c.dataType == ppc.ARRAY)
             return 'xsi:type="SOAP-ENC:Array" SOAP-ENC:arrayType="xsd:ur-type['
                 + c.length + ']"';
-        else if (c.dataType == apf.NUMBER)
+        else if (c.dataType == ppc.NUMBER)
             return 'xsi:type="' + (parseInt(c) == c ? "xsd:int" : "xsd:float")
                 + '"';
         else if (c.dataType == "data")
@@ -224,7 +224,7 @@ apf.soap = function(){
                 19980717T14:08:55
                 */
 
-                var sn = apf.dateSeparator;
+                var sn = ppc.dateSeparator;
 
                 if (/^(\d{4})(\d{2})(\d{2})T(\d{2}):(\d{2}):(\d{2})/
                   .test(data.firstChild.nodeValue)){//data.text)){
@@ -242,7 +242,7 @@ apf.soap = function(){
                     : parseInt(data.firstChild.nodeValue))
                 break;
             case "SOAP-ENC:base64":
-                return apf.crypt.Base64.decode(data.firstChild.nodeValue);
+                return ppc.crypt.Base64.decode(data.firstChild.nodeValue);
                 break;
             case "SOAP-ENC:Array":
                 nodes = data.childNodes;
@@ -259,7 +259,7 @@ apf.soap = function(){
             default:
                 //Custom Type
                 if (type && !self[type]) {
-                    throw new Error(apf.formatErrorString(1084, null, "SOAP", 
+                    throw new Error(ppc.formatErrorString(1084, null, "SOAP", 
                         "Invalid Object Specified in SOAP message: " + type));
                 }
 
@@ -297,7 +297,7 @@ apf.soap = function(){
         var data = extra.data;
 
         // IE Hack
-        if (!apf.supportNamespaces)
+        if (!ppc.supportNamespaces)
             data.ownerDocument.setProperty("SelectionNamespaces",
                 "xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xmlns:xds='http://www.w3.org/2001/XMLSchema' xmlns:SOAP-ENV='http://schemas.xmlsoap.org/soap/envelope/'");
 

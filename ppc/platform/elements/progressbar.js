@@ -94,13 +94,13 @@
  * </a:application>
  * ```
  * 
- * @class apf.progressbar
+ * @class ppc.progressbar
  * @define progressbar
  * @allowchild {smartbinding}
  *
  * @form
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
  * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -130,16 +130,16 @@
  *  <a:progressbar value="[mdlProgress::@progress]" />
  * ```
  */
-apf.progress    = function(struct, tagName){
-    this.$init(tagName || "progress", apf.NODE_VISIBLE, struct);
+ppc.progress    = function(struct, tagName){
+    this.$init(tagName || "progress", ppc.NODE_VISIBLE, struct);
 };
-apf.progressbar = function(struct, tagName){
-    this.$init(tagName || "progressbar", apf.NODE_VISIBLE, struct);
+ppc.progressbar = function(struct, tagName){
+    this.$init(tagName || "progressbar", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     //#ifdef __WITH_DATAACTION
-    this.implement(apf.DataAction);
+    this.implement(ppc.DataAction);
     //#endif
 
     this.$focussable = false; // This object can get the focus
@@ -172,12 +172,12 @@ apf.progressbar = function(struct, tagName){
         this.value = parseInt(value) || this.min;
 
         if (this.value >= this.max)
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Complete", [this.$baseCSSname + "Running", this.$baseCSSname + "Half"]);
+            ppc.setStyleClass(this.$ext, this.$baseCSSname + "Complete", [this.$baseCSSname + "Running", this.$baseCSSname + "Half"]);
         else
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Running", [this.$baseCSSname + "Complete"]);
+            ppc.setStyleClass(this.$ext, this.$baseCSSname + "Running", [this.$baseCSSname + "Complete"]);
             
         if (this.value >= this.max / 2)
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Half", []);
+            ppc.setStyleClass(this.$ext, this.$baseCSSname + "Half", []);
 
         this.oSlider.style.width = (this.value * 100 / (this.max - this.min)) + "%"
         
@@ -239,7 +239,7 @@ apf.progressbar = function(struct, tagName){
         clearInterval(this.$timer);
         this.setValue(this.min);
         //this.oSlider.style.display = "none";
-        apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Running", this.$baseCSSname + "Complete"]);
+        ppc.setStyleClass(this.$ext, "", [this.$baseCSSname + "Running", this.$baseCSSname + "Complete"]);
 
         if (restart) {
             var _self = this;
@@ -327,13 +327,13 @@ apf.progressbar = function(struct, tagName){
             this.hide();
     };
 // #ifdef __WITH_DATABINDING
-}).call(apf.progressbar.prototype = new apf.StandardBinding());
+}).call(ppc.progressbar.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.progressbar.prototype = new apf.Presentation());
+}).call(ppc.progressbar.prototype = new ppc.Presentation());
 #endif */
 
-apf.progress.prototype = apf.progressbar.prototype;
+ppc.progress.prototype = ppc.progressbar.prototype;
 
-apf.aml.setElement("progress",    apf.progress);
-apf.aml.setElement("progressbar", apf.progressbar);
+ppc.aml.setElement("progress",    ppc.progress);
+ppc.aml.setElement("progressbar", ppc.progressbar);
 // #endif

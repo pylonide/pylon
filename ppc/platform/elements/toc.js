@@ -33,15 +33,15 @@
  * @define toc
  *
  *
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  * @todo test if this element still works with the refactored basetab
  *    
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.toc = function(struct, tagName){
-    this.$init(tagName || "toc", apf.NODE_VISIBLE, struct);
+ppc.toc = function(struct, tagName){
+    this.$init(tagName || "toc", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -112,7 +112,7 @@ apf.toc = function(struct, tagName){
         $setTimeout(function(){
             _self.$represent.set(nr);
         }, 1);
-        //setTimeout("apf.lookup(" + this.$represent.$uniqueId + ").set(" + nr + ");", 1);
+        //setTimeout("ppc.lookup(" + this.$represent.$uniqueId + ").set(" + nr + ");", 1);
     };
     
     // *** Private Methods *** //
@@ -165,26 +165,26 @@ apf.toc = function(struct, tagName){
             oPage    = this.$getLayoutNode("page");
             this.$setStyleClass(oPage, "page" + i);
             
-            oPage.setAttribute("onmouseover", 'apf.lookup(' + this.$uniqueId 
+            oPage.setAttribute("onmouseover", 'ppc.lookup(' + this.$uniqueId 
                 + ').$setStyleClass(this, "hover", null, true);');
-            oPage.setAttribute("onmouseout", 'apf.lookup(' + this.$uniqueId 
+            oPage.setAttribute("onmouseout", 'ppc.lookup(' + this.$uniqueId 
                 + ').$setStyleClass(this, "", ["hover"], true);');
             
             if(!pages[i].getAttribute("caption")){
                 // #ifdef __DEBUG
-                apf.console.warn("Page element without caption found.");
+                ppc.console.warn("Page element without caption found.");
                 // #endif
                 //continue;
             }
             else {
-                apf.setNodeValue(oCaption, 
+                ppc.setNodeValue(oCaption, 
                     pages[i].getAttribute("caption") || "");
             }
 
             oPage.setAttribute("onmousedown", "setTimeout(function(){\
-                    apf.lookup(" + this.$uniqueId + ").gotoPage(" + i + ", true);\
+                    ppc.lookup(" + this.$uniqueId + ").gotoPage(" + i + ", true);\
                 });");
-            p.push(apf.insertHtmlNode(oPage, this.$int));
+            p.push(ppc.insertHtmlNode(oPage, this.$int));
             l[i] = p[p.length - 1];
         }
         
@@ -195,7 +195,7 @@ apf.toc = function(struct, tagName){
         this.$setActivePage(0);
         
         //#ifdef __SUPPORT_GECKO
-        if (apf.isGecko) {
+        if (ppc.isGecko) {
             var tocNode = this;
             $setTimeout(function(){
                 tocNode.$ext.style.height = tocNode.$ext.offsetHeight + 1 + "px";
@@ -217,14 +217,14 @@ apf.toc = function(struct, tagName){
     // #ifdef __DEBUG
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         if (!this.represent) {
-            throw new Error(apf.formatErrorString(1013, this, 
+            throw new Error(ppc.formatErrorString(1013, this, 
                 "Find representation", 
                 "Could not find representation for the Toc: '" 
                 + this.name + "'", this));
         }
     });
     // #endif
-}).call(apf.toc.prototype = new apf.Presentation());
+}).call(ppc.toc.prototype = new ppc.Presentation());
 
-apf.aml.setElement("toc", apf.toc);
+ppc.aml.setElement("toc", ppc.toc);
 // #endif
