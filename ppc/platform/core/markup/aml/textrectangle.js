@@ -20,7 +20,7 @@
  */
 
 // #ifdef __WITH_AMLTEXTRECTANGLE
-apf.AmlTextRectangle = function(host){
+ppc.AmlTextRectangle = function(host){
     var _self = this;
     function handler(){
         var pos = _self.getAbsolutePosition(_self.$ext);
@@ -37,5 +37,5 @@ apf.AmlTextRectangle = function(host){
 
     handler.call(host);
 };
-apf.AmlTextRectangle.prototype = new apf.Class();
+ppc.AmlTextRectangle.prototype = new ppc.Class();
 // #endif

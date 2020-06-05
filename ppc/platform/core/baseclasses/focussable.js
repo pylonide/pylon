@@ -19,19 +19,19 @@
  *
  */
 
-apf.__FOCUSSABLE__ = 1 << 26;
+ppc.__FOCUSSABLE__ = 1 << 26;
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have focussable
  * features
  * 
- * @class apf.Focussable
+ * @class ppc.Focussable
  * @baseclass
  * 
  */
 //#ifdef __WITH_FOCUS
-apf.Focussable = function(){
-    this.$regbase = this.$regbase | apf.__FOCUSSABLE__;
+ppc.Focussable = function(){
+    this.$regbase = this.$regbase | ppc.__FOCUSSABLE__;
     if (this.disabled == undefined)
         this.disabled = false;
     
@@ -42,8 +42,8 @@ apf.Focussable = function(){
      * @param {Number} tabindex The position in the list
      */
     this.setTabIndex = function(tabindex){
-        apf.window.$removeFocus(this);
-        apf.window.$addFocus(this, tabindex);
+        ppc.window.$removeFocus(this);
+        ppc.window.$addFocus(this, tabindex);
         return this;
     };
 
@@ -55,24 +55,24 @@ apf.Focussable = function(){
     this.focus = function(noset, e, nofix){
         if (!noset) {
             if (this.$isWindowContainer > -1) {
-                apf.window.$focusLast(this, e, true);
+                ppc.window.$focusLast(this, e, true);
             }
             else {
-                apf.window.$focus(this, e);
+                ppc.window.$focus(this, e);
 
                 //#ifdef __WITH_WINDOW_FOCUS
-                if (!nofix && apf.hasFocusBug)
-                    apf.window.$focusfix();
+                if (!nofix && ppc.hasFocusBug)
+                    ppc.window.$focusfix();
                 //#endif
             }
 
             return this;
         }
 
-        if (this.$focus && !this.editable && (!e || !e.mouse || this.$focussable == apf.KEYBOARD_MOUSE))
+        if (this.$focus && !this.editable && (!e || !e.mouse || this.$focussable == ppc.KEYBOARD_MOUSE))
             this.$focus(e);
 
-        this.dispatchEvent("focus", apf.extend({
+        this.dispatchEvent("focus", ppc.extend({
             bubbles    : true
         }, e));
         return this;
@@ -84,17 +84,17 @@ apf.Focussable = function(){
      */
     this.blur = function(noset, e){
         //#ifdef __WITH_POPUP
-        if ((e && !apf.isChildOf(e.fromElement, e.toElement)) && apf.popup.isShowing(this.$uniqueId))
-            apf.popup.forceHide(); //This should be put in a more general position
+        if ((e && !ppc.isChildOf(e.fromElement, e.toElement)) && ppc.popup.isShowing(this.$uniqueId))
+            ppc.popup.forceHide(); //This should be put in a more general position
         //#endif
         
         if (this.$blur)
             this.$blur(e);
 
         if (!noset)
-            apf.window.$blur(this);
+            ppc.window.$blur(this);
 
-        this.dispatchEvent("blur", apf.extend({
+        this.dispatchEvent("blur", ppc.extend({
             bubbles    : !e || !e.cancelBubble
         }, e));
         return this;
@@ -105,8 +105,8 @@ apf.Focussable = function(){
      * @returns {Boolean} Indicates whether this element has the focus
      */
     this.hasFocus = function(){
-        return apf.document.activeElement == this || this.$isWindowContainer
-            && (apf.document.activeElement || {}).$focusParent == this;
+        return ppc.document.activeElement == this || this.$isWindowContainer
+            && (ppc.document.activeElement || {}).$focusParent == this;
     };
 };
 

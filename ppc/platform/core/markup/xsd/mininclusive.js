@@ -23,8 +23,8 @@
 /**
  * Specifies the lower bounds for numeric values (the value must be greater than or equal to this value)
  */
-apf.XsdMinInclusive = function(struct, tagName){
-    this.$init(tagName || "mininclusive", apf.NODE_HIDDEN, struct);
+ppc.XsdMinInclusive = function(struct, tagName){
+    this.$init(tagName || "mininclusive", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -35,7 +35,7 @@ apf.XsdMinInclusive = function(struct, tagName){
     this.$compile = function(stack){
         stack.push("if (parseFloat(value) < " + this.value + ") return false;");
     };
-}).call(apf.XsdMinInclusive.prototype = new apf.XsdElement());
+}).call(ppc.XsdMinInclusive.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("mininclusive", apf.XsdMinInclusive);
+ppc.xsd.setElement("mininclusive", ppc.XsdMinInclusive);
 //#endif

@@ -25,7 +25,7 @@
 //		Storage provider that uses features in the Adobe AIR runtime to achieve
 //		permanent storage
 
-apf.storage.modules['air.file'] = {
+ppc.storage.modules['air.file'] = {
     initialized: false,
 	
     init: function(){
@@ -33,8 +33,8 @@ apf.storage.modules['air.file'] = {
         this.FileStream = window.runtime.flash.filesystem.FileStream;
         this.FileMode = window.runtime.flash.filesystem.FileMode;
         
-        this.storagePath = "__APF_" + (apf.config.name
-            ? apf.config.name.toUpperCase()
+        this.storagePath = "__PPC_" + (ppc.config.name
+            ? ppc.config.name.toUpperCase()
             : "STORAGE") + "/";
 
         // need to initialize our storage directory
@@ -45,19 +45,19 @@ apf.storage.modules['air.file'] = {
             this.initialized = true;
         }
         catch(e) {
-            apf.console.warn(e.message);
+            ppc.console.warn(e.message);
             return false;
         }
     },
 
     isAvailable: function(){
-        return apf.isAIR;
+        return ppc.isAIR;
     },
 	
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting name/value pair",
                 "Invalid key given: " + key));
         //#endif
@@ -67,7 +67,7 @@ apf.storage.modules['air.file'] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting name/value pair",
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -88,7 +88,7 @@ apf.storage.modules['air.file'] = {
         } 
         catch(e) {
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting name/value pair",
                 "Error writing file: " + e.message));
             //#endif
@@ -102,7 +102,7 @@ apf.storage.modules['air.file'] = {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting name/value pair",
                 "Invalid key given: " + key));
         //#endif
@@ -112,7 +112,7 @@ apf.storage.modules['air.file'] = {
 		
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting name/value pair",
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -147,7 +147,7 @@ apf.storage.modules['air.file'] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Clearing storage",
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -168,7 +168,7 @@ apf.storage.modules['air.file'] = {
 	    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Clearing storage",
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -184,7 +184,7 @@ apf.storage.modules['air.file'] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Removing key",
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -199,7 +199,7 @@ apf.storage.modules['air.file'] = {
         if (this.isValidKeyArray(keys) === false
             || ! values instanceof Array
             || keys.length != values.length){
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting multiple name/value pairs",
                 "Invalid arguments: keys = [" + keys + "], values = [" + values + "]"));
         }
@@ -210,7 +210,7 @@ apf.storage.modules['air.file'] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting multiple name/value pairs",
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -222,7 +222,7 @@ apf.storage.modules['air.file'] = {
         }
         catch(e) {
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Writing multiple name/value pair",
                 "Error writing file: " + e.message));
             //#endif
@@ -235,7 +235,7 @@ apf.storage.modules['air.file'] = {
     getMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting name/value pair",
                 "Invalid key array given: " + keys));
         //#endif
@@ -245,7 +245,7 @@ apf.storage.modules['air.file'] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting multiple name/value pairs",
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -260,7 +260,7 @@ apf.storage.modules['air.file'] = {
     removeMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Removing name/value pair",
                 "Invalid key array given: " + keys));
         //#endif
@@ -270,7 +270,7 @@ apf.storage.modules['air.file'] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Removing multiple name/value pairs",
                 "Invalid namespace given: " + namespace));
         //#endif

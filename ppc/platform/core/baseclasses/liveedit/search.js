@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_SEARCH || __INC_ALL
 
-apf.LiveEdit.searchPlugin = function(sName) {
+ppc.LiveEdit.searchPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.keyBinding  = this.name == "search" ? "ctrl+f" : "ctrl+shift+f";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ apf.LiveEdit.searchPlugin = function(sName) {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -72,7 +72,7 @@ apf.LiveEdit.searchPlugin = function(sName) {
         if (!val)
             return;
 
-        if (apf.isIE)
+        if (ppc.isIE)
             this.editor.$selection.set();
         //this.editor.$execCommand("SelectAll");
         this.editor.$selection.collapse(false);
@@ -83,7 +83,7 @@ apf.LiveEdit.searchPlugin = function(sName) {
 
         var found = false;
 
-        if (apf.isIE) {
+        if (ppc.isIE) {
             var sel   = this.editor.$selection;
             var range = sel.getRange();
             if (!(found = range.findText(val, 1, flag))) {
@@ -121,7 +121,7 @@ apf.LiveEdit.searchPlugin = function(sName) {
         else
             e.cancelBubble = true;
 
-        if (!apf.isIE) {
+        if (!ppc.isIE) {
             // IE cannot show the selection anywhere else then where the cursor
             // is, so no show for them users...
             var _self = this;
@@ -153,7 +153,7 @@ apf.LiveEdit.searchPlugin = function(sName) {
         if (bMatchCase) //IE specific flagging
             flag = flag | 4;
 
-        if (apf.isIE) {
+        if (ppc.isIE) {
             while (range.findText(val, 1, flag)) {
                 range.scrollIntoView();
                 range.select();
@@ -179,7 +179,7 @@ apf.LiveEdit.searchPlugin = function(sName) {
     this.replace = function() {
         var sRepl = this.oReplace.value;
         // Needs to be duplicated due to selection bug in IE
-        if (apf.isIE) {
+        if (ppc.isIE) {
             //this.editor.$selection.set(); //Change by RLD
             this.editor.$selection.getRange().duplicate().pasteHTML(sRepl);
         }
@@ -214,28 +214,28 @@ apf.LiveEdit.searchPlugin = function(sName) {
         this.oSearch = document.getElementById(idSearch);
         this.oCase   = document.getElementById(idCase);
         
-        new apf.toolbar({
+        new ppc.toolbar({
             htmlNode: document.getElementById(idBtns),
-            skinset: apf.getInheritedAttribute(this.editor.parentNode, "skinset"),
+            skinset: ppc.getInheritedAttribute(this.editor.parentNode, "skinset"),
             childNodes: [
-                new apf.bar({
+                new ppc.bar({
                     childNodes: this.name == "search"
-                        ? [new apf.button({
+                        ? [new ppc.button({
                                caption: this.editor.$translate("findnext"),
-                               onclick: "apf.lookup(" + this.$uniqueId + ").submit(event)"
+                               onclick: "ppc.lookup(" + this.$uniqueId + ").submit(event)"
                            })]
                         : [
-                              new apf.button({
+                              new ppc.button({
                                   caption: this.editor.$translate("findnext"),
-                                  onclick: "apf.lookup(" + this.$uniqueId + ").submit(event)"
+                                  onclick: "ppc.lookup(" + this.$uniqueId + ").submit(event)"
                               }),
-                              (this.oReplBtn = new apf.button({
+                              (this.oReplBtn = new ppc.button({
                                   caption: this.editor.$translate("doreplace"),
-                                  onclick: "apf.lookup(" + this.$uniqueId + ").onDoReplClick(event)"
+                                  onclick: "ppc.lookup(" + this.$uniqueId + ").onDoReplClick(event)"
                               })),
-                              (this.oReplAllBtn = new apf.button({
+                              (this.oReplAllBtn = new ppc.button({
                                   caption: this.editor.$translate("replaceall"),
-                                  onclick: "apf.lookup(" + this.$uniqueId + ").onReplAllClick(event)"
+                                  onclick: "ppc.lookup(" + this.$uniqueId + ").onReplAllClick(event)"
                               }))
                           ]
                 })
@@ -248,19 +248,19 @@ apf.LiveEdit.searchPlugin = function(sName) {
         }
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug) {
+        if (ppc.hasFocusBug) {
             var fSel = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
             };
-            apf.sanitizeTextbox(this.oSearch);
+            ppc.sanitizeTextbox(this.oSearch);
             this.oSearch.onselectstart = fSel;
             if (this.oReplace) {
-                apf.sanitizeTextbox(this.oReplace);
+                ppc.sanitizeTextbox(this.oReplace);
                 this.oReplace.onselectstart = fSel;
             }
             // checkboxes also need the focus fix:
-            apf.sanitizeTextbox(this.oCase);
+            ppc.sanitizeTextbox(this.oCase);
         }
         //#endif
 
@@ -281,7 +281,7 @@ apf.LiveEdit.searchPlugin = function(sName) {
     };
 };
 
-apf.LiveEdit.plugin("search",  apf.LiveEdit.searchPlugin);
-apf.LiveEdit.plugin("replace", apf.LiveEdit.searchPlugin);
+ppc.LiveEdit.plugin("search",  ppc.LiveEdit.searchPlugin);
+ppc.LiveEdit.plugin("replace", ppc.LiveEdit.searchPlugin);
 
 // #endif

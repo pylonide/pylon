@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-apf.LiveEdit.plugin("fontstyle", function() {
+ppc.LiveEdit.plugin("fontstyle", function() {
     this.name         = "fontstyle";
     this.icon         = "fontstyle";
-    this.type         = apf.TOOLBARITEM;
-    this.subType      = apf.TOOLBARPANEL;
+    this.type         = ppc.TOOLBARITEM;
+    this.subType      = ppc.TOOLBARPANEL;
     this.hook         = "ontoolbar";
     this.buttonNode   = null;
-    this.state        = apf.OFF;
+    this.state        = ppc.OFF;
 
     var panelBody, oStyles = null, oEditor = null;
 
@@ -38,7 +38,7 @@ apf.LiveEdit.plugin("fontstyle", function() {
             var node, aCss, bCss, oNode = editor.$getPluginOption("fontstyles");
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
-                throw new Error(apf.formatErrorString(0, editor,
+                throw new Error(ppc.formatErrorString(0, editor,
                     "Initializing plugin: fontstyle",
                     "No fontstyle block found in skin definition"));
             // #endif
@@ -53,7 +53,7 @@ apf.LiveEdit.plugin("fontstyle", function() {
                         function (m, caption, css, className) {
                             // #ifdef __DEBUG
                             if (!css || css.charAt(css.length - 1) != "}")
-                                throw new Error(apf.formatErrorString(0, editor,
+                                throw new Error(ppc.formatErrorString(0, editor,
                                     "Initializing plugin: fontstyle",
                                     "Invalid fontstyle block, please check if formatting rules have been applied"));
                             // #endif
@@ -77,9 +77,9 @@ apf.LiveEdit.plugin("fontstyle", function() {
             if (aCss.length) {
                 // insert resulting CSS into container document AND inside the
                 // document of the editor's iframe
-                apf.importCssString(bCss.join(""));
-                apf.importCssString(aCss.join(""), editor.$activeDocument);
-                if (apf.isIE) {
+                ppc.importCssString(bCss.join(""));
+                ppc.importCssString(aCss.join(""), editor.$activeDocument);
+                if (ppc.isIE) {
                     // removing text nodes from the HEAD section, which are added
                     // by IE in some cases.
                     var nodes = editor.$activeDocument.getElementsByTagName("head")[0].childNodes,
@@ -111,7 +111,7 @@ apf.LiveEdit.plugin("fontstyle", function() {
         if (!panelBody) {
             oEditor = editor;
 
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody(editor));
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody(editor));
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -155,7 +155,7 @@ apf.LiveEdit.plugin("fontstyle", function() {
         }
 
         if (sStyle) {
-            apf.popup.forceHide();
+            ppc.popup.forceHide();
             var sel = oEditor.$selection;
 
             sel.set();
@@ -174,13 +174,13 @@ apf.LiveEdit.plugin("fontstyle", function() {
             }
             else if (o && (sel.isCollapsed() 
               || sel.getContent("text") == o.node.innerHTML)
-              && apf.isChildOf(o.node, sel.getSelectedNode(), true)) {
+              && ppc.isChildOf(o.node, sel.getSelectedNode(), true)) {
                 if (o.cname == sStyle) return;
-                apf.setStyleClass(o.node, sStyle, [o.cname]);
+                ppc.setStyleClass(o.node, sStyle, [o.cname]);
             }
             else {
                 if (sel.isCollapsed()) {
-                    if (apf.isIE) {
+                    if (ppc.isIE) {
                         var oNode = sel.getRange().parentElement();
                         var p = oEditor.$activeDocument.createElement("span");
                         p.className = sStyle;
@@ -220,7 +220,7 @@ apf.LiveEdit.plugin("fontstyle", function() {
                                 return (m1 ? '<span class="' + sStyle + '">' + m1 + "</span>" : "") + m2 + (m3 ? '<span class="' + sStyle + '">' + m3 + "</span>" : "");
                             })
                           .replace(/^\s*<(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)(?:\s.*?|)>|<\/(?:normal|pre|p|address|h1|h2|h3|h4|h5|h6)>\s*$/gi, "");
-                        if (apf.isIE) 
+                        if (ppc.isIE) 
                             s = s.replace(/<\/P>/, "");
                     }
                     else {
@@ -250,11 +250,11 @@ apf.LiveEdit.plugin("fontstyle", function() {
         if (o) {
             if (this.stylePreview.innerHTML != o.caption)
                 this.stylePreview.innerHTML = o.caption;
-            this.state = apf.ON;
+            this.state = ppc.ON;
         }
         else {
             this.stylePreview.innerHTML = "Style";
-            this.state = apf.OFF;
+            this.state = ppc.OFF;
         }
 
         return this.state;
@@ -267,11 +267,11 @@ apf.LiveEdit.plugin("fontstyle", function() {
 
         getStyles(editor);
         var aHtml = ['<a class="editor_panelcell editor_fontstyle" rel="normal" \
-            href="javascript:;" onmouseup="apf.lookup(', this.$uniqueId, 
+            href="javascript:;" onmouseup="ppc.lookup(', this.$uniqueId, 
             ').submit(event);"><span>Normal</span></a>'];
         for (var i in oStyles) {
             aHtml.push('<a class="editor_panelcell editor_fontstyle" rel="',
-                i, '" href="javascript:;" onmousedown="apf.lookup(',
+                i, '" href="javascript:;" onmousedown="ppc.lookup(',
                 this.$uniqueId, ').submit(event);"><span class="', i, '">',
                 oStyles[i].caption, "</span></a>")
         }
@@ -290,14 +290,14 @@ apf.LiveEdit.plugin("fontstyle", function() {
 
 //##############################################################################
 
-apf.LiveEdit.plugin("blockformat", function() {
+ppc.LiveEdit.plugin("blockformat", function() {
     this.name         = "blockformat";
     this.icon         = "blockformat";
-    this.type         = apf.TOOLBARITEM;
-    this.subType      = apf.TOOLBARPANEL;
+    this.type         = ppc.TOOLBARITEM;
+    this.subType      = ppc.TOOLBARPANEL;
     this.hook         = "ontoolbar";
     this.buttonNode   = null;
-    this.state        = apf.OFF;
+    this.state        = ppc.OFF;
     this.node         = null;
 
     var panelBody, oEditor,
@@ -323,7 +323,7 @@ apf.LiveEdit.plugin("blockformat", function() {
             var i, j, node, oNode = editor.$getPluginOption("blockformats");
             // #ifdef __DEBUG
             if (!oNode || !oNode.childNodes)
-                throw new Error(apf.formatErrorString(0, editor,
+                throw new Error(ppc.formatErrorString(0, editor,
                     "Initializing plugin: Blockformat",
                     "No block formats found in skin definition"));
             // #endif
@@ -357,7 +357,7 @@ apf.LiveEdit.plugin("blockformat", function() {
         if (!panelBody) {
             oEditor = editor;
 
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody(editor));
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody(editor));
         }
         oEditor.$showPopup(this, this.$uniqueId, this.buttonNode, 203);
         //return button id, icon and action:
@@ -384,12 +384,12 @@ apf.LiveEdit.plugin("blockformat", function() {
             var sBlock = blocksMap[tagName];
             if (this.blockPreview.innerHTML != sBlock)
                 this.blockPreview.innerHTML = sBlock;
-            this.state = apf.ON;
+            this.state = ppc.ON;
             this.node  = oNode;
         }
         else {
             this.blockPreview.innerHTML = "Normal";
-            this.state = apf.OFF;
+            this.state = ppc.OFF;
             this.node  = null;
         }
         return this.state;
@@ -404,20 +404,20 @@ apf.LiveEdit.plugin("blockformat", function() {
         }
 
         if (sBlock) {
-            apf.popup.forceHide();
+            ppc.popup.forceHide();
             var oNode, sel = oEditor.$selection;
 
             sel.set();
             oEditor.$visualFocus();
             var s = sel.getContent();
-            if (sBlock == "normal" && this.queryState(oEditor) == apf.ON) {
+            if (sBlock == "normal" && this.queryState(oEditor) == ppc.ON) {
                 // revert style to NORMAL, i.e. no style at all.
                 /*sel.selectNode(this.node);
                 sel.setContent(this.node.innerHTML);*/
                 
                 var n = this.node.childNodes, p = this.node.parentNode;
                 
-                if (apf.isIE) {
+                if (ppc.isIE) {
                     //var textlength = sel.getContent("text").length;
                     var l = p.insertBefore(p.ownerDocument.createElement("p"), this.node);
                     
@@ -441,12 +441,12 @@ apf.LiveEdit.plugin("blockformat", function() {
                     p.removeChild(this.node);
                 }
                 
-                this.state = apf.OFF;
+                this.state = ppc.OFF;
                 this.node  = null;
                 this.blockPreview.innerHTML = "Normal";
             }
             else if (sel.isCollapsed() || s.trim() == "") {
-                if (apf.isIE) {
+                if (ppc.isIE) {
                     var startNode, oNode;
                     oNode = startNode = sel.getRange().parentElement();
                     while(!oNode.tagName.match(blocksRE4) && oNode.tagName != "BODY") {
@@ -486,7 +486,7 @@ apf.LiveEdit.plugin("blockformat", function() {
 
                 // @todo FF is DEFINITELY b0rking when we try to nest HTML 4.01 block elements...
                 //       REALLY not like Word does it...
-                if (oNode.tagName.match(blocksRE4) && s.length == oNode[apf.hasInnerText ? "innerText" : "textContent"].length) {
+                if (oNode.tagName.match(blocksRE4) && s.length == oNode[ppc.hasInnerText ? "innerText" : "textContent"].length) {
                     var p = oEditor.$activeDocument.createElement(sBlock);
                     p.innerHTML = oNode.innerHTML;
                     oNode.parentNode.insertBefore(p, oNode);
@@ -499,12 +499,12 @@ apf.LiveEdit.plugin("blockformat", function() {
                     }
                     if (oNode && oNode.tagName != "BODY") {
                         var s2;
-                        if (oNode.tagName == "P" && apf.isIE) {
+                        if (oNode.tagName == "P" && ppc.isIE) {
                             s2 = "<" + sBlock + ">" + s.trim().replace(blocksRE3, "") + "</" + sBlock + ">";
                             addedNode = sel.setContent(s2);
                         }
                         else {
-                            s2 = '<P __apf_placeholder="true">' + s + "</P>";
+                            s2 = '<P __ppc_placeholder="true">' + s + "</P>";
                             sel.setContent(s2);
                             
                             var sBlock2 = oNode.tagName;
@@ -513,7 +513,7 @@ apf.LiveEdit.plugin("blockformat", function() {
                                 return (pos != 0 
                                         ? (first = true) && "</" + sBlock2 + ">"
                                         : "") +
-                                    "<" + sBlock + ' __apf_placeholder="true">' + s.replace(blocksRE3, "") +
+                                    "<" + sBlock + ' __ppc_placeholder="true">' + s.replace(blocksRE3, "") +
                                     "</" + sBlock + ">" +
                                     (pos < oNode.innerHTML.length - s.length 
                                         ? (last = true) && "<" + sBlock2 + ">"
@@ -528,8 +528,8 @@ apf.LiveEdit.plugin("blockformat", function() {
                             oNode.innerHTML = html.join("");
                             var addedNode, n = oNode.getElementsByTagName(sBlock);
                             for (var i = 0; i < n.length; i++) {
-                                if (n[i].getAttribute("__apf_placeholder")) {
-                                    n[i].removeAttribute("__apf_placeholder");
+                                if (n[i].getAttribute("__ppc_placeholder")) {
+                                    n[i].removeAttribute("__ppc_placeholder");
                                     addedNode = n[i];
                                     break;
                                 }
@@ -542,7 +542,7 @@ apf.LiveEdit.plugin("blockformat", function() {
                         }
                         
                         if (addedNode) {
-                            if (apf.isIE) {
+                            if (ppc.isIE) {
                                 var prev = addedNode.previousSibling
                                 if (prev && prev.tagName == "P" && prev.innerHTML == "&nbsp;")
                                     prev.parentNode.removeChild(prev);
@@ -560,7 +560,7 @@ apf.LiveEdit.plugin("blockformat", function() {
                             + s.replace(/<p>(.*?)<\/p>(.)/gi, "$1<br />$2")
                                .replace(blocksRE3, "") + "</" + sBlock + ">");
                        
-                        if (apf.isIE) {
+                        if (ppc.isIE) {
                             var prev = addedNode.previousSibling
                             if (prev && prev.tagName == "P" && prev.innerHTML == "&nbsp;")
                                 prev.parentNode.removeChild(prev);
@@ -597,7 +597,7 @@ apf.LiveEdit.plugin("blockformat", function() {
             aFormats = getFormats(editor);
         for (var i = 0, j = aFormats.length; i < j; i++) {
             aHtml.push('<a class="editor_panelcell editor_blockformat" rel="',
-                aFormats[i], '" href="javascript:;" onmousedown="apf.lookup(',
+                aFormats[i], '" href="javascript:;" onmousedown="ppc.lookup(',
                 this.$uniqueId, ').submit(event);"><', aFormats[i], ">",
                 blocksMap[aFormats[i]], "</", aFormats[i], "></a>");
         }

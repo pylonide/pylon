@@ -39,17 +39,17 @@
  * @default_private
  * @todo remove serialize here
  */
-apf.offline.transactions = {
+ppc.offline.transactions = {
     enabled   : false,
        
     init : function(){
-        this.namespace = apf.config.name + ".apf.offline.transactions";
+        this.namespace = ppc.config.name + ".ppc.offline.transactions";
         this.enabled   = true;
         
         //#ifdef __WITH_OFFLINE_STATE
-        apf.addEventListener("load", function(){
-            apf.offline.transactions.rebuildActionQueues();
-            apf.removeEventListener("load", arguments.callee);
+        ppc.addEventListener("load", function(){
+            ppc.offline.transactions.rebuildActionQueues();
+            ppc.removeEventListener("load", arguments.callee);
         });
         //#endif
     },
@@ -61,7 +61,7 @@ apf.offline.transactions = {
      * can be used to notify the user that we're offline.
      */
     actionNotAllowed : function(){
-        apf.offline.dispatchEvent("transactioncancel", {
+        ppc.offline.dispatchEvent("transactioncancel", {
             message : "Transaction is not allowed",
             bubbles : true
         });
@@ -72,7 +72,7 @@ apf.offline.transactions = {
     //@todo you might want to error on dotts in the at name
     addAction : function(at, qItem, type){
         //#ifdef __DEBUG
-        if (!at.name || !apf.storage.base.isValidKey(at.name)) {
+        if (!at.name || !ppc.storage.base.isValidKey(at.name)) {
             //@todo
             throw new Error("Invalid or missing name for actiontracker \
                 used for offline transactions '" + at.name + "'.");
@@ -80,7 +80,7 @@ apf.offline.transactions = {
         //#endif
         
         var namespace = this.namespace + "." + at.name + "." + type;
-        var storage   = apf.offline.storage;
+        var storage   = ppc.offline.storage;
         var len       = parseInt(storage.get("length", namespace)) || 0;
         
         storage.put(len, JSON.stringify(type == "queue"
@@ -94,7 +94,7 @@ apf.offline.transactions = {
     
     removeAction : function(at, fromTop, type){
         var namespace = this.namespace + "." + at.name + "." + type;
-        var storage   = apf.offline.storage;
+        var storage   = ppc.offline.storage;
         
         //@todo add checks for stack sanity
         if (fromTop) {
@@ -130,7 +130,7 @@ apf.offline.transactions = {
     },
     
     rebuildActionQueues : function(){
-        var storage    = apf.offline.storage;
+        var storage    = ppc.offline.storage;
         var namespaces = storage.getNamespaces();
         if (!namespaces) return;
         var lookup, re = new RegExp(this.namespace + "\\.([^\\.]*)\\.([^\\.]*)");
@@ -143,12 +143,12 @@ apf.offline.transactions = {
         var i, j, qItem, stack, namespace, at, start, len, type;
         //#ifdef __WITH_NAMESERVER
         for (i = 0; i < ats.length; i++) {
-            at        = apf.nameserver.get("actiontracker", ats[i][0]);
+            at        = ppc.nameserver.get("actiontracker", ats[i][0]);
             type      = ats[i][1];
             
             //#ifdef __DEBUG
             if (!at) { //@todo
-                throw new Error(apf.formatErrorString(0, null,
+                throw new Error(ppc.formatErrorString(0, null,
                     "Rebuilding Action Queue",
                     "An actiontracker could not be found by the name of '" 
                     + ats[i][0] + "'"));
@@ -164,7 +164,7 @@ apf.offline.transactions = {
             stack     = [];
             
             //#ifdef __DEBUG
-            apf.console.info("Restoring " + type + " stack for " 
+            ppc.console.info("Restoring " + type + " stack for " 
                              + (at.name == "default"
                                 ? "the default actiontracker"
                                 : "the '" + at.name + "' actiontracker")
@@ -173,34 +173,34 @@ apf.offline.transactions = {
 
             if (type == "queue") {
                 for (j = len - 1; j >= start; j--) {
-                    qItem            = apf.unserialize(lookup[j]);
-                    qItem.undoObj    = new apf.UndoData(qItem.undoObj, at).$import();
+                    qItem            = ppc.unserialize(lookup[j]);
+                    qItem.undoObj    = new ppc.UndoData(qItem.undoObj, at).$import();
                     stack.unshift(qItem);
                 }
             }
             else {
                 for (j = len - 1; j >= start; j--) {
-                    qItem    = apf.unserialize(lookup[j]);
-                    stack.unshift(new apf.UndoData(qItem, at).$import());
+                    qItem    = ppc.unserialize(lookup[j]);
+                    stack.unshift(new ppc.UndoData(qItem, at).$import());
                 }
             }
             
             at.$loadQueue(stack, type);
             
-            apf.offline.sLookup = null;
+            ppc.offline.sLookup = null;
         }
         //#endif
     },
     
     clearActions : function(at, type){
-        apf.offline.storage.clear(this.namespace + "." + at.name + "." + type);
+        ppc.offline.storage.clear(this.namespace + "." + at.name + "." + type);
     },
     
     clear : function(queues){
         if (!queues)
             queues = "undo|redo|queue";
         
-        var storage    = apf.offline.storage;
+        var storage    = ppc.offline.storage;
         var namespaces = storage.getNamespaces();
         var re         = new RegExp(this.namespace + "\\.([^\\.]*)\\.(" + queues + ")");
         
@@ -217,7 +217,7 @@ apf.offline.transactions = {
 
     getSyncLength : function(){
         //#ifdef __WITH_NAMESERVER
-        var ats = apf.nameserver.getAll("actiontracker");
+        var ats = ppc.nameserver.getAll("actiontracker");
         
         var len = 0;
         for (var i = 0; i < ats.length; i++)
@@ -229,7 +229,7 @@ apf.offline.transactions = {
 
     sync : function(callback){
         //#ifdef __WITH_NAMESERVER
-        var ats = apf.nameserver.getAll("actiontracker");
+        var ats = ppc.nameserver.getAll("actiontracker");
         
         var qNr = 0, len = 0;
         for (var i = 0; i < ats.length; i++) {
@@ -261,8 +261,8 @@ apf.offline.transactions = {
  * @private
  * @method
  */
-apf.offline.canTransact = function(){
-    if(!apf.offline.enabled || this.onLine || this.transactions.enabled)
+ppc.offline.canTransact = function(){
+    if(!ppc.offline.enabled || this.onLine || this.transactions.enabled)
         return true;
     
     //Transactions can be enabled from this event

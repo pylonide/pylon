@@ -23,8 +23,8 @@
 /**
  * Specifies the minimum number of characters or list items allowed. Must be equal to or greater than zero
  */
-apf.XsdMinLength = function(struct, tagName){
-    this.$init(tagName || "minlength", apf.NODE_HIDDEN, struct);
+ppc.XsdMinLength = function(struct, tagName){
+    this.$init(tagName || "minlength", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -37,7 +37,7 @@ apf.XsdMinLength = function(struct, tagName){
         stack.push("if (value.length < " + this.value
             + ") return false;");
     };
-}).call(apf.XsdMinLength.prototype = new apf.XsdElement());
+}).call(ppc.XsdMinLength.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("minlength", apf.XsdMinLength);
+ppc.xsd.setElement("minlength", ppc.XsdMinLength);
 //#endif

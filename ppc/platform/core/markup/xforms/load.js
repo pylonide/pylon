@@ -30,13 +30,13 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.XformsLoadElement = function(struct, tagName){
-    this.$init(tagName || "Load", apf.NODE_VISIBLE, struct);
+ppc.XformsLoadElement = function(struct, tagName){
+    this.$init(tagName || "Load", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     
-}).call(apf.XformsLoadElement.prototype = new apf.XformsElement());
+}).call(ppc.XformsLoadElement.prototype = new ppc.XformsElement());
 
-apf.xforms.setElement("html", apf.XformsLoadElement);
+ppc.xforms.setElement("html", ppc.XformsLoadElement);
 // #endif

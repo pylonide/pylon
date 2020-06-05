@@ -21,25 +21,25 @@
 
 // #ifdef __ENABLE_EDITOR_VISUALAID || __INC_ALL
 
-apf.LiveEdit.plugin("visualaid", function(){
+ppc.LiveEdit.plugin("visualaid", function(){
     this.name        = "visualaid";
     this.icon        = "visualaid";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+shift+v";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
         var state = this.queryState(editor);
-        editor.$activeDocument.body.className = (state == apf.ON) ? "" : "visualAid";
+        editor.$activeDocument.body.className = (state == ppc.ON) ? "" : "visualAid";
         editor.$notifyButton(this.name);
 
-        apf.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
+        ppc.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
 
     this.queryState = function(editor) {
-        this.state = apf[editor.$activeDocument.body.className == "visualAid" ? "ON" : "OFF"];
+        this.state = ppc[editor.$activeDocument.body.className == "visualAid" ? "ON" : "OFF"];
         return this.state;
     };
 });

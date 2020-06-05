@@ -39,27 +39,27 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.XformsSubmissionElement = function(struct, tagName){
-    this.$init(tagName || "Submission", apf.NODE_VISIBLE, struct);
+ppc.XformsSubmissionElement = function(struct, tagName){
+    this.$init(tagName || "Submission", ppc.NODE_VISIBLE, struct);
     
     /* *********** PARSE ***********/
     //#ifdef __WITH_XFORMS
-    //@todo move this to use apf.subnode
+    //@todo move this to use ppc.subnode
     function cSubmission(x){
         this.localName  = "submission";
         this.name       = x.getAttribute("id");
-        this.parentNode = model; //@todo apf3.0 global var usage??
+        this.parentNode = model; //@todo ppc3.0 global var usage??
 
         var _self = this;
         this.getModel = function(){
             return _self;
         };
 
-        //apf.makeClass(this);
+        //ppc.makeClass(this);
 
-        //this.implement(apf.XForms); /** @inheritsElsewhere apf.XForms */
+        //this.implement(ppc.XForms); /** @inheritsElsewhere ppc.XForms */
         //#ifdef __WITH_AMLNODE
-        this.implement(apf.AmlNode); /** @inherits apf.AmlNode */
+        this.implement(ppc.AmlNode); /** @inherits ppc.AmlNode */
         //#endif
     }
     // #endif
@@ -67,7 +67,7 @@ apf.XformsSubmissionElement = function(struct, tagName){
 
 (function(){
     
-}).call(apf.XformsSubmissionElement.prototype = new apf.XformsElement());
+}).call(ppc.XformsSubmissionElement.prototype = new ppc.XformsElement());
 
-apf.xforms.setElement("html", apf.XformsSubmissionElement);
+ppc.xforms.setElement("html", ppc.XformsSubmissionElement);
 // #endif

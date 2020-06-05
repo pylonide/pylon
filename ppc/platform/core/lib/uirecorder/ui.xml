@@ -4,17 +4,17 @@
             <a:bar id="barUiRecorder" skin="basic" style="background-color:#333;padding:2px;">
                 <a:hbox align="center" padding="5">
                     <a:divider skin="c9-divider-double" />
-                    <a:button id="btnUiRecordStart" skin="c9-toolbarbutton" onclick="apf.uirecorder.ui.start()">Record</a:button>
-                    <a:button id="btnUiRecordStop" skin="c9-toolbarbutton" disabled="true" onclick="apf.uirecorder.ui.stop()">Stop</a:button>
+                    <a:button id="btnUiRecordStart" skin="c9-toolbarbutton" onclick="ppc.uirecorder.ui.start()">Record</a:button>
+                    <a:button id="btnUiRecordStop" skin="c9-toolbarbutton" disabled="true" onclick="ppc.uirecorder.ui.stop()">Stop</a:button>
                     <a:splitbutton
                       id       = "btnUiRecordRun"
                       icon     = "run.png"
                       caption  = "run"
-                      disabled = "{!dgUiRecorder.length or apf.uirecorder.capture.isRecording}"
-                      onclick  = "apf.uirecorder.ui.write()"
+                      disabled = "{!dgUiRecorder.length or ppc.uirecorder.capture.isRecording}"
+                      onclick  = "ppc.uirecorder.ui.write()"
                       submenu  = "mnuUiRecordRunOptions" />
                     <a:button id="btnUiRecordRemove" skin="c9-toolbarbutton" disabled="{!dgUiRecorder.selected or !btnUiRecordMore.expanded}" onclick="dgUiRecorder.remove()">Remove</a:button>
-                    <a:button id="btnUiRecordAddAssert" skin="c9-toolbarbutton" disabled="{!btnUiRecordMore.expanded or 'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="apf.uirecorder.ui.startAddAssert()">Add Assertion</a:button>
+                    <a:button id="btnUiRecordAddAssert" skin="c9-toolbarbutton" disabled="{!btnUiRecordMore.expanded or 'action|assert'.indexOf(dgUiRecorder.selected and dgUiRecorder.selected.localName) == -1}" onclick="ppc.uirecorder.ui.startAddAssert()">Add Assertion</a:button>
                     <a:button id="btnUiRecordMore" skin="c9-toolbarbutton" onclick="
                         this.setProperty('expanded', !this.expanded);
                         if (this.expanded) {
@@ -40,8 +40,8 @@
               each = "[action|assert|test]"
               multiselect = "true"
               startcollapsed = "false"
-              onmouseover = "apf.uirecorder.ui.highlightElement(event)"
-              onmouseout  = "apf.uirecorder.ui.hideHighlightElements(event)">
+              onmouseover = "ppc.uirecorder.ui.highlightElement(event)"
+              onmouseout  = "ppc.uirecorder.ui.hideHighlightElements(event)">
                 <a:column caption="Name" width="40%" value="[@name]" tree="1" check2="1" editor="textbox" skin="tbsimple" />
                 <a:column caption="Value" width="60%" value="[@value]" editor="textbox" />
                 <a:column caption="Element" width="50"><?lm

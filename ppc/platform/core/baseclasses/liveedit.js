@@ -18,7 +18,7 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-apf.__LIVEEDIT__  = 1 << 23;
+ppc.__LIVEEDIT__  = 1 << 23;
 
 // #ifdef __WITH_LIVEEDIT
 
@@ -29,22 +29,22 @@ apf.__LIVEEDIT__  = 1 << 23;
  * @constructor
  * @baseclass
  *
- * @inherits apf.Presentation
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
+ * @inherits ppc.Presentation
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
  *
  * @author      Mike de Boer (mike AT javeline DOT com)
  * @version     %I%, %G%
  * @since       3.0
  */
-apf.LiveEdit = function() {
-    this.$regbase = this.$regbase | apf.__LIVEEDIT__;
+ppc.LiveEdit = function() {
+    this.$regbase = this.$regbase | ppc.__LIVEEDIT__;
 
     //#ifdef __WITH_DATAACTION
-    this.implement(apf.DataAction || apf.K);
+    this.implement(ppc.DataAction || ppc.K);
     //#endif
     //#ifdef __WITH_VALIDATION
-    this.implement(apf.Validation || apf.K);
+    this.implement(ppc.Validation || ppc.K);
     //#endif
 
     this.$activeDocument = document;
@@ -58,7 +58,7 @@ apf.LiveEdit = function() {
     this.$booleanProperties["realtime"]  = true;
     
     this.$propHandlers["liveedit"]       = function(value){
-        if (this.childNodes.length && !this.hasFeature(apf.__CHILDVALUE__)) //@todo rearch this
+        if (this.childNodes.length && !this.hasFeature(ppc.__CHILDVALUE__)) //@todo rearch this
             return;
 
         if (this.realtime == undefined)
@@ -69,16 +69,16 @@ apf.LiveEdit = function() {
                 this.$focussable   = true;
                 this.$unFocussable = [this.$focussable,
                     typeof this.focussable == "undefined" ? true : this.focussable];
-                apf.GuiElement.propHandlers.focussable.call(this, true);
+                ppc.GuiElement.propHandlers.focussable.call(this, true);
             }
             
             if (!this.$leMouseOver)
                 this.$setMouseEvents();
 
-            apf.addListener(this.$ext, "mouseup",   this.$leMouseUp);
-            apf.addListener(this.$ext, "mousedown", this.$leMouseDown);
-            apf.addListener(this.$ext, "mouseout",  this.$leMouseOut);
-            apf.addListener(this.$ext, "mouseover", this.$leMouseOver);
+            ppc.addListener(this.$ext, "mouseup",   this.$leMouseUp);
+            ppc.addListener(this.$ext, "mousedown", this.$leMouseDown);
+            ppc.addListener(this.$ext, "mouseout",  this.$leMouseOut);
+            ppc.addListener(this.$ext, "mouseover", this.$leMouseOver);
             
             this.addEventListener("keydown",   keydownHandler, true);
             this.addEventListener("blur",      blurHandler);
@@ -87,7 +87,7 @@ apf.LiveEdit = function() {
 
             if (this.nodeType == 7)
                 this.addEventListener("prop.calcdata", xmlupdateHandler);
-            else if (this.hasFeature(apf.__CHILDVALUE__)) 
+            else if (this.hasFeature(ppc.__CHILDVALUE__)) 
                 this.addEventListener("prop." + this.$childProperty, xmlupdateHandler);
             else
                 this.addEventListener("xmlupdate", xmlupdateHandler);
@@ -95,14 +95,14 @@ apf.LiveEdit = function() {
         else if (this.$leMouseOver) {
             if (this.$unFocussable) {
                 this.$focussable = this.$unFocussable[0];
-                apf.GuiElement.propHandlers.focussable.call(this, this.$unFocussable[1]);
+                ppc.GuiElement.propHandlers.focussable.call(this, this.$unFocussable[1]);
                 delete this.$unFocussable;
             }
             
-            apf.removeListener(this.$ext, "mouseover", this.$leMouseOver);
-            apf.removeListener(this.$ext, "mouseout",  this.$leMouseOut);
-            apf.removeListener(this.$ext, "mousedown", this.$leMouseDown);
-            apf.removeListener(this.$ext, "mouseup",   this.$leMouseUp);
+            ppc.removeListener(this.$ext, "mouseover", this.$leMouseOver);
+            ppc.removeListener(this.$ext, "mouseout",  this.$leMouseOut);
+            ppc.removeListener(this.$ext, "mousedown", this.$leMouseDown);
+            ppc.removeListener(this.$ext, "mouseup",   this.$leMouseUp);
 
             this.$activeNode     = null;
             this.$lastActiveNode = null;
@@ -114,7 +114,7 @@ apf.LiveEdit = function() {
 
             if (this.nodeType == 7)
                 this.removeEventListener("prop.calcdata", xmlupdateHandler);
-            else if (this.hasFeature(apf.__CHILDVALUE__)) 
+            else if (this.hasFeature(ppc.__CHILDVALUE__)) 
                 this.removeEventListener("prop." + this.$childProperty, xmlupdateHandler);
             else
                 this.removeEventListener("xmlupdate", xmlupdateHandler);
@@ -128,12 +128,12 @@ apf.LiveEdit = function() {
         
         function focusHandler(){
             moEditor.removeEventListener("focus", focusHandler);
-            apf.removeListener(moEditor.$ext, "mouseout", extOutHandler);
+            ppc.removeListener(moEditor.$ext, "mouseout", extOutHandler);
             moEditor = null;
         }
         
         function removeHandler(){
-            apf.removeListener(moEditor.$ext, "mouseout", extOutHandler);
+            ppc.removeListener(moEditor.$ext, "mouseout", extOutHandler);
             if (_self.$lastEditor && _self.$lastEditor[0] == moEditor)
                 removeEditor.call(_self, _self.$activeNode, true);
             moEditor.removeEventListener("focus", focusHandler);
@@ -142,7 +142,7 @@ apf.LiveEdit = function() {
         
         function extOutHandler(){
             if (!_self.$lastEditor) {
-                apf.removeListener(moEditor.$ext, "mouseout", extOutHandler);
+                ppc.removeListener(moEditor.$ext, "mouseout", extOutHandler);
                 return;
             }
                 
@@ -166,10 +166,10 @@ apf.LiveEdit = function() {
                 createEditor.call(_self, el);
                 moEditor = _self.$lastEditor[0];
                 moEditor.addEventListener("focus", focusHandler);
-                apf.addListener(moEditor.$ext, "mouseout", extOutHandler);
+                ppc.addListener(moEditor.$ext, "mouseout", extOutHandler);
             }
             else
-                apf.setStyleClass(el, "liveEditOver");
+                ppc.setStyleClass(el, "liveEditOver");
         };
         this.$leMouseOut = function(e) {
             var el = e.srcElement || e.target;
@@ -179,15 +179,15 @@ apf.LiveEdit = function() {
             if (!el || el == _self.$ext || el == _self.$activeNode)
                 return;
 
-            apf.setStyleClass(el, null, ["liveEditOver"]);
+            ppc.setStyleClass(el, null, ["liveEditOver"]);
         };
         this.$leMouseDown = function(e, preventPropagation) {
             if (!preventPropagation)
-                apf.cancelBubble(e);
+                ppc.cancelBubble(e);
 
             var el = e.srcElement || e.target;
             if (!el) return;
-            if (_self.$activeNode && _self.$selection && apf.isChildOf(_self.$activeNode, el, true))
+            if (_self.$activeNode && _self.$selection && ppc.isChildOf(_self.$activeNode, el, true))
                 $setTimeout(function(){_self.$selection.cache();});
 
             while (el && (!el.className || el.className.indexOf("liveEdit") == -1) && el != _self.$ext)
@@ -202,7 +202,7 @@ apf.LiveEdit = function() {
             createEditor.call(_self, el);
             if (!_self.$lastEditor && !preventPropagation) {
                 e.cancelBubble = true;
-                apf.window.$mousedown({srcElement: _self.$activeNode});
+                ppc.window.$mousedown({srcElement: _self.$activeNode});
                 $setTimeout(function(){
                     //_self.$selection.set();
                     if (_self.$activeNode)
@@ -220,7 +220,7 @@ apf.LiveEdit = function() {
         };
         this.$leMouseUp = function(e) {
             var el = e.srcElement || e.target;
-            if (_self.$activeNode && _self.$selection && apf.isChildOf(_self.$activeNode, el, true))
+            if (_self.$activeNode && _self.$selection && ppc.isChildOf(_self.$activeNode, el, true))
                 _self.$selection.cache();
         };
     }
@@ -232,8 +232,8 @@ apf.LiveEdit = function() {
         }
 
         this.setProperty("state", (this.$pluginsActive == "code")
-            ? apf.DISABLED
-            : apf.OFF);
+            ? ppc.DISABLED
+            : ppc.OFF);
 
         if (this.$lastActiveNode && this.$lastActiveNode.parentNode
           || typeof e.shiftKey == "boolean") {
@@ -267,15 +267,15 @@ apf.LiveEdit = function() {
           || e.toElement.parentNode == this.$lastEditor))
             return;
 
-        var pParent = apf.popup.last && apf.lookup(apf.popup.last);
+        var pParent = ppc.popup.last && ppc.lookup(ppc.popup.last);
         if (pParent && pParent.editor == this)
-            apf.popup.forceHide();
+            ppc.popup.forceHide();
 
         if (this.$selection)
             this.$selection.cache();
         removeEditor.call(this, this.$activeNode, true);
 
-        this.setProperty("state", apf.DISABLED);
+        this.setProperty("state", ppc.DISABLED);
     }
 
     function loadHandler(){
@@ -343,9 +343,9 @@ apf.LiveEdit = function() {
         }
         
         if (code == 13) { //Enter
-            isDone = e.ctrlKey || (apf.isMac && e.metaKey);
+            isDone = e.ctrlKey || (ppc.isMac && e.metaKey);
             if (!isDone)
-                isDone = !apf.isTrue(this.$activeNode.getAttribute("multiline"));
+                isDone = !ppc.isTrue(this.$activeNode.getAttribute("multiline"));
             e.returnValue = true;
         }
         
@@ -382,7 +382,7 @@ apf.LiveEdit = function() {
             removeEditor.call(this);
             found = true;
         }
-        else if (apf.isIE && e.ctrlKey && commandKeys[code]) {
+        else if (ppc.isIE && e.ctrlKey && commandKeys[code]) {
             found = true;
         }
         
@@ -407,7 +407,7 @@ apf.LiveEdit = function() {
             // multiple DOM nodes
             
             
-            if (apf.w3cRange && !this.$selection.isCollapsed() && apf.isCharacter(code)) {
+            if (ppc.w3cRange && !this.$selection.isCollapsed() && ppc.isCharacter(code)) {
                 if (this.$activeNode.innerHTML.trim() != '')
                     this.$selection.remove();
                 //else
@@ -416,7 +416,7 @@ apf.LiveEdit = function() {
         }
 
         if (found)
-            return apf.stopEvent(e);
+            return ppc.stopEvent(e);
         else if (this.$activeNode)
             e.returnValue = -1; //@todo what is this for?
     }
@@ -427,12 +427,12 @@ apf.LiveEdit = function() {
     
         var _self = this;
         var hasRule = getOptions(oHtml);
-        var rule = hasRule && apf.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
+        var rule = hasRule && ppc.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
         oHtml.setAttribute("multiline", rule.multiline || "false"); //For lookup at keydown 13
 
         //Initialize selection
         if (!this.$selection)
-            this.$selection = new apf.selection();
+            this.$selection = new ppc.selection();
 
         if (this.$activeNode) {
             var lastPos = initTabStack.call(this).indexOf(oHtml);//tabStack can be old...
@@ -458,7 +458,7 @@ apf.LiveEdit = function() {
         }*/
 
         //@todo this fucks undo state - elements created here are not undone
-        //var xmlNode = apf.createNodeFromXpath(this.xmlRoot.ownerDocument,
+        //var xmlNode = ppc.createNodeFromXpath(this.xmlRoot.ownerDocument,
         //    oHtml.getAttribute("xpath"));
 
         //@todo dirty hack, how to solve this properly
@@ -467,7 +467,7 @@ apf.LiveEdit = function() {
 
         this.$activeNode  = oHtml;
         this.$activeIndex = (this.$tabStack || initTabStack.call(this)).indexOf(oHtml);
-        apf.setStyleClass(oHtml, "liveEditActive", ["liveEditOver", "liveEditInitial"]);
+        ppc.setStyleClass(oHtml, "liveEditActive", ["liveEditOver", "liveEditInitial"]);
 
         if (oHtml.innerHTML == rule.initial)
             oHtml.innerHTML = "";
@@ -478,9 +478,9 @@ apf.LiveEdit = function() {
         handler.create.call(this, oHtml, rule, getXpath(oHtml));
         
         //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug) {
-            //@todo this leaks like a -> use apf.addListener
-            apf.sanitizeTextbox(oHtml);
+        if (ppc.hasFocusBug) {
+            //@todo this leaks like a -> use ppc.addListener
+            ppc.sanitizeTextbox(oHtml);
         }
         //#endif
         
@@ -504,10 +504,10 @@ apf.LiveEdit = function() {
                 ? eval(xpath) 
                 : this.xmlRoot.ownerDocument.selectSingleNode(xpath),
             hasRule = getOptions(oHtml),
-            rule    = hasRule && apf.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
+            rule    = hasRule && ppc.unserialize(hasRule.replace(/&quot;/g, '"').unescapeHTML()) || {};
 
         this.$activeNode = null;
-        apf.setStyleClass(oHtml, null, ["liveEditOver", "liveEditActive"]);
+        ppc.setStyleClass(oHtml, null, ["liveEditOver", "liveEditActive"]);
         this.$selection.collapse(true);
 
         var handler = this.$editors[rule.editor || "default"] || this.$editors.custom;
@@ -515,9 +515,9 @@ apf.LiveEdit = function() {
 
         if (execChange !== false) {
             if (!bProcess || this.$lastValue && oHtml.innerHTML.toLowerCase().replace(/[\r\n]/g, "")
-              == (this.$lastValue.dataType == apf.ARRAY
+              == (this.$lastValue.dataType == ppc.ARRAY
               ? this.$lastValue[0] : this.$lastValue).toLowerCase().replace(/[\r\n]/g, "")) {
-                oHtml.innerHTML = this.$lastValue.dataType == apf.ARRAY 
+                oHtml.innerHTML = this.$lastValue.dataType == ppc.ARRAY 
                     ? this.$lastValue[1]
                     : this.$lastValue;
             }
@@ -527,7 +527,7 @@ apf.LiveEdit = function() {
                 // @todo this is bullshit, because it tests on unparsed data --> incorrect
                 var value = xpath.indexOf("queryNode") > -1
                     ? eval(xpath.replace("queryNode", "queryValue")) 
-                    : apf.queryValue(this.xmlRoot.ownerDocument, xpath);
+                    : ppc.queryValue(this.xmlRoot.ownerDocument, xpath);
                 if (value != oHtml.innerHTML) {
                     rule.htmlNode = oHtml;
                     var res = this.getValue(oHtml);
@@ -538,9 +538,9 @@ apf.LiveEdit = function() {
                         this.validityState.$reset();
                     
                     if (hasRule) {
-                        apf.validator.compile(rule).call(this, 
+                        ppc.validator.compile(rule).call(this, 
                             res, false, this.validityState || 
-                            (this.validityState = new apf.validator.validityState()));
+                            (this.validityState = new ppc.validator.validityState()));
         
                         this.invalidmsg = valid ? "" : rule.invalidmsg || "";
                         
@@ -568,7 +568,7 @@ apf.LiveEdit = function() {
             
             if (!oHtml.innerHTML && rule.initial) {
                  oHtml.innerHTML = rule.initial;
-                 apf.setStyleClass(oHtml, "liveEditInitial");
+                 ppc.setStyleClass(oHtml, "liveEditInitial");
             }
         }
 
@@ -583,23 +583,23 @@ apf.LiveEdit = function() {
             create : function(oHtml, rule){
                 this.getValue = function(){
                     var html = oHtml.innerHTML.replace(/<br\s*\/?>/g, "\n");
-                    if (apf.isIE) {
+                    if (ppc.isIE) {
                         html = html.replace(/<p[^>]*>/gi, "")
                                    .replace(/<\/P>/g, "")
                                    .replace(/<\/p>/g, "\n");
                     }
                         
-                    return apf.html_entity_decode(html);
+                    return ppc.html_entity_decode(html);
                 };
                 
-                if (apf.hasContentEditable)
+                if (ppc.hasContentEditable)
                     oHtml.contentEditable = true;
                 else {
                     document.body.setAttribute("spellcheck", "false");
                     document.designMode = "on";
                 }
                 
-                if (apf.isGecko) {
+                if (ppc.isGecko) {
                     try {
                         // On each return, insert a BR element
                         document.execCommand("insertBrOnReturn", false, true);
@@ -609,7 +609,7 @@ apf.LiveEdit = function() {
             },
             remove : function(oHtml, rule){
                 oHtml.blur();
-                if (apf.hasContentEditable)
+                if (ppc.hasContentEditable)
                     oHtml.contentEditable = false;
                 else
                     document.designMode = "off";
@@ -630,8 +630,8 @@ apf.LiveEdit = function() {
                 //Set window container to notify that this element will contain sub aml element.
                 if (this.$isWindowContainer != -1) {
                     this.$isWindowContainer = -1; 
-                    apf.window.$removeFocus(this);
-                    apf.window.$addFocus(this, this.tabindex);
+                    ppc.window.$removeFocus(this);
+                    ppc.window.$addFocus(this, this.tabindex);
                 }
                 
                 delete this.getValue;
@@ -650,19 +650,19 @@ apf.LiveEdit = function() {
                     oHtml.appendChild(oEditor.$ext);
                 }
                 //Reference to class
-                else if (apf.namespaces[apf.ns.aml].elements[editor]) {
+                else if (ppc.namespaces[ppc.ns.aml].elements[editor]) {
                     var cacheId = JSON.stringify(rule); //Using full element definition as cache id. @todo when should I clear this cache? - at least at destroy - same for propedit/datagrid
                     if (!this.$editorCache)
                         this.$editorCache = {};
                     
                     if (!this.$editorCache[cacheId]) {
                         if (!this.id)
-                            apf.setReference(this.id = (this.localName || "liveedit") + String(this.$uniqueId), this);
+                            ppc.setReference(this.id = (this.localName || "liveedit") + String(this.$uniqueId), this);
 
                         var _self     = this;
-                        var constr    = apf.namespaces[apf.ns.aml].elements[editor];
+                        var constr    = ppc.namespaces[ppc.ns.aml].elements[editor];
                         var isTextbox = "textarea|textbox|secret".indexOf(editor) > -1;
-                        var info      = apf.extend({
+                        var info      = ppc.extend({
                             htmlNode   : editParent,
                             //width      : "100%+2",
                             //height     : 19,
@@ -698,17 +698,17 @@ apf.LiveEdit = function() {
                         
                         //@todo copy all non-known properties of the prop element
         
-                        /*if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
+                        /*if (constr.prototype.hasFeature(ppc.__MULTISELECT__)) {
                             info.caption   = "[text()]";
                             info.eachvalue = "[@value]";
                             info.each      = "item";
-                            info.model     = "{apf.xmldb.getElementById('" 
-                                + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}";
+                            info.model     = "{ppc.xmldb.getElementById('" 
+                                + prop.getAttribute(ppc.xmldb.xmlIdTag) + "')}";
                         }*/
         
                         oEditor = this.$editorCache[cacheId] = new constr(info);
                         
-                        /*var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
+                        /*var box = ppc.getBox(ppc.getStyle(oEditor.$ext, "margin"));
                         if (box[1] || box[3]) {
                             oEditor.setAttribute("width", "100%+2-" + (box[1] + box[3]));
                         }
@@ -745,9 +745,9 @@ apf.LiveEdit = function() {
                     else {
                         oEditor = this.$editorCache[cacheId];
         
-                        /*if (oEditor.hasFeature(apf.__MULTISELECT__)) {
-                            oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
-                                + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");
+                        /*if (oEditor.hasFeature(ppc.__MULTISELECT__)) {
+                            oEditor.setAttribute("model", "{ppc.xmldb.getElementById('" 
+                                + prop.getAttribute(ppc.xmldb.xmlIdTag) + "')}");
                         }*/
         
                         oEditor.setAttribute("value", 
@@ -756,7 +756,7 @@ apf.LiveEdit = function() {
                         oEditor.setProperty("visible", true);
                         if (oEditor.$ext.parentNode 
                           && oEditor.$ext.parentNode.nodeType == 1
-                          && !apf.hasSingleResizeEvent) {
+                          && !ppc.hasSingleResizeEvent) {
                             if (!oEditor.$parentRsz) 
                                 oEditor.$parentRsz = oEditor.$ext.parentNode.onresize;
                             oEditor.$ext.parentNode.removeAttribute("id");
@@ -766,7 +766,7 @@ apf.LiveEdit = function() {
                         editParent.appendChild(oEditor.$ext);
                         if (editParent.$parentId)
                             editParent.setAttribute("id", editParent.$parentId);
-                        if (oEditor.$parentRsz && !apf.hasSingleResizeEvent) {
+                        if (oEditor.$parentRsz && !ppc.hasSingleResizeEvent) {
                             editParent.onresize = oEditor.$parentRsz;
                             editParent.onresize();
                         }
@@ -798,7 +798,7 @@ apf.LiveEdit = function() {
                 delete this.$lastEditor;
                 oHtml.innerHTML = xpath.indexOf("queryNode") > -1
                     ? eval(xpath.replace("queryNode", "queryValue")) 
-                    : apf.queryValue(this.xmlRoot.ownerDocument, xpath);//this.$lastValue;
+                    : ppc.queryValue(this.xmlRoot.ownerDocument, xpath);//this.$lastValue;
                 
                 this.focus();
                 
@@ -833,7 +833,7 @@ apf.LiveEdit = function() {
     this.$visualFocus = function(bNotify) {
         // setting focus to the iframe content, upsets the 'code' plugin
         var bCode = (this.$pluginsActive == "code");
-        if (this.$bStandalone && apf.document.activeElement == this && !bCode) {
+        if (this.$bStandalone && ppc.document.activeElement == this && !bCode) {
             try {
                 this.$oWin.focus();
             }
@@ -844,28 +844,28 @@ apf.LiveEdit = function() {
         }
 
         if (bCode) {
-            this.$notifyAllButtons(apf.DISABLED);
-            this.$notifyButton("code", apf.SELECTED);
+            this.$notifyAllButtons(ppc.DISABLED);
+            this.$notifyButton("code", ppc.SELECTED);
         }
         else if (bNotify)
             this.$notifyAllButtons();
     };
     
     // #ifdef __ENABLE_LIVEEDIT_RICHTEXT || __INC_ALL
-    apf.LiveEdit.richtext.call(this);
+    ppc.LiveEdit.richtext.call(this);
     // #endif
 };
 
-apf.config.$inheritProperties["liveedit"] = 2;
+ppc.config.$inheritProperties["liveedit"] = 2;
 
-apf.LiveEdit.mousedown = function(oHtml, event){
+ppc.LiveEdit.mousedown = function(oHtml, event){
     if (oHtml.$ext) {
-        var amlNode = apf.findHost(oHtml.$ext);
+        var amlNode = ppc.findHost(oHtml.$ext);
         var lm      = amlNode.ownerDocument.$parentNode;
         if (!lm.hasFocus())
             lm.focus();
         lm.$leMouseDown(event, true);
-        apf.stopPropagation(event);
+        ppc.stopPropagation(event);
     }
 }
 

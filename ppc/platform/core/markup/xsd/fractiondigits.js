@@ -23,8 +23,8 @@
 /**
  * Specifies the maximum number of decimal places allowed. Must be equal to or greater than zero
  */
-apf.XsdFractionDigits = function(struct, tagName){
-    this.$init(tagName || "maxinclusive", apf.NODE_HIDDEN, struct);
+ppc.XsdFractionDigits = function(struct, tagName){
+    this.$init(tagName || "maxinclusive", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -36,7 +36,7 @@ apf.XsdFractionDigits = function(struct, tagName){
         stack.push("if (parseFloat(value) == value && value.split('.')[1].length != "
             + this.value + ") return false;");
     };
-}).call(apf.XsdFractionDigits.prototype = new apf.XsdElement());
+}).call(ppc.XsdFractionDigits.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("maxinclusive", apf.XsdFractionDigits);
+ppc.xsd.setElement("maxinclusive", ppc.XsdFractionDigits);
 //#endif

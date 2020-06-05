@@ -19,14 +19,14 @@
  *
  */
 
-apf.__CHILDVALUE__ = 1 << 27;
+ppc.__CHILDVALUE__ = 1 << 27;
 
 //#ifdef __WITH_CHILDVALUE
-apf.ChildValue = function(){
+ppc.ChildValue = function(){
     if (!this.$childProperty)
         this.$childProperty = "value";
     
-    this.$regbase = this.$regbase | apf.__CHILDVALUE__;
+    this.$regbase = this.$regbase | ppc.__CHILDVALUE__;
     
     var f, re = /^[\s\S]*?>(<\?lm)?([\s\S]*?)(?:\?>)?<[^>]*?>$/;
     this.addEventListener("DOMCharacterDataModified", f = function(e){
@@ -93,7 +93,7 @@ apf.ChildValue = function(){
                 this.$setDynamicProperty(this.$childProperty, v);
             else
             //#endif
-                this.setProperty(this.$childProperty, apf.html_entity_decode(v)); //@todo should be xml entity decode
+                this.setProperty(this.$childProperty, ppc.html_entity_decode(v)); //@todo should be xml entity decode
         }
         else if (hasNoProp)
             this.$propHandlers[this.$childProperty].call(this, "");

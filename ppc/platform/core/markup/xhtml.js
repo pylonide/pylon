@@ -31,19 +31,19 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.xhtml = new apf.AmlNamespace();
-apf.setNamespace("http://www.w3.org/1999/xhtml", apf.xhtml);
+ppc.xhtml = new ppc.AmlNamespace();
+ppc.setNamespace("http://www.w3.org/1999/xhtml", ppc.xhtml);
 //#endif
 
 /*
-if (apf.getTextNode(x)) {
+if (ppc.getTextNode(x)) {
     var data = {
         amlNode  : x,
         htmlNode : o
     }
 
     // #ifdef __WITH_LANG_SUPPORT
-    apf.language.addElement(apf.getTextNode(x)
+    ppc.language.addElement(ppc.getTextNode(x)
         .nodeValue.replace(/^\$(.*)\$$/, "$1"), data);
     // #endif
 }

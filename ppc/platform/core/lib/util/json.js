@@ -29,23 +29,23 @@
  * @return {XMLNode} the created xml document (NOT the root-node).
  */
 
-apf.json2xml_Obj  = {};
-apf.json2xml_Attr = {};
-apf.json2xml_ObjByAttr = {};
+ppc.json2xml_Obj  = {};
+ppc.json2xml_Attr = {};
+ppc.json2xml_ObjByAttr = {};
 
-apf.json2Xml = (function(){
+ppc.json2Xml = (function(){
     var jsonToXml = function (v, name, xml, notag) {
         var i, n, m, t;
-        // do an apf warn
-        var cleanString = apf.escapeXML || function(s){
+        // do an ppc warn
+        var cleanString = ppc.escapeXML || function(s){
             return s.replace(/&/g, "&amp;").replace(/\</g, "&lt;").replace(/\>/g, "&gt;");
         };
         if (!notag) {
             if (name != (m = name.replace(/[^a-zA-Z0-9_-]/g, "_")))
-                apf.console.warn("Json2XML, invalid characters found in JSON tagname '" + name, "json2Xml");
+                ppc.console.warn("Json2XML, invalid characters found in JSON tagname '" + name, "json2Xml");
             name = m;
         }
-        if (apf.isArray(v)) {
+        if (ppc.isArray(v)) {
             for (i = 0, n = v.length; i < n; i++)
                 jsonToXml(v[i], name, xml);
         }
@@ -56,9 +56,9 @@ apf.json2Xml = (function(){
             if (!notag)
                 xml.push("<", name);
             for (i in v) {
-                if ((n = apf.json2xml_Attr[i]) || i.charAt(0) == "@") {
+                if ((n = ppc.json2xml_Attr[i]) || i.charAt(0) == "@") {
                     if (!n && !objAttr)
-                        objAttr = apf.json2xml_ObjByAttr[i.slice(1)];
+                        objAttr = ppc.json2xml_ObjByAttr[i.slice(1)];
                     if (!notag)
                         xml.push(" ", n ? n : i.slice(1), "=\"", cleanString(v[i].toString()), "\"");
                 }
@@ -68,7 +68,7 @@ apf.json2Xml = (function(){
             if (hasChild) {
                 if (!notag)
                     xml.push(">");
-                if (t = (objAttr || apf.json2xml_Obj[name])) {
+                if (t = (objAttr || ppc.json2xml_Obj[name])) {
                     if (t == 1) {
                         t = {
                             child: name.replace(/(.*)s$/,"$1") || name,
@@ -77,9 +77,9 @@ apf.json2Xml = (function(){
                         };
                     }
                     for (i in v) {
-                        if (i.charAt(0) != "@" && !apf.json2xml_Attr[i]) {
+                        if (i.charAt(0) != "@" && !ppc.json2xml_Attr[i]) {
                             if (typeof(m = v[i]) == "object") {
-                                if (apf.json2xml_Obj[i]) {
+                                if (ppc.json2xml_Obj[i]) {
                                     jsonToXml(m,i,xml);
                                 }
                                 else {
@@ -106,9 +106,9 @@ apf.json2Xml = (function(){
                 }
                 else {
                     for (i in v) {
-                        if (!apf.json2xml_Attr[i] && i.charAt(0) != "@") {
+                        if (!ppc.json2xml_Attr[i] && i.charAt(0) != "@") {
                            if (i.match(/[^a-zA-Z0-9_-]/g))
-                               apf.console.warn("Json2XML, invalid characters found in JSON tagname: '" + i, "json2Xml");
+                               ppc.console.warn("Json2XML, invalid characters found in JSON tagname: '" + i, "json2Xml");
                            else
                                jsonToXml(v[i], i, xml, false);
                         }
@@ -129,17 +129,17 @@ apf.json2Xml = (function(){
     };
 
     return function(strJson, noError, preserveWhiteSpace) {
-        var o   = (typeof strJson == "string" && apf.isJson(strJson))
+        var o   = (typeof strJson == "string" && ppc.isJson(strJson))
             ? JSON.parse(strJson.replace(/""/g, '" "'))//eval("(" + strJson + ")")
             : strJson,
             xml = [];
         jsonToXml(o, "jsondoc", xml, false);
 
-        return apf.getXmlDom(xml.join("").replace(/\t|\n/g, ""), noError, true);//preserveWhiteSpace);//@todo apf3.0
+        return ppc.getXmlDom(xml.join("").replace(/\t|\n/g, ""), noError, true);//preserveWhiteSpace);//@todo ppc3.0
     };
 })();
 
-apf.xml2json = function (xml, noattrs) {
+ppc.xml2json = function (xml, noattrs) {
     // alright! lets go and convert our xml back to json.
     var filled, o, cn, i, j, n, m, u, v, w, s, t, cn1, s1, u1, v1, t1, name,
         out = {},
@@ -148,7 +148,7 @@ apf.xml2json = function (xml, noattrs) {
     if (!noattrs) {
         if (m = (xml.attributes)) {
             for (u = 0, v = m.length; u < v; u++) {
-                t = apf.json2xml_Attr[w = m[u].nodeName] || ("@" + w);
+                t = ppc.json2xml_Attr[w = m[u].nodeName] || ("@" + w);
                 if (t.indexOf("@a_") !== 0) {
                     out[t] = m[u].nodeValue;
                     filled = true;
@@ -171,10 +171,10 @@ apf.xml2json = function (xml, noattrs) {
             for (u = 0, v = m.length; u < v; u++) {
                 o["@" + (w = m[u].nodeName)] = m[u].nodeValue;
                 if (!s)
-                    s = apf.json2xml_ObjByAttr[w];
+                    s = ppc.json2xml_ObjByAttr[w];
             }
         }
-        if (t = s || apf.json2xml_Obj[name]) {
+        if (t = s || ppc.json2xml_Obj[name]) {
             if (t == 1)
                 t = { key:"name", value: "value" };
             // lets enumerate the children
@@ -182,15 +182,15 @@ apf.xml2json = function (xml, noattrs) {
                 if ((s = cn[u]).nodeType != 1)
                     continue;
 
-                if (t1 = apf.json2xml_Obj[s.nodeName]) {
+                if (t1 = ppc.json2xml_Obj[s.nodeName]) {
                     var o2 = {};
                     for(cn1 = s.childNodes, u1=0, v1 = cn1.length; u1 < v1; u1++) {
                         if ((s1 = cn1[u1]).nodeType != 1)
                             continue;
                         if (w = s1.getAttribute(t1.key)) {
                             o2[w] = (t1.value == 1
-                                ? (s1.childNodes.length ? apf.xml2json(s1, 1) : 1)
-                                : (s1.getAttribute(t1.value || "value")) || apf.xml2json(s1, 1));
+                                ? (s1.childNodes.length ? ppc.xml2json(s1, 1) : 1)
+                                : (s1.getAttribute(t1.value || "value")) || ppc.xml2json(s1, 1));
                         }
                     }
                     o[s.nodeName] = o2;
@@ -198,18 +198,18 @@ apf.xml2json = function (xml, noattrs) {
                 else {
                     if (w = s.getAttribute(t.key)) {
                         o[w] = (t.value == 1
-                            ? (s.childNodes.length ? apf.xml2json(s, 1) : 1)
-                            : (s.getAttribute(t.value || "value")) || apf.xml2json(s, 1));
+                            ? (s.childNodes.length ? ppc.xml2json(s, 1) : 1)
+                            : (s.getAttribute(t.value || "value")) || ppc.xml2json(s, 1));
                     }
                }
             }
         }
         else {
-            o =  apf.xml2json(n);
+            o =  ppc.xml2json(n);
         }
 
         if (out[name] !== undefined) {
-            if ((s = out[name]).dataType != apf.ARRAY)
+            if ((s = out[name]).dataType != ppc.ARRAY)
                 out[name] = [s, o];
             else
                 out[name].push(o);
@@ -218,7 +218,7 @@ apf.xml2json = function (xml, noattrs) {
             out[name] = o;
    }
 
-   return filled ? out : apf.queryValue(xml, "text()");
+   return filled ? out : ppc.queryValue(xml, "text()");
 };
 
 //#endif
@@ -231,7 +231,7 @@ apf.xml2json = function (xml, noattrs) {
  * @param {Mixed}   value The variable to check
  * @type  {Boolean}
  */
-apf.isJson = (function() {
+ppc.isJson = (function() {
     var escapes  = /\\["\\\/bfnrtu@]/g,
         values   = /"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?/g,
         brackets = /(?:^|:|,)(?:\s*\[)+/g,
@@ -737,7 +737,7 @@ if (!this.JSON) {
  * @return {String} the json string representation of the object.
  * @todo allow for XML serialization
  */
-apf.serialize = function(o){
+ppc.serialize = function(o){
     return self.JSON.stringify(o);
 };
 
@@ -749,7 +749,7 @@ apf.serialize = function(o){
  * @param  {String} str the json string to create an object from.
  * @return {Object} the object created from the json string.
  */
-apf.unserialize = function(str){
+ppc.unserialize = function(str){
     if (!str) return str;
     return self.JSON.parse(str);
 };

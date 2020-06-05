@@ -20,7 +20,7 @@
  */
 
 // #ifdef __WITH_AMLPROCESSINGINSTRUCTION
-apf.AmlProcessingInstruction = function(isPrototype){
+ppc.AmlProcessingInstruction = function(isPrototype){
     this.$init(isPrototype);
 };
 
@@ -38,7 +38,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
     this.target = null;
     
     this.serialize = function(){
-        return "<?" + this.target + "\n" + apf.escapeXML(this.nodeValue) + "\n?>";
+        return "<?" + this.target + "\n" + ppc.escapeXML(this.nodeValue) + "\n?>";
     };
     
     this.reload = function(){
@@ -46,19 +46,19 @@ apf.AmlProcessingInstruction = function(isPrototype){
     };
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         calcdata : 0 //Start in code mode
     }, this.$attrExcludePropBind);
     
     this.getAttribute = function(){};
-    this.$setInheritedAttribute = apf.AmlElement.prototype.$setInheritedAttribute;
+    this.$setInheritedAttribute = ppc.AmlElement.prototype.$setInheritedAttribute;
     this.$supportedProperties = [];
     this.$propHandlers        = {};
     this.$booleanProperties   = {};
     this.$inheritProperties   = {};
     
     //#ifdef __WITH_LIVEEDIT
-    apf.LiveEdit && this.implement(apf.LiveEdit);
+    ppc.LiveEdit && this.implement(ppc.LiveEdit);
     //#endif
     
     this.$setValue = function(value){
@@ -97,13 +97,13 @@ apf.AmlProcessingInstruction = function(isPrototype){
         this.$ext.host = this;
 
         // #ifdef __WITH_LIVEEDIT
-        if (!this.hasFeature(apf.__LIVEEDIT__)) {
-            this.implement(apf.LiveEdit);
+        if (!this.hasFeature(ppc.__LIVEEDIT__)) {
+            this.implement(ppc.LiveEdit);
         }
         
-        this.liveedit = apf.isTrue(apf.getInheritedAttribute(this, "liveedit"));
+        this.liveedit = ppc.isTrue(ppc.getInheritedAttribute(this, "liveedit"));
         if (this.liveedit) {
-            //this.implement(apf.LiveEdit);
+            //this.implement(ppc.LiveEdit);
             this.$inheritProperties["liveedit"] = 2;
             this.$propHandlers["liveedit"].call(this, this.liveedit);
         }
@@ -113,7 +113,7 @@ apf.AmlProcessingInstruction = function(isPrototype){
         
         //#ifdef __DEBUG
         if (this.target.match(/\-debug$/)) {
-            apf.console.info(this.$lastFParsed.toString());
+            ppc.console.info(this.$lastFParsed.toString());
         }
         //#endif
     }, true);
@@ -126,5 +126,5 @@ apf.AmlProcessingInstruction = function(isPrototype){
         this.$clearDynamicProperty("calcdata");
         this.$propHandlers["calcdata"].call(this, "");
     };
-}).call(apf.AmlProcessingInstruction.prototype = new apf.AmlNode());
+}).call(ppc.AmlProcessingInstruction.prototype = new ppc.AmlNode());
 // #endif

@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_FONTS || __INC_ALL
 
-apf.LiveEdit.plugin("fonts", function() {
+ppc.LiveEdit.plugin("fonts", function() {
     this.name        = "fonts";
     this.icon        = "fonts";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.buttonNode  = null;
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
     this.colspan     = 1;
     this.fontNames   = {};
 
@@ -62,7 +62,7 @@ apf.LiveEdit.plugin("fonts", function() {
 
     this.execute = function() {
         if (!panelBody)
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
 
         this.editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
         
@@ -89,8 +89,8 @@ apf.LiveEdit.plugin("fonts", function() {
             el = el.parentNode;
         var sFont = el.getAttribute("rel");
         if (sFont) {
-            apf.popup.forceHide();
-            if (apf.isIE) {
+            ppc.popup.forceHide();
+            if (ppc.isIE) {
                 this.editor.$selection.set();
                 if (this.editor.$selection.isCollapsed()) {
                     this.editor.$visualFocus();
@@ -100,7 +100,7 @@ apf.LiveEdit.plugin("fonts", function() {
                 }
             }
             this.editor.$execCommand("FontName", sFont);
-            if (apf.isIE)
+            if (ppc.isIE)
                 this.editor.$selection.collapse(false);
         }
     };
@@ -114,7 +114,7 @@ apf.LiveEdit.plugin("fonts", function() {
         for (var i in this.fontNames) {
             aHtml.push('<a class="editor_panelcell editor_font" style="font-family:',
                 this.fontNames[i], ';" rel="', i,
-                '" href="javascript:;" onmousedown="apf.lookup(', this.$uniqueId,
+                '" href="javascript:;" onmousedown="ppc.lookup(', this.$uniqueId,
                 ').submit(event);">', i, "</a>");
         }
         panelBody.innerHTML = aHtml.join("");
@@ -129,14 +129,14 @@ apf.LiveEdit.plugin("fonts", function() {
     };
 });
 
-apf.LiveEdit.plugin("fontsize", function() {
+ppc.LiveEdit.plugin("fontsize", function() {
     this.name        = "fontsize";
     this.icon        = "fontsize";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.buttonNode  = null;
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     var panelBody;
 
@@ -174,7 +174,7 @@ apf.LiveEdit.plugin("fontsize", function() {
                     this.fontSizes = node.nodeValue.splitSafe(",");
             }
 
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
         this.editor.$showPopup(this, this.$uniqueId, this.buttonNode, 203);
         //return button id, icon and action:
@@ -198,8 +198,8 @@ apf.LiveEdit.plugin("fontsize", function() {
             el = el.parentNode;
         var sSize = el.getAttribute("rel");
         if (sSize) {
-            apf.popup.forceHide();
-            if (apf.isIE) {
+            ppc.popup.forceHide();
+            if (ppc.isIE) {
                 this.editor.$selection.set();
                 if (this.editor.$selection.isCollapsed()) {
                     this.editor.$visualFocus();
@@ -209,10 +209,10 @@ apf.LiveEdit.plugin("fontsize", function() {
                 }
             }
             this.editor.$execCommand("FontSize", sSize);
-            if (apf.isIE)
+            if (ppc.isIE)
                 this.editor.$selection.collapse(false);
         }
-        apf.stopEvent(e);
+        ppc.stopEvent(e);
         return false;
     };
 
@@ -228,7 +228,7 @@ apf.LiveEdit.plugin("fontsize", function() {
             aHtml.push('<a class="editor_panelcell editor_fontsize" style="font-size:',
                 sizeMap[aSizes[i]], "pt;height:", sizeMap[aSizes[i]], "pt;line-height:",
                 sizeMap[aSizes[i]], 'pt;" rel="', aSizes[i],
-                '" href="javascript:;" onmousedown="apf.lookup(', this.$uniqueId,
+                '" href="javascript:;" onmousedown="ppc.lookup(', this.$uniqueId,
                 ').submit(event);">', aSizes[i], " (", sizeMap[aSizes[i]], "pt)</a>");
         }
         panelBody.innerHTML = aHtml.join("");

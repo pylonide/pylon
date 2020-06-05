@@ -19,15 +19,15 @@
  *
  */
 
-apf.__VALIDATION__ = 1 << 6;
+ppc.__VALIDATION__ = 1 << 6;
 
 // #ifdef __WITH_VALIDATION
 
 //if checkequal then notnull = true
-apf.validator = {
+ppc.validator = {
     macro : {
         //#ifdef __PARSER_XSD
-        "datatype"  : "apf.xsd.matchType(value, '",
+        "datatype"  : "ppc.xsd.matchType(value, '",
         "datatype_" : "')",
         //#endif
 
@@ -48,7 +48,7 @@ apf.validator = {
     compile : function(options){
         var m = this.macro, s = ["var temp, valid = true; \
             if (!validityState) \
-                validityState = new apf.validator.validityState(); "];
+                validityState = new ppc.validator.validityState(); "];
 
         if (options.required) {
             s.push("if (checkRequired && (!value || value.toString().trim().length == 0)) {\
@@ -80,7 +80,7 @@ apf.validator = {
  * Remarks:
  * This is part of {@link http://www.whatwg.org/specs/web-apps/current-work/multipage/forms.html#validitystatethe HTML 5 specification}.
  */
-apf.validator.validityState = function(){
+ppc.validator.validityState = function(){
     this.valueMissing    = false,
     this.typeMismatch    = false,
     this.patternMismatch = false,
@@ -141,8 +141,8 @@ apf.validator.validityState = function(){
  * </a:application>
  * ```
  * 
- * @class apf.Validation
- * @inherits apf.AmlElement
+ * @class ppc.Validation
+ * @inherits ppc.AmlElement
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -152,15 +152,15 @@ apf.validator.validityState = function(){
   * @event invalid    Fires when this component goes into an invalid state.
   *
   */
-apf.Validation = function(){
-    this.$regbase = this.$regbase | apf.__VALIDATION__;
+ppc.Validation = function(){
+    this.$regbase = this.$regbase | ppc.__VALIDATION__;
 
     /**
      * Checks if this element's value is valid.
      *
      * @param  {Boolean} [checkRequired] Specifies whether this check also adheres to the `'required'` rule.
      * @returns  {Boolean} Specifies whether the value is valid
-     * @see  apf.ValidationGroup
+     * @see  ppc.ValidationGroup
      * @see  element.submitform
      */
     this.isValid = function(checkRequired){
@@ -168,10 +168,10 @@ apf.Validation = function(){
             return true;
         
         (this.$vOptions.isValid || (this.$vOptions.isValid
-          = apf.validator.compile(this.$vOptions))).call(this,
+          = ppc.validator.compile(this.$vOptions))).call(this,
             typeof this.getValue == "function" ? this.getValue(null, true) : null, 
             checkRequired, this.validityState || 
-            (this.validityState = new apf.validator.validityState()));
+            (this.validityState = new ppc.validator.validityState()));
         
         var valid = this.validityState.valid;
         
@@ -206,8 +206,8 @@ apf.Validation = function(){
 
     // #ifdef __WITH_HTML5
     /**
-     * @alias apf.Validation.validate
-     * @inheritdoc apf.Validation.validate
+     * @alias ppc.Validation.validate
+     * @inheritdoc ppc.Validation.validate
      * @method
      */
     this.checkValidity =
@@ -222,7 +222,7 @@ apf.Validation = function(){
      * @param  {Boolean} [nosetError] Specifies whether the error box is displayed if this component does not validate.
      * @param  {Boolean} [force]      Specifies whether this element is in the error state, and doesn't check if the element's value is invalid.
      * @return  {Boolean}  Indicates whether the value is valid
-     * @see  apf.ValidationGroup
+     * @see  ppc.ValidationGroup
      */
     this.validate = function(ignoreReq, nosetError, force){
         //if (!this.$validgroup) return this.isValid();
@@ -251,18 +251,18 @@ apf.Validation = function(){
 
         errBox.setMessage(this.invalidmsg || value);
         
-        apf.setStyleClass(this.$ext, this.$baseCSSname + "Error");
+        ppc.setStyleClass(this.$ext, this.$baseCSSname + "Error");
         this.showMe(); //@todo scroll refHtml into view
 
         if (this.invalidmsg || value)
             errBox.display(this);
         
         //#ifdef __WITH_HTML5
-        if (this.hasFeature(apf.__MULTISELECT__) && this.validityState.$errorXml)
+        if (this.hasFeature(ppc.__MULTISELECT__) && this.validityState.$errorXml)
             this.select(this.validityState.$errorXml);
         //#endif
         
-        if (apf.document.activeElement && apf.document.activeElement != this)
+        if (ppc.document.activeElement && ppc.document.activeElement != this)
             this.focus(null, {mouse:true}); //arguable...
     };
 
@@ -328,15 +328,15 @@ apf.Validation = function(){
      *   - `xsd:unsignedShort`
      *   - `xsd:unsignedByte`
      *   - `xsd:positiveInteger`
-     *   - `apf:url`
-     *   - `apf:website`
-     *   - `apf:email`
-     *   - `apf:creditcard`
-     *   - `apf:expdate`
-     *   - `apf:wechars`
-     *   - `apf:phonenumber`
-     *   - `apf:faxnumber`
-     *   - `apf:mobile`
+     *   - `ppc:url`
+     *   - `ppc:website`
+     *   - `ppc:email`
+     *   - `ppc:creditcard`
+     *   - `ppc:expdate`
+     *   - `ppc:wechars`
+     *   - `ppc:phonenumber`
+     *   - `ppc:faxnumber`
+     *   - `ppc:mobile`
      */
     /**
      * @attribute  {Number}  min          Sets or gets the minimal value for which the value of this element is valid.
@@ -382,10 +382,10 @@ apf.Validation = function(){
      * ```
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        //this.addEventListener(this.hasFeature(apf.__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
+        //this.addEventListener(this.hasFeature(ppc.__MULTISELECT__) ? "onafterselect" : "onafterchange", onafterchange);
         /* Temp disabled, because I don't understand it (RLD)
         this.addEventListener("beforechange", function(){
-            if (this.xmlRoot && apf.getBoundValue(this) === this.getValue())
+            if (this.xmlRoot && ppc.getBoundValue(this) === this.getValue())
                 return false;
         });*/
         
@@ -395,7 +395,7 @@ apf.Validation = function(){
     });
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         pattern   : 1,
         validtest : 3
     }, this.$attrExcludePropBind);
@@ -428,11 +428,11 @@ apf.Validation = function(){
             }
             else {
                 //#ifdef __WITH_NAMESERVER
-                vgroup = apf.nameserver.get("validgroup", value);
+                vgroup = ppc.nameserver.get("validgroup", value);
                 //#endif
             }
 
-            this.$validgroup = vgroup || new apf.ValidationGroup(value);
+            this.$validgroup = vgroup || new ppc.ValidationGroup(value);
             this.$validgroup.register(this);
             /*
                 @todo What about children, when created after start
@@ -468,7 +468,7 @@ apf.Validation = function(){
         delete this.$vOptions.isValid;
     };
     
-    //@todo rewrite this for apf3.0 - it should just execute a live markup
+    //@todo rewrite this for ppc3.0 - it should just execute a live markup
     this.$propHandlers["validtest"] = function(value){
         var _self = this, rvCache = {};
         /**
@@ -484,19 +484,19 @@ apf.Validation = function(){
             if(rvCache[value] == -1) return true;
             rvCache[value] = -1;
 
-            apf.getData(this.validtest.toString(), {
+            ppc.getData(this.validtest.toString(), {
                xmlNode : this.xmlRoot,
                value   : this.getValue(),
                callback : function(data, state, extra){
-                  if (state != apf.SUCCESS) {
-                      if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
+                  if (state != ppc.SUCCESS) {
+                      if (state == ppc.TIMEOUT && extra.retries < ppc.maxHttpRetries)
                           return extra.tpModule.retry(extra.id);
                       else {
-                          var commError = new Error(apf.formatErrorString(0, _self, 
+                          var commError = new Error(ppc.formatErrorString(0, _self, 
                             "Validating entry at remote source", 
                             "Communication error: \n\n" + extra.message));
 
-                          if (_self.dispatchEvent("error", apf.extend({
+                          if (_self.dispatchEvent("error", ppc.extend({
                             error : commError, 
                             state : status
                           }, extra)) !== false)
@@ -505,7 +505,7 @@ apf.Validation = function(){
                       }
                   }
 
-                  rvCache[value] = apf.isTrue(data);//instr[1] ? data == instr[1] : apf.isTrue(data);
+                  rvCache[value] = ppc.isTrue(data);//instr[1] ? data == instr[1] : ppc.isTrue(data);
                   
                   if(!rvCache[value]){
                     if (!_self.hasFocus())
@@ -518,24 +518,24 @@ apf.Validation = function(){
             return true;
         };
         
-        (this.$vOptions || (this.$vOptions = {})).custom = "apf.lookup(" + this.$uniqueId + ").$checkRemoteValidation()";
+        (this.$vOptions || (this.$vOptions = {})).custom = "ppc.lookup(" + this.$uniqueId + ").$checkRemoteValidation()";
         delete this.$vOptions.isValid;
     };
 };
 
 //#ifdef __PARSER_XSD
-apf.GuiElement.propHandlers["datatype"]   =
+ppc.GuiElement.propHandlers["datatype"]   =
 //#endif
-apf.GuiElement.propHandlers["required"]   = 
-apf.GuiElement.propHandlers["pattern"]    = 
-apf.GuiElement.propHandlers["min"]        = 
-apf.GuiElement.propHandlers["max"]        = 
-apf.GuiElement.propHandlers["maxlength"]  = 
-apf.GuiElement.propHandlers["minlength"]  = 
-apf.GuiElement.propHandlers["notnull"]    = 
-apf.GuiElement.propHandlers["checkequal"] = 
-apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
-    this.implement(apf.Validation);
+ppc.GuiElement.propHandlers["required"]   = 
+ppc.GuiElement.propHandlers["pattern"]    = 
+ppc.GuiElement.propHandlers["min"]        = 
+ppc.GuiElement.propHandlers["max"]        = 
+ppc.GuiElement.propHandlers["maxlength"]  = 
+ppc.GuiElement.propHandlers["minlength"]  = 
+ppc.GuiElement.propHandlers["notnull"]    = 
+ppc.GuiElement.propHandlers["checkequal"] = 
+ppc.GuiElement.propHandlers["validtest"]  = function(value, prop){
+    this.implement(ppc.Validation);
     this.$propHandlers[prop].call(this, value, prop);
 }
 
@@ -582,8 +582,8 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
  *  vgForm.validate();
  * ```
  *
- * @class apf.ValidationGroup
- * @inherits apf.Class
+ * @class ppc.ValidationGroup
+ * @inherits ppc.Class
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -593,17 +593,17 @@ apf.GuiElement.propHandlers["validtest"]  = function(value, prop){
 /**
  * @event validation Fires when the validation group isn't validated.
  */
-apf.ValidationGroup = function(name){
+ppc.ValidationGroup = function(name){
     this.$init();
     
     this.childNodes = [];
     
     if (name)
-        apf.setReference(name, this);
+        ppc.setReference(name, this);
     
     this.name = name || "validgroup" + this.$uniqueId;
     //#ifdef __WITH_NAMESERVER
-    apf.nameserver.register("validgroup", this.name, this);
+    ppc.nameserver.register("validgroup", this.name, this);
     //#endif
 };
 
@@ -622,16 +622,16 @@ apf.ValidationGroup = function(name){
 
     /**
      * Adds an AML element to this validation group.
-     * @param o {apf.AmlElement} The AML element to add
+     * @param o {ppc.AmlElement} The AML element to add
      */
     this.register   = function(o){ 
-        if (o.hasFeature(apf.__VALIDATION__)) 
+        if (o.hasFeature(ppc.__VALIDATION__)) 
             this.childNodes.push(o);
     };
     
     /**
      * Removes a AML element from this validation group.
-     * @param o {apf.AmlElement} The AML element to remove
+     * @param o {ppc.AmlElement} The AML element to remove
      */
     this.unregister = function(o){
         this.childNodes.remove(o); 
@@ -641,23 +641,23 @@ apf.ValidationGroup = function(name){
      * Returns a string representation of this object.
      */
     this.toString = function(){
-        return "[APF Validation Group]";
+        return "[PPC Validation Group]";
     };
 
     //Shared among all validationgroups
     var errbox;
     /**
-     * Retrieves the {@link apf.errorbox} used for a specified element.
+     * Retrieves the {@link ppc.errorbox} used for a specified element.
      *
-     * @param  {apf.AmlNode}  o An AMLNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link apf.ValidationGroup.allowMultipleErrors} to influence when Errorboxes are created.
+     * @param  {ppc.AmlNode}  o An AMLNode specifying the element for which the Errorbox should be found. If none is found, an Errorbox is created. Use the {@link ppc.ValidationGroup.allowMultipleErrors} to influence when Errorboxes are created.
      * @param  {Boolean}  no_create    Boolean that specifies whether new Errorbox may be created when it doesn't exist already
-     * @return  {apf.errorbox}  The found (or created) Errorbox
+     * @return  {ppc.errorbox}  The found (or created) Errorbox
      */
     this.getErrorBox = function(o, no_create){
         if (this.allowMultipleErrors || !errbox && !no_create) {
-            errbox            = new apf.errorbox();
+            errbox            = new ppc.errorbox();
             errbox.$pHtmlNode = o.$ext.parentNode;
-            errbox.skinset    = apf.getInheritedAttribute(o.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
+            errbox.skinset    = ppc.getInheritedAttribute(o.parentNode, "skinset"); //@todo use skinset here. Has to be set in presentation
             errbox.dispatchEvent("DOMNodeInsertedIntoDocument");
         }
         return errbox;
@@ -682,7 +682,7 @@ apf.ValidationGroup = function(name){
                 continue;
             if (!oEl.disabled
               && (!this.validateVisibleOnly && oEl.visible || !oEl.$ext || oEl.$ext.offsetHeight)
-              && (oEl.hasFeature(apf.__VALIDATION__) && oEl.isValid && !oEl.isValid(!ignoreReq))) {
+              && (oEl.hasFeature(ppc.__VALIDATION__) && oEl.isValid && !oEl.isValid(!ignoreReq))) {
                 //|| !ignoreReq && oEl.required && (!(v = oEl.getValue()) || new String(v).trim().length == 0)
                 
                 if (!nosetError) {
@@ -710,7 +710,7 @@ apf.ValidationGroup = function(name){
     // #ifdef __WITH_HTML5
     /**
      * 
-     * @inheritDoc apf.ValidationGroup.isValid
+     * @inheritDoc ppc.ValidationGroup.isValid
      * @method
      */
     this.checkValidity =
@@ -718,7 +718,7 @@ apf.ValidationGroup = function(name){
     
     /**
      * 
-     * @inheritDoc apf.ValidationGroup.isValid
+     * @inheritDoc ppc.ValidationGroup.isValid
      * @method
      */
     this.validate =
@@ -731,7 +731,7 @@ apf.ValidationGroup = function(name){
      * @method isValid
      * @param  {Boolean}    [ignoreReq]  Specifies whether to adhere to the 'required' check.
      * @param  {Boolean}    [nosetError  Specifies whether to not set the error state of the element with an invalid value
-     * @param  {apf.AmlElement} [page]   The page for which the children will be checked. When not specified all elements of this validation group are checked.
+     * @param  {ppc.AmlElement} [page]   The page for which the children will be checked. When not specified all elements of this validation group are checked.
      * @return  {Boolean}  Specifies whether the checked elements are valid.
      */
     this.isValid = function(ignoreReq, nosetError, page){
@@ -749,7 +749,7 @@ apf.ValidationGroup = function(name){
             //#ifdef __DEBUG
             }
             catch(e) {
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Validating Page",
                     "Error in javascript validation string of page: '"
                     + page.validation + "'", page.$aml));
@@ -764,8 +764,8 @@ apf.ValidationGroup = function(name){
 
         return !found;
     };
-}).call(apf.ValidationGroup.prototype = new apf.Class());
+}).call(ppc.ValidationGroup.prototype = new ppc.Class());
 
-apf.config.$inheritProperties["validgroup"] = 1;
+ppc.config.$inheritProperties["validgroup"] = 1;
 
 // #endif

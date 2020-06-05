@@ -21,8 +21,8 @@
 
 // #ifdef __ENABLE_LIVEEDIT_RICHTEXT || __INC_ALL
 
-apf.LiveEdit.richtext = function(){
-    this.$state          = apf.ON;
+ppc.LiveEdit.richtext = function(){
+    this.$state          = ppc.ON;
     this.$buttons        = {};
     this.$classToolbar   = "editor_Toolbar";
     this.$plugins        = {};
@@ -52,7 +52,7 @@ apf.LiveEdit.richtext = function(){
         $setTimeout(function() {
             _self.$notifyAllButtons(value);
             if (_self.$pluginsActive == "code")
-                _self.$notifyButton("code", apf.SELECTED);
+                _self.$notifyButton("code", ppc.SELECTED);
         });
     };
 
@@ -99,7 +99,7 @@ apf.LiveEdit.richtext = function(){
         function keyupHandler() {
             clearTimeout(_self.$keyupTimer);
             _self.$keyupTimer = null;
-            if (_self.state == apf.DISABLED) return;
+            if (_self.state == ppc.DISABLED) return;
             _self.$notifyAllButtons();
             _self.dispatchEvent("typing", {editor: _self, event: e});
             _self.$notifyAllPlugins("typing", e.keyCode);
@@ -116,7 +116,7 @@ apf.LiveEdit.richtext = function(){
         var found,
             code = e.which || e.keyCode;
 
-        if (apf.isIE) {
+        if (ppc.isIE) {
             switch (code) {
                 case 66:  // B
                 case 98:  // b
@@ -126,7 +126,7 @@ apf.LiveEdit.richtext = function(){
                 case 85:  // U
                 //case 86:  // V |_ See this.$paste()
                 //case 118: // v |  event handler...
-                    if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey
+                    if ((e.ctrlKey || (ppc.isMac && e.metaKey)) && !e.shiftKey
                       && !e.altKey && this.realtime)
                         // #ifdef __WITH_DATAACTION
                         this.change(this.getValue());
@@ -155,7 +155,7 @@ apf.LiveEdit.richtext = function(){
         }
         else {
             this.$visualFocus();
-            if ((e.ctrlKey || (apf.isMac && e.metaKey)) && !e.shiftKey && !e.altKey) {
+            if ((e.ctrlKey || (ppc.isMac && e.metaKey)) && !e.shiftKey && !e.altKey) {
                 found = false;
                 switch (code) {
                     case 66: // B
@@ -175,13 +175,13 @@ apf.LiveEdit.richtext = function(){
                         break;
                     case 86:  // V
                     case 118: // v
-                        if (!apf.isGecko)
+                        if (!ppc.isGecko)
                             this.$paste();
                         //found = true;
                         break;
                 }
                 if (found) {
-                    apf.stopEvent(e.htmlEvent || e);
+                    ppc.stopEvent(e.htmlEvent || e);
                     if (this.realtime && this.$bStandalone)
                         // #ifdef __WITH_DATAACTION
                         this.change(this.getValue());
@@ -192,7 +192,7 @@ apf.LiveEdit.richtext = function(){
             }
             var sel, r, r2, m;
             // gecko cannot collapse the selection with the arrow keys. Please, don't ask me why...
-            if (apf.isGecko && (code == 37 || code == 39) && !e.shiftKey && !e.metaKey && !e.ctrlKey && !this.$selection.isCollapsed()) {
+            if (ppc.isGecko && (code == 37 || code == 39) && !e.shiftKey && !e.metaKey && !e.ctrlKey && !this.$selection.isCollapsed()) {
                 // get current range
                 sel = this.$selection.get()
                 r   = this.$selection.getRange();
@@ -207,7 +207,7 @@ apf.LiveEdit.richtext = function(){
                 }, 20);
             }
             // in webkit, first word cannot be reached by ctrl+left
-            else if (apf.isWebkit && code == 37 && (e.ctrlKey || (apf.isMac && e.altKey)) && !e.shiftKey) {
+            else if (ppc.isWebkit && code == 37 && (e.ctrlKey || (ppc.isMac && e.altKey)) && !e.shiftKey) {
                 // get current range
                 sel = this.$selection.get()
                 r   = this.$selection.getRange();
@@ -223,7 +223,7 @@ apf.LiveEdit.richtext = function(){
             }
             // in gecko, the last word cannot be reached by ctrl+right (strangely 
             // enough this does not occur on mac - prolly 'cause it uses the alt-key)
-            else if (apf.isGecko && code == 39 && !apf.isMac && e.ctrlKey && !e.altKey) {
+            else if (ppc.isGecko && code == 39 && !ppc.isMac && e.ctrlKey && !e.altKey) {
                 // get current range
                 sel = this.$selection.get()
                 r   = this.$selection.getRange();
@@ -260,14 +260,14 @@ apf.LiveEdit.richtext = function(){
         // Tab navigation handling
         if (code == 9) {
             if (listBehavior.call(this, e.htmlEvent || e))
-                return apf.stopEvent(e.htmlEvent || e);
+                return ppc.stopEvent(e.htmlEvent || e);
         }
         else if (code == 8 || code == 46) { //backspace or del
             listBehavior.call(this, e.htmlEvent || e, true); //correct lists, if any
         }
         
         if (found)
-            return apf.stopEvent(e);
+            return ppc.stopEvent(e);
     };
     
     /**
@@ -293,7 +293,7 @@ apf.LiveEdit.richtext = function(){
      * @private
      */
     function buttonEnable() {
-        apf.setStyleClass(this, "editor_enabled",
+        ppc.setStyleClass(this, "editor_enabled",
             ["editor_selected", "editor_disabled"]);
         this.disabled = false;
     }
@@ -305,7 +305,7 @@ apf.LiveEdit.richtext = function(){
      * @private
      */
     function buttonDisable() {
-        apf.setStyleClass(this, "editor_disabled",
+        ppc.setStyleClass(this, "editor_disabled",
             ["editor_selected", "editor_enabled"]);
         this.disabled = true;
     }
@@ -323,15 +323,15 @@ apf.LiveEdit.richtext = function(){
     function getState(id, isPlugin) {
         if (isPlugin) {
             var plugin = this.$plugins[id];
-            if (this.state == apf.DISABLED && !plugin.noDisable)
-                return apf.DISABLED;
+            if (this.state == ppc.DISABLED && !plugin.noDisable)
+                return ppc.DISABLED;
             return plugin.queryState
                 ? plugin.queryState(this)
                 : this.state;
         }
 
-        if (this.state == apf.DISABLED)
-            return apf.DISABLED;
+        if (this.state == ppc.DISABLED)
+            return ppc.DISABLED;
 
         return this.$queryCommandState(id);
     }
@@ -351,9 +351,9 @@ apf.LiveEdit.richtext = function(){
             return false;
         if (typeof e.shift != "undefined")
            e.shiftKey = e.shift;
-        var pList = this.$plugins["bullist"].queryState(this) == apf.ON
+        var pList = this.$plugins["bullist"].queryState(this) == ppc.ON
             ? this.$plugins["bullist"]
-            : this.$plugins["numlist"].queryState(this) == apf.ON
+            : this.$plugins["numlist"].queryState(this) == ppc.ON
                 ? this.$plugins["numlist"]
                 : null;
         if (!pList) return false;
@@ -372,18 +372,18 @@ apf.LiveEdit.richtext = function(){
      * @type Number
      */
     this.$queryCommandState = function(name) {
-        if (apf.isGecko && (name == "paste" || name == "copy" || name == "cut"))
-            return apf.DISABLED;
+        if (ppc.isGecko && (name == "paste" || name == "copy" || name == "cut"))
+            return ppc.DISABLED;
         try {
             if (!this.$activeDocument.queryCommandEnabled(name))
-                return apf.DISABLED;
+                return ppc.DISABLED;
             else
                 return this.$activeDocument.queryCommandState(name)
-                    ? apf.ON
-                    : apf.OFF;
+                    ? ppc.ON
+                    : ppc.OFF;
         }
         catch (e) {
-            return apf.OFF;
+            return ppc.OFF;
         }
     };
 
@@ -413,7 +413,7 @@ apf.LiveEdit.richtext = function(){
      * 
      */
     this.$execCommand = function(name, param) {
-        if (this.$plugins[name] || this.state == apf.DISABLED)
+        if (this.$plugins[name] || this.state == ppc.DISABLED)
             return;
 
         this.$selection.set();
@@ -429,7 +429,7 @@ apf.LiveEdit.richtext = function(){
             c = c.replace(/<\/?(\w+)(?:\s.*?|)>/g, function(m, tag) {
                 return !disallowed[tag] ? m : "";
             });
-            if (apf.isIE) {
+            if (ppc.isIE) {
                 var htmlNode = this.$selection.setContent("<div>" + c
                     + "</div>");
                 this.$selection.selectNode(htmlNode);
@@ -446,16 +446,16 @@ apf.LiveEdit.richtext = function(){
         // make sure that the command didn't leave any <P> tags behind (cleanup)
         name       = name.toLowerCase();
         var bNoSel = (name == "selectall");
-        if (apf.isIE) {
+        if (ppc.isIE) {
             if ((name == "insertunorderedlist" || name == "insertorderedlist")
-              && this.$queryCommandState(name) == apf.OFF) {
+              && this.$queryCommandState(name) == ppc.OFF) {
                 bNoSel = true;
             }
             else if (name == "outdent") {
                 bNoSel = true;
                 if (this.$plugins["bullist"] && this.$plugins["numlist"]) {
-                    if (this.$plugins["bullist"].queryState(this) != apf.OFF
-                     && this.$plugins["numlist"].queryState(this) != apf.OFF)
+                    if (this.$plugins["bullist"].queryState(this) != ppc.OFF
+                     && this.$plugins["numlist"].queryState(this) != ppc.OFF)
                         bNoSel = false;
                 }
                 var oNode = this.$selection.getSelectedNode();
@@ -468,7 +468,7 @@ apf.LiveEdit.richtext = function(){
                     ? this.$activeDocument.body
                     : this.$activeNode;
                 //#ifdef __WITH_HTML_CLEANER
-                el.innerHTML = apf.htmlCleaner.prepare(el.innerHTML);
+                el.innerHTML = ppc.htmlCleaner.prepare(el.innerHTML);
                 //#endif
                 this.$controlAgentBehavior(el);
             }
@@ -492,7 +492,7 @@ apf.LiveEdit.richtext = function(){
             //_self.$notifyAllButtons(); // @todo This causes pain, find out why
             if (!bNoSel)
                _self.$selection.set();
-            if (apf.isIE) {
+            if (ppc.isIE) {
                 _self.focus();
                 $setTimeout(function() {_self.$visualFocus();});
             }
@@ -507,14 +507,14 @@ apf.LiveEdit.richtext = function(){
      * Add a plugin to the collection IF an implementation actually exists.
      *
      * @param {String} sPlugin The plugin identifier/ name
-     * @type  {apf.LiveEdit.plugin}
+     * @type  {ppc.LiveEdit.plugin}
      */
     this.$addPlugin = function(sPlugin) {
         if (this.$plugins[sPlugin])
             return this.$plugins[sPlugin];
-        if (!apf.LiveEdit.plugin[sPlugin]) return null;
+        if (!ppc.LiveEdit.plugin[sPlugin]) return null;
         // yay, plugin does exist, so we can instantiate it for the editor
-        var plugin = new apf.LiveEdit.plugin[sPlugin](sPlugin);
+        var plugin = new ppc.LiveEdit.plugin[sPlugin](sPlugin);
         // add it to main plugin collection
         this.$plugins[plugin.name] = plugin;
 
@@ -637,11 +637,11 @@ apf.LiveEdit.richtext = function(){
 
         oButton.state = state;
 
-        if (state == apf.DISABLED)
+        if (state == ppc.DISABLED)
             buttonDisable.call(oButton);
-        else if (state == apf.HIDDEN)
+        else if (state == ppc.HIDDEN)
             oButton.style.display = "none";
-        else if (state == apf.VISIBLE)
+        else if (state == ppc.VISIBLE)
             oButton.style.display = "";
         else {
             if (oButton.style.display == "none")
@@ -651,8 +651,8 @@ apf.LiveEdit.richtext = function(){
                 buttonEnable.call(oButton);
 
             var btnState = (oButton.selected)
-                ? apf.ON
-                : apf.OFF;
+                ? ppc.ON
+                : ppc.OFF;
 
             if (state != btnState) {
                 this.$buttonClick({
@@ -679,7 +679,7 @@ apf.LiveEdit.richtext = function(){
     this.$restoreFocus = function(bWithSel) {
         // for now, only IE needs this workaround to return the focus to the
         // liveEdit area - whilst preserving the correct state.
-        if (apf.isIE) {
+        if (ppc.isIE) {
             var _self = this;
             $setTimeout(function() {
                 if (bWithSel)
@@ -705,7 +705,7 @@ apf.LiveEdit.richtext = function(){
         if (this.$selection)
             this.$selection.cache();
 
-        apf.setStyleClass(oButton, "active");
+        ppc.setStyleClass(oButton, "active");
         var item = oButton.getAttribute("type");
 
         //context 'this' is the buttons' DIV domNode reference
@@ -714,19 +714,19 @@ apf.LiveEdit.richtext = function(){
             e.state    = getState.call(this, item, e.isPlugin);
         }
 
-        if (e.state == apf.DISABLED) {
+        if (e.state == ppc.DISABLED) {
             buttonDisable.call(oButton);
         }
         else {
             if (this.disabled)
                 buttonEnable.call(oButton);
 
-            if (e.state == apf.ON) {
-                apf.setStyleClass(oButton, "editor_selected");
+            if (e.state == ppc.ON) {
+                ppc.setStyleClass(oButton, "editor_selected");
                 oButton.selected = true;
             }
             else {
-                apf.setStyleClass(oButton, "", ["editor_selected"]);
+                ppc.setStyleClass(oButton, "", ["editor_selected"]);
                 oButton.selected = false;
             }
 
@@ -738,7 +738,7 @@ apf.LiveEdit.richtext = function(){
                 e.state = getState.call(this, item, e.isPlugin);
             }
         }
-        apf.setStyleClass(oButton, "", ["active"]);
+        ppc.setStyleClass(oButton, "", ["active"]);
     };
 
     /**
@@ -761,12 +761,12 @@ apf.LiveEdit.richtext = function(){
 
         for (i = 0, l = oNode.childNodes.length; i < l; i++) {
             node = oNode.childNodes[i];
-            if (node.nodeType != 1 || node[apf.TAGNAME] != sSkinTag)
+            if (node.nodeType != 1 || node[ppc.TAGNAME] != sSkinTag)
                 continue;
 
             //#ifdef __DEBUG
-            /*if (node[apf.TAGNAME] != "toolbar") {
-                throw new Error(apf.formatErrorString(0, this,
+            /*if (node[ppc.TAGNAME] != "toolbar") {
+                throw new Error(ppc.formatErrorString(0, this,
                     "Creating toolbars",
                     "Invalid element found in toolbars definition",
                     node));
@@ -778,7 +778,7 @@ apf.LiveEdit.richtext = function(){
 
                 //#ifdef __DEBUG;
                 if (bNode.nodeType != 3 && bNode.nodeType != 4) {
-                    throw new Error(apf.formatErrorString(0, this,
+                    throw new Error(ppc.formatErrorString(0, this,
                         "Creating toolbars",
                         "Invalid element found in toolbar definition",
                         bNode));
@@ -793,7 +793,7 @@ apf.LiveEdit.richtext = function(){
 
             this.$docklet.$getNewContext("toolbar");
             tb = bAfterRender
-                ? apf.insertHtmlNode(this.$docklet.$getLayoutNode("toolbar"), oParent, oParent.firstChild)
+                ? ppc.insertHtmlNode(this.$docklet.$getLayoutNode("toolbar"), oParent, oParent.firstChild)
                 : oParent.insertBefore(this.$docklet.$getLayoutNode("toolbar"), oParent.firstChild);//, oParent.lastChild
 
             for (z = 0, x = buttons.length; z < x; z++) {
@@ -802,14 +802,14 @@ apf.LiveEdit.richtext = function(){
                 if (item == "|") { //seperator!
                     this.$docklet.$getNewContext("divider");
                     if (bAfterRender)
-                        apf.insertHtmlNode(this.$docklet.$getLayoutNode("divider"), tb);
+                        ppc.insertHtmlNode(this.$docklet.$getLayoutNode("divider"), tb);
                     else
                         tb.appendChild(this.$docklet.$getLayoutNode("divider"));
                 }
                 else {
                     this.$docklet.$getNewContext(sButton);
                     oButton = bAfterRender
-                        ? oButton = apf.insertHtmlNode(this.$docklet.$getLayoutNode(sButton), tb)
+                        ? oButton = ppc.insertHtmlNode(this.$docklet.$getLayoutNode(sButton), tb)
                         : oButton = tb.appendChild(this.$docklet.$getLayoutNode(sButton));
 
                     bIsPlugin = false;
@@ -818,7 +818,7 @@ apf.LiveEdit.richtext = function(){
                         plugin = this.$addPlugin(item);
                         // #ifdef __DEBUG
                         if (!plugin)
-                            apf.console.error("Plugin '" + item + "' can not "
+                            ppc.console.error("Plugin '" + item + "' can not "
                                             + "be found and/ or instantiated.",
                                               "editor");
                         // #endif
@@ -829,7 +829,7 @@ apf.LiveEdit.richtext = function(){
                         plugin = plugin || plugins[item];
                         if (!plugin)
                             continue;
-                        if (!(plugin.type & apf.TOOLBARITEM))
+                        if (!(plugin.type & ppc.TOOLBARITEM))
                             continue;
 
                         this.$docklet.$getLayoutNode(sButton, "label", oButton)
@@ -844,12 +844,12 @@ apf.LiveEdit.richtext = function(){
                         oButton.setAttribute("title", this.$translate(item));
                     }
 
-                    oButton.setAttribute("onmousedown", sBtnClick || "apf.all["
+                    oButton.setAttribute("onmousedown", sBtnClick || "ppc.all["
                         + this.$uniqueId + "].$buttonClick(event, this, true);");
                     oButton.setAttribute("onmouseover", 
-                        "apf.setStyleClass(this, 'hover', null, true);");
+                        "ppc.setStyleClass(this, 'hover', null, true);");
                     oButton.setAttribute("onmouseout", 
-                        "apf.setStyleClass(this, '', ['hover'], true);");
+                        "ppc.setStyleClass(this, '', ['hover'], true);");
 
                     oButton.setAttribute("type", item);
                 }
@@ -858,7 +858,7 @@ apf.LiveEdit.richtext = function(){
             buttons = null;
         }
 
-        if (apf.isIE) {
+        if (ppc.isIE) {
             var nodes = oParent.getElementsByTagName("*");
             for (i = nodes.length - 1; i >= 0; i--)
                 nodes[i].setAttribute("unselectable", "On");
@@ -869,11 +869,11 @@ apf.LiveEdit.richtext = function(){
     this.$editors["richtext"] = {
         create : function(oHtml, rule){
             this.getValue = function(){
-                return apf.htmlCleaner.parse(oHtml.innerHTML);
+                return ppc.htmlCleaner.parse(oHtml.innerHTML);
             };
             oHtml.setAttribute("richtext", "true");
 
-            if (apf.isGecko) {
+            if (ppc.isGecko) {
                 try {
                     // On each return, insert a BR element
                     document.execCommand("insertBrOnReturn", false, true);
@@ -891,16 +891,16 @@ apf.LiveEdit.richtext = function(){
                 this.$docklet.show();
                 
                 //Docklet animation
-                var pos = apf.getAbsolutePosition(oHtml);
+                var pos = ppc.getAbsolutePosition(oHtml);
                 var w   = this.$docklet.$ext.offsetWidth;
                 var h   = this.$docklet.$ext.offsetHeight;
-                if (pos[0] + oHtml.offsetWidth + w + 5 > apf.getWindowWidth())
-                    pos[0] = apf.getWindowWidth() - w - 5;
+                if (pos[0] + oHtml.offsetWidth + w + 5 > ppc.getWindowWidth())
+                    pos[0] = ppc.getWindowWidth() - w - 5;
                 else 
                     pos[0] += oHtml.offsetWidth + 5;
 
                 if (pos[1] - h - 5 < 0) {
-                    if (pos[1] + oHtml.offsetHeight + 5 + h < apf.getWindowHeight())
+                    if (pos[1] + oHtml.offsetHeight + 5 + h < ppc.getWindowHeight())
                         pos[1] = pos[1] + oHtml.offsetHeight + 5;
                     else
                         pos[1] = 0;
@@ -908,7 +908,7 @@ apf.LiveEdit.richtext = function(){
                 else 
                     pos[1] -= h + 5;
                 
-                var dPos = apf.getAbsolutePosition(this.$docklet.$ext);
+                var dPos = ppc.getAbsolutePosition(this.$docklet.$ext);
                 if (this.$control)
                     this.$control.stop();
                 this.$control = {};
@@ -924,27 +924,27 @@ apf.LiveEdit.richtext = function(){
                 }];
                 if (!wasVisible)
                     tweens.push({
-                        from    : 0, //apf.getOpacity(this.$docklet.$ext),
+                        from    : 0, //ppc.getOpacity(this.$docklet.$ext),
                         to      : 1,
                         type    : "fade"
                     });
                 else
-                    apf.setOpacity(this.$docklet.$ext, 1);
+                    ppc.setOpacity(this.$docklet.$ext, 1);
 
-                apf.tween.multi(this.$docklet, {
+                ppc.tween.multi(this.$docklet, {
                     steps   : 30,
                     interval: 10,
                     control : this.$control,
-                    anim    : apf.tween.easeInOutCubic,
+                    anim    : ppc.tween.easeInOutCubic,
                     tweens  : tweens
                 });
                 
                 setTimeout(function(){wasVisible = true;});
             }
             
-            this.setProperty("state", apf.OFF);
+            this.setProperty("state", ppc.OFF);
             
-            if (apf.hasContentEditable)
+            if (ppc.hasContentEditable)
                 oHtml.contentEditable = true;
             else {
                 document.body.setAttribute("spellcheck", "false");
@@ -953,10 +953,10 @@ apf.LiveEdit.richtext = function(){
             
             // #ifdef __WITH_HTML_CLEANER
             this.$lastValue = [];
-            this.$lastValue[0] = apf.htmlCleaner.prepare(
+            this.$lastValue[0] = ppc.htmlCleaner.prepare(
                 (this.$lastValue[1] = oHtml.innerHTML)
                   .replace(/<p[^>]*>/gi, "").replace(/<\/P>/g, "").replace(/<\/p>/g, 
-                    "<br _apf_marker='1' /><br _apf_marker='1' />"));
+                    "<br _ppc_marker='1' /><br _ppc_marker='1' />"));
 
             if (this.$lastValue[1] != this.$lastValue[0]) {
                 //Set bookmark for cursor position
@@ -973,7 +973,7 @@ apf.LiveEdit.richtext = function(){
         },
         remove : function(oHtml, rule){
             oHtml.blur();
-            if (apf.hasContentEditable)
+            if (ppc.hasContentEditable)
                 oHtml.contentEditable = false;
             else
                 document.designMode = "off";
@@ -1022,13 +1022,13 @@ apf.LiveEdit.richtext = function(){
             this.addEventListener("keydown", keydownHandler, true);
             this.addEventListener("keyup",   keyupHandler, true);
         }
-        //@todo apf3.0 get this from portal.js
-        else if (!this.$docklet && !(apf.LiveEdit.toolwin = this.$docklet)) {
+        //@todo ppc3.0 get this from portal.js
+        else if (!this.$docklet && !(ppc.LiveEdit.toolwin = this.$docklet)) {
             var _self     = this;
-            this.$docklet = apf.LiveEdit.toolwin =
-                new apf.modalwindow({
+            this.$docklet = ppc.LiveEdit.toolwin =
+                new ppc.modalwindow({
                     htmlNode   : document.body,
-                    skinset    : apf.getInheritedAttribute(this.parentNode, "skinset"),
+                    skinset    : ppc.getInheritedAttribute(this.parentNode, "skinset"),
                     buttons    : "",
                     title      : "Format",
                     icon       : "application.png",
@@ -1089,10 +1089,10 @@ apf.LiveEdit.richtext = function(){
     };
 
     /**
-     * Make an instance of apf.popup (identified with a pointer to the cached
+     * Make an instance of ppc.popup (identified with a pointer to the cached
      * DOM node - sCacheId) visible to the user.
      *
-     * @param {apf.LiveEdit.plugin} oPlugin  The plugin instance
+     * @param {ppc.LiveEdit.plugin} oPlugin  The plugin instance
      * @param {String}            sCacheId Pointer to the cached DOM node
      * @param {DOMElement}        oRef     Button node to show popup below to
      * @param {Number}            iWidth   New width of the popup
@@ -1100,10 +1100,10 @@ apf.LiveEdit.richtext = function(){
      * 
      */
     this.$showPopup = function(oPlugin, sCacheId, oRef, iWidth, iHeight) {
-        if (apf.popup.last && apf.popup.last != sCacheId) {
-            var o = apf.lookup(apf.popup.last);
+        if (ppc.popup.last && ppc.popup.last != sCacheId) {
+            var o = ppc.lookup(ppc.popup.last);
             if (o) {
-                o.state = apf.OFF;
+                o.state = ppc.OFF;
                 this.$notifyPlugin(o.name, o.state);
             }
         }
@@ -1113,17 +1113,17 @@ apf.LiveEdit.richtext = function(){
         if (this.$visualFocus)
             this.$visualFocus();
 
-        oPlugin.state = apf.ON;
-        this.$notifyPlugin(oPlugin.name, apf.ON);
+        oPlugin.state = ppc.ON;
+        this.$notifyPlugin(oPlugin.name, ppc.ON);
 
-        if (apf.popup.isShowing(sCacheId))
+        if (ppc.popup.isShowing(sCacheId))
             return;
 
         // using $setTimeout here, because I want the popup to be shown AFTER the
         // event bubbling is complete. Another click handler further up the DOM
-        // tree may call a apf.popup.forceHide();
+        // tree may call a ppc.popup.forceHide();
         $setTimeout(function() {
-            apf.popup.show(sCacheId, {
+            ppc.popup.show(sCacheId, {
                 x        : 0,
                 y        : 22,
                 animate  : false,
@@ -1136,7 +1136,7 @@ apf.LiveEdit.richtext = function(){
                         e = e || window.event;
                         var key = e.which || e.keyCode;
                         if (key == 13 && typeof oPlugin["submit"] == "function") //Enter
-                            return oPlugin.submit(new apf.AbstractEvent(e));
+                            return oPlugin.submit(new ppc.AbstractEvent(e));
                     }
                 }
             });
@@ -1153,15 +1153,15 @@ apf.LiveEdit.richtext = function(){
      */
     this.$translate = function(key, bIsPlugin) {
         // #ifdef __DEBUG
-        if ((!bIsPlugin && !apf.LiveEdit.i18n[this.language][key])
-          || (bIsPlugin && !apf.LiveEdit.i18n[this.language]["plugins"][key]))
-            apf.console.error("Translation does not exist"
+        if ((!bIsPlugin && !ppc.LiveEdit.i18n[this.language][key])
+          || (bIsPlugin && !ppc.LiveEdit.i18n[this.language]["plugins"][key]))
+            ppc.console.error("Translation does not exist"
                 + (bIsPlugin ? " for plugin" : "") + ": " + key);
         // #endif
 
         return bIsPlugin
-            ? apf.LiveEdit.i18n[this.language]["plugins"][key]
-            : apf.LiveEdit.i18n[this.language][key];
+            ? ppc.LiveEdit.i18n[this.language]["plugins"][key]
+            : ppc.LiveEdit.i18n[this.language][key];
     };
 
     /**
@@ -1178,7 +1178,7 @@ apf.LiveEdit.richtext = function(){
             this.$selection.set();
         this.$visualFocus(true);
         // #ifdef __WITH_HTML_CLEANER
-        html = bNoParse ? html : apf.htmlCleaner.prepare(html);
+        html = bNoParse ? html : ppc.htmlCleaner.prepare(html);
         // #endif
         this.$selection.setContent(html, true);
         if (this.$bStandalone) {
@@ -1224,7 +1224,7 @@ apf.LiveEdit.richtext = function(){
      * @private
      */
     this.$controlAgentBehavior = function(oParent) {
-        if (apf.isGecko) {
+        if (ppc.isGecko) {
             //var oParent = this.$activeDocument.body;
             var oNode;
             while (oParent.childNodes.length) {
@@ -1241,14 +1241,14 @@ apf.LiveEdit.richtext = function(){
                 oParent = oNode;
             }
         }
-        else if (apf.isWebkit) {
+        else if (ppc.isWebkit) {
             this.$activeDocument.designMode = "on";
         }
-        else if (apf.isIE) {
+        else if (ppc.isIE) {
             // yes, we fix hyperlinks...%&$#*@*!
             var s, aLinks = oParent.getElementsByTagName("a");
             for (var i = 0, j = aLinks.length; i < j; i++) {
-                s = aLinks[i].getAttribute("_apf_href");
+                s = aLinks[i].getAttribute("_ppc_href");
                 if (s) //prefix 'http://' if it's not there yet...
                     aLinks[i].href = (!s.match(/^[a-zA-Z]+\:/) ? "http://" : "") + s;
             }
@@ -1256,17 +1256,17 @@ apf.LiveEdit.richtext = function(){
     };
 
     this.language = "en_GB";//"nl_NL";
-    this.state    = apf.OFF;
+    this.state    = ppc.OFF;
 };
 
-apf.ON       = 1;
-apf.OFF      = 0;
-apf.DISABLED = -1;
-apf.VISIBLE  = 2;
-apf.HIDDEN   = 3;
-apf.SELECTED = 4;
+ppc.ON       = 1;
+ppc.OFF      = 0;
+ppc.DISABLED = -1;
+ppc.VISIBLE  = 2;
+ppc.HIDDEN   = 3;
+ppc.SELECTED = 4;
 
-apf.LiveEdit.i18n = {
+ppc.LiveEdit.i18n = {
     "en_GB": {
         "cancel": "Cancel",
         "insert": "Insert",
@@ -1399,11 +1399,11 @@ apf.LiveEdit.i18n = {
     }
 };
 
-apf.TOOLBARITEM   = 0x0001;//"toolbaritem";
-apf.TOOLBARBUTTON = 0x0002;//"toolbarbutton";
-apf.TOOLBARPANEL  = 0x0004;//"toolbarpanel";
-apf.TEXTMACRO     = 0x0008;//"textmacro";
-apf.CMDMACRO      = 0x0010;//"commandmacro";
+ppc.TOOLBARITEM   = 0x0001;//"toolbaritem";
+ppc.TOOLBARBUTTON = 0x0002;//"toolbarbutton";
+ppc.TOOLBARPANEL  = 0x0004;//"toolbarpanel";
+ppc.TEXTMACRO     = 0x0008;//"textmacro";
+ppc.CMDMACRO      = 0x0010;//"commandmacro";
 
 /**
  * @class plugin
@@ -1414,7 +1414,7 @@ apf.CMDMACRO      = 0x0010;//"commandmacro";
  *
  * Example plugin:
  * <code language=javascript>
- * apf.LiveEdit.plugin("sample", function() {
+ * ppc.LiveEdit.plugin("sample", function() {
  *     this.name    = "SamplePluginName";
  *     this.type    = "PluginType";
  *     this.subType = "PluginSubType";
@@ -1428,9 +1428,9 @@ apf.CMDMACRO      = 0x0010;//"commandmacro";
  * });
  * </code>
  */
-apf.LiveEdit.plugin = function(sName, fExec) {
-    apf.LiveEdit.plugin[sName] = function() {
-        this.$uniqueId = apf.all.push(this) - 1;
+ppc.LiveEdit.plugin = function(sName, fExec) {
+    ppc.LiveEdit.plugin[sName] = function() {
+        this.$uniqueId = ppc.all.push(this) - 1;
 
         /**
          * Appends a new AML element - in its string representation - to an
@@ -1438,12 +1438,12 @@ apf.LiveEdit.plugin = function(sName, fExec) {
          * contents of sNode and appended to oParent.
          *
          * @param {String}  sNode
-         * @param {apf.AmlNode} oParent
-         * @type  {apf.AmlNode}
+         * @param {ppc.AmlNode} oParent
+         * @type  {ppc.AmlNode}
          */
         this.appendAmlNode = function(sNode, oParent) {
             if (!sNode) return null;
-            var domParser = new apf.DOMParser(),
+            var domParser = new ppc.DOMParser(),
                 oFrag     = this.editor.ownerDocument.createDocumentFragment();
             oFrag.$int    = oParent;
             var oNode     = domParser.parseFromString(sNode, "text/xml", {
@@ -1456,24 +1456,24 @@ apf.LiveEdit.plugin = function(sName, fExec) {
         this.dispatchEvent = function() {
             var _self = this;
             window.setTimeout(function() {
-                if (_self.type == apf.editor.CONTEXTPANEL
-                  && _self.queryState(_self.editor) == apf.editor.ON)
+                if (_self.type == ppc.editor.CONTEXTPANEL
+                  && _self.queryState(_self.editor) == ppc.editor.ON)
                     return;
-                _self.state = apf.editor.OFF;
+                _self.state = ppc.editor.OFF;
                 if (_self.editor)
                     _self.editor.$notifyButton(_self.name, _self.state);
                 //@todo: add animation?
-                apf.popup.hide();
-                apf.popup.last = null;
+                ppc.popup.hide();
+                ppc.popup.last = null;
             });
 
             return false;
         };
 
         this.$destroy = function() {
-            // @todo should we keep this, or does apf.Popup destroy itself? what
+            // @todo should we keep this, or does ppc.Popup destroy itself? what
             // if we removeNode() the editor?
-            apf.popup.forceHide();
+            ppc.popup.forceHide();
             this.buttonNode = this.editor = null;
             delete this.buttonNode;
             delete this.editor;

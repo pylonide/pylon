@@ -19,7 +19,7 @@
  *
  */
 
-apf.__DATABINDING__ = 1 << 1;
+ppc.__DATABINDING__ = 1 << 1;
 
 // #ifdef __WITH_DATABINDING
 
@@ -48,8 +48,8 @@ apf.__DATABINDING__ = 1 << 1;
  *  </a:list>
  * ```
  *
- * @class apf.DataBinding
- * @inherits apf.Presentation
+ * @class ppc.DataBinding
+ * @inherits ppc.Presentation
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -64,14 +64,14 @@ apf.__DATABINDING__ = 1 << 1;
  * @param {Object} e The standard event object. It contains the following properties:
  *                   - error ([[Error]]): the error object that is thrown when the event callback doesn't return false.
  *                   - state ([[Number]]): the state of the call
- *                                                - `apf.SUCCESS`:  The request was successfull
- *                                                - `apf.TIMEOUT`:  The request has timed out.
- *                                                - `apf.ERROR  `:  An error has occurred while making the request.
- *                                                - `apf.OFFLINE`:  The request was made while the application was offline.
+ *                                                - `ppc.SUCCESS`:  The request was successfull
+ *                                                - `ppc.TIMEOUT`:  The request has timed out.
+ *                                                - `ppc.ERROR  `:  An error has occurred while making the request.
+ *                                                - `ppc.OFFLINE`:  The request was made while the application was offline.
  *                   - userdata (`Mixed`): Data that the caller wanted to be available in the callback of the http request.
  *                   - http ([[XMLHttpRequest]]): The object that executed the actual http request.
  *                   - url ([[String]]): The url that was requested.
- *                   - tpModule ([[apf.http]]): The teleport module that is making the request.
+ *                   - tpModule ([[ppc.http]]): The teleport module that is making the request.
  *                   - id ([[Number]]): The ID of the request.
  *                   - message ([[String]]): The error message.
  */
@@ -89,12 +89,12 @@ apf.__DATABINDING__ = 1 << 1;
  *                   - data ([[String]]): the retrieved data
  *
  */
-apf.DataBinding = function(){
+ppc.DataBinding = function(){
     this.$init(true);
     
     this.$loadqueue = 
     this.$dbTimer   = null;
-    this.$regbase   = this.$regbase | apf.__DATABINDING__;
+    this.$regbase   = this.$regbase | ppc.__DATABINDING__;
     this.$mainBind  = "value";
     
     this.$bindings     = 
@@ -102,7 +102,7 @@ apf.DataBinding = function(){
     this.$attrBindings = false;
 
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         model     : 1,
         each      : 1
         //eachvalue : 1 //disabled because of line 1743 valueRule = in multiselect.js
@@ -118,12 +118,12 @@ apf.DataBinding = function(){
      * @return  {XMLNode}  The changed XMLNode
      */
     this.setQueryValue = function(xpath, value, type){
-        var node = apf.createNodeFromXpath(this[type || 'xmlRoot'], xpath);
+        var node = ppc.createNodeFromXpath(this[type || 'xmlRoot'], xpath);
         if (!node)
             return null;
 
-        apf.setNodeValue(node, value, true);
-        //apf.xmldb.setTextNode(node, value);
+        ppc.setNodeValue(node, value, true);
+        //ppc.xmldb.setTextNode(node, value);
         return node;
     };
 
@@ -144,7 +144,7 @@ apf.DataBinding = function(){
      *  lstRev.query('revision/text()', 'xmlRoot');
      *  lstRev.query('revision/text()', 'indicator');
      */
-        return apf.queryValue(this[type || 'xmlRoot'], xpath );
+        return ppc.queryValue(this[type || 'xmlRoot'], xpath );
     };
 	/**
      * Queries the bound data for an array of string values
@@ -157,7 +157,7 @@ apf.DataBinding = function(){
      * @return {String}       The value of the selected XML Node
      */
     this.queryValues = function(xpath, type){
-        return apf.queryValues(this[type || 'xmlRoot'], xpath );
+        return ppc.queryValues(this[type || 'xmlRoot'], xpath );
     };
 	
     /**
@@ -196,7 +196,7 @@ apf.DataBinding = function(){
             if (!this.caching)
                 this.xmlRoot = null;
             var q = this.load(this.$loadqueue[0], {cacheId: this.$loadqueue[1]});
-            if (!q || q.dataType != apf.ARRAY || q != this.$loadqueue)
+            if (!q || q.dataType != ppc.ARRAY || q != this.$loadqueue)
                 this.$loadqueue = null;
         }
         else return false;
@@ -214,14 +214,14 @@ apf.DataBinding = function(){
         
         //#ifdef __DEBUG
         if (!attr) {
-            apf.console.error("Could not find attribute handler for property '" 
+            ppc.console.error("Could not find attribute handler for property '" 
                 + prop + "' on " + this.localName + ":" + (this.id || ""));
             return;
         }
         //#endif
         
         //#ifdef __WITH_LANG_SUPPORT
-        apf.$lm_has_lang = false;
+        ppc.$lm_has_lang = false;
         //#endif
 
         /*#ifndef __DEBUG
@@ -233,9 +233,9 @@ apf.DataBinding = function(){
                     _self.setProperty(prop, value, true);
                     
                     //#ifdef __WITH_LANG_SUPPORT
-                    //@todo apf3.0
-                    if (apf.$lm_has_lang)
-                        apf.language.addProperty(this, prop, attr.cvalue); //@todo should auto remove
+                    //@todo ppc3.0
+                    if (ppc.$lm_has_lang)
+                        ppc.language.addProperty(this, prop, attr.cvalue); //@todo should auto remove
                     //#endif
                 
                 }); 
@@ -246,22 +246,22 @@ apf.DataBinding = function(){
         /*#ifndef __DEBUG
         }
         catch(e){
-            apf.console.warn("[400] Could not execute binding for property "
+            ppc.console.warn("[400] Could not execute binding for property "
                 + prop + "\n\n" + e.message);
             return;
         }
         #endif */
         
-        this.setProperty(prop, undoObj && undoObj.extra.range || value, true); //@todo apf3.0 range
+        this.setProperty(prop, undoObj && undoObj.extra.range || value, true); //@todo ppc3.0 range
         
         //#ifdef __WITH_LANG_SUPPORT
-        //@todo apf3.0
-        if (apf.$lm_has_lang)
-            apf.language.addProperty(this, prop, attr.cvalue); //@todo should auto remove
+        //@todo ppc3.0
+        if (ppc.$lm_has_lang)
+            ppc.language.addProperty(this, prop, attr.cvalue); //@todo should auto remove
         //#endif
     };
     
-    //@todo apf3.0 contentEditable support
+    //@todo ppc3.0 contentEditable support
     this.$applyBindRule = function(name, xmlNode, defaultValue, callback, oHtml){
         var handler = this.$attrBindings[name] 
           && this.$attrBindings[name].cvalue || this.$cbindings[name];
@@ -312,7 +312,7 @@ apf.DataBinding = function(){
             lm.dispatchEvent("DOMNodeInsertedIntoDocument", {
                 pHtmlNode: div
             });
-            queue[lm.xmlRoot.getAttribute(apf.xmldb.xmlIdTag)] = lm;
+            queue[lm.xmlRoot.getAttribute(ppc.xmldb.xmlIdTag)] = lm;
             delete queue[i];
         }
         
@@ -331,11 +331,11 @@ apf.DataBinding = function(){
             if (!this.$amlBindQueue || !(queue = this.$amlBindQueue.caption))
                 return;
 
-            /*var htmlNode = apf.xmldb.findHtmlNode(e.xmlNode, this);
+            /*var htmlNode = ppc.xmldb.findHtmlNode(e.xmlNode, this);
             var captionNode = this.$getLayoutNode("caption", htmlNode);
             var id = captionNode.getAttribute("id").split("_")[2];
             var lm = queue[id];*/
-            var lm = queue[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
+            var lm = queue[e.xmlNode.getAttribute(ppc.xmldb.xmlIdTag)];
             lm.parentNode = lm.$focusParent = lm.$model = lm.xmlRoot = null;
             lm.destroy();
         }
@@ -355,7 +355,7 @@ apf.DataBinding = function(){
     var ruleIsMatch = {"drag":1,"drop":1,"dragcopy":1}
     this.$getDataNode = function(name, xmlNode, createNode, ruleList, multiple){
         var node, rule = this.$attrBindings[name];
-        if (rule) { //@todo apf3.0 find out why drag and drop rules are already compiled here
+        if (rule) { //@todo ppc3.0 find out why drag and drop rules are already compiled here
             if (rule.cvalue.type != 3) //@todo warn here?
                 return false;
             
@@ -383,7 +383,7 @@ apf.DataBinding = function(){
      * Sets the model of the specified element. 
      * The model acts as a datasource for this element.
      *
-     * @param  {apf.model}  The model this element is going to connect to.
+     * @param  {ppc.model}  The model this element is going to connect to.
      * 
      */
     this.setModel = function(model){
@@ -396,8 +396,8 @@ apf.DataBinding = function(){
      * The model acts as a datasource for this element.
      *
      * @param {Boolean} doRecur Specifies whether the model should be searched recursively up the data tree.
-     * @returns  {apf.model}  The model this element is connected to.
-     * @see apf.smartbinding
+     * @returns  {ppc.model}  The model this element is connected to.
+     * @see ppc.smartbinding
      */
     this.getModel = function(doRecur){
         if (doRecur && !this.$model)
@@ -440,7 +440,7 @@ apf.DataBinding = function(){
      *  </a:list>
      *  
      *  <a:script><!--
-     *      apf.onload = function() {
+     *      ppc.onload = function() {
      *      lstExample.load('<images>\
      *          <image icon="icoTest.gif">image 1</image>\
      *          <image icon="icoTest.gif">image 2</image>\
@@ -473,17 +473,17 @@ apf.DataBinding = function(){
             return;
 
         //#ifdef __WITH_POPUP
-        if (apf.popup.isShowing(this.$uniqueId))
-            apf.popup.forceHide(); //This should be put in a more general position
+        if (ppc.popup.isShowing(this.$uniqueId))
+            ppc.popup.forceHide(); //This should be put in a more general position
         //#endif
 
         // Convert first argument to an xmlNode we can use;
         if (xmlNode) {
             if (typeof xmlNode == "string") {
                 if (xmlNode.charAt(0) == "<")
-                    xmlNode = apf.getXmlDom(xmlNode).documentElement;
+                    xmlNode = ppc.getXmlDom(xmlNode).documentElement;
                 else {
-                    return apf.model.prototype.$loadFrom.call(this, xmlNode, options);
+                    return ppc.model.prototype.$loadFrom.call(this, xmlNode, options);
                 }
             }
             else if (xmlNode.nodeType == 9) {
@@ -502,10 +502,10 @@ apf.DataBinding = function(){
         // If control hasn't loaded databinding yet, queue the call
         if (this.$preventDataLoad || !this.$canLoadData 
           && ((!this.$bindings && (!this.$canLoadDataAttr || !this.each)) || !this.$amlLoaded) 
-          && (!this.hasFeature(apf.__MULTISELECT__) || !this.each) 
+          && (!this.hasFeature(ppc.__MULTISELECT__) || !this.each) 
           || this.$canLoadData && !this.$canLoadData()) {
             
-            if (!this.caching || !this.hasFeature(apf.__CACHE__)) {
+            if (!this.caching || !this.hasFeature(ppc.__CACHE__)) {
                 
                 //@todo this is wrong. It is never updated when there are only
                 //Property binds and then it just leaks xml nodes
@@ -518,7 +518,7 @@ apf.DataBinding = function(){
             
             //#ifdef __DEBUG
             if (this.$amlLoaded && !this.$attrBindings) {
-                apf.console.warn("Could not load data yet in " + (this.localName
+                ppc.console.warn("Could not load data yet in " + (this.localName
                   ? this.localName + "[" + (this.name || "") + "]"
                   : this.nodeName) + ". The loaded data is queued "
                       + "until smartbinding rules are loaded or set manually.");
@@ -535,7 +535,7 @@ apf.DataBinding = function(){
 
         if (!xmlNode && (!cacheId || !this.$isCached || !this.$isCached(cacheId))) {
             //#ifdef __DEBUG
-            apf.console.warn("No xml root node was given to load in "
+            ppc.console.warn("No xml root node was given to load in "
                 + this.localName + "[" + (this.name || '') + "]. Clearing any "
                 + "loaded xml in this component");
             //#endif
@@ -543,10 +543,10 @@ apf.DataBinding = function(){
             this.clear(noClearMsg);
 
             //#ifdef __WITH_PROPERTY_BINDING
-            if (apf.config.autoDisable && this.$createModel === false)
+            if (ppc.config.autoDisable && this.$createModel === false)
                 this.setProperty("disabled", true);
 
-            //@todo apf3.0 remove , true in clear above
+            //@todo ppc3.0 remove , true in clear above
             //this.setProperty("selected", null);
             //#endif
             return;
@@ -565,7 +565,7 @@ apf.DataBinding = function(){
             return false;
 
         //#ifdef __DEBUG
-        apf.console.info("Loading XML data in "
+        ppc.console.info("Loading XML data in "
           + (this.localName 
             ? this.localName + "[" + (this.name || '') + "]"
             : this.nodeName));
@@ -584,7 +584,7 @@ apf.DataBinding = function(){
         }
         
         //Set usefull vars
-        this.documentId = apf.xmldb.getXmlDocId(xmlNode);
+        this.documentId = ppc.xmldb.getXmlDocId(xmlNode);
         this.xmlRoot    = xmlNode;
         
         //#ifdef __WITH_PROPERTY_BINDING
@@ -592,18 +592,18 @@ apf.DataBinding = function(){
         //#endif
 
         //#ifdef __WITH_LANG_SUPPORT
-        apf.$lm_has_lang = false;
+        ppc.$lm_has_lang = false;
         //#endif
 
         // Draw Content
         this.$load(xmlNode);
         
         //#ifdef __WITH_LANG_SUPPORT
-        //@todo apf3.0
-        if (apf.$lm_has_lang)
-            apf.language.addBinding(this); //@todo should auto remove
+        //@todo ppc3.0
+        if (ppc.$lm_has_lang)
+            ppc.language.addBinding(this); //@todo should auto remove
         else
-            apf.language.removeBinding(this);
+            ppc.language.removeBinding(this);
         //#endif
 
         // Check if subtree should be loaded
@@ -667,11 +667,11 @@ apf.DataBinding = function(){
         var rule = this.$getBindRule("load", xmlRootNode);
         if (rule && (!rule[1] || rule[1](xmlRootNode))) {
             // #ifdef __WITH_OFFLINE_TRANSACTIONS
-            if (typeof apf.offline != "undefined" && !apf.offline.onLine) {
-                apf.offline.transactions.actionNotAllowed();
+            if (typeof ppc.offline != "undefined" && !ppc.offline.onLine) {
+                ppc.offline.transactions.actionNotAllowed();
                 this.$loadedWhenOffline = true;
     
-                //this.hasFeature(apf.__MULTISELECT__)
+                //this.hasFeature(ppc.__MULTISELECT__)
                 if (this.$setClearMessage && !this.getTraverseNodes().length)
                     this.$setClearMessage(this["offline-message"], "offline");
     
@@ -684,7 +684,7 @@ apf.DataBinding = function(){
             if (this.$setClearMessage)
                 this.$setClearMessage(this["loading-message"], "loading");
 
-            //||apf.xmldb.findModel(xmlRootNode)
+            //||ppc.xmldb.findModel(xmlRootNode)
             var mdl = this.getModel(true);
             //#ifdef __DEBUG
             if (!mdl)
@@ -693,12 +693,12 @@ apf.DataBinding = function(){
 
             var amlNode = this;
             if (mdl.$insertFrom(rule.getAttribute("get"), {
-              xmlNode     : xmlRootNode,  //@todo apf3.0
+              xmlNode     : xmlRootNode,  //@todo ppc3.0
               insertPoint : xmlRootNode, //this.xmlRoot,
               amlNode     : this,
               callback    : function(){
                     //#ifdef __WITH_PROPERTY_BINDING
-                    amlNode.setProperty(amlNode.hasFeature(apf.__MULTISELECT__) 
+                    amlNode.setProperty(amlNode.hasFeature(ppc.__MULTISELECT__) 
                         ? "selected" 
                         : "root", xmlRootNode);
                     //#endif
@@ -707,7 +707,7 @@ apf.DataBinding = function(){
             ) {
                 this.clear(true);
                 //#ifdef __WITH_PROPERTY_BINDING
-                if (apf.config.autoDisable)
+                if (ppc.config.autoDisable)
                     this.setProperty("disabled", true);
 
                 //amlNode.setProperty("selected", null); //@todo is this not already done in clear?
@@ -720,7 +720,7 @@ apf.DataBinding = function(){
     //@todo should clear listener
     /*
      * Unloads data from this element and resets state displaying an empty message.
-     * The empty message is set on the {@link apf.GuiElement.msg}.
+     * The empty message is set on the {@link ppc.GuiElement.msg}.
      *
      * @param {Boolean} [nomsg]   Specifies whether to display the empty message.
      * @param {Boolean} [doEvent] Specifies whether to send select events.
@@ -729,7 +729,7 @@ apf.DataBinding = function(){
      */
     this.clear = function(nomsg, doEvent, fakeClear){
         if (!this.$container)
-            return;//@todo apf3.0
+            return;//@todo ppc3.0
 
         if (this.clearSelection)
             this.clearSelection(true);//!doEvent);//@todo move this to the $clear event in multiselect.js
@@ -737,13 +737,13 @@ apf.DataBinding = function(){
         var lastHeight = this.$container.offsetHeight;
 
         if (this.dispatchEvent("$clear") !== false)
-            this.$container.innerHTML = ""; //@todo apf3.0
+            this.$container.innerHTML = ""; //@todo ppc3.0
 
         if (typeof nomsg == "string") {
             var msgType = nomsg;
             nomsg = false;
             
-            //@todo apf3.0 please use attr. inheritance
+            //@todo ppc3.0 please use attr. inheritance
             if (!this[msgType + "-message"]) {
                 this.$setInheritedAttribute(msgType + "-message");
             }
@@ -755,7 +755,7 @@ apf.DataBinding = function(){
               ? this[msgType + "-message"] 
               : this["empty-message"], msgType || "empty", lastHeight);
 
-            //this.setProperty("selected", null); //@todo apf3.0 get the children to show loading... as well (and for each selected, null
+            //this.setProperty("selected", null); //@todo ppc3.0 get the children to show loading... as well (and for each selected, null
             //c[i].o.clear(msgType, doEvent);
         }
         else if(this.$removeClearMessage)
@@ -766,10 +766,10 @@ apf.DataBinding = function(){
 
         //#ifdef __WITH_PROPERTY_BINDING
         if (!nomsg) {
-            if (this.hasFeature(apf.__MULTISELECT__)) //@todo this is all wrong
+            if (this.hasFeature(ppc.__MULTISELECT__)) //@todo this is all wrong
                 this.setProperty("length", 0);
             //else 
-                //this.setProperty("value", ""); //@todo redo apf3.0
+                //this.setProperty("value", ""); //@todo redo ppc3.0
         }
         //#endif
     };
@@ -841,12 +841,12 @@ apf.DataBinding = function(){
                 if (options.whitespace === false)
                     xmlNode = xmlNode.replace(/>[\s\n\r]*</g, "><");
                 
-                xmlNode = apf.getXmlDom(xmlNode).documentElement;
+                xmlNode = ppc.getXmlDom(xmlNode).documentElement;
             }
             else {
                 if (!options.insertPoint)
                     options.insertPoint = this.xmlRoot;
-                return apf.model.prototype.$insertFrom.call(this, xmlNode, options);
+                return ppc.model.prototype.$insertFrom.call(this, xmlNode, options);
             }
         }
         
@@ -864,12 +864,12 @@ apf.DataBinding = function(){
         if (this.filterUnique)
             options.filter = this.filterUnique;
         
-        var newNode = apf.mergeXml(xmlNode, insertPoint, options);
+        var newNode = ppc.mergeXml(xmlNode, insertPoint, options);
         
         this.$isLoading = true; //Optimization for simpledata
 
         //Call __XMLUpdate on all listeners
-        apf.xmldb.applyChanges("insert", insertPoint);
+        ppc.xmldb.applyChanges("insert", insertPoint);
         
         this.$isLoading = false;
 
@@ -927,7 +927,7 @@ apf.DataBinding = function(){
     /**
      * @attribute {Boolean} render-root Sets or gets whether the root node of the data loaded
      * into this element is rendered as well. 
-     * @see apf.tree
+     * @see ppc.tree
      */
     this.$propHandlers["render-root"] = function(value){
         this.renderRoot = value;
@@ -1068,9 +1068,9 @@ apf.DataBinding = function(){
      *
      * There are several ways to be less verbose in assigning certain rules. For more information, see:
      *
-     * * [[apf.bindings]]
-     * * [[apf.actions]]
-     * * [[apf.DragDrop]]
+     * * [[ppc.bindings]]
+     * * [[ppc.actions]]
+     * * [[ppc.DragDrop]]
      * 
      */
     this.$propHandlers["smartbinding"] = 
@@ -1172,13 +1172,13 @@ apf.DataBinding = function(){
             return;
         //#ifdef __WITH_NAMESERVER
         // #ifdef __DEBUG
-        if (!apf.nameserver.get(prop, value))
-            throw new Error(apf.formatErrorString(1064, this,
+        if (!ppc.nameserver.get(prop, value))
+            throw new Error(ppc.formatErrorString(1064, this,
                 "Setting " + prop,
                 "Could not find " + prop + " by name '" + value + "'"));
         // #endif
 
-        apf.nameserver.get(prop, value).register(this);
+        ppc.nameserver.get(prop, value).register(this);
         //#endif
         
         if (prop != "actions" && 
@@ -1189,16 +1189,16 @@ apf.DataBinding = function(){
 
     //#ifdef __WITH_INLINE_DATABINDING
     var eachBinds = {"caption":1, "icon":1, "select":1, "css":1, "sort":1,
-                     "drop":2, "drag":2, "dragcopy":2, "eachvalue":1}; //Similar to apf.Class
+                     "drop":2, "drag":2, "dragcopy":2, "eachvalue":1}; //Similar to ppc.Class
     // #endif
     this.$addAttrBind = function(prop, fParsed, expression) {
         //Detect if it uses an external model
         if (fParsed.models) {
             //#ifdef __WITH_MULTISELECT
-            if (this.hasFeature(apf.__MULTISELECT__)) {
+            if (this.hasFeature(ppc.__MULTISELECT__)) {
                 //#ifdef __DEBUG
                 if (eachBinds[prop]) {
-                    //throw new Error("Cannot use external model inside " + prop + " rule"); //@todo apf3.0 convert to apf error
+                    //throw new Error("Cannot use external model inside " + prop + " rule"); //@todo ppc3.0 convert to ppc error
                 }
                 //#endif
             }
@@ -1222,7 +1222,7 @@ apf.DataBinding = function(){
         var rule = (this.$attrBindings || (this.$attrBindings = {}))[prop] = {
             cvalue  : fParsed,
             value   : expression,
-            compile : apf.BindingRule.prototype.$compile,
+            compile : ppc.BindingRule.prototype.$compile,
             models  : []
         };
 
@@ -1235,23 +1235,23 @@ apf.DataBinding = function(){
             xpath = paths[i + 1];
 
             if (modelId == "#" || xpath == "#") {
-                var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
+                var m = (rule.cvalue3 || (rule.cvalue3 = ppc.lm.compile(rule.value, {
                     xpathmode: 5
                 }))).call(this, this.xmlRoot);
                 
-                //@todo apf3 this needs to be fixed in live markup
+                //@todo ppc3 this needs to be fixed in live markup
                 if (typeof m != "string") {
                     model = m.model && m.model.$isModel && m.model;
                     if (model)
                         xpath = m.xpath;
                     else if (m.model) {
-                        model = typeof m.model == "string" ? apf.xmldb.findModel(m.model) : m.model;
-                        xpath = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
+                        model = typeof m.model == "string" ? ppc.xmldb.findModel(m.model) : m.model;
+                        xpath = ppc.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
                     }
                     else {
                         //wait until model becomes available
                         this.addEventListener("prop." + prop, function(e){
-                            var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
+                            var m = (rule.cvalue3 || (rule.cvalue3 = ppc.lm.compile(rule.value, {
                                 xpathmode: 5
                             }))).call(this, this.xmlRoot);
                             
@@ -1274,10 +1274,10 @@ apf.DataBinding = function(){
             if (!model) {
                 if (modelId) {
                     //#ifdef __WITH_NAMESERVER
-                    //@todo apf3.0 how is this cleaned up???
+                    //@todo ppc3.0 how is this cleaned up???
                     //Add change listener to the data of the model
-                    model = apf.nameserver.get("model", modelId) //is model creation useful here?
-                        || apf.setReference(modelId, apf.nameserver.register("model", modelId, new apf.model()));
+                    model = ppc.nameserver.get("model", modelId) //is model creation useful here?
+                        || ppc.setReference(modelId, ppc.nameserver.register("model", modelId, new ppc.model()));
                     //#endif
                 }
                 else {
@@ -1286,7 +1286,7 @@ apf.DataBinding = function(){
     
                     model = this.$model;
 
-                    if (!this.hasFeature(apf.__MULTISELECT__) 
+                    if (!this.hasFeature(ppc.__MULTISELECT__) 
                       && eachBinds[prop] != 2 || !eachBinds[prop]) //@experimental - should not set this because model will load these attributes
                         this.$propsUsingMainModel[prop] = {
                             xpath    : xpath,
@@ -1296,7 +1296,7 @@ apf.DataBinding = function(){
             }
             
             //@todo warn here if no model??
-            if (model && (!this.hasFeature(apf.__MULTISELECT__) 
+            if (model && (!this.hasFeature(ppc.__MULTISELECT__) 
               && eachBinds[prop] != 2 || !eachBinds[prop])) {
                 //Create the attribute binding
                 //@todo: remove listenRoot = expression.indexOf("*[") > -1 -> because it doesnt make sense in certain context. recheck selection handling
@@ -1309,12 +1309,12 @@ apf.DataBinding = function(){
         
         rule.xpath = xpath;
 
-        this.$canLoadDataAttr = eachBinds[prop] == 1; //@todo apf3.0 remove
+        this.$canLoadDataAttr = eachBinds[prop] == 1; //@todo ppc3.0 remove
         this.$checkLoadQueue();
     }
     
     this.$removeAttrBind = function(prop){
-        //@todo apf3.0
+        //@todo ppc3.0
         //$model.$unbindXmlProperty
         var rule = this.$attrBindings[prop]
         if (!rule)
@@ -1349,7 +1349,7 @@ apf.DataBinding = function(){
     
     // #ifdef __WITH_LANG_SUPPORT
     this.addEventListener("DOMNodeRemovedFromDocument", function(e){
-        apf.language.removeBinding(this);
+        ppc.language.removeBinding(this);
     });
     // #endif
 
@@ -1467,7 +1467,7 @@ apf.DataBinding = function(){
      * model is the first model that is found without a name, or if all models
      * have a name, the first model found.
      * 
-     * @see apf.DataBinding.model
+     * @see ppc.DataBinding.model
      */
     this.$propHandlers["model"] = function(value){
         //Unset model
@@ -1531,9 +1531,9 @@ apf.DataBinding = function(){
         //Analyze the data
         var model;
         if (typeof value == "object") {
-            if (value.dataType == apf.ARRAY) { //Optimization used for templating
+            if (value.dataType == ppc.ARRAY) { //Optimization used for templating
                 //#ifdef __WITH_NAMESERVER
-                model = apf.nameserver.get("model", value[0]);
+                model = ppc.nameserver.get("model", value[0]);
                 model.register(this, value[1]);
                 return;
                 //#endif
@@ -1551,10 +1551,10 @@ apf.DataBinding = function(){
                 if (this.dataParent)
                     this.model = this.dataParent.model; //reset this property
 
-                model = apf.xmldb.findModel(value);
+                model = ppc.xmldb.findModel(value);
                 if (!model) //@todo very strange, this should never happen, but it does
                     return;
-                var xpath = apf.xmlToXpath(value, null, true) || ".";
+                var xpath = ppc.xmlToXpath(value, null, true) || ".";
                 
                 //#ifdef __DEBUG
                 if (model.queryNode(xpath) != value) {
@@ -1586,23 +1586,23 @@ apf.DataBinding = function(){
                 value = value.replace(/\[\:\:/g, "[" + model + "::");
             }
             else {
-                apf.console.warn("No found model on any of the parents for this element while trying to overload model: " + value);
+                ppc.console.warn("No found model on any of the parents for this element while trying to overload model: " + value);
                 return;
             }
         }
 
         //Optimize xmlroot position and set model async (unset the old one)
-        //@todo apf3.0 this could be optimized by using apf.queue and only when not all info is there...
+        //@todo ppc3.0 this could be optimized by using ppc.queue and only when not all info is there...
         clearTimeout(this.$dbTimer);
         if (!this.$amlLoaded && this.nodeType == 1) {
             var _self = this;
             this.$dbTimer = $setTimeout(function(){
                 if (!_self.$amlDestroyed)
-                    apf.setModel(value, _self);
+                    ppc.setModel(value, _self);
             });
         }
         else
-            apf.setModel(value, this);
+            ppc.setModel(value, this);
     };
 
     // #ifdef __WITH_VIRTUALVIEWPORT
@@ -1618,22 +1618,22 @@ apf.DataBinding = function(){
         if (value != "virtual")
             return;
 
-        this.implement(apf.VirtualViewport);
+        this.implement(ppc.VirtualViewport);
     };
     //#endif
 };
 // #ifdef __WITH_PRESENTATION
-    apf.DataBinding.prototype = new apf[apf.Presentation ? "Presentation" : "AmlElement"]();
+    ppc.DataBinding.prototype = new ppc[ppc.Presentation ? "Presentation" : "AmlElement"]();
 /* #else
-    apf.DataBinding.prototype = new apf.AmlElement();
+    ppc.DataBinding.prototype = new ppc.AmlElement();
 #endif*/
 
-apf.config.$inheritProperties["model"]           = 1;
-apf.config.$inheritProperties["empty-message"]   = 1;
-apf.config.$inheritProperties["loading-message"] = 1;
-apf.config.$inheritProperties["offline-message"] = 1;
-apf.config.$inheritProperties["noloading"]       = 1;
+ppc.config.$inheritProperties["model"]           = 1;
+ppc.config.$inheritProperties["empty-message"]   = 1;
+ppc.config.$inheritProperties["loading-message"] = 1;
+ppc.config.$inheritProperties["offline-message"] = 1;
+ppc.config.$inheritProperties["noloading"]       = 1;
 
-apf.Init.run("databinding");
+ppc.Init.run("databinding");
 
 // #endif

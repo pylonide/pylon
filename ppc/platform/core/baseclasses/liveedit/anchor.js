@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_ANCHOR || __INC_ALL
 
-apf.LiveEdit.plugin("anchor", function() {
+ppc.LiveEdit.plugin("anchor", function() {
     this.name        = "anchor";
     this.icon        = "anchor";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+shift+a";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.editor      = null;
 
@@ -45,7 +45,7 @@ apf.LiveEdit.plugin("anchor", function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
 
         this.editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -68,13 +68,13 @@ apf.LiveEdit.plugin("anchor", function() {
         // @todo: for webkit compat, we need to insert images instead of inline an elements
         var oNode = this.editor.$selection.getSelectedNode();
         if (oNode.tagName == "A" && oNode.getAttribute("name"))
-            return apf.ON;
+            return ppc.ON;
 
         return this.state;
     };
 
     this.submit = function(e) {
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
 
         if (!this.oName.value) return;
 
@@ -97,14 +97,14 @@ apf.LiveEdit.plugin("anchor", function() {
             </div>\
             <div id="' + idButton + '" class="editor_panelrow editor_panelrowbtns"></div>';
 
-        new apf.toolbar({
+        new ppc.toolbar({
             htmlNode: document.getElementById(idButton),
-            skinset: apf.getInheritedAttribute(this.editor.parentNode, "skinset"),
+            skinset: ppc.getInheritedAttribute(this.editor.parentNode, "skinset"),
             childNodes: [
-                new apf.bar({
-                    childNodes: [new apf.button({
+                new ppc.bar({
+                    childNodes: [new ppc.button({
                         caption: this.editor.$translate("insert"),
-                        onclick: "apf.lookup(" + this.$uniqueId + ").submit(event)"
+                        onclick: "ppc.lookup(" + this.$uniqueId + ").submit(event)"
                     })]
                 })
             ]
@@ -112,7 +112,7 @@ apf.LiveEdit.plugin("anchor", function() {
         
         this.oName = document.getElementById(idName);
         //#ifdef __WITH_WINDOW_FOCUS
-        apf.sanitizeTextbox(this.oName);
+        ppc.sanitizeTextbox(this.oName);
         // #endif
         return panelBody;
     };

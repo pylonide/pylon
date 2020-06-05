@@ -20,7 +20,7 @@
  */
 
 //#ifdef __WITH_XSDELEMENT
-apf.XsdElement = function(struct, tagName){
+ppc.XsdElement = function(struct, tagName){
     this.$init(true);
     
     this.addEventListener("DOMNodeInserted", function(){
@@ -38,13 +38,13 @@ apf.XsdElement = function(struct, tagName){
             return;
         
         var _self = this;
-        apf.queue.add("compile" + this.$uniqueId, function(){
+        ppc.queue.add("compile" + this.$uniqueId, function(){
             _self.$compile();
         });
     });
 }
-apf.XsdElement.prototype = new apf.AmlElement();
-apf.XsdElement.prototype.$recompile = function(stack){
+ppc.XsdElement.prototype = new ppc.AmlElement();
+ppc.XsdElement.prototype.$recompile = function(stack){
     if (!this.$amlLoaded)
         return;
     

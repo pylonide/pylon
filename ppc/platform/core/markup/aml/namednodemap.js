@@ -20,8 +20,8 @@
  */
 
 // #ifdef __WITH_AMLNAMEDNODEMAP
-//@todo apf3.0
-apf.AmlNamedNodeMap = function(host){
+//@todo ppc3.0
+ppc.AmlNamedNodeMap = function(host){
     this.$host = host;
 };
 
@@ -51,7 +51,7 @@ apf.AmlNamedNodeMap = function(host){
         node.$triggerUpdate();
     };
     
-    //@todo apf3.0 domattr
+    //@todo ppc3.0 domattr
     this.removeNamedItem = function(name){
         //Should deconstruct dynamic properties
         
@@ -79,7 +79,7 @@ apf.AmlNamedNodeMap = function(host){
         return this[i];
     };
 
-    //if (apf.isIE < 8) { //Only supported by IE8 and above
+    //if (ppc.isIE < 8) { //Only supported by IE8 and above
         this.length = 0;
         
         this.splice = function(pos, length){
@@ -104,5 +104,5 @@ apf.AmlNamedNodeMap = function(host){
         }
         return x.join(glue);
     }
-}).call(apf.AmlNamedNodeMap.prototype = {}); //apf.isIE < 8 ? {} : []
+}).call(ppc.AmlNamedNodeMap.prototype = {}); //ppc.isIE < 8 ? {} : []
 // #endif

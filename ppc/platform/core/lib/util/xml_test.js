@@ -22,8 +22,8 @@
 //#ifdef __TESTS
 
 "use strict";
-/*global apf*/
-global.apf = {};
+/*global ppc*/
+global.ppc = {};
 
 var Assert = require("assert");
 require("./utilities");
@@ -31,8 +31,8 @@ require("./xml");
 
 // test unescapeXML:
 
-Assert.equal(apf.unescapeXML("ser&#60;script&#62;ver.js"), "ser<script>ver.js");
-Assert.equal(apf.unescapeXML("ser<script>ver.js"), "ser<script>ver.js");
-Assert.equal(apf.unescapeXML("Long &#60;string&#62; with &#9829; wicked XML entities &#9830; in it: &uarr; ."), "Long <string> with &hearts; wicked XML entities &diams; in it: &uarr; .");
+Assert.equal(ppc.unescapeXML("ser&#60;script&#62;ver.js"), "ser<script>ver.js");
+Assert.equal(ppc.unescapeXML("ser<script>ver.js"), "ser<script>ver.js");
+Assert.equal(ppc.unescapeXML("Long &#60;string&#62; with &#9829; wicked XML entities &#9830; in it: &uarr; ."), "Long <string> with &hearts; wicked XML entities &diams; in it: &uarr; .");
 
 //#endif

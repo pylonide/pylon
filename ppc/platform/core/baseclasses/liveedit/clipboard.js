@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CLIPBOARD || __INC_ALL
 
-apf.LiveEdit.pasteDialog = function(sName) {
+ppc.LiveEdit.pasteDialog = function(sName) {
     this.name        = sName;
     this.icon        = sName == "pasteworddialog" ? "pasteword" : sName;
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.keyBinding  = sName == "pastetext" ? "ctrl+shift+v" : "ctrl+shift+w";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ apf.LiveEdit.pasteDialog = function(sName) {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -69,7 +69,7 @@ apf.LiveEdit.pasteDialog = function(sName) {
     };
 
     this.submit = function(e) {
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
 
         var sContent = this.oArea.value;
         if (!sContent || sContent.length == 0) return;
@@ -91,7 +91,7 @@ apf.LiveEdit.pasteDialog = function(sName) {
         }
         this.editor.$insertHtml(sContent);
 
-        apf.stopEvent(e);
+        ppc.stopEvent(e);
         return false;
     };
 
@@ -103,7 +103,7 @@ apf.LiveEdit.pasteDialog = function(sName) {
             idBtns = "editor_" + this.$uniqueId + "_btns";
         panelBody.innerHTML =
            '<label for="' + idArea + '">' +
-           this.editor.$translate("paste_keyboardmsg").sprintf(apf.isMac ? "CMD+V" : "CTRL+V")
+           this.editor.$translate("paste_keyboardmsg").sprintf(ppc.isMac ? "CMD+V" : "CTRL+V")
            + '</label>\
             <textarea id="' + idArea + '" name="' + idArea + '"  wrap="soft" dir="ltr" \
               cols="60" rows="10" class="editor_textarea"></textarea>\
@@ -112,24 +112,24 @@ apf.LiveEdit.pasteDialog = function(sName) {
         this.oArea = document.getElementById(idArea);
 
         //#ifdef __WITH_WINDOW_FOCUS
-        apf.sanitizeTextbox(this.oArea);
+        ppc.sanitizeTextbox(this.oArea);
         // #endif
 
-        if (apf.isIE) {
+        if (ppc.isIE) {
             this.oArea.onselectstart = this.oArea.onpaste = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
             };
         }
 
-        new apf.toolbar({
+        new ppc.toolbar({
             htmlNode: document.getElementById(idBtns),
-            skinset: apf.getInheritedAttribute(this.editor.parentNode, "skinset"),
+            skinset: ppc.getInheritedAttribute(this.editor.parentNode, "skinset"),
             childNodes: [
-                new apf.bar({
-                    childNodes: [new apf.button({
+                new ppc.bar({
+                    childNodes: [new ppc.button({
                         caption: this.editor.$translate("insert"),
-                        onclick: "apf.lookup(" + this.$uniqueId + ").submit(event)"
+                        onclick: "ppc.lookup(" + this.$uniqueId + ").submit(event)"
                     })]
                 })
             ]
@@ -145,16 +145,16 @@ apf.LiveEdit.pasteDialog = function(sName) {
     };
 };
 
-apf.LiveEdit.plugin("pasteworddialog", apf.LiveEdit.pasteDialog);
-apf.LiveEdit.plugin("pastetext", apf.LiveEdit.pasteDialog);
+ppc.LiveEdit.plugin("pasteworddialog", ppc.LiveEdit.pasteDialog);
+ppc.LiveEdit.plugin("pastetext", ppc.LiveEdit.pasteDialog);
 
-apf.LiveEdit.plugin("pasteword", function() {
+ppc.LiveEdit.plugin("pasteword", function() {
     this.name        = "pasteword";
     this.icon        = "pasteword";
-    this.type        = apf.CMDMACRO;
+    this.type        = ppc.CMDMACRO;
     this.hook        = "onpaste";
     this.keyBinding  = "ctrl+shift+v";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
     
     this.parse = function(sContent) {
         var bull   = String.fromCharCode(8226),

@@ -35,7 +35,7 @@
         - double clicking also registers the mouseup and down
 
 */
-apf.uirecorder.ui = {
+ppc.uirecorder.ui = {
     created : false,
     
     show : function(){
@@ -53,30 +53,30 @@ apf.uirecorder.ui = {
     },
     
     start : function(){
-        apf.uirecorder.capture.record();
+        ppc.uirecorder.capture.record();
         
         btnUiRecordStart.disable();
         btnUiRecordStop.enable();
         
-        dgUiRecorder.setModel(apf.uirecorder.capture.model);
+        dgUiRecorder.setModel(ppc.uirecorder.capture.model);
         
-        apf.addListener(winUiRecorder.$ext, "mouseover", this.$winHover);
-        apf.addListener(winUiRecorder.$ext, "mouseout", this.$winOut);
+        ppc.addListener(winUiRecorder.$ext, "mouseover", this.$winHover);
+        ppc.addListener(winUiRecorder.$ext, "mouseout", this.$winOut);
         
     },
     
     stop : function(){
-        apf.uirecorder.capture.stop();
+        ppc.uirecorder.capture.stop();
         
         btnUiRecordStart.enable();
         btnUiRecordStop.disable();
         
         btnUiRecordRun.setAttribute("disabled", 
-            !apf.uirecorder.capture.actions.length);
+            !ppc.uirecorder.capture.actions.length);
         
-        apf.setOpacity(winUiRecorder.$ext, 1);
-        apf.removeListener(winUiRecorder.$ext, "mouseover", this.$winHover);
-        apf.removeListener(winUiRecorder.$ext, "mouseout", this.$winOut);
+        ppc.setOpacity(winUiRecorder.$ext, 1);
+        ppc.removeListener(winUiRecorder.$ext, "mouseover", this.$winHover);
+        ppc.removeListener(winUiRecorder.$ext, "mouseout", this.$winOut);
     },
     
     startAddAssert : function(){
@@ -84,24 +84,24 @@ apf.uirecorder.ui = {
         
         this.initHighlights();
         
-        apf.addListener(document, "mousemove", this.assertHandlers[0], true);
-        apf.addListener(document, "mousedown", this.assertHandlers[1], true);
-        apf.addListener(document, "mouseout", this.assertHandlers[2], true);
+        ppc.addListener(document, "mousemove", this.assertHandlers[0], true);
+        ppc.addListener(document, "mousedown", this.assertHandlers[1], true);
+        ppc.addListener(document, "mouseout", this.assertHandlers[2], true);
 
         barUiRecorder.disable();
         
-        apf.uirecorder.capture.pause();
+        ppc.uirecorder.capture.pause();
     },
     
     assertHandlers : [
         function(e){
             if (!e) e = event;
             
-            var div = apf.uirecorder.ui.divs[0];
+            var div = ppc.uirecorder.ui.divs[0];
             div.style.top = "-20000px";
 
             var htmlNode = document.elementFromPoint(e.x, e.y);
-            var amlNode = apf.findHost(htmlNode);
+            var amlNode = ppc.findHost(htmlNode);
             
             if (amlNode && amlNode.$ignoreRecorder)
                 return;
@@ -109,14 +109,14 @@ apf.uirecorder.ui = {
             if (amlNode 
               && (amlNode.$ext.offsetWidth || amlNode.$ext.offsetHeight)) {
                 div.style.display = "block";
-                var pos = lastPos = apf.getAbsolutePosition(amlNode.$ext);
+                var pos = lastPos = ppc.getAbsolutePosition(amlNode.$ext);
                 div.style.left = pos[0] + "px";
                 div.style.top = pos[1] + "px";
                 div.style.width = (amlNode.$ext.offsetWidth - 6) + "px";
                 div.style.height = (amlNode.$ext.offsetHeight - 6) + "px";
                 
                 div.innerHTML = "<div style='position:absolute;right:0;bottom:0;padding:2px 3px 2px 4px;background:black;color:white;font-family:Arial;font-size:10px;'>"
-                    + (amlNode.id || apf.xmlToXpath(amlNode, apf.document.documentElement)) 
+                    + (amlNode.id || ppc.xmlToXpath(amlNode, ppc.document.documentElement)) 
                     + "</div>";
             }
             else {
@@ -126,21 +126,21 @@ apf.uirecorder.ui = {
         function(e){
             if (!e) e = event;
 
-            var div = apf.uirecorder.ui.divs[0];
+            var div = ppc.uirecorder.ui.divs[0];
             var lastTop = div.style.top;
             div.style.top = "-20000px";
 
             var htmlNode = document.elementFromPoint(e.x, e.y);
-            var amlNode = apf.findHost(htmlNode);
+            var amlNode = ppc.findHost(htmlNode);
 
             if (!amlNode || amlNode.$ignoreRecorder)
                 return;
             
-            var ui = apf.uirecorder.ui;
+            var ui = ppc.uirecorder.ui;
             if (ui.selected) {
-                apf.addListener(document, "mousemove", ui.assertHandlers[0], true);
-                apf.addListener(document, "mousedown", ui.assertHandlers[1], true);
-                apf.addListener(document, "mouseout", ui.assertHandlers[2], true);
+                ppc.addListener(document, "mousemove", ui.assertHandlers[0], true);
+                ppc.addListener(document, "mousedown", ui.assertHandlers[1], true);
+                ppc.addListener(document, "mouseout", ui.assertHandlers[2], true);
                 
                 if (this.menu)
                     this.menu.destroy(true, true);
@@ -148,23 +148,23 @@ apf.uirecorder.ui = {
                 ui.selected = false;
             }
             else {
-                apf.removeListener(document, "mousemove", ui.assertHandlers[0], true);
-                apf.removeListener(document, "mousedown", ui.assertHandlers[1], true);
-                apf.removeListener(document, "mouseout", ui.assertHandlers[2], true);
+                ppc.removeListener(document, "mousemove", ui.assertHandlers[0], true);
+                ppc.removeListener(document, "mousedown", ui.assertHandlers[1], true);
+                ppc.removeListener(document, "mouseout", ui.assertHandlers[2], true);
                 
                 var props = amlNode.$supportedProperties;
                 
-                var xml = apf.getXml("<properties />");
+                var xml = ppc.getXml("<properties />");
                 var doc = xml.ownerDocument;
                 
                 div.style.top = lastTop;
                 
-                this.menu = apf.document.body.appendChild(new apf.menu());
+                this.menu = ppc.document.body.appendChild(new ppc.menu());
                 this.menu.$ignoreRecorder = true;
                 this.menu.addEventListener("itemclick", function(e){
-                    apf.addListener(document, "mousemove", ui.assertHandlers[0], true);
-                    apf.addListener(document, "mouseout", ui.assertHandlers[2], true);
-                    apf.addListener(document, "mouseout", ui.assertHandlers[2], true);
+                    ppc.addListener(document, "mousemove", ui.assertHandlers[0], true);
+                    ppc.addListener(document, "mouseout", ui.assertHandlers[2], true);
+                    ppc.addListener(document, "mouseout", ui.assertHandlers[2], true);
                     
                     if (dgUiRecorder.selected) {
                         var node = dgUiRecorder.selected;
@@ -176,9 +176,9 @@ apf.uirecorder.ui = {
                         assert.setAttribute("name", e.relatedNode.caption);
                         assert.setAttribute("value", JSON.stringify(e.relatedNode.value));
                         assert.setAttribute("element",  
-                            JSON.stringify(apf.uirecorder.capture.getElementLookupDef(null, amlNode)));
+                            JSON.stringify(ppc.uirecorder.capture.getElementLookupDef(null, amlNode)));
                         
-                        apf.xmldb.appendChild(node, assert);
+                        ppc.xmldb.appendChild(node, assert);
                         
                         dgUiRecorder.select(assert);
                     }
@@ -190,9 +190,9 @@ apf.uirecorder.ui = {
                 
                 for (var prop, i = 0; i < props.length; i++) {
                     if (amlNode[props[i]] != undefined) {
-                        this.menu.appendChild(new apf.item({
+                        this.menu.appendChild(new ppc.item({
                             caption : props[i],
-                            value   : apf.uirecorder.capture.getCleanCopy(amlNode[props[i]])
+                            value   : ppc.uirecorder.capture.getCleanCopy(amlNode[props[i]])
                         })).$ignoreRecorder = true;
                     }
                 }
@@ -203,32 +203,32 @@ apf.uirecorder.ui = {
                     prop = xml.appendChild(doc.createElement("prop"));
                     prop.setAttribute("name", amlNode[props[i]]);
                     prop.setAttribute("value", 
-                        JSON.stringify(apf.uirecorder.capture.getCleanCopy(amlNode[props[i]])));
+                        JSON.stringify(ppc.uirecorder.capture.getCleanCopy(amlNode[props[i]])));
                 }
                 
                 dgUiProps.getModel().load(xml);
                 
                 mnuUiProps.display(e.x, e.y);*/
                 
-                apf.stopEvent(e);
+                ppc.stopEvent(e);
                 
                 ui.selected = true;
             }
         },
         function(e){
-            apf.uirecorder.ui.divs[0].style.display = "none";
+            ppc.uirecorder.ui.divs[0].style.display = "none";
         }
     ],
     
     stopAddAssert : function(){
-        apf.removeListener(document, "mousemove", this.assertHandlers[0], true);
-        apf.removeListener(document, "mousedown", this.assertHandlers[1], true);
-        apf.removeListener(document, "mouseout", this.assertHandlers[2], true);
+        ppc.removeListener(document, "mousemove", this.assertHandlers[0], true);
+        ppc.removeListener(document, "mousedown", this.assertHandlers[1], true);
+        ppc.removeListener(document, "mouseout", this.assertHandlers[2], true);
         
         barUiRecorder.enable();
         this.pickingAssertion = false;
         
-        apf.uirecorder.capture.unpause();
+        ppc.uirecorder.capture.unpause();
     },
     
     findElement : function (options){
@@ -239,13 +239,13 @@ apf.uirecorder.ui = {
         else if (options.id)
             amlNode = self[options.id];
         else if (options.xpath)
-            amlNode = apf.document.selectSingleNode(options.xpath);
+            amlNode = ppc.document.selectSingleNode(options.xpath);
     
         if (!amlNode)
             return false;
     
         if (options.xml) {
-            resHtml = apf.xmldb.findHtmlNode(amlNode.queryNode(options.xml), amlNode);
+            resHtml = ppc.xmldb.findHtmlNode(amlNode.queryNode(options.xml), amlNode);
             
             if (!resHtml)
                 return false;
@@ -258,17 +258,17 @@ apf.uirecorder.ui = {
         }
         
         if (options.htmlXpath) {
-            if (!apf.XPath)
-                apf.runXpath();
+            if (!ppc.XPath)
+                ppc.runXpath();
     
-            resHtml = apf.XPath.selectNodes(options.htmlXpath, resHtml)[0];
+            resHtml = ppc.XPath.selectNodes(options.htmlXpath, resHtml)[0];
             
             if (!resHtml)
                 return false;
         }
     
         if (options.html) {
-            if (options.html.dataType == apf.ARRAY) {
+            if (options.html.dataType == ppc.ARRAY) {
                 var temp, arr = options.html;
                 for (var i = 0; i < arr.length; i++) {
                     if (!arr[i]) {
@@ -315,24 +315,24 @@ apf.uirecorder.ui = {
             var div = this.divs[0];
             div.style.border = "3px solid blue";
             div.style.position = "absolute";
-            apf.window.zManager.set("plane", div);
+            ppc.window.zManager.set("plane", div);
             div.style.display = "none";
             div.style.cursor = "default";
-            apf.setOpacity(div, "0.5");
+            ppc.setOpacity(div, "0.5");
             
             var div = this.divs[1];
             div.style.border = "2px solid purple";
             div.style.position = "absolute";
-            apf.window.zManager.set("plane", div);
+            ppc.window.zManager.set("plane", div);
             div.style.display = "none";
-            apf.setOpacity(div, "0.5");
+            ppc.setOpacity(div, "0.5");
             
             var div = this.divs[2];
             div.style.border = "1px solid red";
             div.style.position = "absolute";
-            apf.window.zManager.set("plane", div);
+            ppc.window.zManager.set("plane", div);
             div.style.display = "none";
-            apf.setOpacity(div, "0.5");
+            ppc.setOpacity(div, "0.5");
             
             var div = this.divs[3];
             div.style.border = "2px solid red";
@@ -342,17 +342,17 @@ apf.uirecorder.ui = {
             div.style.borderRadius = "3px";
             div.style.position = "absolute";
             div.style.display = "none";
-            apf.window.zManager.set("plane", div);
+            ppc.window.zManager.set("plane", div);
         }
     },
     
     highlightElement : function(e){
-        if (apf.uirecorder.isRecording || this.pickingAssertion)
+        if (ppc.uirecorder.isRecording || this.pickingAssertion)
             return;
         
         this.initHighlights();
         
-        var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.srcElement || e.htmlEvent.target);
+        var xmlNode = ppc.xmldb.findXmlNode(e.htmlEvent.srcElement || e.htmlEvent.target);
         if (!xmlNode)
             return;
         
@@ -369,13 +369,13 @@ apf.uirecorder.ui = {
             if (nodeInfo.aml 
               && (nodeInfo.aml.$ext.offsetHeight || nodeInfo.aml.$ext.offsetWidth)) {
                 div.style.display = "block";
-                var pos = lastPos = apf.getAbsolutePosition(nodeInfo.aml.$ext);
+                var pos = lastPos = ppc.getAbsolutePosition(nodeInfo.aml.$ext);
                 div.style.left = pos[0] + "px";
                 div.style.top = pos[1] + "px";
                 div.style.width = (nodeInfo.aml.$ext.offsetWidth - 6) + "px";
                 div.style.height = (nodeInfo.aml.$ext.offsetHeight - 6) + "px";
                 div.innerHTML = "<div style='position:absolute;right:0;bottom:0;padding:2px 3px 2px 4px;background:black;color:white;font-family:Arial;font-size:10px;'>"
-                    + (nodeInfo.aml.id || apf.xmlToXpath(nodeInfo.aml, apf.document.documentElement)) 
+                    + (nodeInfo.aml.id || ppc.xmlToXpath(nodeInfo.aml, ppc.document.documentElement)) 
                     + "</div>";
             }
             else
@@ -387,7 +387,7 @@ apf.uirecorder.ui = {
               && (nodeInfo.prop.offsetWidth || nodeInfo.prop.offsetHeight)) {
                 div.style.display = "block";
                 
-                var pos = lastPos = apf.getAbsolutePosition(nodeInfo.prop);
+                var pos = lastPos = ppc.getAbsolutePosition(nodeInfo.prop);
                 div.style.left = pos[0] + "px";
                 div.style.top = pos[1] + "px";
                 div.style.width = (nodeInfo.prop.offsetWidth - 4) + "px";
@@ -402,7 +402,7 @@ apf.uirecorder.ui = {
               && (nodeInfo.html.offsetWidth || nodeInfo.html.offsetHeight)) {
                 div.style.display = "block";
                 
-                var pos = lastPos = apf.getAbsolutePosition(nodeInfo.html);
+                var pos = lastPos = ppc.getAbsolutePosition(nodeInfo.html);
                 div.style.left = pos[0] + "px";
                 div.style.top = pos[1] + "px";
                 div.style.width = (nodeInfo.html.offsetWidth - 2) + "px";
@@ -425,11 +425,11 @@ apf.uirecorder.ui = {
     },
     
     $winHover : function(){
-        apf.setOpacity(winUiRecorder.$ext, 1);
+        ppc.setOpacity(winUiRecorder.$ext, 1);
     },
     
     $winOut : function(){
-        apf.setOpacity(winUiRecorder.$ext, 0.5);
+        ppc.setOpacity(winUiRecorder.$ext, 0.5);
     },
     
     write : function(){
@@ -441,7 +441,7 @@ apf.uirecorder.ui = {
     },
     
     getTests : function(compiled){
-        var model = apf.uirecorder.capture.model;
+        var model = ppc.uirecorder.capture.model;
         var nodes = model.queryNodes("test");
         
         var sp = new SeleniumPlayer();
@@ -449,14 +449,14 @@ apf.uirecorder.ui = {
         
         var test, tests = {}, actions, action, asserts, assert;
         for (var i = 0; i < nodes.length; i++) {
-            actions = apf.queryNodes(nodes[i], "action");
+            actions = ppc.queryNodes(nodes[i], "action");
             
             test = [];
             for (var j = 0; j < actions.length; j++) {
                 action = JSON.parse(actions[j].getAttribute("json"));
                 action.properties = [];
                 
-                asserts = apf.queryNodes(actions[j], "assert");
+                asserts = ppc.queryNodes(actions[j], "assert");
                 for (var k = 0; k < asserts.length; k++) {
                     assert = JSON.parse(asserts[k].getAttribute("json")) || {};
                     
@@ -477,10 +477,10 @@ apf.uirecorder.ui = {
     },
     
     create : function(){
-        var include = apf.document.createElementNS(apf.ns.aml, "include");
-        include.setAttribute("src", "/static/support/apf/core/lib/uirecorder/ui.xml");
+        var include = ppc.document.createElementNS(ppc.ns.aml, "include");
+        include.setAttribute("src", "/static/support/ppc/core/lib/uirecorder/ui.xml");
         
-        apf.document.body.appendChild(include);
+        ppc.document.body.appendChild(include);
         
         include.callback = function(){
             var nodes = winUiRecorder.getElementsByTagName("*");
@@ -494,7 +494,7 @@ apf.uirecorder.ui = {
     }
 }
 
-apf.registerHotkey("Command-F10", function(){
-    apf.uirecorder.ui.show();
+ppc.registerHotkey("Command-F10", function(){
+    ppc.uirecorder.ui.show();
 });
 // #endif

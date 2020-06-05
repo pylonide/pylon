@@ -19,7 +19,7 @@
  *
  */
 
-apf.__VIRTUALVIEWPORT__ = 1 << 19;
+ppc.__VIRTUALVIEWPORT__ = 1 << 19;
 
 // #ifdef __WITH_VIRTUALVIEWPORT
 
@@ -35,15 +35,15 @@ apf.__VIRTUALVIEWPORT__ = 1 << 19;
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.VirtualViewport = function(){
+ppc.VirtualViewport = function(){
     this.$init(true);
 
-    this.$regbase = this.$regbase | apf.__VIRTUALVIEWPORT__;
+    this.$regbase = this.$regbase | ppc.__VIRTUALVIEWPORT__;
 
     this.virtualVTimer = null;
     this._xmlUpdate    = this.$xmlUpdate;
     
-    apf.setStyleClass(this.$ext, "virtual");
+    ppc.setStyleClass(this.$ext, "virtual");
     
     this.$deInitNode = function(xmlNode, htmlNode){
         /*  
@@ -63,7 +63,7 @@ apf.VirtualViewport = function(){
         this.$viewport.redraw();//very unoptimized
     };
     
-    this.emptyNode = apf.xmldb.getXml("<empty />");
+    this.emptyNode = ppc.xmldb.getXml("<empty />");
     this.$addEmpty = this.$add;
     this.$add = function(xmlNode, Lid, xmlParentNode, htmlParentNode, beforeNode){
         //find new slot
@@ -90,7 +90,7 @@ apf.VirtualViewport = function(){
             var msgType = nomsg;
             nomsg = false;
             
-            //@todo apf3.0 please use attr. inheritance
+            //@todo ppc3.0 please use attr. inheritance
             if (!this[msgType + "-message"])
                 this.$setInheritedAttribute(msgType + "-message");
         }
@@ -115,7 +115,7 @@ apf.VirtualViewport = function(){
     };
 
     var _self = this;
-    this.$viewport = new apf.$viewportVirtual(this);
+    this.$viewport = new ppc.$viewportVirtual(this);
     
     this.getViewport = function(){
         return this.$viewport;
@@ -204,7 +204,7 @@ apf.VirtualViewport = function(){
     
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(XMLRoot, this);
+        ppc.xmldb.addNodeListener(XMLRoot, this);
 
         //Reserve here a set of nodeConnect id's and add them to our initial marker
         //Init virtual dataset here
@@ -260,7 +260,7 @@ apf.VirtualViewport = function(){
         }
 
         if (this.$focussable)
-            apf.window.hasFocus(this) ? this.$focus() : this.$blur();
+            ppc.window.hasFocus(this) ? this.$focus() : this.$blur();
         
         this.$viewport.setScrollTop(0, true);
     };
@@ -286,7 +286,7 @@ apf.VirtualViewport = function(){
                 throw new Error("Could not find model");
             
             if (!rule.getAttribute("total")) {
-                throw new Error(apf.formatErrorString(this, "Loading data", 
+                throw new Error(ppc.formatErrorString(this, "Loading data", 
                     "Error in load rule. Missing total xpath. Expecting <a:load total='xpath' />"));
             }
             //#endif
@@ -307,7 +307,7 @@ apf.VirtualViewport = function(){
                     _self.setProperty("root", _self.xmlRoot);
                     //#endif
                     
-                    var length = parseInt(apf.queryValue(xmlNode, 
+                    var length = parseInt(ppc.queryValue(xmlNode, 
                         rule.getAttribute("total")));
                     
                     if (_self.$viewport.length != length) {
@@ -470,7 +470,7 @@ apf.VirtualViewport = function(){
         if (!count)
             count = 1;
 
-        this.getTraverseNodes = apf.MultiselectBinding.prototype.getTraverseNodes;
+        this.getTraverseNodes = ppc.MultiselectBinding.prototype.getTraverseNodes;
         var node = baseNTS.call(this, xmlNode, up, count);
         this.getTraverseNodes = getTraverseNodes;
         
@@ -481,7 +481,7 @@ apf.VirtualViewport = function(){
 
         //@todo treeArch support
         //this.getTraverseNodes()
-//        var nodes = apf.MultiselectBinding.prototype.getTraverseNodes.call(_self), i = 0;
+//        var nodes = ppc.MultiselectBinding.prototype.getTraverseNodes.call(_self), i = 0;
 //        while (nodes[i] && nodes[i] != xmlNode)
 //            i++;
 
@@ -501,7 +501,7 @@ apf.VirtualViewport = function(){
     this.caching = false; //for now, because the implications are unknown
 };
 
-apf.$viewportVirtual = function(amlNode){
+ppc.$viewportVirtual = function(amlNode){
     this.amlNode = amlNode;
     
     var _self = this;
@@ -521,7 +521,7 @@ apf.$viewportVirtual = function(amlNode){
         }
     });
     
-    apf.addListener(this.$getHtmlHost(), "scroll", function(){
+    ppc.addListener(this.$getHtmlHost(), "scroll", function(){
         _self.setScrollTop(_self.getScrollTop());
     });
     
@@ -538,9 +538,9 @@ apf.$viewportVirtual = function(amlNode){
     });
     
     if (!amlNode.scrollbar) {
-        this.sb = new apf.scrollbar();
+        this.sb = new ppc.scrollbar();
         
-        this.sb.parentNode = new apf.Class().$init();
+        this.sb.parentNode = new ppc.Class().$init();
         this.sb.parentNode.$container = amlNode.$pHtmlNode;
         this.sb.parentNode.$int = amlNode.$pHtmlNode;
         this.sb.dispatchEvent("DOMNodeInsertedIntoDocument");
@@ -560,11 +560,11 @@ apf.$viewportVirtual = function(amlNode){
      * - Optimize grow function to use fill
      */
     //#ifdef __WITH_LAYOUT
-//    apf.layout.setRules(amlNode.$container, "scrollbar", "\
-//        var s = apf.all[" + _self.sb.$uniqueId + "];\
+//    ppc.layout.setRules(amlNode.$container, "scrollbar", "\
+//        var s = ppc.all[" + _self.sb.$uniqueId + "];\
 //        s.$update();\
 //    ", true);
-//    apf.layout.queue(amlNode.$container);
+//    ppc.layout.queue(amlNode.$container);
     //#endif
 };
 
@@ -609,26 +609,26 @@ apf.$viewportVirtual = function(amlNode){
     
     this.getScrollWidth = function(){
         var htmlNode = this.$getHtmlHost();
-        return (apf.isIE && htmlNode.lastChild 
+        return (ppc.isIE && htmlNode.lastChild 
             ? htmlNode.lastChild.offsetLeft 
                 + htmlNode.lastChild.offsetWidth
-                + apf.getBox(apf.getStyle(htmlNode, "padding"))[1]
-                + (parseInt(apf.getStyle(htmlNode, "marginRight")) || 0)
+                + ppc.getBox(ppc.getStyle(htmlNode, "padding"))[1]
+                + (parseInt(ppc.getStyle(htmlNode, "marginRight")) || 0)
             : htmlNode.scrollWidth);
     }
     
     this.getHeight = function(){
         var htmlNode = this.$getHtmlHost();
         return htmlNode.tagName == "HTML" || htmlNode.tagName == "BODY" 
-            ? apf.getWindowHeight() 
-            : apf.getHtmlInnerHeight(htmlNode);
+            ? ppc.getWindowHeight() 
+            : ppc.getHtmlInnerHeight(htmlNode);
     }
     
     this.getWidth = function(){
         var htmlNode = this.$getHtmlHost();
         return htmlNode.tagName == "HTML" || htmlNode.tagName == "BODY" 
-            ? apf.getWindowHeight() 
-            : apf.getHtmlInnerWidth(htmlNode);
+            ? ppc.getWindowHeight() 
+            : ppc.getHtmlInnerWidth(htmlNode);
     }
     
     this.setScrollTop = function(value, preventEvent, byUser){
@@ -666,7 +666,7 @@ apf.$viewportVirtual = function(amlNode){
     
     this.scrollIntoView = function(xmlNode, toBottom){
         var _self = this.amlNode;
-        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, _self);
+        var htmlNode = ppc.xmldb.findHtmlNode(xmlNode, _self);
         if (htmlNode && htmlNode.offsetTop - _self.$container.scrollTop > 0 
           && htmlNode.offsetTop + htmlNode.offsetHeight 
             - _self.$container.scrollTop < _self.$container.offsetHeight)
@@ -675,8 +675,8 @@ apf.$viewportVirtual = function(amlNode){
         if (this.amlNode.$sharedScrollbarMove)
             this.amlNode.$sharedScrollbarMove();
         
-        var nr = apf.getChildNumber(xmlNode, 
-            apf.MultiselectBinding.prototype.getTraverseNodes.call(_self));
+        var nr = ppc.getChildNumber(xmlNode, 
+            ppc.MultiselectBinding.prototype.getTraverseNodes.call(_self));
         var itemHeight = this.$getItemHeight();
         
         this.setScrollTop(nr * itemHeight + (toBottom ? itemHeight - this.getHeight() : 0));
@@ -690,7 +690,7 @@ apf.$viewportVirtual = function(amlNode){
         if (this.amlNode.each && this.amlNode.xmlRoot) {
             var nodes = this.amlNode.getTraverseNodes();
             if (nodes.length) {
-                var htmlNode = apf.xmldb.findHtmlNode(nodes[0], this.amlNode);
+                var htmlNode = ppc.xmldb.findHtmlNode(nodes[0], this.amlNode);
                 if (htmlNode)
                     return this.$lastItemHeight = htmlNode.offsetHeight;
             }
@@ -702,7 +702,7 @@ apf.$viewportVirtual = function(amlNode){
     this.$getHtmlHost = function(){
         var htmlNode = this.amlNode.$int || this.amlNode.$container;
         return (htmlNode.tagName == "BODY" || htmlNode.tagName == "HTML" 
-            ? (apf.isSafari || apf.isChrome ? document.body : htmlNode.parentNode) 
+            ? (ppc.isSafari || ppc.isChrome ? document.body : htmlNode.parentNode) 
             : htmlNode);
     }
 
@@ -729,7 +729,7 @@ apf.$viewportVirtual = function(amlNode){
             return;
         
         var len    = nodes.length;
-        var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
+        var docId  = ppc.xmldb.getXmlDocId(_self.xmlRoot),
             hNodes = _self.$container.childNodes, hNode;
         for (var j = 0, i = 0, l = hNodes.length; i < l; i++) {
             if (hNodes[i].nodeType != 1) continue;
@@ -740,7 +740,7 @@ apf.$viewportVirtual = function(amlNode){
                 hNode = hNodes[i];
                 _self.$deselect(hNode);
                 hNode.style.display = "block"; //Will ruin tables & lists
-                apf.xmldb.nodeConnect(docId, nodes[j], hNode, _self);
+                ppc.xmldb.nodeConnect(docId, nodes[j], hNode, _self);
             }
             
             j++;
@@ -814,7 +814,7 @@ apf.$viewportVirtual = function(amlNode){
             limit = this.limit;
         
         if (!force)
-            force = apf.isGecko;
+            force = ppc.isGecko;
         
         var scrollTop = this.getScrollTop();
         
@@ -843,7 +843,7 @@ apf.$viewportVirtual = function(amlNode){
                 this.resize(nodes.length);
         }
 
-        var docId  = apf.xmldb.getXmlDocId(_self.xmlRoot),
+        var docId  = ppc.xmldb.getXmlDocId(_self.xmlRoot),
             hNodes = _self.$container.childNodes,
             xmlNode, htmlNode, xmlPos, sel, len, j, i;
 
@@ -858,7 +858,7 @@ apf.$viewportVirtual = function(amlNode){
                     j++;
                     xmlNode = nodes[xmlPos++];
                     if (xmlNode) {
-                        apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                        ppc.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
                         _self.$updateNode(xmlNode, htmlNode);//, noModifier);
                         if (sel.indexOf(xmlNode) > -1)
                             _self.$select(htmlNode);
@@ -884,7 +884,7 @@ apf.$viewportVirtual = function(amlNode){
                 if (htmlNode.nodeType == 1) {
                     j++;
                     xmlNode = nodes[xmlPos++];
-                    apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                    ppc.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
                     _self.$updateNode(xmlNode, htmlNode);//, noModifier);
                     if (sel.indexOf(xmlNode) > -1)
                         _self.$select(htmlNode);
@@ -904,7 +904,7 @@ apf.$viewportVirtual = function(amlNode){
                 htmlNode = hNodes[i];
                 if (htmlNode.nodeType == 1) {
                     xmlNode = nodes[j++];
-                    apf.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
+                    ppc.xmldb.nodeConnect(docId, xmlNode, htmlNode, _self);
                     _self.$updateNode(xmlNode, htmlNode);//, noModifier);
                     
                     if (sel.indexOf(xmlNode) > -1)
@@ -916,12 +916,12 @@ apf.$viewportVirtual = function(amlNode){
         }
         
         if (!_self.$selected && sel && sel.length)
-            _self.$selected = apf.xmldb.findHtmlNode(sel[0], _self);
+            _self.$selected = ppc.xmldb.findHtmlNode(sel[0], _self);
 
         var htmlNode = this.$getHtmlHost();
         var itemHeight = this.$getItemHeight();
         htmlNode.scrollTop = scrollTop - (this.offset * itemHeight);
     };
-}).call(apf.$viewportVirtual.prototype);
+}).call(ppc.$viewportVirtual.prototype);
 
 // #endif

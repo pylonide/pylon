@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_DATETIME || __INC_ALL
 
-apf.LiveEdit.dateTimePlugin = function(sName) {
+ppc.LiveEdit.dateTimePlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = sName == "insertdate" ? "ctrl+shift+d" : "ctrl+shift+t";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
     this.i18n        = { //default English (en_GB)
         date_format  :"%Y-%m-%d",
         time_format  :"%H:%M:%S",
@@ -74,7 +74,7 @@ apf.LiveEdit.dateTimePlugin = function(sName) {
     };
 };
 
-apf.LiveEdit.plugin("insertdate", apf.LiveEdit.dateTimePlugin);
-apf.LiveEdit.plugin("inserttime", apf.LiveEdit.dateTimePlugin);
+ppc.LiveEdit.plugin("insertdate", ppc.LiveEdit.dateTimePlugin);
+ppc.LiveEdit.plugin("inserttime", ppc.LiveEdit.dateTimePlugin);
 
 // #endif

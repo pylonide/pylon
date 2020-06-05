@@ -23,8 +23,8 @@
 /**
  * Specifies the maximum number of characters or list items allowed. Must be equal to or greater than zero
  */
-apf.XsdMaxLength = function(struct, tagName){
-    this.$init(tagName || "maxlength", apf.NODE_HIDDEN, struct);
+ppc.XsdMaxLength = function(struct, tagName){
+    this.$init(tagName || "maxlength", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -36,7 +36,7 @@ apf.XsdMaxLength = function(struct, tagName){
     this.$compile = function(stack){
         stack.push("if (value.length > " + this.value + ") return false;");
     };
-}).call(apf.XsdMaxLength.prototype = new apf.XsdElement());
+}).call(ppc.XsdMaxLength.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("maxlength", apf.XsdMaxLength);
+ppc.xsd.setElement("maxlength", ppc.XsdMaxLength);
 //#endif

@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_MEDIA || __INC_ALL
 
-apf.LiveEdit.plugin("media", function(){
+ppc.LiveEdit.plugin("media", function(){
     this.name        = "media";
     this.icon        = "media";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+m";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
         // @todo: implement this plugin

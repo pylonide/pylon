@@ -28,7 +28,7 @@
  * @default_private
  * @todo only the put/get/remove methods are implemented correctly
  */
-apf.storage.modules.cookie = {
+ppc.storage.modules.cookie = {
     initialized: true,
     
     isAvailable: function(){
@@ -44,7 +44,7 @@ apf.storage.modules.cookie = {
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -54,7 +54,7 @@ apf.storage.modules.cookie = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -63,7 +63,7 @@ apf.storage.modules.cookie = {
         value = JSON.stringify(value);
         
         // store the value    
-        apf.setcookie(namespace + "~" + key, value, 
+        ppc.setcookie(namespace + "~" + key, value, 
             new Date().getTime() + (60*60*24*365*10000));
     },
     
@@ -76,7 +76,7 @@ apf.storage.modules.cookie = {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -86,13 +86,13 @@ apf.storage.modules.cookie = {
 		
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
 
-        var value = apf.getcookie(namespace + "~" + key);
-        return value ? apf.unserialize(value) : null;
+        var value = ppc.getcookie(namespace + "~" + key);
+        return value ? ppc.unserialize(value) : null;
     },
     
     /**
@@ -121,7 +121,7 @@ apf.storage.modules.cookie = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -143,7 +143,7 @@ apf.storage.modules.cookie = {
 	    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -162,12 +162,12 @@ apf.storage.modules.cookie = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing key", 
                 "Invalid namespace given: " + namespace));
         //#endif
         
-        apf.delcookie(namespace + "~" + key);
+        ppc.delcookie(namespace + "~" + key);
     },
     
     /**
@@ -182,7 +182,7 @@ apf.storage.modules.cookie = {
         if (this.isValidKeyArray(keys) === false
           || ! values instanceof Array
           || keys.length != values.length) {
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting multiple name/value pairs",
                 "Invalid arguments: keys = [" + keys + "], \
                                     values = [" + values + "]"));
@@ -194,7 +194,7 @@ apf.storage.modules.cookie = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -221,7 +221,7 @@ apf.storage.modules.cookie = {
         throw new Error("Not Implemented");
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -231,7 +231,7 @@ apf.storage.modules.cookie = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -242,7 +242,7 @@ apf.storage.modules.cookie = {
         var results = [];
         for (var i = 0; i < keys.length; i++){
             if (this.store[namespace][keys[i]])
-                results.push(apf.unserialize(this.store[namespace][keys[i]]));
+                results.push(ppc.unserialize(this.store[namespace][keys[i]]));
         }
         
         return results;
@@ -257,7 +257,7 @@ apf.storage.modules.cookie = {
         throw new Error("Not Implemented");
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -267,7 +267,7 @@ apf.storage.modules.cookie = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif

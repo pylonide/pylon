@@ -21,17 +21,17 @@
 
 // #ifdef __ENABLE_EDITOR_HR || __INC_ALL
 
-apf.LiveEdit.plugin("hr", function(){
+ppc.LiveEdit.plugin("hr", function(){
     this.name        = "hr";
     this.icon        = "hr";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+h";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
-        if (apf.isGecko || apf.isIE)
+        if (ppc.isGecko || ppc.isIE)
             editor.$insertHtml("<hr />", true);
         else
             editor.$execCommand("InsertHorizontalRule");

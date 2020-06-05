@@ -35,7 +35,7 @@
  *
  * @default_private
  */
-apf.offline.models = {
+ppc.offline.models = {
     enabled   : false,
     timer     : null,
     models    : {},
@@ -43,14 +43,14 @@ apf.offline.models = {
     realtime  : true,
 
     init      : function(aml){
-        this.namespace = apf.config.name + ".apf.offline.models";
+        this.namespace = ppc.config.name + ".ppc.offline.models";
 
         if (aml.nodeType && aml.getAttribute("realtime"))
-            this.realtime = !apf.isFalse(aml.getAttribute("realtime"));
+            this.realtime = !ppc.isFalse(aml.getAttribute("realtime"));
 
         if (!this.realtime) {
-            apf.addEventListener("exit", function(){
-                apf.offline.models.search();
+            ppc.addEventListener("exit", function(){
+                ppc.offline.models.search();
             });
         }
 
@@ -78,14 +78,14 @@ apf.offline.models = {
     },
 
     clear : function(){
-        apf.offline.storage.clear(this.namespace);
+        ppc.offline.storage.clear(this.namespace);
     },
 
     removeModel : function(model){
         var name = model.name || model.$uniqueId + ".model";
 
         //Remove recorded data of this model
-        apf.offline.storage.remove(name, this.namespace);
+        ppc.offline.storage.remove(name, this.namespace);
 
         //Remove the model from the init queue
         this.initQueue.remove(model);
@@ -95,7 +95,7 @@ apf.offline.models = {
         var name = model.name || model.$uniqueId + ".model";
 
         //#ifdef __DEBUG
-        apf.console.info("Updating model '" + name + "'");
+        ppc.console.info("Updating model '" + name + "'");
         //#endif
 
         /*
@@ -103,27 +103,27 @@ apf.offline.models = {
             data. At load/exit these could be purged.
         */
 
-        var docId = model.data.getAttribute(apf.xmldb.xmlDocTag);
-        model.data.setAttribute(apf.xmldb.xmlDocTag + "_length",
-            apf.xmldb.nodeCount[docId]);
+        var docId = model.data.getAttribute(ppc.xmldb.xmlDocTag);
+        model.data.setAttribute(ppc.xmldb.xmlDocTag + "_length",
+            ppc.xmldb.nodeCount[docId]);
 
-        apf.offline.storage.put(name, model.data.xml || model.data.serialize(), this.namespace);
+        ppc.offline.storage.put(name, model.data.xml || model.data.serialize(), this.namespace);
     },
 
     loadModel : function(model){
         var name = model.name || model.$uniqueId + ".model";
 
-        var data = apf.offline.storage.get(name, this.namespace);
+        var data = ppc.offline.storage.get(name, this.namespace);
         if (!data) return false;
 
         //#ifdef __DEBUG
-        apf.console.info("Loading model '" + name + "' from local storage");
+        ppc.console.info("Loading model '" + name + "' from local storage");
         //#endif
 
-        var xmlNode = apf.getXmlDom(data).documentElement;
-        var docId   = xmlNode.getAttribute(apf.xmldb.xmlDocTag);
-        apf.xmldb.nodeCount[docId]
-            = parseInt(xmlNode.getAttribute(apf.xmldb.xmlDocTag + "_length"));
+        var xmlNode = ppc.getXmlDom(data).documentElement;
+        var docId   = xmlNode.getAttribute(ppc.xmldb.xmlDocTag);
+        ppc.xmldb.nodeCount[docId]
+            = parseInt(xmlNode.getAttribute(ppc.xmldb.xmlDocTag + "_length"));
 
         model.load(xmlNode);
         return true;
@@ -132,7 +132,7 @@ apf.offline.models = {
     search : function(){
         //Save all the models
         //#ifdef __WITH_NAMESERVER
-        var done = {}, models = apf.nameserver.getAll("model");
+        var done = {}, models = ppc.nameserver.getAll("model");
         for (var i = 0; i < models.length; i++) {
             if (done[models[i].$uniqueId])
                 continue;

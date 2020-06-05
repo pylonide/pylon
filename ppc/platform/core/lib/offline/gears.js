@@ -25,7 +25,7 @@
  * Offline provider that uses Google gears.
  * @default_private
  */
-apf.offline.application.gears = {
+ppc.offline.application.gears = {
     localServer : null,
     lastStore   : null,
     cancelID    : null,
@@ -36,13 +36,13 @@ apf.offline.application.gears = {
         //#ifdef __WITH_NAMESERVER
         // clip at 64 characters, the max length of a resource store name
         this.name = this.storeName.truncate(64);
-        this.storeName = apf.config.name + ".apf.offline";
+        this.storeName = ppc.config.name + ".ppc.offline";
         
         try{
-            this.localServer = apf.nameserver.get("google", "gears").create("beta.localserver", "1.0");
+            this.localServer = ppc.nameserver.get("google", "gears").create("beta.localserver", "1.0");
         }
         catch(e){
-            apf.console.warn("Error loading gears: " + e.message);
+            ppc.console.warn("Error loading gears: " + e.message);
             return false;
         }
         
@@ -52,11 +52,11 @@ apf.offline.application.gears = {
     install : function(){
         //@todo make a script to install gears here
         
-        apf.isGears = true;
+        ppc.isGears = true;
     },
     
     isAvailable : function(){
-        return apf.isGears && location.protocol != "file:";
+        return ppc.isGears && location.protocol != "file:";
     },
     
     clear : function(){
@@ -76,7 +76,7 @@ apf.offline.application.gears = {
         }
         catch(e) {
             //#ifdef __DEBUG;
-            apf.console.warn("Gears failed to start local storage: " + e.message);
+            ppc.console.warn("Gears failed to start local storage: " + e.message);
             //#endif
             
             return false;
@@ -117,8 +117,8 @@ apf.offline.application.gears = {
                     _self.refreshing = false;
                     
                     if(newVersion)
-                        apf.storage.put("oldVersion", newVersion, null,
-                            apf.offline.application.storeName);
+                        ppc.storage.put("oldVersion", newVersion, null,
+                            ppc.offline.application.storeName);
                     
                     if (callback) {
                         callback({

@@ -20,15 +20,15 @@
  */
 
 // #ifdef __WITH_AMLCDATASECTION
-apf.AmlCDATASection = function(isPrototype){
+ppc.AmlCDATASection = function(isPrototype){
     this.nodeType = this.NODE_CDATA_SECTION;
     this.nodeName = "#cdata-section";
     
     this.$init(isPrototype);
 };
 
-apf.AmlCDATASection.prototype = new apf.AmlText(true);
-apf.AmlCDATASection.prototype.serialize = function(){
+ppc.AmlCDATASection.prototype = new ppc.AmlText(true);
+ppc.AmlCDATASection.prototype.serialize = function(){
     return "<![CDATA[" + this.nodeValue + "]]>";
 };
 // #endif

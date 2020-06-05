@@ -24,7 +24,7 @@
  * The parser of the HyperText Markup Language.
  * @private
  */
-apf.htmlCleaner = (function() {
+ppc.htmlCleaner = (function() {
     var prepareRE    = null, exportRE = null,
         noMarginTags = {"table": 1, "TABLE": 1},
         selfClosing  = {"br": 1, "img": 1, "input": 1, "hr": 1};
@@ -58,13 +58,13 @@ apf.htmlCleaner = (function() {
             }
 
             // Convert strong and em to b and i in FF since it can't handle them
-            if (apf.isGecko) {//@todo what about the other browsers?
+            if (ppc.isGecko) {//@todo what about the other browsers?
                 html = html.replace(prepareRE[0], "<$1b$2>")
                            .replace(prepareRE[1], "<$1i$2>");
             }
-            else if (apf.isIE) {
+            else if (ppc.isIE) {
                 html = html.replace(prepareRE[2], "&#39;") // IE can't handle apos
-                           .replace(prepareRE[4], "$1$2 _apf_href=$2$3");
+                           .replace(prepareRE[4], "$1$2 _ppc_href=$2$3");
                            //.replace(prepareRE[5], "<p>&nbsp;</p>");
 
                 // <BR>'s need to be replaced to be properly handled as
@@ -114,7 +114,7 @@ apf.htmlCleaner = (function() {
                         }
                         else {
                             if ((bdepth.length || lastBlockClosed)
-                              && br.indexOf("_apf_marker") > -1) {
+                              && br.indexOf("_ppc_marker") > -1) {
                                 //donothing
                             }
                             else
@@ -178,7 +178,7 @@ apf.htmlCleaner = (function() {
             }
 
             // Fix some issues
-            html = (apf.escapeXML ? apf.escapeXML(html) : html)
+            html = (ppc.escapeXML ? ppc.escapeXML(html) : html)
                        .replace(prepareRE[6], "<a$1$2></a>");
 
             return html;
@@ -197,10 +197,10 @@ apf.htmlCleaner = (function() {
                 // compile 'em regezz
                 exportRE = [
                     /<br[^>]*><\/li>/gi,
-                    /<br[^>]*_apf_placeholder="1"\/?>/gi,
+                    /<br[^>]*_ppc_placeholder="1"\/?>/gi,
                     /<(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>[\s\n\r\t]*<\/(a|span|div|h1|h2|h3|h4|h5|h6|pre|address)>/gi,
                     /<(tr|td)>[\s\n\r\t]*<\/(tr|td)>/gi,
-                    /[\s]*_apf_href="?[^\s^>]+"?/gi,
+                    /[\s]*_ppc_href="?[^\s^>]+"?/gi,
                     /(".*?"|'.*?')|(\w)=([^'"\s>]+)/gi,
                     /<((?:br|input|hr|img)(?:[^>]*[^\/]|))>/ig, // NO! do <br /> see selfClosing
                     /<p>&nbsp;$/mig,
@@ -211,7 +211,7 @@ apf.htmlCleaner = (function() {
                 ];
             }
 
-            if (apf.isIE) {
+            if (ppc.isIE) {
                 html = html.replace(exportRE[7], "<p></p>")
                            .replace(exportRE[9], "<br />")
                            .replace(exportRE[10], "")
@@ -219,7 +219,7 @@ apf.htmlCleaner = (function() {
             else if (html == "<br>")
                 html = "";
 
-            html = (!noEntities && apf.escapeXML ? apf.escapeXML(html) : html)
+            html = (!noEntities && ppc.escapeXML ? ppc.escapeXML(html) : html)
                        .replace(exportRE[0], "</li>")
                        .replace(exportRE[1], "")
                        .replace(exportRE[2], "")
@@ -232,12 +232,12 @@ apf.htmlCleaner = (function() {
 
             //@todo: Ruben: Maybe make this a setting (paragraphs="true")
             //@todo might be able to unify this function with the one above.
-            if (apf.isIE && !noParagraph) {
+            if (ppc.isIE && !noParagraph) {
                 var str = [], capture = true, strP = [], depth = [], bdepth = [];
                 html.replace(exportRE[8],
                   function(m, br, inline, close, tag, block, bclose, btag, any){
                     if (inline) {
-                        if (apf.isIE) {
+                        if (ppc.isIE) {
                             inline = inline.replace(exportRE[5],
                                 function(m1, str, m2, v){
                                     return str || m2 + "=\"" + v + "\"";
@@ -298,7 +298,7 @@ apf.htmlCleaner = (function() {
                             }
                         }
                         else {
-                            if (apf.isIE) {
+                            if (ppc.isIE) {
                                 block = block.replace(exportRE[5],
                                     function(m1, str, m2, v){
                                         return str || m2 + "=\"" + v + "\"";
@@ -343,17 +343,17 @@ apf.htmlCleaner = (function() {
                 html = str.join("");
             }
             else {
-                html = html.replace(/<br[^>]*_apf_marker="1"[^>]*>/gi, "<br />");
+                html = html.replace(/<br[^>]*_ppc_marker="1"[^>]*>/gi, "<br />");
             }
 
             // #ifdef __DEBUG
             // check for VALID XHTML in DEBUG mode...
             try {
-                apf.getXml("<source>" + html.replace(/&.{3,5};/g, "")
+                ppc.getXml("<source>" + html.replace(/&.{3,5};/g, "")
                     + "</source>");
             }
             catch(ex) {
-                apf.console.error(ex.message + "\n" + html.escapeHTML());
+                ppc.console.error(ex.message + "\n" + html.escapeHTML());
             }
             // #endif
 

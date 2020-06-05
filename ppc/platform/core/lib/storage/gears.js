@@ -24,8 +24,8 @@
 /**
  *  Storage provider that uses Google Gears to store data.
  */
-apf.storage.modules.gears = 
-apf.storage.modules["gears.sql"] = {
+ppc.storage.modules.gears = 
+ppc.storage.modules["gears.sql"] = {
     //#ifdef __WITH_NAMESERVER
     // instance methods and properties
     table_name  : "STORAGE",
@@ -35,8 +35,8 @@ apf.storage.modules["gears.sql"] = {
     $db         : null,
     
     init: function(){
-        this.factory = apf.nameserver.get("google", "gears");
-        this.database_name = apf.config.name.substr(0, 46) + ".apf.offline.gears";
+        this.factory = ppc.nameserver.get("google", "gears");
+        this.database_name = ppc.config.name.substr(0, 46) + ".ppc.offline.gears";
 
         this.$db = this.factory.create('beta.database', '1.0');
         this.$db.open(this.database_name);
@@ -56,7 +56,7 @@ apf.storage.modules["gears.sql"] = {
             this.initialized = true;
         }
         catch(e) {
-            apf.console.warn(e.message);
+            ppc.console.warn(e.message);
             return false;
         }
     },
@@ -68,7 +68,7 @@ apf.storage.modules["gears.sql"] = {
     },
     
     destroy : function(){
-        //if (!apf.isIE)
+        //if (!ppc.isIE)
         this.$db.close();
     },
     
@@ -97,13 +97,13 @@ apf.storage.modules["gears.sql"] = {
     
     isAvailable: function(){
         // is Google Gears available and defined?
-        return apf.isGears;
+        return ppc.isGears;
     },
 
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -113,7 +113,7 @@ apf.storage.modules["gears.sql"] = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -131,7 +131,7 @@ apf.storage.modules["gears.sql"] = {
         }
         catch(e) {
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Error setting name/value pair: " + e.message));
             //#endif
@@ -144,7 +144,7 @@ apf.storage.modules["gears.sql"] = {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -154,7 +154,7 @@ apf.storage.modules["gears.sql"] = {
 		
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -168,7 +168,7 @@ apf.storage.modules["gears.sql"] = {
         if (!results.length)
             return null;
 
-        return apf.unserialize(results[0].value);
+        return ppc.unserialize(results[0].value);
     },
     
     getNamespaces: function(){
@@ -190,7 +190,7 @@ apf.storage.modules["gears.sql"] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Retrieving keys", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -212,7 +212,7 @@ apf.storage.modules["gears.sql"] = {
 	    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -228,7 +228,7 @@ apf.storage.modules["gears.sql"] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing key", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -244,7 +244,7 @@ apf.storage.modules["gears.sql"] = {
         if(this.isValidKeyArray(keys) === false
                         || ! values instanceof Array
                         || keys.length != values.length){
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting multiple name/value pairs",
                 "Invalid arguments: keys = [" + keys + "], \
                                     values = [" + values + "]"));
@@ -256,7 +256,7 @@ apf.storage.modules["gears.sql"] = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -278,7 +278,7 @@ apf.storage.modules["gears.sql"] = {
         }
         catch(e) {
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Writing multiple name/value pair", 
                 "Error writing file: " + e.message));
             //#endif
@@ -291,7 +291,7 @@ apf.storage.modules["gears.sql"] = {
     getMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -301,7 +301,7 @@ apf.storage.modules["gears.sql"] = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -313,7 +313,7 @@ apf.storage.modules["gears.sql"] = {
         for (var i = 0; i < keys.length; i++) {
             var result = this.$sql(stmt, [namespace, keys[i]]);
             results[i] = result.length
-                ? apf.unserialize(result[0].value)
+                ? ppc.unserialize(result[0].value)
                 : null;
         }
         
@@ -323,7 +323,7 @@ apf.storage.modules["gears.sql"] = {
     removeMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -332,7 +332,7 @@ apf.storage.modules["gears.sql"] = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif

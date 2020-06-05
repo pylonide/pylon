@@ -31,8 +31,8 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.xforms = new apf.AmlNamespace();
-apf.setNamespace("http://www.w3.org/2002/xforms", apf.xforms);
+ppc.xforms = new ppc.AmlNamespace();
+ppc.setNamespace("http://www.w3.org/2002/xforms", ppc.xforms);
 //#endif
 
 //#ifdef __WITH_XFORMS
@@ -67,7 +67,7 @@ xforms : {
 
 //XForms
 //#ifdef __WITH_XFORMS
-else if (amlParent && (amlParent.hasFeature(apf.__XFORMS__)
+else if (amlParent && (amlParent.hasFeature(ppc.__XFORMS__)
   && (this.xforms[tagName] || amlParent.setCaption
   && this.xforms[tagName] > 2))) {
     switch (this.xforms[tagName]) {
@@ -91,7 +91,7 @@ else if (amlParent && (amlParent.hasFeature(apf.__XFORMS__)
             }
 
             //Create element using this function
-            var oLabel = this.nsHandler[apf.ns.aml].call(this, x,
+            var oLabel = this.nsHandler[ppc.ns.aml].call(this, x,
                 amlParent.$ext.parentNode, amlParent.parentNode);
 
             //Set Dom stuff
@@ -122,7 +122,7 @@ if (tagName == "select1" && x.getAttribute("appearance") == "minimal") {
 }
 //#endif
 //#ifdef __WITH_XFORMS
-                var models = apf.nameserver.getAll("model");
+                var models = ppc.nameserver.getAll("model");
                 for (var i = 0; i < models.length; i++)
                     models[i].dispatchEvent("xforms-ready");
                 //#endif

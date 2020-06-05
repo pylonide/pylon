@@ -2,7 +2,7 @@
 /**
  * @private
  */
-apf.runXpath = function(){
+ppc.runXpath = function(){
 
 /**
  *    Workaround for the lack of having an XPath parser on safari.
@@ -18,7 +18,7 @@ apf.runXpath = function(){
  * @parser
  * @private
  */
-apf.XPath = {
+ppc.XPath = {
     cache : {},
 
     getSelf : function(htmlNode, tagName, info, count, num, sResult){
@@ -62,14 +62,14 @@ apf.XPath = {
         try {
             var qResult = eval(query);
         }catch(e){
-            apf.console.error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
-            //throw new Error(e.name + " " + e.type + ":" + apf.XPath.lastExpr + "\n\n" + query);
+            ppc.console.error(e.name + " " + e.type + ":" + ppc.XPath.lastExpr + "\n\n" + query);
+            //throw new Error(e.name + " " + e.type + ":" + ppc.XPath.lastExpr + "\n\n" + query);
             return;
         }
 
         if (returnResult)
             return sResult.push(qResult);
-        if (!qResult || qResult.dataType == apf.ARRAY && !qResult.length) 
+        if (!qResult || qResult.dataType == ppc.ARRAY && !qResult.length) 
             return;
 
         if (data)
@@ -143,7 +143,7 @@ apf.XPath = {
         if (tagName == "node()") {
             tagName = "*";
             prefix = "";
-            if (apf.isIE) {
+            if (ppc.isIE) {
                 nodes = htmlNode.getElementsByTagName("*");
             }
             else {
@@ -162,7 +162,7 @@ apf.XPath = {
         }
         else {
             nodes = htmlNode.getElementsByTagName((prefix
-              && (apf.isGecko || apf.isOpera || htmlNode.nodeFunc) ? prefix + ":" : "") + tagName);
+              && (ppc.isGecko || ppc.isOpera || htmlNode.nodeFunc) ? prefix + ":" : "") + tagName);
         }
 
         for (i = 0, l = nodes.length; i < l; i++) {
@@ -349,7 +349,7 @@ apf.XPath = {
             else if (sections[i] == "self::node()")
                 results.push([this.getSelf, null]);
             else if (sections[i].match(/self::(.*)$/))
-                results.push([this.doQuery, ["apf.XPath.doXpathFunc(htmlNode, 'local-name') == '" + RegExp.$1 + "'"]]);
+                results.push([this.doQuery, ["ppc.XPath.doXpathFunc(htmlNode, 'local-name') == '" + RegExp.$1 + "'"]]);
             else {
                 //@todo FIX THIS CODE
                 //add some checking here
@@ -365,7 +365,7 @@ apf.XPath = {
 
                 results.push([this.doQuery, [this.compileQuery(query), true]])
 
-                //throw new Error("---- APF Error ----\nMessage : Could not match XPath statement: '" + sections[i] + "' in '" + sExpr + "'");
+                //throw new Error("---- PPC Error ----\nMessage : Could not match XPath statement: '" + sections[i] + "' in '" + sExpr + "'");
             }
         }
 
@@ -374,7 +374,7 @@ apf.XPath = {
     },
 
     compileQuery : function(code){
-        return new apf.CodeCompilation(code).compile();
+        return new ppc.CodeCompilation(code).compile();
     },
 
     doXpathFunc : function(contextNode, type, nodelist, arg2, arg3, xmlNode, force){
@@ -386,7 +386,7 @@ apf.XPath = {
 
         if (!force) {
             var arg1, i, l;
-            if (typeof nodelist == "object" || nodelist.dataType == apf.ARRAY) {
+            if (typeof nodelist == "object" || nodelist.dataType == ppc.ARRAY) {
                 if (nodelist && !nodelist.length)
                     nodelist = [nodelist];
                 
@@ -418,9 +418,9 @@ apf.XPath = {
         
         switch(type){
             case "position":
-                return apf.getChildNumber(contextNode) + 1;
+                return ppc.getChildNumber(contextNode) + 1;
             case "format-number":
-                return apf.formatNumber(arg1); //@todo this should actually do something
+                return ppc.formatNumber(arg1); //@todo this should actually do something
             case "floor":
                 return Math.floor(arg1);
             case "ceiling":
@@ -439,7 +439,7 @@ apf.XPath = {
             case "local-name":
                 var c = xmlNode || contextNode;
                 if (c.nodeType != 1) return false;
-                return c.localName || (c.tagName || "").split(":").pop();//[apf.TAGNAME]
+                return c.localName || (c.tagName || "").split(":").pop();//[ppc.TAGNAME]
             case "substring":
                 return arg1 && arg2 ? arg1.substring(arg2, arg3 || 0) : "";
             case "contains":
@@ -535,7 +535,7 @@ function getNodeValue(sResult){
  * @constructor
  * @private
  */
-apf.CodeCompilation = function(code){
+ppc.CodeCompilation = function(code){
     this.data = {
         F : [],
         S : [],
@@ -599,14 +599,14 @@ apf.CodeCompilation = function(code){
     this.insert = function(){
         var data = this.data;
         code = code.replace(/(\d+)X_\s*==\s*(\d+S_)/g, function(d, nr, str){
-                return "apf.XPath.selectNodeExtended('"
+                return "ppc.XPath.selectNodeExtended('"
                     +  data.X[nr].replace(/'/g, "\\'") + "', htmlNode, " + str + ")";
             })
             .replace(/(\d+)([FISX])_/g, function(d, nr, type){
                 var value = data[type][nr];
 
                 if (type == "F") {
-                    return "apf.XPath.doXpathFunc(htmlNode, '" + value + "', ";
+                    return "ppc.XPath.doXpathFunc(htmlNode, '" + value + "', ";
                 }
                 else if (type == "S") {
                     return "'" + value + "'";
@@ -615,7 +615,7 @@ apf.CodeCompilation = function(code){
                     return value;
                 }
                 else if (type == "X") {
-                    return "apf.XPath.selectNodeExtended('"
+                    return "ppc.XPath.selectNodeExtended('"
                         + value.replace(/'/g, "\\'") + "', htmlNode)";
                 }
             })

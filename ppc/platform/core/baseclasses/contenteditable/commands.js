@@ -20,7 +20,7 @@
  */
 
 //#ifdef __WITH_CONTENTEDITABLE
-apf.ContentEditable.commands = (function(){
+ppc.ContentEditable.commands = (function(){
     var STATE = 1;
     var VALUE = 2;
     var ENABL = 3;
@@ -39,12 +39,12 @@ apf.ContentEditable.commands = (function(){
 
         //@todo node creation should become a lot simpler, api wise...
         if (typeof addType == "object") {
-            var amlNode = apf.getXml("<a:application xmlns:a='" + apf.ns.aml + "' />");
+            var amlNode = ppc.getXml("<a:application xmlns:a='" + ppc.ns.aml + "' />");
             //var amlNode = addType.ownerDocument.createElement("a:application");
             amlNode.appendChild(addType.cloneNode(true));
         }
-        else//apf.document.createElementNS(apf.ns.apf, addType),
-            var amlNode = apf.getXml("<a:application xmlns:a='" + apf.ns.aml + "'><a:" + addType + " /></a:application>");
+        else//ppc.document.createElementNS(ppc.ns.ppc, addType),
+            var amlNode = ppc.getXml("<a:application xmlns:a='" + ppc.ns.aml + "'><a:" + addType + " /></a:application>");
         
         if (options.skinset && options.skinset != "default")
             amlNode.firstChild.setAttribute("skinset", options.skinset);
@@ -52,7 +52,7 @@ apf.ContentEditable.commands = (function(){
         var htmlNode   = options.htmlNode,
             parentNode = options.parentNode;
         if (!parentNode) {
-            parentNode = (apf.document.activeElement || apf.document.documentElement);
+            parentNode = (ppc.document.activeElement || ppc.document.documentElement);
             if (parentNode.getPage) {
                 parentNode = parentNode.getPage();
             }
@@ -65,11 +65,11 @@ apf.ContentEditable.commands = (function(){
         
         //if (!parentNode) debugger;
         
-        var domParser = apf.document.$domParser;
+        var domParser = ppc.document.$domParser;
         amlNode = domParser.parseFromXml(amlNode, {doc: this}).firstChild.firstChild;
         
         if (!options.ignorePos) {
-            var pos = apf.getAbsolutePosition(parentNode.$int, null, true);
+            var pos = ppc.getAbsolutePosition(parentNode.$int, null, true);
             amlNode.setAttribute("left", htmlNode.offsetLeft - pos[0]);
             amlNode.setAttribute("top", htmlNode.offsetTop - pos[1]);
         }
@@ -122,11 +122,11 @@ apf.ContentEditable.commands = (function(){
         amlNode.setProperty("editable", true);
     
         //#ifdef __WITH_LAYOUT
-        apf.layout.processQueue();
+        ppc.layout.processQueue();
         //#endif
         
         if (!options.userInteraction)
-            apf.document.getSelection().$selectList([amlNode]);
+            ppc.document.getSelection().$selectList([amlNode]);
 
         options.addedNode = amlNode;
         
@@ -156,7 +156,7 @@ apf.ContentEditable.commands = (function(){
     
     var rename = {
         getInput : function(){
-            apf.Rename.initEditableArea.call(this);
+            ppc.Rename.initEditableArea.call(this);
             
             var txt = this.$txt;
             txt.className = "editable"
@@ -233,9 +233,9 @@ apf.ContentEditable.commands = (function(){
                 htmlNode.parentNode.replaceChild(txt, htmlNode);
             }
             
-            if (apf.hasContentEditable) {
+            if (ppc.hasContentEditable) {
                 txt.innerHTML = this.$renameContents.replace(/</g, "&lt;") 
-                    || apf.hasContentEditableContainerBug && "<br>" || "";
+                    || ppc.hasContentEditableContainerBug && "<br>" || "";
             }
             else 
                 txt.value = this.$renameContents;
@@ -250,7 +250,7 @@ apf.ContentEditable.commands = (function(){
                 }
                 catch(e) {}
             };
-            if (apf.isIE) f() 
+            if (ppc.isIE) f() 
             else setTimeout(f);
                 
             this.renaming = true;
@@ -270,7 +270,7 @@ apf.ContentEditable.commands = (function(){
             
             var value = typeof success == "string"
               ? success
-              : (apf.hasContentEditable
+              : (ppc.hasContentEditable
                 ? this.$txt.innerText
                 : this.$txt.value)
                   .replace(/<.*?nobr>/gi, "").replace(/\n$/, ""); //last replace is for chrome;
@@ -363,16 +363,16 @@ apf.ContentEditable.commands = (function(){
     	else if (value && value.mode == "add") {
             mode = "add";
             var e   = value.ev;
-    	    var pos = apf.getAbsolutePosition(e.indicator);
-    	    (value.dragserver || apf.DragServer).stop(null, true);
+    	    var pos = ppc.getAbsolutePosition(e.indicator);
+    	    (value.dragserver || ppc.DragServer).stop(null, true);
     	    
     	    addType = value.value;
     	    var opt = {
     	        //htmlNode   : q,
     	        userInteraction : true,
     	        ignorePos  : true,
-    	        parentNode : value.parent || apf.document.body,
-    	        skinset    : apf.getInheritedAttribute(value.parent || apf.document.body, "skinset")
+    	        parentNode : value.parent || ppc.document.body,
+    	        skinset    : ppc.getInheritedAttribute(value.parent || ppc.document.body, "skinset")
     	    };
     	    
     	    commands.begin.call(this);
@@ -381,7 +381,7 @@ apf.ContentEditable.commands = (function(){
     	    amlNode.$adding = true;
     	    
     	    if (value.parent) {
-    	        var ppos = apf.getAbsolutePosition(value.parent.$int);
+    	        var ppos = ppc.getAbsolutePosition(value.parent.$int);
     	        pos[0] -= ppos[0];
     	        pos[1] -= ppos[1];
     	    }
@@ -418,7 +418,7 @@ apf.ContentEditable.commands = (function(){
         var htmlNode   = options.htmlNode,
             parentNode = options.parentNode;
         if (!parentNode) {
-            parentNode = (apf.document.$getVisualSelect().getLastSelection()[0] || apf.document.documentElement);
+            parentNode = (ppc.document.$getVisualSelect().getLastSelection()[0] || ppc.document.documentElement);
             if (parentNode.getPage) {
                 parentNode = parentNode.getPage();
             }
@@ -429,10 +429,10 @@ apf.ContentEditable.commands = (function(){
             options.parentNode = parentNode;
         }
         
-        var nodes = apf.document.getElementsByTagName("*");
+        var nodes = ppc.document.getElementsByTagName("*");
         var htmlParent = htmlNode.parentNode;
-        var left = apf.getHtmlLeft(htmlNode);
-        var top  = apf.getHtmlTop(htmlNode);
+        var left = ppc.getHtmlLeft(htmlNode);
+        var top  = ppc.getHtmlTop(htmlNode);
         var right = left + htmlNode.offsetWidth;
         var bottom = top + htmlNode.offsetHeight;
         var first = true, ext, selList = [];
@@ -441,7 +441,7 @@ apf.ContentEditable.commands = (function(){
             if (!(ext = nodes[i].$ext))
                 continue;
             
-            var pos = apf.getAbsolutePosition(ext, htmlParent);
+            var pos = ppc.getAbsolutePosition(ext, htmlParent);
             if (pos[0] > left && pos[0] + ext.offsetWidth < right
               && pos[1] > top && pos[1] + ext.offsetHeight < bottom) {
                 if (!refParent) refParent = nodes[i].parentNode;
@@ -452,7 +452,7 @@ apf.ContentEditable.commands = (function(){
         }
         
         if (selList.length)
-            apf.document.getSelection().$selectList(selList);
+            ppc.document.getSelection().$selectList(selList);
         
         //trTools.select(trTools.queryNode("//node()[@name='Arrow']"));
     };
@@ -471,8 +471,8 @@ apf.ContentEditable.commands = (function(){
         });
 
         var s = pNode.ownerDocument.getSelection();
-        s.$selectList([apf.document.activeElement && apf.document.activeElement.editable 
-            ? apf.document.activeElement
+        s.$selectList([ppc.document.activeElement && ppc.document.activeElement.editable 
+            ? ppc.document.activeElement
             : (pNode.editable ? pNode : pNode.firstChild)]);
     };
     
@@ -488,7 +488,7 @@ apf.ContentEditable.commands = (function(){
     };
     
     commands["undo"] = function(sel, showUI, value, query){
-        var um = apf.window.undoManager;
+        var um = ppc.window.undoManager;
         switch(query){
             case STATE: return um.undolength;
             case VALUE: return String(um.undolength);
@@ -500,7 +500,7 @@ apf.ContentEditable.commands = (function(){
     };
     
     commands["redo"] = function(sel, showUI, value, query){
-        var um = apf.window.undoManager;
+        var um = ppc.window.undoManager;
         switch(query){
             case STATE: return um.redolength;
             case VALUE: return String(um.redolength);
@@ -513,8 +513,8 @@ apf.ContentEditable.commands = (function(){
     
     commands["cut"] = function(sel, showUI, value, query){
         switch(query){
-            case STATE: return apf.clipboard.store ? true : false;
-            case VALUE: return apf.clipboard.store;
+            case STATE: return ppc.clipboard.store ? true : false;
+            case VALUE: return ppc.clipboard.store;
             case ENABL: return true;
             case INDET: return false;
         }
@@ -525,8 +525,8 @@ apf.ContentEditable.commands = (function(){
     
     commands["copy"] = function(sel, showUI, value, query){
         switch(query){
-            case STATE: return apf.clipboard.store ? true : false;
-            case VALUE: return apf.clipboard.store;
+            case STATE: return ppc.clipboard.store ? true : false;
+            case VALUE: return ppc.clipboard.store;
             case ENABL: return true;
             case INDET: return false;
         }
@@ -536,18 +536,18 @@ apf.ContentEditable.commands = (function(){
             nodes.push(item.cloneNode(true));
         });
             
-        apf.clipboard.put(nodes);
+        ppc.clipboard.put(nodes);
     };
     
     commands["paste"] = function(sel, showUI, value, query){
         switch(query){
-            case STATE: return apf.clipboard.store ? true : false;
-            case VALUE: return apf.clipboard.store;
+            case STATE: return ppc.clipboard.store ? true : false;
+            case VALUE: return ppc.clipboard.store;
             case ENABL: return true;
             case INDET: return false;
         }
         
-        var content = apf.clipboard.get();
+        var content = ppc.clipboard.get();
         if (!content) return;
         
         var pNode = sel.length > 1 ? sel[0].parentNode : sel[0];
@@ -555,7 +555,7 @@ apf.ContentEditable.commands = (function(){
         if (typeof content == "string") {
             sel.insertMarkup(content);
         }
-        else if (content.dataType == apf.ARRAY) {
+        else if (content.dataType == ppc.ARRAY) {
             if (pNode.localName == "table") //@todo not generic enough
                 command["resetgeo"].call(this, sel, showUI);
             
@@ -566,7 +566,7 @@ apf.ContentEditable.commands = (function(){
             //Copy nodes and add to selection
             var _self = this;
             content.each(function(item){
-                docsel.addRange(new apf.AmlRange(_self)).selectNode(
+                docsel.addRange(new ppc.AmlRange(_self)).selectNode(
                     pNode.appendChild(item.cloneNode(true)));
             });
         }
@@ -579,7 +579,7 @@ apf.ContentEditable.commands = (function(){
         
         //#ifdef __WITH_LAYOUT
         //@todo more general place for this?
-        apf.layout.processQueue();
+        ppc.layout.processQueue();
         //#endif
     };
     
@@ -597,17 +597,17 @@ apf.ContentEditable.commands = (function(){
         
         //Copy nodes and add to selection
         sel.each(function(item){
-            docsel.addRange(new apf.AmlRange(item)).selectNode(
-                item.parentNode.appendChild(apf.getCleanCopy(item)));
+            docsel.addRange(new ppc.AmlRange(item)).selectNode(
+                item.parentNode.appendChild(ppc.getCleanCopy(item)));
         });
         
-        /*apf.ContentEditable.execCommand("resetgeo", {
+        /*ppc.ContentEditable.execCommand("resetgeo", {
             sel: nodes
         });*/
         
         //#ifdef __WITH_LAYOUT
         //@todo more general place for this?
-        apf.layout.processQueue();
+        ppc.layout.processQueue();
         //#endif
     };
     
@@ -728,15 +728,15 @@ apf.ContentEditable.commands = (function(){
             case INDET: return false;
         }
         
-        apf.ContentEditable.execCommand("property", {
+        ppc.ContentEditable.execCommand("property", {
             name: "align", value: options.to
         });
         if ("left|middle|right".indexOf(options.to) > -1)
-            apf.ContentEditable.execCommand("property", {
+            ppc.ContentEditable.execCommand("property", {
                 name: "height", value: ""
             });
         if ("top|middle|bottom".indexOf(options.to) > -1)
-            apf.ContentEditable.execCommand("property", {
+            ppc.ContentEditable.execCommand("property", {
                 name: "width", value: ""
             });
 
@@ -769,7 +769,7 @@ apf.ContentEditable.commands = (function(){
         var pos = [100000,100000,0,0];
         for (var i = 0; i < sel.length; i++) {
             var oEl  = sel[i].$ext;
-            var opos = apf.getAbsolutePosition(oEl, pNode.$int);
+            var opos = ppc.getAbsolutePosition(oEl, pNode.$int);
             if (opos[0] < pos[0]) pos[0] = opos[0];
             if (opos[1] < pos[1]) pos[1] = opos[1];
             if (opos[0] + oEl.offsetWidth > pos[2]) pos[2] = opos[0] + oEl.offsetWidth;
@@ -827,7 +827,7 @@ apf.ContentEditable.commands = (function(){
         
         //#ifdef __WITH_LAYOUT
         //@todo more general
-        apf.layout.processQueue();
+        ppc.layout.processQueue();
         //#endif
         
     };
@@ -863,23 +863,23 @@ apf.ContentEditable.commands = (function(){
     };
     
     commands.begin = function(sel, showUI, bClear){
-        apf.window.undoManager.begin(this.documentElement, bClear);
+        ppc.window.undoManager.begin(this.documentElement, bClear);
     };
     
     commands.rollback = function(){
-        apf.window.undoManager.rollback(this.documentElement);
+        ppc.window.undoManager.rollback(this.documentElement);
     };
     
     commands.commit = function(){
-        apf.window.undoManager.commit(this.documentElement);
+        ppc.window.undoManager.commit(this.documentElement);
     };
     
     commands.pause = function(sel, showUI, bContinue){
-        apf.window.undoManager.pause(this.documentElement, bContinue);
+        ppc.window.undoManager.pause(this.documentElement, bContinue);
     };
 
-    apf.AmlDocument.prototype.$commands = apf.extend(
-        apf.AmlDocument.prototype.$commands,
+    ppc.AmlDocument.prototype.$commands = ppc.extend(
+        ppc.AmlDocument.prototype.$commands,
         commands
     );
 })();

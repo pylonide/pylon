@@ -28,8 +28,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.XhtmlHtmlElement = function(struct, tagName){
-    this.$init(tagName || "html", apf.NODE_VISIBLE, struct);
+ppc.XhtmlHtmlElement = function(struct, tagName){
+    this.$init(tagName || "html", ppc.NODE_VISIBLE, struct);
     
     //#ifdef __WITH_CONTENTEDITABLE
     this.$coreHtml   = true;
@@ -40,17 +40,17 @@ apf.XhtmlHtmlElement = function(struct, tagName){
     
     this.$int        = document.body;
     this.$tabList    = []; //Prevents documentElement from being focussed
-    this.$focussable = apf.KEYBOARD;
+    this.$focussable = ppc.KEYBOARD;
     this.focussable  = true;
     this.visible     = true;
     this.$isWindowContainer = true;
     //this.focus = function(){ this.dispatchEvent("focus"); };
     //this.blur  = function(){ this.dispatchEvent("blur"); };
     
-    this.implement(apf.Focussable);
+    this.implement(ppc.Focussable);
     
     //#ifdef __WITH_FOCUS
-    apf.window.$addFocus(this);
+    ppc.window.$addFocus(this);
     //#endif
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
@@ -70,10 +70,10 @@ apf.XhtmlHtmlElement = function(struct, tagName){
         }
         
         if (!doc.namespaceURI)
-            doc.namespaceURI = apf.ns.xhtml;
+            doc.namespaceURI = ppc.ns.xhtml;
     });
 };
-apf.XhtmlHtmlElement.prototype = new apf.XhtmlElement();
+ppc.XhtmlHtmlElement.prototype = new ppc.XhtmlElement();
 
-apf.xhtml.setElement("html", apf.XhtmlHtmlElement);
+ppc.xhtml.setElement("html", ppc.XhtmlHtmlElement);
 // #endif

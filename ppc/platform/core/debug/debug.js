@@ -26,27 +26,27 @@
  *
  * @param {Mixed} obj the object to investigate
  */
-apf.dump =
-apf.vardump = function(obj, o, depth, stack){
+ppc.dump =
+ppc.vardump = function(obj, o, depth, stack){
 	o = o || {};
 	if(o.maxdepth === undefined)o.maxdepth = 99;
 
-    if (apf.isWebkit) //@todo RIK please fix this issue.
+    if (ppc.isWebkit) //@todo RIK please fix this issue.
         return "";
     if (!obj) return obj + "";
     if (!stack) stack = "";
     if (!depth) depth = 0;
     var str;
     switch (obj.dataType) {
-        case apf.STRING:
+        case ppc.STRING:
             return "\"" + (o.clip?(obj.length>o.clip?(obj.slice(0,o.clip)+"..."):obj):obj).replace(/[\"]/g,"'") + "\"";
-        case apf.NUMBER:
+        case ppc.NUMBER:
             return obj;
-        case apf.BOOLEAN:
+        case ppc.BOOLEAN:
             return (obj ? "true" : "false");
-        case apf.DATE:
+        case ppc.DATE:
             return "Date(\"" + obj + "\)";
-        case apf.ARRAY:
+        case ppc.ARRAY:
             if(obj[obj.length-2]=='$__vardump'){
                 return "this"+obj[obj.length-1]; 
             }
@@ -55,7 +55,7 @@ apf.vardump = function(obj, o, depth, stack){
             for (var i = 0; i < obj.length-2; i++) {
                 str.push( str.length>1?",":"",
                     (depth >= o.maxdepth ? typeof(obj[i]) :
-                    apf.vardump(obj[i], o, depth + 1, stack+'['+i+']')) );
+                    ppc.vardump(obj[i], o, depth + 1, stack+'['+i+']')) );
             }
             str.push( " ]");
             obj.pop();obj.pop();
@@ -80,7 +80,7 @@ apf.vardump = function(obj, o, depth, stack){
                     if(str.length>1)str.push(o.clip?", ":",\n");
                     str.push( o.clip?"":("\t".repeat(depth+1)), propname, ": ",
                       (depth >= o.maxdepth ? typeof(obj[prop]):
-                        apf.vardump(obj[prop], o, depth + 1, stack+'.'+prop)) );
+                        ppc.vardump(obj[prop], o, depth + 1, stack+'.'+prop)) );
                 } catch(e) {
                     str.push( o.clip?"":("\t".repeat(depth+1)) , prop , ": dumperror");
                 }
@@ -102,7 +102,7 @@ apf.vardump = function(obj, o, depth, stack){
     }
 };
 
-if (apf.isOpera) {
+if (ppc.isOpera) {
     window.console = {};
     ["log", "debug", "info", "warn", "error"].forEach(function(type) {
         window.console[type] = function() {
@@ -138,8 +138,8 @@ if (apf.isOpera) {
  *
  * @param {Mixed} obj the object to investigate
  */
-apf.dump2 =
-apf.vardump2 = function (obj, depth, recur, stack){
+ppc.dump2 =
+ppc.vardump2 = function (obj, depth, recur, stack){
     if(!obj) return obj + "";
     if(!depth) depth = 0;
 
@@ -151,7 +151,7 @@ apf.vardump2 = function (obj, depth, recur, stack){
         case "array":
             var str = "{\n";
             for(var i=0;i < obj.length;i++){
-                str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : apf.vardump(obj[i], depth+1, !recur)) + "\n";
+                str += "     ".repeat(depth+1) + i + " => " + (!recur && depth > 0 ? typeof obj[i] : ppc.vardump(obj[i], depth+1, !recur)) + "\n";
             }
             str += "     ".repeat(depth) + "}";
             
@@ -167,7 +167,7 @@ apf.vardump2 = function (obj, depth, recur, stack){
             var str = "{\n";
             for(prop in obj){
                 try{
-                    str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : apf.vardump(obj[prop], depth+1, !recur)) + "\n";
+                    str += "     ".repeat(depth+1) + prop + " => " + (!recur && depth > 0? typeof obj[prop] : ppc.vardump(obj[prop], depth+1, !recur)) + "\n";
                 }catch(e){
                     str += "     ".repeat(depth+1) + prop + " => [ERROR]\n";
                 }
@@ -188,8 +188,8 @@ String.prototype.s = function(){
  *
  * @param {Mixed} obj the object to investigate
  */
-apf.alert_r = function(obj, recur){
-    alert(apf.vardump(obj, null, recur));
+ppc.alert_r = function(obj, recur){
+    alert(ppc.vardump(obj, null, recur));
 }
 
 /**
@@ -197,8 +197,8 @@ apf.alert_r = function(obj, recur){
  *
  * @param {Mixed} obj the object to investigate
  */
-apf.alert_r2 = function(obj, recur){
-    alert(apf.vardump2(obj, null, !recur));
+ppc.alert_r2 = function(obj, recur){
+    alert(ppc.vardump2(obj, null, !recur));
 }
 
 /**
@@ -207,7 +207,7 @@ apf.alert_r2 = function(obj, recur){
  * @param {Boolean} nostart whether the profiler should start measuring at creation.
  * @constructor
  */
-apf.ProfilerClass = function(nostart){
+ppc.ProfilerClass = function(nostart){
     this.totalTime = 0;
 
     /**
@@ -238,7 +238,7 @@ apf.ProfilerClass = function(nostart){
      */
     this.addPoint = function(msg){
         this.end();
-        apf.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
+        ppc.console.time("[TIME] " + (msg || "Profiled Section") + ": " + this.totalTime + "ms");
         this.start(true);
     }
 
@@ -246,7 +246,7 @@ apf.ProfilerClass = function(nostart){
         this.start();
 };
 
-apf.Latometer = new apf.ProfilerClass(true);//backward compatibility
+ppc.Latometer = new ppc.ProfilerClass(true);//backward compatibility
 
 if (self.navigator && navigator.userAgent.indexOf("Opera") != -1) {
     window.console = {};

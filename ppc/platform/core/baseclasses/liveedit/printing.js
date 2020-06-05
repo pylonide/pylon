@@ -21,18 +21,18 @@
 
 // #ifdef __ENABLE_EDITOR_PRINTING || __INC_ALL
 
-apf.LiveEdit.plugin("print", function(){
+ppc.LiveEdit.plugin("print", function(){
     this.name        = "print";
     this.icon        = "print";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+p";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
-        if (apf.print)
-            apf.print(editor.getValue());
+        if (ppc.print)
+            ppc.print(editor.getValue());
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };
@@ -42,18 +42,18 @@ apf.LiveEdit.plugin("print", function(){
     };
 });
 
-apf.LiveEdit.plugin("preview", function(){
+ppc.LiveEdit.plugin("preview", function(){
     this.name        = "preview";
     this.icon        = "preview";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+shift+p";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
-        if (apf.printer)
-            apf.printer.preview(editor.getValue()).show();
+        if (ppc.printer)
+            ppc.printer.preview(editor.getValue()).show();
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
     };

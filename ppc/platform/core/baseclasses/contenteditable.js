@@ -18,47 +18,47 @@
  * 02110-1301 USA, or see the FSF site: http://www.fsf.org.
  *
  */
-apf.__CONTENTEDITABLE__  = 1 << 24;
+ppc.__CONTENTEDITABLE__  = 1 << 24;
 // #ifdef __WITH_CONTENTEDITABLE
 
-apf.addEventListener("load", function(){
+ppc.addEventListener("load", function(){
     var lastShift;
 
-    apf.window.undoManager.addEventListener("afterchange", function(){
-        apf.layout.processQueue();
-        apf.document.$getVisualSelect().updateGeo(); //Possibly not best place for this
+    ppc.window.undoManager.addEventListener("afterchange", function(){
+        ppc.layout.processQueue();
+        ppc.document.$getVisualSelect().updateGeo(); //Possibly not best place for this
     });
     
-    var sel = apf.document.getSelection();
+    var sel = ppc.document.getSelection();
     sel.addEventListener("update", function(){
         
     });
     
     //Init visual selection 
-    //apf.document.$getVisualSelect();
+    //ppc.document.$getVisualSelect();
     
     //@todo only for editable elements
-    apf.addEventListener("keydown", function(e){
+    ppc.addEventListener("keydown", function(e){
         var key = e.keyCode;
 
-        if (!apf.document.activeElement
-          || !apf.document.activeElement.editable)
+        if (!ppc.document.activeElement
+          || !ppc.document.activeElement.editable)
             return;
 
-        if (apf.document.queryCommandState("rename")) {
-            if (apf.hasSingleResizeEvent)
+        if (ppc.document.queryCommandState("rename")) {
+            if (ppc.hasSingleResizeEvent)
                 $setTimeout(function(){
-                    apf.document.$getVisualSelect().updateGeo();
+                    ppc.document.$getVisualSelect().updateGeo();
                 });
             
             if (key == 27 || key == 13) {
-                apf.document.execCommand("rename", false, key == 13);
+                ppc.document.execCommand("rename", false, key == 13);
                 
                 window.focus(); //@todo don't know why this is needed...
-                apf.stopPropagation(e);
+                ppc.stopPropagation(e);
                 return false;
             }
-            else if (apf.hasContentEditableContainerBug && key == 8
+            else if (ppc.hasContentEditableContainerBug && key == 8
               && document.getElementById("txt_rename").innerHTML == "<br>") {
                 e.preventDefault();
             }
@@ -69,21 +69,21 @@ apf.addEventListener("load", function(){
         //F2
         switch(key) {
             case 27: //ESC
-                if (apf.dragMode) {
-                    var sel = apf.document.$getVisualSelect().getLastSelection();
-                    (apf.document.activeElement || sel[0]).$cancelInteractive();
+                if (ppc.dragMode) {
+                    var sel = ppc.document.$getVisualSelect().getLastSelection();
+                    (ppc.document.activeElement || sel[0]).$cancelInteractive();
                 }
                 break;
             case 113: //F2
-                apf.document.execCommand("rename", true);
+                ppc.document.execCommand("rename", true);
                 return false;
             case 16:
-                if (!this.dragMode && (apf.document.documentElement.editable 
+                if (!this.dragMode && (ppc.document.documentElement.editable 
                   || self.app && self.app.editable)) { //@hack!
                     if (e.ctrlKey)
-                        apf.document.execCommand("mode", null, "select");
+                        ppc.document.execCommand("mode", null, "select");
                     else {
-                        apf.document.execCommand("mode", null, {
+                        ppc.document.execCommand("mode", null, {
                             mode    : "connect",
                             timeout : 1000,
                             event   : e.htmlEvent
@@ -95,8 +95,8 @@ apf.addEventListener("load", function(){
                 if (!lastShift || new Date() - lastShift > 500 || e.htmlEvent.repeat)
                     lastShift = new Date().getTime();
                 else {
-                    var isShowingConnections = (apf.document.queryCommandState("mode") || "").substr(0,8) == "connect-";
-                    apf.document.execCommand("mode", null, {
+                    var isShowingConnections = (ppc.document.queryCommandState("mode") || "").substr(0,8) == "connect-";
+                    ppc.document.execCommand("mode", null, {
                         mode    : isShowingConnections ? "arrow" : "connect-element",
                         timeout : 1000,
                         event   : e.htmlEvent
@@ -127,14 +127,14 @@ apf.addEventListener("load", function(){
         }
     });
 
-    apf.addEventListener("keyup", function(e){
+    ppc.addEventListener("keyup", function(e){
         if (e.keyCode == 16
-          && "select|connect".indexOf(apf.document.queryCommandState("mode")) > -1)
-            apf.document.execCommand("mode", null, "arrow");
+          && "select|connect".indexOf(ppc.document.queryCommandState("mode")) > -1)
+            ppc.document.execCommand("mode", null, "arrow");
     });
 
     var recursion, $focus, lastFocussed;
-    apf.document.addEventListener("focus", $focus = function(e){
+    ppc.document.addEventListener("focus", $focus = function(e){
         if (recursion)
             return;
         
@@ -174,34 +174,34 @@ apf.addEventListener("load", function(){
         }
         recursion = false;
     });
-    if (apf.document.activeElement && apf.document.activeElement.editable)
-        sel.addRange(apf.document.createRange()).selectNode(apf.document.activeElement);
+    if (ppc.document.activeElement && ppc.document.activeElement.editable)
+        sel.addRange(ppc.document.createRange()).selectNode(ppc.document.activeElement);
     
     var lastPos = [-1000, -1000];
-    apf.addEventListener("mousedown", function(e){
+    ppc.addEventListener("mousedown", function(e){
         lastPos = [e.htmlEvent.clientX, e.htmlEvent.clientY];
     });
     
     //Focus isn't set when the node already has the focus
-    apf.addEventListener("mouseup", function(e){
-        if ((apf.document.queryCommandState("mode") || "").indexOf("connect-") > -1)
-            apf.document.execCommand("mode", null, "arrow");
+    ppc.addEventListener("mouseup", function(e){
+        if ((ppc.document.queryCommandState("mode") || "").indexOf("connect-") > -1)
+            ppc.document.execCommand("mode", null, "arrow");
     
         if (Math.abs(lastPos[0] - e.htmlEvent.clientX) > 2 
           || Math.abs(lastPos[1] - e.htmlEvent.clientY) > 2)
             return;
         
-        var o = apf.document.$getVisualSelect().$getOutline();
+        var o = ppc.document.$getVisualSelect().$getOutline();
         if (!o) return;
         
-        //apf.plane.hide();
+        //ppc.plane.hide();
         var lastTop = o.style.top;
         o.style.top = "-10000px"
-        var hOutline = document.getElementById("apf_outline");
+        var hOutline = document.getElementById("ppc_outline");
         if (hOutline) 
             hOutline.style.top = "-10000px";
         
-        var node = apf.findHost(
+        var node = ppc.findHost(
             document.elementFromPoint(e.htmlEvent.clientX, e.htmlEvent.clientY));
 
         o.style.top = lastTop;
@@ -213,7 +213,7 @@ apf.addEventListener("load", function(){
         
         if (!node.editable) return;
         
-        //apf.activeElement == node && 
+        //ppc.activeElement == node && 
         if (sel.rangeCount > 1) {
             //Deselect a node when its already selected
             var idx, list = sel.$getNodeList(); //@todo use visualSelect cache here?
@@ -228,13 +228,13 @@ apf.addEventListener("load", function(){
             }
             else { //@todo this could be optimized by checking whether the object is already the only selected
                 sel.removeAllRanges();
-                sel.addRange(apf.document.createRange()).selectNode(node);
+                sel.addRange(ppc.document.createRange()).selectNode(node);
             }
         }
     });
     
-    /*apf.addEventListener("contextmenu", function(e){
-        if (e.currentTarget.namespaceURI == apf.ns.xhtml) {
+    /*ppc.addEventListener("contextmenu", function(e){
+        if (e.currentTarget.namespaceURI == ppc.ns.xhtml) {
             e.currentTarget.ownerDocument.execCommand("contextmenu", true, {
                 amlNode   : e.currentTarget,
                 htmlEvent : e
@@ -245,8 +245,8 @@ apf.addEventListener("load", function(){
     });*/
 });
 
-apf.ContentEditable = function() {
-    this.$regbase = this.$regbase | apf.__CONTENTEDITABLE__;
+ppc.ContentEditable = function() {
+    this.$regbase = this.$regbase | ppc.__CONTENTEDITABLE__;
 
     this.editable = false;
     this.$canEdit = true;
@@ -267,16 +267,16 @@ apf.ContentEditable = function() {
 
                 //Make this element draggable
                 (this.$propHandlers["draggable"]
-                  || apf.GuiElement.propHandlers["draggable"]).call(this, true);
+                  || ppc.GuiElement.propHandlers["draggable"]).call(this, true);
                 
                 //Make this element resizable
                 (this.$propHandlers["resizable"]
-                  || apf.GuiElement.propHandlers["resizable"]).call(this, true);
+                  || ppc.GuiElement.propHandlers["resizable"]).call(this, true);
                 
                 //Make this element focussable
                 this.$lastFocussable = [this.$focussable, this.focussable];
                 if (!this.$focussable || !this.focussable)
-                    apf.GuiElement.propHandlers.focussable.call(this, true);
+                    ppc.GuiElement.propHandlers.focussable.call(this, true);
                 this.$focussable = 
                 this.focussable  = true;
                 if (this.$blur)
@@ -286,14 +286,14 @@ apf.ContentEditable = function() {
                 if (this.$propHandlers.visible)
                     this.$propHandlers.visible_original = this.$propHandlers.visible;
                 this.$propHandlers.visible = function(value){
-                    apf.setOpacity(this.$ext, value ? 1 : 0.5);
+                    ppc.setOpacity(this.$ext, value ? 1 : 0.5);
                     this.$ext.onmouseover = value ? null : function(){
-                        apf.setOpacity(this, 1);
+                        ppc.setOpacity(this, 1);
                     }
                     this.$ext.onmouseout = value ? null : function(e){
                         if (!e) e = event;
                         if (!e.toElement || e.toElement.host !== false)
-                            apf.setOpacity(this, 0.5);
+                            ppc.setOpacity(this, 0.5);
                     }
                 }
                 if (this.visible === false) {
@@ -317,31 +317,31 @@ apf.ContentEditable = function() {
                     var htmlNode = !rInfo[0] 
                         ? this.$ext 
                         : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
-                    if (apf.isIE)
-                        htmlNode.ondblclick = apf.ContentEditable.$renameStart;
+                    if (ppc.isIE)
+                        htmlNode.ondblclick = ppc.ContentEditable.$renameStart;
                     else {
-                        apf.addListener(htmlNode, "mousedown", 
-                          apf.ContentEditable.$renameStart);
+                        ppc.addListener(htmlNode, "mousedown", 
+                          ppc.ContentEditable.$renameStart);
                     }
                     
                     this.addEventListener("$skinchange", 
-                        apf.ContentEditable.$renameSkinChange);
+                        ppc.ContentEditable.$renameSkinChange);
                 }
                 
                 //Contextmenu
                 this.addEventListener("contextmenu", 
-                    apf.ContentEditable.$contextMenu);
+                    ppc.ContentEditable.$contextMenu);
                 
                 //Drag & Resize
-                apf.ContentEditable.addInteraction(this);
+                ppc.ContentEditable.addInteraction(this);
             }
             this.isContentEditable = true;
             
-            //@todo apf3.0 this needs optimization
+            //@todo ppc3.0 this needs optimization
             if (!this.parentNode.editable) {
                 var curfoc, vsel, lsel = 
                   (vsel = this.ownerDocument.$getVisualSelect()).getLastSelection();
-                if (!(curfoc = apf.window.getLastActiveElement()) && lsel.length 
+                if (!(curfoc = ppc.window.getLastActiveElement()) && lsel.length 
                   || curfoc && lsel.indexOf(curfoc) > -1) {
                     vsel.show();
                 }
@@ -351,7 +351,7 @@ apf.ContentEditable = function() {
                 }
             }
             
-            apf.setStyleClass(this.$ext, "editable");
+            ppc.setStyleClass(this.$ext, "editable");
         }
         else {
             if (this.$canEdit && this.$ext && !this.$coreHtml) {
@@ -359,13 +359,13 @@ apf.ContentEditable = function() {
                 
                 //Unset draggable
                 if (n = this.getAttributeNode("draggable")) {
-                    apf.removeListener(this.$ext, "mousedown", this.$dragStart);
+                    ppc.removeListener(this.$ext, "mousedown", this.$dragStart);
                     n.$triggerUpdate();
                 }
                 else {
-                    apf.removeListener(this.$ext, "mousedown", this.$dragStart);
+                    ppc.removeListener(this.$ext, "mousedown", this.$dragStart);
                     (this.$propHandlers["draggable"]
-                      || apf.GuiElement.propHandlers["draggable"]).call(this, this.localName == "window" || false); //@todo hack!
+                      || ppc.GuiElement.propHandlers["draggable"]).call(this, this.localName == "window" || false); //@todo hack!
                 }
                 
                 delete this.dragOutline; //@todo hack!
@@ -378,14 +378,14 @@ apf.ContentEditable = function() {
                     n.$triggerUpdate();
                 else
                     (this.$propHandlers["resizable"]
-                      || apf.GuiElement.propHandlers["resizable"]).call(this, false);
+                      || ppc.GuiElement.propHandlers["resizable"]).call(this, false);
                 
                 //Unset focussable
                 if (this.$lastFocussable) {
                     this.$focussable = this.$lastFocussable[0];
                     this.focussable  = this.$lastFocussable[0] && this.$lastFocussable[1];
                     if (!this.focussable)
-                        apf.GuiElement.propHandlers.focussable.call(this, this.focussable);
+                        ppc.GuiElement.propHandlers.focussable.call(this, this.focussable);
                     delete this.$lastFocussable;
                 }
                 if (this.hasFocus && this.hasFocus())
@@ -413,22 +413,22 @@ apf.ContentEditable = function() {
                     var htmlNode = !rInfo[0] 
                         ? this.$ext 
                         : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
-                    if (apf.isIE)
+                    if (ppc.isIE)
                         htmlNode.ondblclick = null;
                     else {
-                        apf.removeListener(htmlNode, "mousedown", 
-                            apf.ContentEditable.$renameStart);
+                        ppc.removeListener(htmlNode, "mousedown", 
+                            ppc.ContentEditable.$renameStart);
                     }
                     
                     this.removeEventListener("$skinchange", 
-                        apf.ContentEditable.$renameSkinChange);
+                        ppc.ContentEditable.$renameSkinChange);
                 }
                 
                 //Contextmenu
                 this.removeEventListener("contextmenu", 
-                    apf.ContentEditable.$contextMenu);
+                    ppc.ContentEditable.$contextMenu);
                 
-                apf.ContentEditable.removeInteraction(this);
+                ppc.ContentEditable.removeInteraction(this);
                 
                 var sel = this.ownerDocument.$getVisualSelect().getLastSelection();//this.ownerDocument.getSelection().$getNodeList();
                 if (sel.indexOf(this) > -1)
@@ -437,9 +437,9 @@ apf.ContentEditable = function() {
             this.isContentEditable = false;
             
             //@todo hack!
-            //apf.ContentEditable.resize.hide();
+            //ppc.ContentEditable.resize.hide();
             
-            apf.setStyleClass(this.$ext, "", ["editable"]);
+            ppc.setStyleClass(this.$ext, "", ["editable"]);
         }
     }
     
@@ -451,7 +451,7 @@ apf.ContentEditable = function() {
         }catch(e){}*/
         
         if (!this.editable) {
-            this.editable = apf.isTrue(apf.getInheritedAttribute(this, "editable"));
+            this.editable = ppc.isTrue(ppc.getInheritedAttribute(this, "editable"));
             if (this.editable) {
                 this.$propHandlers["editable"].call(this, true);
                 this.dispatchEvent("prop.editable", {value: true});
@@ -464,26 +464,26 @@ apf.ContentEditable = function() {
         
     });
 };
-apf.ContentEditable.$contextMenu = function(e){
+ppc.ContentEditable.$contextMenu = function(e){
     this.ownerDocument.execCommand("contextmenu", true, {
         amlNode: this,
         htmlEvent: e
     });
 
-    apf.stopEvent(e)
+    ppc.stopEvent(e)
     return false;
 };
 
 (function(){
     var time;
-    apf.ContentEditable.$renameStart = apf.isIE
+    ppc.ContentEditable.$renameStart = ppc.isIE
       ? function(){
         e = event;
         if (e.srcElement != this)
             return;
         
-        apf.findHost(e.srcElement).ownerDocument.execCommand("rename", true);
-        apf.stopPropagation(e);
+        ppc.findHost(e.srcElement).ownerDocument.execCommand("rename", true);
+        ppc.stopPropagation(e);
       }
       : function(e){
         if (e.target != this)
@@ -492,31 +492,31 @@ apf.ContentEditable.$contextMenu = function(e){
         if (!time || new Date() - time[0] > 500 || time[1] != e.target)
             time = [new Date().getTime(), e.target];
         else if (time) {
-            apf.findHost(e.target).ownerDocument.execCommand("rename", true);
-            apf.stopPropagation(e);
+            ppc.findHost(e.target).ownerDocument.execCommand("rename", true);
+            ppc.stopPropagation(e);
             time = null;
         }
       }
 })();
 
-apf.ContentEditable.$renameSkinChange = function(e){
+ppc.ContentEditable.$renameSkinChange = function(e){
     var rInfo = this.ownerDocument.queryCommandEnabled("rename", false, this);
     var htmlNode = !rInfo[0] 
         ? this.$ext 
         : (rInfo[0].nodeType == 1 ? rInfo[0] : rInfo[0].parentNode);
-    if (apf.isIE) {
-        htmlNode.ondblclick = apf.ContentEditable.$renameStart;
-        //@todo apf3.0 memory leak - fix this
+    if (ppc.isIE) {
+        htmlNode.ondblclick = ppc.ContentEditable.$renameStart;
+        //@todo ppc3.0 memory leak - fix this
         //e.ext ... .ondblclick        = null;
     }
     else {
-        apf.addListener(htmlNode, "mousedown", 
-          apf.ContentEditable.$renameStart);
+        ppc.addListener(htmlNode, "mousedown", 
+          ppc.ContentEditable.$renameStart);
     }
 }
 
 
-apf.XhtmlElement.prototype.implement(apf.ContentEditable);
+ppc.XhtmlElement.prototype.implement(ppc.ContentEditable);
 
-apf.config.$inheritProperties["editable"] = 2;
+ppc.config.$inheritProperties["editable"] = 2;
 // #endif

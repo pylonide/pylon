@@ -23,7 +23,7 @@
 /**
  * @private
  */
-apf.visualConnect = function (sel){
+ppc.visualConnect = function (sel){
     /* 
      * modes: 
      * draw     : mode to create a new connection
@@ -46,7 +46,7 @@ apf.visualConnect = function (sel){
     var width = document.body.clientWidth;
     //@todo adjust height to browser window height?
     var height = 800;//document.body.clientHeight;
-    var paintGroup = apf.vector.group({w:width,h:height,z:1000});
+    var paintGroup = ppc.vector.group({w:width,h:height,z:1000});
     
     var paintRect = paintGroup.rect({
         sw: 1,
@@ -85,7 +85,7 @@ apf.visualConnect = function (sel){
         var timer, lastTime;
         var isDrawing = false;
         
-        apf.addEventListener("vcpropchange", function(e) {
+        ppc.addEventListener("vcpropchange", function(e) {
             if (connections[e.obj.fromEl.id] && connections[e.obj.fromEl.id][e.obj.toEl.id])
                 var el1 = e.obj.fromEl.id, el2 = e.obj.toEl.id;
             else
@@ -109,16 +109,16 @@ apf.visualConnect = function (sel){
             }
                 
         });
-        apf.addEventListener("vcdelete", function(e) {
+        ppc.addEventListener("vcdelete", function(e) {
             e.el.style.display = "none";
         });
-        apf.addEventListener("vcmoveselection", function(e) {
+        ppc.addEventListener("vcmoveselection", function(e) {
             sel.$selectList(selection = [e.target]);
             createConnections(selection);
             showConnections();
         });
         
-        apf.plane.show();
+        ppc.plane.show();
         
         div = document.body.appendChild(document.createElement("div"));
         div.style.display = "block";
@@ -127,7 +127,7 @@ apf.visualConnect = function (sel){
         div.style.top = "0px";
         div.style.zIndex = 100000001;
         
-        //@todo use apf.window.zManager.set("drag", this.panel);
+        //@todo use ppc.window.zManager.set("drag", this.panel);
 /*
         var showAllTimer = setTimeout(function(){
             // lets show the drawing till someone clicks and then its gone
@@ -157,8 +157,8 @@ apf.visualConnect = function (sel){
                 break;
             case "all":
                 var all = [];
-                for (var el, i = 0, l = apf.all.length; i < l; i++) {
-                    if ((el=apf.all[i]).$ext && el.prefix == "a") all.push(apf.all[i]);
+                for (var el, i = 0, l = ppc.all.length; i < l; i++) {
+                    if ((el=ppc.all[i]).$ext && el.prefix == "a") all.push(ppc.all[i]);
                 }
                 if (createConnections(all))
                     selection = all;
@@ -171,8 +171,8 @@ apf.visualConnect = function (sel){
             if (elements.length){
                 // get all elements
                 var all = [];
-                for (var el, i = 0, l = apf.all.length; i < l; i++) {
-                    if ((el=apf.all[i]).$ext && el.prefix == "a") all.push(apf.all[i])
+                for (var el, i = 0, l = ppc.all.length; i < l; i++) {
+                    if ((el=ppc.all[i]).$ext && el.prefix == "a") all.push(ppc.all[i])
                 }
 
                 // element as source element
@@ -192,7 +192,7 @@ apf.visualConnect = function (sel){
                         // @todo regex search of "{"
                         if ((val = elements[i].attributes[j].value).toString().charAt(0) == "{" && val.toString().charAt(val.length-1) == "}") {
                             // check if value is attribute of an element
-                            if (targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1))) {
+                            if (targetEl = ppc.document.getElementById((split=val.split("."))[0].substr(1))) {
                                 targetAttr = split[1].substr(0, split[1].length-1);
                                 createConnection(elements[i], targetEl, elements[i].attributes[j].name, targetAttr, val);
                             }
@@ -205,7 +205,7 @@ apf.visualConnect = function (sel){
                         for (var ai = 0, al = all[ei].attributes.length; ai < al; ai++) {
                             // check for value with string {...}
                             if ((val = all[ei].attributes[ai].value).toString().charAt(0) == "{" && val.toString().charAt(val.length-1) == "}") {
-                                if ((targetEl = apf.document.getElementById((split=val.split("."))[0].substr(1))) == elements[i]) {
+                                if ((targetEl = ppc.document.getElementById((split=val.split("."))[0].substr(1))) == elements[i]) {
                                     targetAttr = split[1].substr(0, split[1].length-1);
                                     createConnection(all[ei], targetEl, all[ei].attributes[ai].name, targetAttr, val);
                                 }
@@ -230,7 +230,7 @@ apf.visualConnect = function (sel){
                 drawConnections();
                 paintConnections.style({p: connectionPath.join(" ")});
 
-                apf.plane.show();
+                ppc.plane.show();
                 paintGroup.style({v:1});
                 paintGroup.repaint();
             }
@@ -246,21 +246,21 @@ apf.visualConnect = function (sel){
         }
         
         function startDraw(e){
-            apf.dragMode = true; //prevents selection
+            ppc.dragMode = true; //prevents selection
             
             fromEl = null;
             toEl = null;
         }
         
         function stopDraw(e){
-            apf.dragMode = true;
-            apf.plane.hide();
+            ppc.dragMode = true;
+            ppc.plane.hide();
             
             paintGroup.style({v:0});
             paintGroup.repaint();
             
             var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
-            var amlNode = apf.findHost(htmlNode);
+            var amlNode = ppc.findHost(htmlNode);
             // target amlNode found, create connection
 
             if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1 && amlNode.tagName != "html") {
@@ -269,14 +269,14 @@ apf.visualConnect = function (sel){
                 // draw connection line
                 var hNode, x, y, w, h, pos;
                 var from = {
-                    x : (x=(pos=apf.getAbsolutePosition((hNode=fromEl.$ext)))[0]),
+                    x : (x=(pos=ppc.getAbsolutePosition((hNode=fromEl.$ext)))[0]),
                     y : (y=pos[1]),
                     w : (w=hNode.offsetWidth),
                     h : (h=hNode.offsetHeight),
                     c : [Math.round(x+w/2), Math.round(y+h/2)]  // center of element
                 }
                 var to = {
-                    x : (x=(pos=apf.getAbsolutePosition((hNode=toEl.$ext)))[0]),
+                    x : (x=(pos=ppc.getAbsolutePosition((hNode=toEl.$ext)))[0]),
                     y : (y=pos[1]),
                     w : (w=hNode.offsetWidth),
                     h : (h=hNode.offsetHeight),
@@ -297,12 +297,12 @@ apf.visualConnect = function (sel){
                 if (!toEl.attributes.length) return;
                 for (var name, attList = [], i = 0, l = toEl.attributes.length; i < l; i++) {
                     if (ignoreToAtts.indexOf((name = toEl.attributes[i].name)) > -1) continue;
-                    attList.push(new apf.item({
+                    attList.push(new ppc.item({
                         caption: name
                     }));
                 }
 
-                attMenu = new apf.menu({
+                attMenu = new ppc.menu({
                   htmlNode   : div,
                   id         : "attMenu",
                   childNodes : attList
@@ -313,16 +313,16 @@ apf.visualConnect = function (sel){
                 });
                 
                 attMenu.addEventListener("mousedown", function(e) {
-                    //apf.console.info("mousedown on attMenu");
+                    //ppc.console.info("mousedown on attMenu");
                     (e||event).cancelBubble = true;
                 });
                 attMenu.addEventListener("mouseup", function(e) {
-                    //apf.console.info("mouseup on attMenu");
+                    //ppc.console.info("mouseup on attMenu");
                     (e||event).cancelBubble = true;
                 });
                 attMenu.addEventListener("itemclick", function(e) {
                     sel.$selectList(selection = [fromEl]);
-                    apf.dragMode = true; //prevents selection
+                    ppc.dragMode = true; //prevents selection
                     toAtt = e.value;
                     attMenu.setProperty("visible", false);
                     fromEl.setAttribute(fromAtt, "{" + toEl.id + "." + toAtt + "}");
@@ -333,7 +333,7 @@ apf.visualConnect = function (sel){
                     if (createConnections([fromEl]))
                         showConnections();
                     
-                    //apf.cancelBubble((e || event), attMenu);
+                    //ppc.cancelBubble((e || event), attMenu);
                 });
             }
             isDrawing = false;
@@ -342,15 +342,15 @@ apf.visualConnect = function (sel){
         }
         
         function updateDraw(e){
-            apf.plane.hide();
+            ppc.plane.hide();
             paintGroup.style({v:0});
             paintGroup.repaint();
             
             var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
-            var amlNode = apf.findHost(htmlNode);
+            var amlNode = ppc.findHost(htmlNode);
             if (amlNode && amlNode.editable && selection.indexOf(amlNode) == -1) {
                 htmlNode = amlNode.$ext;
-                var pos = apf.getAbsolutePosition(htmlNode);
+                var pos = ppc.getAbsolutePosition(htmlNode);
                 paintRect.style({
                     x: pos[0], 
                     y: pos[1],
@@ -367,13 +367,13 @@ apf.visualConnect = function (sel){
             var drawPath = [];
             for (var i = 0, il = selection.length; i < il; i++) {
                 hNode = selection[i].$ext;
-                pos = apf.getAbsolutePosition(hNode);
+                pos = ppc.getAbsolutePosition(hNode);
                 var sx =  ~~(pos[0] + (hNode.offsetWidth/2)), sy = ~~(pos[1] + (hNode.offsetHeight/2)), ex = e.clientX, ey = e.clientY;
                 drawPath.push("M",sx,sy,"L",ex,ey,paintGroup.circlePath(sx,sy,3,3),paintGroup.circlePath(ex,ey,3,3));
             }
             paintLine.style({p: drawPath.join(" ")});
 
-            apf.plane.show();
+            ppc.plane.show();
             paintGroup.style({v:1});
             paintGroup.repaint();
         }
@@ -383,7 +383,7 @@ apf.visualConnect = function (sel){
             
             clearTimeout(timer);
             if (lastTime && new Date().getTime() 
-              - lastTime < apf.mouseEventBuffer) {
+              - lastTime < ppc.mouseEventBuffer) {
                 var z = {
                     clientX: e.clientX,
                     clientY: e.clientY
@@ -418,11 +418,11 @@ apf.visualConnect = function (sel){
 */
             }
             else if (lineMode == "draw" && !fromEl) {
-                apf.plane.hide();
+                ppc.plane.hide();
                 var htmlNode = document.elementFromPoint(e.clientX, e.clientY);
-                amlNode = apf.findHost(htmlNode);
+                amlNode = ppc.findHost(htmlNode);
                 if (amlNode) {
-                    //apf.console.info("mousedown in draw mode");
+                    //ppc.console.info("mousedown in draw mode");
                     fromEl = amlNode;
                     sel.$selectList(selection = [fromEl]);
                     
@@ -431,12 +431,12 @@ apf.visualConnect = function (sel){
                     if (!fromEl.attributes.length) return;
                     for (var name, attList = [], i = 0, l = fromEl.attributes.length; i < l; i++) {
                         if (ignoreFromAtts.indexOf((name = fromEl.attributes[i].name)) > -1) continue
-                        attList.push(new apf.item({
+                        attList.push(new ppc.item({
                             caption: name
                         }));
                     }
 
-                    attMenu = new apf.menu({
+                    attMenu = new ppc.menu({
                       htmlNode   : div,
                       id         : "attMenu",
                       childNodes : attList
@@ -456,7 +456,7 @@ apf.visualConnect = function (sel){
                
                 _self.setMode("draw-started");
                 //debugger;
-                apf.plane.show();
+                ppc.plane.show();
                     
                    
             } else {
@@ -471,7 +471,7 @@ apf.visualConnect = function (sel){
         document.onmouseup = function(e){
             // lets see if we should stop drawing
             //if (!isDrawing)
-                //apf.dragMode = false; //prevents selection
+                //ppc.dragMode = false; //prevents selection
         }
         
         /*document.onkeydown = function(e) {
@@ -496,7 +496,7 @@ apf.visualConnect = function (sel){
                 var el2 = targetList[0].el;
                 var at2 = targetList[0].at;
                 var from = {
-                    x : (x=(pos=apf.getAbsolutePosition((hNode=el1.$ext)))[0]),
+                    x : (x=(pos=ppc.getAbsolutePosition((hNode=el1.$ext)))[0]),
                     y : (y=pos[1]),
                     w : (w=hNode.offsetWidth),
                     h : (h=hNode.offsetHeight),
@@ -507,7 +507,7 @@ apf.visualConnect = function (sel){
                     c : [Math.round(x+w/2), Math.round(y+h/2)]  // center of element
                 }
                 var to = {
-                    x : (x=(pos=apf.getAbsolutePosition((hNode=el2.$ext)))[0]),
+                    x : (x=(pos=ppc.getAbsolutePosition((hNode=el2.$ext)))[0]),
                     y : (y=pos[1]),
                     w : (w=hNode.offsetWidth),
                     h : (h=hNode.offsetHeight),
@@ -654,9 +654,9 @@ apf.visualConnect = function (sel){
         document.onmouseup = null;
         //document.onkeydown = null;
         
-        apf.dragMode = false;
+        ppc.dragMode = false;
         
-        apf.plane.hide();
+        ppc.plane.hide();
         paintLine.style({p:""});
         paintConnections.style({p:""});
         paintRect.style({w:0,h:0});
@@ -686,7 +686,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
     this.ignoreToAtts = ["for"];    // attributes for to elements to ignore in attMenu
 
     this.$getInput = function(){
-        apf.Rename.initEditableArea.call(this);
+        ppc.Rename.initEditableArea.call(this);
         
         var txt = this.$txt;
         txt.host = this;
@@ -702,9 +702,9 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
         htmlNode.innerHTML = "";
         htmlNode.appendChild(txt);
         
-        if (apf.hasContentEditable) {
+        if (ppc.hasContentEditable) {
             txt.innerHTML = value.replace(/</g, "&lt;") 
-                || apf.hasContentEditableContainerBug && "<br>" || "";
+                || ppc.hasContentEditableContainerBug && "<br>" || "";
         }
         else 
             txt.value = value;
@@ -719,7 +719,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
             }
             catch(e) {}
         };
-        if (apf.isIE) f() 
+        if (ppc.isIE) f() 
         else setTimeout(f);
             
         this.renaming = true;
@@ -737,7 +737,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
         
         var value = typeof success == "string"
           ? success
-          : (apf.hasContentEditable
+          : (ppc.hasContentEditable
             ? this.$txt.innerText
             : this.$txt.value)
               .replace(/<.*?nobr>/gi, "").replace(/\n$/, ""); //last replace is for chrome;
@@ -798,7 +798,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
             }
             this.$delBtn.onmouseup = function(e) {
                 _self.fromEl.setAttribute(_self.fromAt, '');
-                apf.dispatchEvent("vcdelete", {el:_self.$ext});
+                ppc.dispatchEvent("vcdelete", {el:_self.$ext});
                 
                 (e||event).cancelBubble = true;
             }
@@ -811,18 +811,18 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
                 //debugger;
                 for (var name, attList = [], ai = 0, al = _self.fromEl.attributes.length; ai < al; ai++) {
                     if (_self.ignoreFromAtts.indexOf((name = _self.fromEl.attributes[ai].name)) > -1) continue;
-                    attList.push(new apf.item({
+                    attList.push(new ppc.item({
                         caption: name
                     }));
                 }
 
-                attMenu = new apf.menu({
+                attMenu = new ppc.menu({
                   htmlNode   : _self.$ext,
                   id         : "attMenu",
                   childNodes : attList
                 });
                 
-                var pos = apf.getAbsolutePosition(this);
+                var pos = ppc.getAbsolutePosition(this);
 
                 var x = pos[0], y = pos[1] + this.offsetHeight;
                 setTimeout(function(){
@@ -833,7 +833,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
                     attMenu.$ext.style.zIndex = 100000002;
                    
                     // select attribute in menu
-                    apf.popup.cache[apf.popup.last].content.onmousedown = function(e) {
+                    ppc.popup.cache[ppc.popup.last].content.onmousedown = function(e) {
                         var newAt = attMenu.$selected.caption;
                         
                         if (_self.fromAt == newAt) return;
@@ -849,7 +849,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
                         
                         _self.container.onmousedown = _self.container.onmouseup = function(e) {
                             _self.container.onmousedown = _self.container.onmouseup = null;
-                            apf.dispatchEvent("vcpropchange", {obj:_self});
+                            ppc.dispatchEvent("vcpropchange", {obj:_self});
                             (e || event).cancelBubble = true;
                         }
                         //document.onmouseup = null;
@@ -869,7 +869,7 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
         
         if (this.type == "readonly") {
             this.$ext.onmousedown = function(e) {
-                apf.dispatchEvent("vcmoveselection", {target: _self.toEl});
+                ppc.dispatchEvent("vcmoveselection", {target: _self.toEl});
                 (e||event).cancelBubble = true;
             }
             this.$ext.onmouseup = function(e) {
@@ -927,5 +927,5 @@ function connectEdit(container, fromEl, toEl, fromAt, toAt, val, type){
         return this.$lblFromEl.offsetWidth + this.$lblAttMenu.offsetWidth + this.$lblVal.offsetWidth;
     }
     
-}).call(connectEdit.prototype = new apf.Class());
+}).call(connectEdit.prototype = new ppc.Class());
 //#endif

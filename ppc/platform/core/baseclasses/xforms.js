@@ -19,7 +19,7 @@
  *
  */
 
-apf.__XFORMS__ = 1 << 17;
+ppc.__XFORMS__ = 1 << 17;
 
 //#ifdef __WITH_XFORMS
 
@@ -37,27 +37,27 @@ apf.__XFORMS__ = 1 << 17;
  * All elements inheriting from this {@link term.baseclass baseclass} have xforms support.
  *
  *
- * @class apf.XForms
+ * @class ppc.XForms
  * @experimental
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9.8
  */
-apf.XForms = function(){
+ppc.XForms = function(){
     this.$init(true);
 };
 
-apf.XForms.prototype = new (function() {
-    this.$regbase = this.$regbase | apf.__XFORMS__;
+ppc.XForms.prototype = new (function() {
+    this.$regbase = this.$regbase | ppc.__XFORMS__;
     
     function getModel(name){
         if (name){
             //#ifdef __WITH_NAMESERVER
-            var model = apf.nameserver.get("model", name);
+            var model = ppc.nameserver.get("model", name);
             
             //#ifdef __DEBUG
             if (!model) {
-                throw new Error(apf.formatErrorString(0, this, 
+                throw new Error(ppc.formatErrorString(0, this, 
                     "Resetting form", 
                     "Could not find model '" + name + "'"));
             }
@@ -85,11 +85,11 @@ apf.XForms.prototype = new (function() {
             getModel.call(this, model).isValid(); 
         },
         "xforms-next" : function(){
-            apf.window.moveNext(null, this);
+            ppc.window.moveNext(null, this);
             return false;
         },
         "xforms-previous" : function(){
-            apf.window.moveNext(true, this);
+            ppc.window.moveNext(true, this);
             return false;
         },
         "xforms-focus" : function(){
@@ -186,7 +186,7 @@ apf.XForms.prototype = new (function() {
                     : getXmlValue(actionNode, "text()");
             
                 var dataNode = findXFormsData.call(this, actionNode);
-                apf.setNodeValue(dataNode, value, true);
+                ppc.setNodeValue(dataNode, value, true);
                 break;
             case "setindex":
                 break;
@@ -224,7 +224,7 @@ apf.XForms.prototype = new (function() {
      * @private
      */
     this.parseXFormTag = function(xmlNode){
-        switch (xmlNode[apf.TAGNAME]) {
+        switch (xmlNode[ppc.TAGNAME]) {
             case "filename":
             case "mediatype":
             case "itemset":
@@ -245,20 +245,20 @@ apf.XForms.prototype = new (function() {
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        this.addEventListener(this.hasFeature(apf.__MULTISELECT__) ? "click" : "choose",
+        this.addEventListener(this.hasFeature(ppc.__MULTISELECT__) ? "click" : "choose",
             function(){
                 var model = this.getModel(); 
                 if (model)
                     model.dispatchEvent("DOMActivate");
             });
-        this.addEventListener(this.hasFeature(apf.__MULTISELECT__) ? "afterchange" : "afterselect",
+        this.addEventListener(this.hasFeature(ppc.__MULTISELECT__) ? "afterchange" : "afterselect",
             function(){
                 var model = this.getModel(); 
                 if (model)
                     model.dispatchEvent("xforms-value-changed")
             });
         
-        if (this.hasFeature(apf.__MULTISELECT__)) {
+        if (this.hasFeature(ppc.__MULTISELECT__)) {
             this.addEventListener("afterselect", function(e){
                 this.dispatchEvent(e.selection.contains(e.xmlNode)
                     ? "xforms-select"

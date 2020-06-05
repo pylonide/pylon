@@ -19,7 +19,7 @@
  *
  */
 
-apf.__DELAYEDRENDER__ = 1 << 11
+ppc.__DELAYEDRENDER__ = 1 << 11
 
 // #ifdef __WITH_DELAYEDRENDER
 
@@ -49,7 +49,7 @@ apf.__DELAYEDRENDER__ = 1 << 11
  *      </a:page>
  *  </a:tab>
  * ```
- * @class apf.DelayedRender
+ * @class ppc.DelayedRender
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -78,8 +78,8 @@ apf.__DELAYEDRENDER__ = 1 << 11
  * allowing the browsers' render engine to draw (for instance, a loader).
  *
  */
-apf.DelayedRender = function(){
-    this.$regbase   = this.$regbase | apf.__DELAYEDRENDER__;
+ppc.DelayedRender = function(){
+    this.$regbase   = this.$regbase | ppc.__DELAYEDRENDER__;
     this.$rendered  = false;
     
     /*
@@ -97,7 +97,7 @@ apf.DelayedRender = function(){
             return;
 
         if (this["render-delay"] || usedelay)
-            $setTimeout("apf.lookup(" + this.$uniqueId + ").$renderparse()", 10);
+            $setTimeout("ppc.lookup(" + this.$uniqueId + ").$renderparse()", 10);
         else
             this.$renderparse();
     };
@@ -130,7 +130,7 @@ apf.DelayedRender = function(){
     };
     
     /*var _self = this;
-    if (apf.window.vManager.check(this, "delayedrender", function(){
+    if (ppc.window.vManager.check(this, "delayedrender", function(){
         _self.$render();
     })) this.$render();*/
     
@@ -146,9 +146,9 @@ apf.DelayedRender = function(){
     });
 };
 
-apf.GuiElement.propHandlers["render"] = function(value) {
-    if (!this.hasFeature(apf.__DELAYEDRENDER__) && value == "runtime") {
-        this.implement(apf.DelayedRender);
+ppc.GuiElement.propHandlers["render"] = function(value) {
+    if (!this.hasFeature(ppc.__DELAYEDRENDER__) && value == "runtime") {
+        this.implement(ppc.DelayedRender);
     
         if (this.localName != "page") {
             this.visible = false;
@@ -160,6 +160,6 @@ apf.GuiElement.propHandlers["render"] = function(value) {
     }
 };
 
-apf.config.$inheritProperties["render-delay"] = 1;
+ppc.config.$inheritProperties["render-delay"] = 1;
 
 // #endif

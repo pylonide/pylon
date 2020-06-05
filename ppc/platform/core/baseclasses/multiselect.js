@@ -19,7 +19,7 @@
  *
  */
 
-apf.__MULTISELECT__ = 1 << 8;
+ppc.__MULTISELECT__ = 1 << 8;
 
 // #ifdef __WITH_MULTISELECT
 
@@ -72,13 +72,13 @@ apf.__MULTISELECT__ = 1 << 8;
  *  </a:dropdown>
  * ```
  *
- * @class apf.MultiSelect
+ * @class ppc.MultiSelect
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
  *
- * @inherits apf.MultiselectBinding
+ * @inherits ppc.MultiselectBinding
  *
  */
 /**
@@ -89,10 +89,10 @@ apf.__MULTISELECT__ = 1 << 8;
  /**
  *
  * * @binding value  Determines the way the value for the element is retrieved
- * from the selected node. The `apf.MultiSelect.value` property contains this value.
+ * from the selected node. The `ppc.MultiSelect.value` property contains this value.
  *
  */
-apf.MultiSelect = function(){
+ppc.MultiSelect = function(){
     this.$init(function(){
         this.$valueList       = [];
         this.$selectedList    = [];
@@ -101,7 +101,7 @@ apf.MultiSelect = function(){
 
 //@todo investigate if selectedList can be deprecated
 (function() {
-    this.$regbase    = this.$regbase|apf.__MULTISELECT__;
+    this.$regbase    = this.$regbase|ppc.__MULTISELECT__;
 
     // *** Properties *** //
 
@@ -162,7 +162,7 @@ apf.MultiSelect = function(){
      * 
      * ```xml
      *  <a:script><!--
-     *      apf.onload = function() {
+     *      ppc.onload = function() {
      *          myList.setValue("product20");
      *          myList.remove();
      *      }
@@ -187,7 +187,7 @@ apf.MultiSelect = function(){
      * 
      * ```xml
      *  <a:script><![CDATA[
-     *      apf.onload = function() {
+     *      ppc.onload = function() {
      *          var list = myList.getTraverseNodes();
      * 
      *          var removeList = [];
@@ -258,7 +258,7 @@ apf.MultiSelect = function(){
         //#ifdef __DEBUG
         //We're not removing the XMLRoot, that would be suicide ;)
         if (nodeList.contains(this.xmlRoot)) {
-            throw new Error(apf.formatErrorString(0,
+            throw new Error(ppc.formatErrorString(0,
                 "Removing nodes",
                 "You are trying to delete the xml root of this \
                  element. This is not allowed."));
@@ -314,7 +314,7 @@ apf.MultiSelect = function(){
      *
      * ```xml
      *  <a:script><![CDATA[
-     *      apf.onload = function() {
+     *      ppc.onload = function() {
      *          myList.add('<product name="USB drive" type="storage" />');
      *      }
      *  ]]></a:script>
@@ -328,8 +328,8 @@ apf.MultiSelect = function(){
      * 
      * ```xml
      *  <a:script><![CDATA[
-     *      apf.onload = function() {
-     *          var xmlNode = apf.xmldb.copy(myList.selected);
+     *      ppc.onload = function() {
+     *          var xmlNode = ppc.xmldb.copy(myList.selected);
      *          xmlNode.setAttribute("name", "New product");
      *          myList.add(xmlNode);
      *          myList.select(xmlNode);
@@ -411,7 +411,7 @@ apf.MultiSelect = function(){
                 rule = this.$actions.getRule("add", xmlNode);
             else if (typeof xmlNode == "string") {
                 if (xmlNode.trim().charAt(0) == "<") {
-                    xmlNode = apf.getXml(xmlNode);
+                    xmlNode = ppc.getXml(xmlNode);
                     rule = this.$actions.getRule("add", xmlNode);
                 }
                 else {
@@ -433,21 +433,21 @@ apf.MultiSelect = function(){
             rule = null;
             
         //#ifdef __WITH_OFFLINE
-        var bHasOffline = (typeof apf.offline != "undefined");
-        if (bHasOffline && !apf.offline.canTransact())
+        var bHasOffline = (typeof ppc.offline != "undefined");
+        if (bHasOffline && !ppc.offline.canTransact())
             return false;
 
-        if (bHasOffline && !apf.offline.onLine && (!xmlNode || !rule.get))
+        if (bHasOffline && !ppc.offline.onLine && (!xmlNode || !rule.get))
             return false;
         //#endif
         
         var refNode  = this.$isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot,
             amlNode  = this,
         callback = function(addXmlNode, state, extra){
-            if (state != apf.SUCCESS) {
+            if (state != ppc.SUCCESS) {
                 var oError;
 
-                oError = new Error(apf.formatErrorString(1032, amlNode,
+                oError = new Error(ppc.formatErrorString(1032, amlNode,
                     "Loading xml data",
                     "Could not add data for control " + amlNode.name
                     + "[" + amlNode.tagName + "] \nUrl: " + extra.url
@@ -459,15 +459,15 @@ apf.MultiSelect = function(){
                 throw oError;
             }
 
-            /*if (apf.supportNamespaces && node.namespaceURI == apf.ns.xhtml) {
-                node = apf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
+            /*if (ppc.supportNamespaces && node.namespaceURI == ppc.ns.xhtml) {
+                node = ppc.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
                 //@todo import here for webkit?
             }*/
 
             if (typeof addXmlNode != "object")
-                addXmlNode = apf.getXmlDom(addXmlNode).documentElement;
-            if (addXmlNode.getAttribute(apf.xmldb.xmlIdTag))
-                addXmlNode.setAttribute(apf.xmldb.xmlIdTag, "");
+                addXmlNode = ppc.getXmlDom(addXmlNode).documentElement;
+            if (addXmlNode.getAttribute(ppc.xmldb.xmlIdTag))
+                addXmlNode.setAttribute(ppc.xmldb.xmlIdTag, "");
 
             var actionNode = amlNode.$actions &&
               amlNode.$actions.getRule("add", amlNode.$isTreeArch
@@ -494,12 +494,12 @@ apf.MultiSelect = function(){
                 pNode = amlNode.xmlRoot;
 
             //Safari issue not auto importing nodes:
-            if (apf.isWebkit && pNode.ownerDocument != addXmlNode.ownerDocument)
+            if (ppc.isWebkit && pNode.ownerDocument != addXmlNode.ownerDocument)
                 addXmlNode = pNode.ownerDocument.importNode(addXmlNode, true); 
 
             //#ifdef __DEBUG
             if (!pNode) {
-                throw new Error(apf.formatErrorString(0, amlNode,
+                throw new Error(ppc.formatErrorString(0, amlNode,
                     "Executing add action",
                     "Missing parent node. You can only add nodes to a list if it\
                      has data loaded. Unable to perform action."));
@@ -518,13 +518,13 @@ apf.MultiSelect = function(){
         };
 
         if (xmlNode)
-            return callback(xmlNode, apf.SUCCESS);
+            return callback(xmlNode, ppc.SUCCESS);
         else {
             if (rule.get)
-                return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
+                return ppc.getData(rule.get, {xmlNode: refNode, callback: callback})
             else {
                 //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Executing add action",
                     "Missing add action defined in action rules. Unable to \
                      perform action."));
@@ -543,10 +543,10 @@ apf.MultiSelect = function(){
          * selection is cleared.
          *
          * @param  {String}  value  The new value for this element.
-         * @see apf.MultiSelect.getValue
+         * @see ppc.MultiSelect.getValue
          */
         this.setValue = function(value, disable_event){
-            // @todo apf3.0 what does noEvent do? in this scope it's useless and
+            // @todo ppc3.0 what does noEvent do? in this scope it's useless and
             // doesn't improve codeflow with a global lookup and assignment
             noEvent = disable_event;
             this.setProperty("value", value, false, true);
@@ -592,7 +592,7 @@ apf.MultiSelect = function(){
                 if (noError)
                     return false;
                 
-                throw new Error(apf.formatErrorString(1074, this,
+                throw new Error(ppc.formatErrorString(1074, this,
                     "Retrieving the value of this component.",
                     "No value rule has been defined. There is no way \
                      to determine the value of the selected item."));
@@ -615,14 +615,14 @@ apf.MultiSelect = function(){
     };
 
     /**
-     * @event  beforeselect  Fires before a {@link apf.MultiSelect.select selection} is made
+     * @event  beforeselect  Fires before a {@link ppc.MultiSelect.select selection} is made
      * @param {Object} e The standard event object. It contains the following properties:
      *                     - `selected` ([[XMLElement]]): The {@link term.datanode data node} that will be selected
      *                     - `selection` ([[Array]]): An array of {@link term.datanode data nodes} that will be selected
      *                     - `htmlNode` ([[HTMLElement]]): The HTML element that visually represents the {@link term.datanode data node} 
      */
     /**
-     * @event  afterselect  Fires after a {@link apf.MultiSelect.select selection} is made
+     * @event  afterselect  Fires after a {@link ppc.MultiSelect.select selection} is made
      * @param {Object} e The standard event object. It contains the following properties:
      *                     - `selected` ([[XMLElement]]):    the {@link term.datanode data node} that was selected
      *                     - `selection` ([[Array]]():       an array of {@link term.datanode data node} that are selected
@@ -692,7 +692,7 @@ apf.MultiSelect = function(){
         // *** Type Detection *** //
         if (!xmlNode) {
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(1075, this,
+            throw new Error(ppc.formatErrorString(1075, this,
                 "Making a selection",
                 "No selection was specified"))
             //#endif
@@ -703,7 +703,7 @@ apf.MultiSelect = function(){
         if (typeof xmlNode != "object") {
             var str = xmlNode; xmlNode = null;
             if (typeof xmlNode == "string")
-                xmlNode = apf.xmldb.getNodeById(str);
+                xmlNode = ppc.xmldb.getNodeById(str);
 
             //Select based on the value of the xml node
             if (!xmlNode) {
@@ -717,15 +717,15 @@ apf.MultiSelect = function(){
         
         if (!(typeof (xmlNode.style || "") == "object")) {
             htmlNode = this.$findHtmlNode(xmlNode.getAttribute(
-                    apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         }
         else {
-            var id = (htmlNode = xmlNode).getAttribute(apf.xmldb.htmlIdTag);
+            var id = (htmlNode = xmlNode).getAttribute(ppc.xmldb.htmlIdTag);
             while (!id && htmlNode.parentNode)
                 id = (htmlNode = htmlNode.parentNode).getAttribute(
-                    apf.xmldb.htmlIdTag);
+                    ppc.xmldb.htmlIdTag);
 
-            xmlNode = apf.xmldb.getNodeById(id);//, this.xmlRoot);
+            xmlNode = ppc.xmldb.getNodeById(id);//, this.xmlRoot);
         }
 
         if (!shiftKey && !ctrlKey && !force && !this.reselectable 
@@ -765,7 +765,7 @@ apf.MultiSelect = function(){
             if (this.$valueList.contains(xmlNode)) {
                 if (this.selected == xmlNode) {
                     this.$deselect(this.$findHtmlNode(this.selected.getAttribute(
-                        apf.xmldb.xmlIdTag) + "|" + this.$uniqueId));
+                        ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId));
                     
                     this.$deindicate(this.$caret);
 
@@ -879,7 +879,7 @@ apf.MultiSelect = function(){
             this.select(xmlNode);
 
         //#ifdef __WITH_PROPERTY_BINDING
-        if (this.hasFeature(apf.__DATABINDING__)
+        if (this.hasFeature(ppc.__DATABINDING__)
           && this.dispatchEvent("afterchoose", {xmlNode : this.selected}) !== false)
             this.setProperty("chosen", this.selected);
         //#endif
@@ -908,7 +908,7 @@ apf.MultiSelect = function(){
         var htmlNode;
         for (var i = this.$valueList.length - 1; i >= 0; i--) {
             htmlNode = this.$findHtmlNode(this.$valueList[i].getAttribute(
-                    apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
             this.$deselect(htmlNode);
         }
         
@@ -921,7 +921,7 @@ apf.MultiSelect = function(){
         //Redraw indicator
         if (this.caret) {
             htmlNode = this.$findHtmlNode(this.caret.getAttribute(
-                    apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
 
             this.$caret = this.$indicate(htmlNode);
         }
@@ -962,19 +962,19 @@ apf.MultiSelect = function(){
 
             //Type Detection
             if (typeof xmlNode != "object")
-                xmlNode = apf.xmldb.getNodeById(xmlNode);
+                xmlNode = ppc.xmldb.getNodeById(xmlNode);
             if (!(typeof (xmlNode.style || "") == "object"))
                 htmlNode = this.$pHtmlDoc.getElementById(xmlNode.getAttribute(
-                    apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
             else {
                 htmlNode = xmlNode;
-                xmlNode  = apf.xmldb.getNodeById(htmlNode.getAttribute(
-                    apf.xmldb.htmlIdTag));
+                xmlNode  = ppc.xmldb.getNodeById(htmlNode.getAttribute(
+                    ppc.xmldb.htmlIdTag));
             }
 
             if (!xmlNode) {
                 // #ifdef __DEBUG
-                apf.console.warn("Component : " + this.name + " ["
+                ppc.console.warn("Component : " + this.name + " ["
                     + this.localName + "]\nMessage : xmlNode whilst selecting a "
                     + "list of xmlNodes could not be found. Ignoring.")
                 // #endif
@@ -1033,24 +1033,24 @@ apf.MultiSelect = function(){
         // *** Type Detection *** //
         var htmlNode;
         if (typeof xmlNode != "object")
-            xmlNode = apf.xmldb.getNodeById(xmlNode);
+            xmlNode = ppc.xmldb.getNodeById(xmlNode);
         if (!(typeof (xmlNode.style || "") == "object")) {
             htmlNode = this.$findHtmlNode(xmlNode.getAttribute(
-                    apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
         }
         else {
-            var id = (htmlNode = xmlNode).getAttribute(apf.xmldb.htmlIdTag);
+            var id = (htmlNode = xmlNode).getAttribute(ppc.xmldb.htmlIdTag);
             while (!id && htmlNode.parentNode && htmlNode.parentNode.nodeType == 1)
                 id = (htmlNode = htmlNode.parentNode).getAttribute(
-                    apf.xmldb.htmlIdTag);
+                    ppc.xmldb.htmlIdTag);
             if (!id) alert(this.$int.outerHTML);
 
-            xmlNode = apf.xmldb.getNodeById(id);
+            xmlNode = ppc.xmldb.getNodeById(id);
         }
 
         if (this.$caret) {
             //this.$deindicate(this.$findHtmlNode(this.caret.getAttribute(
-                //apf.xmldb.xmlIdTag) + "|" + this.$uniqueId));
+                //ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId));
             this.$deindicate(this.$caret);
         }
         
@@ -1095,7 +1095,7 @@ apf.MultiSelect = function(){
             this.select(xmlNode);
         }
         else {
-            var id = apf.xmldb.getID(xmlNode, this);
+            var id = ppc.xmldb.getID(xmlNode, this);
 
             this.$deselect(this.$tempsel || this.$selected);
             this.$deindicate(this.$tempsel || this.$caret);
@@ -1152,9 +1152,9 @@ apf.MultiSelect = function(){
         if (xmldoc) {
             r = this.xmlRoot
                 ? this.xmlRoot.ownerDocument.createDocumentFragment()
-                : apf.getXmlDom().createDocumentFragment();
+                : ppc.getXmlDom().createDocumentFragment();
             for (i = 0; i < this.$valueList.length; i++)
-                apf.xmldb.cleanNode(r.appendChild(
+                ppc.xmldb.cleanNode(r.appendChild(
                     this.$valueList[i].cloneNode(true)));
         }
         else {
@@ -1244,14 +1244,14 @@ apf.MultiSelect = function(){
         if (this.$valueList.length > 1) {
             //Fix selection if needed
             for (var lst = [], i = 0, l = this.$valueList.length; i < l; i++) {
-                if (apf.isChildOf(this.xmlRoot, this.$valueList[i]))
+                if (ppc.isChildOf(this.xmlRoot, this.$valueList[i]))
                     lst.push(this.$valueList[i]);
             }
 
             if (lst.length > 1) {
                 this.selectList(lst);
                 if(this.caret
-                  && !apf.isChildOf(this.xmlRoot, this.caret)) {
+                  && !ppc.isChildOf(this.xmlRoot, this.caret)) {
                     this.setCaret(nextNode || this.selected);
                 }
                 return;
@@ -1264,11 +1264,11 @@ apf.MultiSelect = function(){
 
         if (!nextNode) {
             if (this.selected
-              && !apf.isChildOf(this.xmlRoot, this.selected)) {
+              && !ppc.isChildOf(this.xmlRoot, this.selected)) {
                 nextNode = this.getFirstTraverseNode();
             }
             else if(this.selected && this.caret
-              && !apf.isChildOf(this.xmlRoot, this.caret)) {
+              && !ppc.isChildOf(this.xmlRoot, this.caret)) {
                 this.setCaret(this.selected);
             }
             else if (!this.selected){
@@ -1360,7 +1360,7 @@ apf.MultiSelect = function(){
         if (!this.$attrBindings["eachvalue"] && !this.$amlLoaded
           && this.getAttribute("eachvalue")) {
             var _self = this;
-            return apf.queue.add("value" + this.$uniqueId, function(){
+            return ppc.queue.add("value" + this.$uniqueId, function(){
                 _self.$propHandlers["value"].call(_self, value);
             });
         }
@@ -1370,13 +1370,13 @@ apf.MultiSelect = function(){
         if (rule) {
             /*var compiled = rule.cvalue || rule.cmatch;
             if (compiled.type != 3) {
-                throw new Error(apf.formatErrorString(0,
+                throw new Error(ppc.formatErrorString(0,
                     "Setting value attribute",
                     "Value attribute does not have legal value."));
             }*/
 
             if (rule.models[0] == this.$model && rule.cvalue.xpaths[0] != "#") {
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Setting value attribute",
                     "Value should not point to the same model where the items\
                      are loaded from. Please use value=\"[mdlName::xpath]\" to\
@@ -1434,7 +1434,7 @@ apf.MultiSelect = function(){
         
         //#ifdef __DEBUG
         if (prop == "selection" && (this.getAttribute("selection") || "*").substr(0, 1) != "*"){
-            apf.console.warn("Selection attribute (" + this.getAttributeNode("selection") 
+            ppc.console.warn("Selection attribute (" + this.getAttributeNode("selection") 
                 + ") should select multiple nodes. Please prefix xpath query with a * (ex.: *[item]).");
         }
         //#endif
@@ -1458,7 +1458,7 @@ apf.MultiSelect = function(){
                         && "value" || this.$hasBindRule("caption") && "caption";
                     
                     if (!bindSet)
-                        throw new Error("Missing bind rule set: eachvalue, value or caption");//@todo apf3.0 make this into a proper error
+                        throw new Error("Missing bind rule set: eachvalue, value or caption");//@todo ppc3.0 make this into a proper error
                     
                     //@todo this may be optimized by keeping a copy of the selection
                     var selNodes = this.$getDataNode(prop, this.xmlRoot);
@@ -1471,7 +1471,7 @@ apf.MultiSelect = function(){
                     else {
                         var model, path;
                         if (c.cvalue.xpaths[0] == "#" || c.cvalue.xpaths[1] == "#") {
-                            var m = (c.cvalue3 || (c.cvalue3 = apf.lm.compile(c.value, {
+                            var m = (c.cvalue3 || (c.cvalue3 = ppc.lm.compile(c.value, {
                                 xpathmode: 5
                             })))(this.xmlRoot);
                             
@@ -1479,8 +1479,8 @@ apf.MultiSelect = function(){
                             if (model)
                                 path = m.xpath;
                             else if (m.model) {
-                                model = apf.xmldb.findModel(m.model);
-                                path = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
+                                model = ppc.xmldb.findModel(m.model);
+                                path = ppc.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
                             }
                             else {
                                 //No selection - nothing to do
@@ -1488,7 +1488,7 @@ apf.MultiSelect = function(){
                         }
                         else {
                             //#ifdef __WITH_NAMESERVER
-                            model = apf.nameserver.get("model", c.cvalue.xpaths[0]);
+                            model = ppc.nameserver.get("model", c.cvalue.xpaths[0]);
                             //#endif
                             path  = c.cvalue.xpaths[1];
                         }
@@ -1501,7 +1501,7 @@ apf.MultiSelect = function(){
                         pNode = model.queryNode(path.replace(/\/[^\/]+$|^[^\/]*$/, "") || ".");
 
                         if (!pNode)
-                            throw new Error("Missing parent node"); //@todo apf3.0 make this into a proper error
+                            throw new Error("Missing parent node"); //@todo ppc3.0 make this into a proper error
                     }
                     
                     //Nodes removed
@@ -1520,7 +1520,7 @@ apf.MultiSelect = function(){
                         }
                         
                         //remove node
-                        apf.xmldb.removeNode(selNodes[i]);
+                        ppc.xmldb.removeNode(selNodes[i]);
                     }
                     
                     //Nodes added
@@ -1541,8 +1541,8 @@ apf.MultiSelect = function(){
                         //add node
                         var node = this.$attrBindings["selection-constructor"] 
                           && this.$getDataNode("selection-constructor", nodes[i])
-                          || apf.getCleanCopy(nodes[i]);
-                        apf.xmldb.appendChild(pNode, node);
+                          || ppc.getCleanCopy(nodes[i]);
+                        ppc.xmldb.appendChild(pNode, node);
                     }
                     
                     //@todo above changes should be via the actiontracker
@@ -1614,7 +1614,7 @@ apf.MultiSelect = function(){
             
             //For when nodes are traverse nodes of this element
             if (this.isTraverseNode(nodes[0]) 
-              && apf.isChildOf(this.xmlRoot, nodes[0])) {
+              && ppc.isChildOf(this.xmlRoot, nodes[0])) {
                 if (!this.multiselect) {
                     this.select(nodes[0]);
                 }
@@ -1632,7 +1632,7 @@ apf.MultiSelect = function(){
                     && "value" || this.$hasBindRule("caption") && "caption";
                 
                 if (!bindSet)
-                    throw new Error("Missing bind rule set: eachvalue, value or caption");//@todo apf3.0 make this into a proper error
+                    throw new Error("Missing bind rule set: eachvalue, value or caption");//@todo ppc3.0 make this into a proper error
                 
                 var tNodes = !this.each 
                     ? this.getTraverseNodes()
@@ -1680,7 +1680,7 @@ apf.MultiSelect = function(){
 
                 var srcElement = e.srcElement || e.target;
                 if (_self.allowdeselect && (srcElement == this
-                  || srcElement.getAttribute(apf.xmldb.htmlIdTag)))
+                  || srcElement.getAttribute(ppc.xmldb.htmlIdTag)))
                     _self.clearSelection(); //hacky
             }
         }
@@ -1691,7 +1691,7 @@ apf.MultiSelect = function(){
 
     this.$propHandlers["ctrlselect"] = function(value){
         if (value != "enter")
-            this.ctrlselect = apf.isTrue(value);
+            this.ctrlselect = ppc.isTrue(value);
     }
 
     function fAutoselect(){
@@ -1730,7 +1730,7 @@ apf.MultiSelect = function(){
         //@todo refactor below
         /*if (this.caret == this.selected || e.list && e.list.length > 1 && hasConnections) {
             //Multiselect databinding handling... [experimental]
-            if (e.list && e.list.length > 1 && this.$getConnections().length) { //@todo this no work no more apf3.0
+            if (e.list && e.list.length > 1 && this.$getConnections().length) { //@todo this no work no more ppc3.0
                 var oEl  = this.xmlRoot.ownerDocument.createElement(this.selected.tagName);
                 var attr = {};
 
@@ -1759,10 +1759,10 @@ apf.MultiSelect = function(){
 
                 //missing is childnodes... will implement later when needed...
 
-                oEl.setAttribute(apf.xmldb.xmlIdTag, this.$uniqueId);
-                apf.MultiSelectServer.register(oEl.getAttribute(apf.xmldb.xmlIdTag),
+                oEl.setAttribute(ppc.xmldb.xmlIdTag, this.$uniqueId);
+                ppc.MultiSelectServer.register(oEl.getAttribute(ppc.xmldb.xmlIdTag),
                     oEl, e.list, this);
-                apf.xmldb.addNodeListener(oEl, apf.MultiSelectServer);
+                ppc.xmldb.addNodeListener(oEl, ppc.MultiSelectServer);
 
                 combinedvalue = oEl;
             }
@@ -1837,12 +1837,12 @@ apf.MultiSelect = function(){
         
         //#ifdef __WITH_OFFLINE_STATE
         //@todo this should be generalized and collapsed with setProperty
-        if (typeof apf.offline != "undefined" && apf.offline.state.enabled
-          && apf.offline.state.realtime) {  //@todo please optimize
+        if (typeof ppc.offline != "undefined" && ppc.offline.state.enabled
+          && ppc.offline.state.realtime) {  //@todo please optimize
             for (var sel = [], i = 0; i < e.selection.length; i++)
-                sel.push(apf.xmlToXpath(e.selection[i], null, true));
+                sel.push(ppc.xmlToXpath(e.selection[i], null, true));
 
-            apf.offline.state.set(this, "selection", sel);
+            ppc.offline.state.set(this, "selection", sel);
             fSelState.call(this);
         }
         //#endif
@@ -1853,14 +1853,14 @@ apf.MultiSelect = function(){
     
     //#ifdef __WITH_OFFLINE_STATE
     function fSelState(){
-        if (typeof apf.offline != "undefined" && apf.offline.state.enabled
-          && apf.offline.state.realtime) {
-            apf.offline.state.set(this, "selstate",
+        if (typeof ppc.offline != "undefined" && ppc.offline.state.enabled
+          && ppc.offline.state.realtime) {
+            ppc.offline.state.set(this, "selstate",
                 [this.caret
-                    ? apf.xmlToXpath(this.caret, null, true)
+                    ? ppc.xmlToXpath(this.caret, null, true)
                     : "",
                  this.selected
-                    ? apf.xmlToXpath(this.selected, null, true)
+                    ? ppc.xmlToXpath(this.selected, null, true)
                     : ""]);
         }
     }
@@ -1868,9 +1868,9 @@ apf.MultiSelect = function(){
     this.addEventListener("prop.caret", fSelState);
     //#endif
 // #ifdef __WITH_DATABINDING
-}).call(apf.MultiSelect.prototype = new apf.MultiselectBinding());
+}).call(ppc.MultiSelect.prototype = new ppc.MultiselectBinding());
 /* #else
-}).call(apf.MultiSelect.prototype = new apf.Presentation());
+}).call(ppc.MultiSelect.prototype = new ppc.Presentation());
  #endif*/
 
 //#ifdef __WITH_MULTISELECT_COLLAPSE
@@ -1879,12 +1879,12 @@ apf.MultiSelect = function(){
  * @private
  */
 /*
-apf.MultiSelectServer = {
+ppc.MultiSelectServer = {
     objects : {},
 
     register : function(xmlId, xmlNode, selList, jNode){
         if (!this.$uniqueId)
-            this.$uniqueId = apf.all.push(this) - 1;
+            this.$uniqueId = ppc.all.push(this) - 1;
 
         this.objects[xmlId] = {
             xml   : xmlNode,
@@ -1896,18 +1896,18 @@ apf.MultiSelectServer = {
     $xmlUpdate : function(action, xmlNode, listenNode, UndoObj){
         if (action != "attribute") return;
 
-        var data = this.objects[xmlNode.getAttribute(apf.xmldb.xmlIdTag)];
+        var data = this.objects[xmlNode.getAttribute(ppc.xmldb.xmlIdTag)];
         if (!data) return;
 
         var nodes = xmlNode.attributes;
 
         for (var j = 0; j < data.list.length; j++) {
             //data[j].setAttribute(UndoObj.name, xmlNode.getAttribute(UndoObj.name));
-            apf.xmldb.setAttribute(data.list[j], UndoObj.name,
+            ppc.xmldb.setAttribute(data.list[j], UndoObj.name,
                 xmlNode.getAttribute(UndoObj.name));
         }
 
-        //apf.xmldb.synchronize();
+        //ppc.xmldb.synchronize();
     }
 };
 */

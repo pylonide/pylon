@@ -22,34 +22,34 @@
 
 /**
  * Baseclass of a simple element. These are usually displaying elements 
- * (_i.e._ {@link apf.label}, {@link apf.img})
+ * (_i.e._ {@link ppc.label}, {@link ppc.img})
  *
- * @class apf.BaseSimple
+ * @class ppc.BaseSimple
  * @baseclass
  *
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.BaseSimple = function(){
+ppc.BaseSimple = function(){
     this.$init(true);
 };
 
 (function() {
     //#ifdef __WITH_DATAACTION
-    this.implement(apf.DataAction);
+    this.implement(ppc.DataAction);
     //#endif
     
     this.getValue = function(){
         return this.value;
     };
 // #ifdef __WITH_DATABINDING
-}).call(apf.BaseSimple.prototype = new apf.StandardBinding());
+}).call(ppc.BaseSimple.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.BaseSimple.prototype = new apf.Presentation());
+}).call(ppc.BaseSimple.prototype = new ppc.Presentation());
 #endif */
 
 //#endif

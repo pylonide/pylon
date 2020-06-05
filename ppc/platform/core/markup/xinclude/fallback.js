@@ -23,13 +23,13 @@
 /**
  * Defines a list of acceptable values
  */
-apf.XiFallback = function(struct, tagName){
-    this.$init(tagName || "fallback", apf.NODE_HIDDEN, struct);
+ppc.XiFallback = function(struct, tagName){
+    this.$init(tagName || "fallback", ppc.NODE_HIDDEN, struct);
 };
 
-apf.XiFallback.prototype = new apf.AmlElement();
-apf.XiFallback.prototype.$parsePrio = "002";
+ppc.XiFallback.prototype = new ppc.AmlElement();
+ppc.XiFallback.prototype.$parsePrio = "002";
 
-apf.xinclude.setElement("fallback", apf.XiFallback);
-apf.aml.setElement("fallback", apf.XiFallback);
+ppc.xinclude.setElement("fallback", ppc.XiFallback);
+ppc.aml.setElement("fallback", ppc.XiFallback);
 //#endif

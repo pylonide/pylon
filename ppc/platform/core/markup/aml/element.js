@@ -22,13 +22,13 @@
 /**
  * Represents a single element within an AML node.
  *
- * @class apf.AmlElement
+ * @class ppc.AmlElement
  * @baseclass
- * @inherits apf.AmlNode
+ * @inherits ppc.AmlNode
  */
 
 // #ifdef __WITH_AMLELEMENT
-apf.AmlElement = function(struct, tagName){
+ppc.AmlElement = function(struct, tagName){
     var $init = this.$init;
     this.$init = function(tagName, nodeFunc, struct){
         this.$supportedProperties = this.$supportedProperties.slice();
@@ -55,7 +55,7 @@ apf.AmlElement = function(struct, tagName){
          * A node list containing all the attributes. This is implemented according to the
          * W3C specification.
          * 
-         * For more information, see [[apf.AmlElement.getAttribute]] and [[apf.AmlElement.setAttribute]].
+         * For more information, see [[ppc.AmlElement.getAttribute]] and [[ppc.AmlElement.setAttribute]].
          *
          * #### Example
          * 
@@ -64,14 +64,14 @@ apf.AmlElement = function(struct, tagName){
          *      alert(obj.attributes.item(i));
          *  }
          * ```
-         * @type {apf.AmlNamedNodeMap}
+         * @type {ppc.AmlNamedNodeMap}
          */
-        this.attributes = new apf.AmlNamedNodeMap(this); //@todo apf3.0 move to init?
+        this.attributes = new ppc.AmlNamedNodeMap(this); //@todo ppc3.0 move to init?
         
         /**
          * Defines the purpose of this element. Possible values include:
-         * - `apf.NODE_VISIBLE`:  This element has a GUI representation
-         * - `apf.NODE_HIDDEN`:   This element does not display a GUI
+         * - `ppc.NODE_VISIBLE`:  This element has a GUI representation
+         * - `ppc.NODE_HIDDEN`:   This element does not display a GUI
          * @type {Number}
          */
         this.nodeFunc = nodeFunc;
@@ -94,7 +94,7 @@ apf.AmlElement = function(struct, tagName){
             for (prop in struct){ 
                 if (prop == "htmlNode") continue;
                 
-                attr = new apf.AmlAttr(this, prop, struct[prop]);
+                attr = new ppc.AmlAttr(this, prop, struct[prop]);
                 
                 //These exceptions should be generalized
                 if (prop == "id")
@@ -108,9 +108,9 @@ apf.AmlElement = function(struct, tagName){
             }
             
             if (!this.ownerDocument) {
-                this.ownerDocument = apf.document;
+                this.ownerDocument = ppc.document;
                 this.prefix        = "a";
-                this.namespaceURI  = apf.ns.aml;
+                this.namespaceURI  = ppc.ns.aml;
                 this.tagName       = tagName;
             }
             
@@ -127,12 +127,12 @@ apf.AmlElement = function(struct, tagName){
             }
 
             //Temp hack
-            this.$aml = apf.$emptyNode || (apf.$emptyNode = apf.getXml("<empty />"));
+            this.$aml = ppc.$emptyNode || (ppc.$emptyNode = ppc.getXml("<empty />"));
         }
     });
     
     if (tagName) //of typeof is not function and not true
-        $init.call(this, tagName, apf.NODE_HIDDEN, struct);
+        $init.call(this, tagName, ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -148,7 +148,7 @@ apf.AmlElement = function(struct, tagName){
          * @attribute {String} id The identifier of this element. When set, this
          * identifier is the name of the variable in JavaScript to access this
          * element directly. This identifier is also the way to get a reference to
-         * this element using `apf.document.getElementById()`.
+         * this element using `ppc.document.getElementById()`.
          * 
          * #### Example
          *
@@ -161,10 +161,10 @@ apf.AmlElement = function(struct, tagName){
          */
         "id": function(value){
             //#ifdef __DEBUG
-            if (value == "apf") {
-                throw new Error(apf.formatErrorString(0, this, 
+            if (value == "ppc") {
+                throw new Error(ppc.formatErrorString(0, this, 
                     "Setting Name of Element",
-                    "Cannot set name of element to 'apf'"));
+                    "Cannot set name of element to 'ppc'"));
             }
             //#endif
             
@@ -174,14 +174,14 @@ apf.AmlElement = function(struct, tagName){
             if (self[this.name] == this) {
                 self[this.name] = null;
                 //#ifdef __WITH_NAMESERVER
-                apf.nameserver.remove(this.localName, this);
-                apf.nameserver.remove("all", this);
+                ppc.nameserver.remove(this.localName, this);
+                ppc.nameserver.remove("all", this);
                 //#endif
             }
     
             //#ifdef __DEBUG
             if (self[value])
-                throw new Error("ID collision of APF element: '" + value + "'");
+                throw new Error("ID collision of PPC element: '" + value + "'");
             //#endif
     
             if (!self[value] || !self[value].hasFeature) {
@@ -196,7 +196,7 @@ apf.AmlElement = function(struct, tagName){
             }
             // #ifdef __DEBUG
             if (error && value in self) {
-                apf.console.warn("trying to set a value in the global scope with "
+                ppc.console.warn("trying to set a value in the global scope with "
                                 + "a reserved name '" + value + "'.\nNothing wrong "
                                 + "with that, except that you will not be able to "
                                 + "reference\nthe object from the global scope in JS.")
@@ -206,8 +206,8 @@ apf.AmlElement = function(struct, tagName){
             //@todo dispatch event for new name creation.
             //@todo old name disposal
             //#ifdef __WITH_NAMESERVER
-            apf.nameserver.register(this.localName, value, this)
-            apf.nameserver.register("all", value, this)
+            ppc.nameserver.register(this.localName, value, this)
+            ppc.nameserver.register("all", value, this)
             //#endif
             
             this.name = value;
@@ -283,14 +283,14 @@ apf.AmlElement = function(struct, tagName){
      * @param {String} name The name of the attribute to which the value is set
      * @param {String} value The new value of the attribute.
      * @param {Boolean} [noTrigger] If specified, does not emit events 
-     * [[apf.AmlNode@DOMNodeInsertedIntoDocument]] and [[apf.AmlNode@DOMNodeInserted]].
+     * [[ppc.AmlNode@DOMNodeInsertedIntoDocument]] and [[ppc.AmlNode@DOMNodeInserted]].
      */
     this.setAttribute = function(name, value, noTrigger) {
         name = name.toLowerCase();
         
         var a = this.attributes.getNamedItem(name);
         if (!a) {
-            this.attributes.push(a = new apf.AmlAttr(this, name, value));
+            this.attributes.push(a = new ppc.AmlAttr(this, name, value));
         
             if (!this.$amlLoaded && name != "id" && name != "hotkey")
                 return;
@@ -298,12 +298,12 @@ apf.AmlElement = function(struct, tagName){
             if (noTrigger)
                 a.$setValue(value);
             else {
-                //@todo apf3.0 domattr
+                //@todo ppc3.0 domattr
                 a.dispatchEvent("DOMNodeInsertedIntoDocument", {
                     relatedNode : this
                 });
                 
-                //@todo apf3.0 domattr
+                //@todo ppc3.0 domattr
                 a.dispatchEvent("DOMNodeInserted", {
                     relatedNode : this,
                     bubbles     : true
@@ -319,11 +319,11 @@ apf.AmlElement = function(struct, tagName){
         if (noTrigger || !this.$amlLoaded)
             return;
         
-        //@todo apf3.0 domattr
+        //@todo ppc3.0 domattr
         a.$triggerUpdate(null, oldValue);
     };
     
-    //@todo apf3.0 domattr
+    //@todo ppc3.0 domattr
     this.setAttributeNode = function(attrNode){
         this.attributes.setNamedItem(attrNode);
     };
@@ -332,7 +332,7 @@ apf.AmlElement = function(struct, tagName){
         return this.setAttribute(name, value);
     };
     
-    //@todo apf3.0 domattr
+    //@todo ppc3.0 domattr
     this.hasAttribute = function(name){
         return this.getAttributeNode(name) ? true : false;
     };
@@ -346,19 +346,19 @@ apf.AmlElement = function(struct, tagName){
      * Removes an attribute from this element. 
      * @chainable
      * @param {String} name The name of the attribute to remove.
-     * @returns {apf.AmlElement} The modified element.
+     * @returns {ppc.AmlElement} The modified element.
      */
-    this.removeAttribute = function(name){ //@todo apf3.0 domattr
+    this.removeAttribute = function(name){ //@todo ppc3.0 domattr
         this.attributes.removeNamedItem(name);
         return this;
     };
     
-    //@todo apf3.0 domattr
+    //@todo ppc3.0 domattr
     this.removeAttributeNS = function(namespaceURI, name){
         return this.removeAttribute(name);
     };
     
-    //@todo apf3.0 domattr
+    //@todo ppc3.0 domattr
     this.removeAttributeNode = function(attrNode){
         this.attributes.removeNamedItem(attrNode.name); //@todo this should probably be slightly different.
     };
@@ -381,14 +381,14 @@ apf.AmlElement = function(struct, tagName){
      * Retrieves the attribute node for a given name
      *
      * @param {String} name The name of the attribute to find.
-     * @return {apf.AmlNode} The attribute node, or `null` if none was found with the name specified.
+     * @return {ppc.AmlNode} The attribute node, or `null` if none was found with the name specified.
      */
     this.getAttributeNode = function(name){
         return this.attributes.getNamedItem(name);
     };
 
     this.getBoundingClientRect = function(){
-        return new apf.AmlTextRectangle(this);
+        return new ppc.AmlTextRectangle(this);
     };
     
     //@todo
@@ -413,7 +413,7 @@ apf.AmlElement = function(struct, tagName){
      */
     this.replaceMarkup = function(amlDefNode, options) {
         //#ifdef __DEBUG
-        apf.console.info("Remove all children from element");
+        ppc.console.info("Remove all children from element");
         //#endif
 
         if (!options)
@@ -440,7 +440,7 @@ apf.AmlElement = function(struct, tagName){
                 oItem.destroy(true);
 
             if (oItem.$ext != this.$int)
-                apf.destroyHtmlNode(oItem.$ext);
+                ppc.destroyHtmlNode(oItem.$ext);
         }
         
         this.childNodes.length = 0;
@@ -461,19 +461,19 @@ apf.AmlElement = function(struct, tagName){
      */
     this.insertMarkup = function(amlDefNode, options){
         //#ifdef __DEBUG
-        apf.console.info("Loading sub markup from external source");
+        ppc.console.info("Loading sub markup from external source");
         //#endif
 
         //#ifdef __WITH_OFFLINE
-        if (typeof apf.offline != "undefined" && !apf.offline.onLine)
+        if (typeof ppc.offline != "undefined" && !ppc.offline.onLine)
             return false; //it's the responsibility of the dev to check this
         //#endif
 
         var _self   = this;
-        var include = new apf.XiInclude();
+        var include = new ppc.XiInclude();
         
         if (amlDefNode.trim().charAt(0) == "<")
-            amlDefNode = apf.getXml(amlDefNode);
+            amlDefNode = ppc.getXml(amlDefNode);
         
         include.setAttribute("href", amlDefNode);
         if (options && options.clear)
@@ -532,8 +532,8 @@ apf.AmlElement = function(struct, tagName){
             isInherit = true;
         }
         
-        if (!value && apf.config && prop)
-            value = apf.config[prop];
+        if (!value && ppc.config && prop)
+            value = ppc.config[prop];
     
         if (value) {
             //#ifdef __WITH_PROPERTY_BINDING
@@ -575,10 +575,10 @@ apf.AmlElement = function(struct, tagName){
                     10 Dynamic property
         */
         var vOld, vNew;
-        var aci = apf.config.$inheritProperties;
+        var aci = ppc.config.$inheritProperties;
         for (var prop in aci) {
-            vOld = apf.getInheritedAttribute(e.$oldParent, prop);
-            vNew = apf.getInheritedAttribute(this.parentNode, prop);
+            vOld = ppc.getInheritedAttribute(e.$oldParent, prop);
+            vNew = ppc.getInheritedAttribute(this.parentNode, prop);
             
             //Property has changed, lets recursively set it on inherited nodes
             if (vOld != vNew) {
@@ -614,7 +614,7 @@ apf.AmlElement = function(struct, tagName){
     
     this.$handlePropSet = function(prop, value, force){
         if (this.$booleanProperties[prop])
-            value = apf.isTrue(value);
+            value = ppc.isTrue(value);
 
         //#ifdef __DEBUG
         if (typeof this[prop] == "function") {
@@ -628,24 +628,24 @@ apf.AmlElement = function(struct, tagName){
 
         var handler;
         return (handler = this.$propHandlers && this.$propHandlers[prop]
-          || this.nodeFunc == apf.NODE_VISIBLE && apf.GuiElement && apf.GuiElement.propHandlers[prop] || null)
+          || this.nodeFunc == ppc.NODE_VISIBLE && ppc.GuiElement && ppc.GuiElement.propHandlers[prop] || null)
           && handler.call(this, value, prop, force);
     };
     
-    //var aci = apf.config.$inheritProperties; << UNUSED
+    //var aci = ppc.config.$inheritProperties; << UNUSED
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var a, i, l, attr = this.attributes;
 
         // #ifdef __WITH_OFFLINE_STATE
-        if (typeof apf.offline != "undefined" && apf.offline.state.enabled) {
-            var offlineLookup = apf.offline.state.getAll(this);
+        if (typeof ppc.offline != "undefined" && ppc.offline.state.enabled) {
+            var offlineLookup = ppc.offline.state.getAll(this);
             for (i in offlineLookup) {
                 a = attr.getNamedItem(i);
                 if (a) 
                     a.$setValue(offlineLookup[i]);
                 else {
                     this.attributes.push(
-                        new apf.AmlAttr(this, i, offlineLookup[i]))
+                        new ppc.AmlAttr(this, i, offlineLookup[i]))
                 }
             }
         }
@@ -654,7 +654,7 @@ apf.AmlElement = function(struct, tagName){
         //#ifdef __WITH_NAMESERVER
         //#ifdef __WITH_APP_DEFAULTS
         //Get defaults from the defaults element if it exists
-        var defs = apf.nameserver.getAll("defaults_" + this.localName);
+        var defs = ppc.nameserver.getAll("defaults_" + this.localName);
         if (defs.length) {
             for (var j = 0, jl = defs.length; j < jl; j++) {
                 var d = defs[j].attributes, di;
@@ -669,7 +669,7 @@ apf.AmlElement = function(struct, tagName){
                     }
                     else {
                         this.attributes.push(
-                            new apf.AmlAttr(this, di.nodeName, di.nodeValue));
+                            new ppc.AmlAttr(this, di.nodeName, di.nodeValue));
                         this.$inheritProperties[di.nodeName] = 2;
                     }
                 }
@@ -687,5 +687,5 @@ apf.AmlElement = function(struct, tagName){
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.$amlLoaded = true;
     });
-}).call(apf.AmlElement.prototype = new apf.AmlNode());
+}).call(ppc.AmlElement.prototype = new ppc.AmlNode());
 // #endif

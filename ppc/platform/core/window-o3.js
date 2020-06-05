@@ -31,22 +31,22 @@
  * @event focus             Fires when the browser window receives focus.
  *
  * @constructor
- * @inherits apf.Class
+ * @inherits ppc.Class
  * @default_private
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.window = function(){
-    this.$uniqueId = apf.all.push(this);
-    this.apf       = apf;
+ppc.window = function(){
+    this.$uniqueId = ppc.all.push(this);
+    this.ppc       = ppc;
 
     /**
      * Returns a string representation of this object.
      */
     this.toString = function(){
-        return "[APF Component : " + (this.name || "") + " (apf.window)]";
+        return "[PPC Component : " + (this.name || "") + " (ppc.window)]";
     };
 
     /**
@@ -60,90 +60,90 @@ apf.window = function(){
      * @private
      */
     this.loadCodeFile = function(url){
-        //if(apf.isWebkit) return;
+        //if(ppc.isWebkit) return;
         if (self[url])
-            apf.importClass(self[url], true, this.win);
+            ppc.importClass(self[url], true, this.win);
         else
-            apf.include(url);//, this.document);
+            ppc.include(url);//, this.document);
     };
 
     // *** Set Window Events *** //
 
-    /*apf.addListener(window, "beforeunload", function(){
-        return apf.dispatchEvent("exit");
+    /*ppc.addListener(window, "beforeunload", function(){
+        return ppc.dispatchEvent("exit");
     });
 
-    //@todo apf3.x why is this loaded twice
-    apf.addListener(window, "unload", function(){
-        if (!apf)
+    //@todo ppc3.x why is this loaded twice
+    ppc.addListener(window, "unload", function(){
+        if (!ppc)
             return;
         
-        apf.window.isExiting = true;
-        apf.window.destroy();
+        ppc.window.isExiting = true;
+        ppc.window.destroy();
     });*/
     
-    apf.document = {};
+    ppc.document = {};
     this.init = function(strAml){
         //#ifdef __WITH_ACTIONTRACKER
-        if (apf.actiontracker) {
-            this.$at      = new apf.actiontracker();
+        if (ppc.actiontracker) {
+            this.$at      = new ppc.actiontracker();
             this.$at.name = "default";
             //#ifdef __WITH_NAMESERVER
-            apf.nameserver.register("actiontracker", "default", this.$at);
+            ppc.nameserver.register("actiontracker", "default", this.$at);
             //#endif
         }
         //#endif
 
          // #ifdef __DEBUG
-        apf.console.info("Start parsing main application");
+        ppc.console.info("Start parsing main application");
         // #endif
         // #ifdef __DEBUG
-        //apf.Latometer.start();
+        //ppc.Latometer.start();
         // #endif
         
         //Put this in callback in between the two phases
         //#ifdef __WITH_SKIN_AUTOLOAD
         /*XForms and lazy devs support
-        if (!nodes.length && !apf.skins.skins["default"] && apf.autoLoadSkin) {
-            apf.console.warn("No skin file found, attempting to autoload the \
+        if (!nodes.length && !ppc.skins.skins["default"] && ppc.autoLoadSkin) {
+            ppc.console.warn("No skin file found, attempting to autoload the \
                               default skin file: skins.xml");
-            apf.loadAmlInclude(null, doSync, "skins.xml", true);
+            ppc.loadAmlInclude(null, doSync, "skins.xml", true);
         }*/
         //#endif 
 
-        this.$domParser = new apf.DOMParser();
-        this.document = apf.document = this.$domParser.parseFromString(strAml, 
+        this.$domParser = new ppc.DOMParser();
+        this.document = ppc.document = this.$domParser.parseFromString(strAml, 
           "text/xml", {
-            timeout   : apf.config.initdelay,
+            timeout   : ppc.config.initdelay,
             callback  : function(doc){
-                //@todo apf3.0
+                //@todo ppc3.0
 
                 //Call the onload event (prevent recursion)
-                if (apf.parsed != 2) {
-                    //@todo apf3.0 onload is being called too often
-                    var inital = apf.parsed;
-                    apf.parsed = 2;
-                    apf.dispatchEvent("parse", { //@todo apf3.0 document
+                if (ppc.parsed != 2) {
+                    //@todo ppc3.0 onload is being called too often
+                    var inital = ppc.parsed;
+                    ppc.parsed = 2;
+                    ppc.dispatchEvent("parse", { //@todo ppc3.0 document
                         initial : inital
                     });
-                    apf.parsed = true;
+                    ppc.parsed = true;
                 }
         
-                if (!apf.loaded) {
-                    apf.loaded = true;
-                    apf.dispatchEvent("load");
+                if (!ppc.loaded) {
+                    ppc.loaded = true;
+                    ppc.dispatchEvent("load");
                 }
         
                 //END OF ENTIRE APPLICATION STARTUP
         
                 //#ifdef __DEBUG
-                //apf.console.info("Initialization finished");
+                //ppc.console.info("Initialization finished");
                 //#endif
                 
                 // #ifdef __DEBUG
-                //apf.Latometer.end();
-                //apf.Latometer.addPoint("Total load time");
-                //apf.Latometer.start(true);
+                //ppc.Latometer.end();
+                //ppc.Latometer.addPoint("Total load time");
+                //ppc.Latometer.start(true);
                 // #endif
           }
         }); //async
@@ -155,15 +155,15 @@ apf.window = function(){
     this.destroy = function(){
         this.$at = null;
 
-        apf.unload(this);
+        ppc.unload(this);
 
-        apf           =
+        ppc           =
         this.win      =
         this.window   =
         this.document = null;
     };
 };
-apf.window.prototype = new apf.Class().$init();
-apf.window = new apf.window();
+ppc.window.prototype = new ppc.Class().$init();
+ppc.window = new ppc.window();
 
 // #endif

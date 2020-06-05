@@ -20,14 +20,14 @@
  */
 
 //#ifdef __PARSER_XHTML
-apf.XhtmlIgnoreElement = function(struct, tagName){
-    this.$init(tagName, apf.NODE_VISIBLE, struct);
+ppc.XhtmlIgnoreElement = function(struct, tagName){
+    this.$init(tagName, ppc.NODE_VISIBLE, struct);
 };
 
-apf.XhtmlIgnoreElement.prototype = new apf.AmlElement();
+ppc.XhtmlIgnoreElement.prototype = new ppc.AmlElement();
 
-apf.xhtml.setElement("script",   apf.XhtmlIgnoreElement);
-apf.xhtml.setElement("noscript", apf.XhtmlIgnoreElement);
-apf.xhtml.setElement("head",     apf.XhtmlIgnoreElement);
-apf.xhtml.setElement("meta",     apf.XhtmlIgnoreElement);
+ppc.xhtml.setElement("script",   ppc.XhtmlIgnoreElement);
+ppc.xhtml.setElement("noscript", ppc.XhtmlIgnoreElement);
+ppc.xhtml.setElement("head",     ppc.XhtmlIgnoreElement);
+ppc.xhtml.setElement("meta",     ppc.XhtmlIgnoreElement);
 // #endif

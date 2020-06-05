@@ -22,7 +22,7 @@
 // #ifdef __WITH_HISTORY
 
 /**
- * @class apf.history
+ * @class ppc.history
  *
  * Implements a hash change listener. The 'hash' is the part of the
  * location string in your browser that takes care of pointing to a section
@@ -36,7 +36,7 @@
  * #### Remarks
  * 
  * In modern browsers (after 2009) the location hash can be set by script and
- * {@link apf.history@hashchange} is called when it's changed by using the back or forward
+ * {@link ppc.history@hashchange} is called when it's changed by using the back or forward
  * button of the browsers. In most of the current (2009) browsers this is not the case.
  * This object handles that logic for those browsers in such a way that the user
  * of the application can use the back and forward buttons in an intuitive manner.
@@ -54,13 +54,13 @@
  * #### Example
  *
  * ```javascript
- *  apf.addEventListener("hashchange", function(e){
+ *  ppc.addEventListener("hashchange", function(e){
  *      var info = e.page.split(":");
  *
  *      switch(info[0]) {
  *          case "product": //hash is for instance 'product:23849'
  *              //Sets the application state to display product info
- *              //For more information see apf.state
+ *              //For more information see ppc.state
  *              stProduct.activate(); 
  *              //Loads a product by id
  *              loadProduct(info[1]); 
@@ -74,7 +74,7 @@
  *
  * @default_private
  */
-apf.history = {
+ppc.history = {
     inited: false,
     page  : null,
     past  : [],
@@ -92,26 +92,26 @@ apf.history = {
 
         var name, _self = this;
         function preInit() {
-            name = apf.dispatchEvent("hashinit")
+            name = ppc.dispatchEvent("hashinit")
               || location.href.match(/#(.*)$/) && decodeURI(RegExp.$1)
-              || apf._GET[getVar || -1] || defName;
+              || ppc._GET[getVar || -1] || defName;
 
 
             location.hash = name;
             _self.hasChanged(name || null);
         }
 
-        if (apf.supportHashChange) {
+        if (ppc.supportHashChange) {
             $setTimeout(function() {
                 preInit();
 
                 window.onhashchange = function(){
                     var page = location.hash.replace("#", "");
-                    apf.history.hasChanged(decodeURI(page));
+                    ppc.history.hasChanged(decodeURI(page));
                 };
             });
         }
-        else if (apf.isIE) {
+        else if (ppc.isIE) {
             preInit();
             var str =
                 "<style>\
@@ -131,7 +131,7 @@ apf.history = {
                     function checkUrl(){\
                         var iScr = (document.all ? document.body : document.documentElement).scrollTop;\
                         if (lastURL == iScr) return;\
-                        top.apf.history.hasChanged(document.getElementsByTagName('h1')[Math.round(iScr / 100)].id, true);\
+                        top.ppc.history.hasChanged(document.getElementsByTagName('h1')[Math.round(iScr / 100)].id, true);\
                         lastURL = iScr;\
                         }\
                     checkUrl();\
@@ -149,26 +149,26 @@ apf.history = {
             this.iframe = document.frames["nav"];// : document.getElementById("nav").contentWindow;
             //Check to see if url has been manually changed
             this.timer2 = setInterval(function(){
-                if (!apf.history.changingHash && location.hash != "#" + apf.history.page) {
+                if (!ppc.history.changingHash && location.hash != "#" + ppc.history.page) {
                     var name = location.hash.replace(/^#/, "");
-                    var page = apf.history.page;
-                    apf.history.setHash(name, true, true);
-                    apf.history.page = page;
-                    apf.history.hasChanged(name);
+                    var page = ppc.history.page;
+                    ppc.history.setHash(name, true, true);
+                    ppc.history.page = page;
+                    ppc.history.hasChanged(name);
                 }
-            }, apf.history.delay || 1);
+            }, ppc.history.delay || 1);
         }
         else {
             preInit();
-            apf.history.lastUrl = location.href.toString();
+            ppc.history.lastUrl = location.href.toString();
             this.timer2 = setInterval(function(){
-                if (apf.history.lastUrl == location.href.toString())
+                if (ppc.history.lastUrl == location.href.toString())
                     return;
 
-                apf.history.lastUrl = location.href.toString();
+                ppc.history.lastUrl = location.href.toString();
                 //var page            = location.href.replace(/^.*#(.*)$/, "$1")
                 var page = location.hash.replace("#", "");//.replace(/^.*#(.*)$/,"$1");
-                apf.history.hasChanged(decodeURI(page));
+                ppc.history.hasChanged(decodeURI(page));
             }, 20);
         }
     },
@@ -189,10 +189,10 @@ apf.history = {
             return;
         }
 
-        if (!apf.supportHashChange && apf.isIE  && !timed) {
+        if (!ppc.supportHashChange && ppc.isIE  && !timed) {
             this.to_name = name;
             return $setTimeout(function(){
-                apf.history.setHash(apf.history.to_name, true, force);
+                ppc.history.setHash(ppc.history.to_name, true, force);
             }, 200);
         }
 
@@ -200,29 +200,29 @@ apf.history = {
         if (!this.inited)
             return this.init(name);
 
-        if (!apf.supportHashChange && apf.isIE) {
+        if (!ppc.supportHashChange && ppc.isIE) {
             var h       = this.iframe.document.body
                 .appendChild(this.iframe.document.createElement('h1'));
             h.id        = name;
             h.innerHTML = "1";
         }
 
-        (!apf.supportHashChange && apf.isIE ? this.iframe : window).location.href = "#" + name;
+        (!ppc.supportHashChange && ppc.isIE ? this.iframe : window).location.href = "#" + name;
         
-        if (!apf.isIE && !apf.isGecko && !apf.isIphone)
-            apf.history.lastUrl = location.href.toString();
-        //else if (apf.isIE8)
+        if (!ppc.isIE && !ppc.isGecko && !ppc.isIphone)
+            ppc.history.lastUrl = location.href.toString();
+        //else if (ppc.isIE8)
     },
 
     timer : null,
     changePage: function(page, force){
-        if (!apf.supportHashChange && apf.isIE) {
+        if (!ppc.supportHashChange && ppc.isIE) {
             this.page = page;
             this.changingHash = true;
             clearTimeout(this.timer);
             this.timer = $setTimeout(function(){
                 location.hash = page;
-                apf.history.changingHash = false;
+                ppc.history.changingHash = false;
             }, 1);
         }
     },
@@ -268,7 +268,7 @@ apf.history = {
         this.changePage(page, force);
 
         this.changing = true;
-        if (apf.dispatchEvent("hashchange", {
+        if (ppc.dispatchEvent("hashchange", {
             oldURL : this.page,
             newURL : page,
             page   : page, 

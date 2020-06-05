@@ -21,8 +21,8 @@
 
 //#ifdef __PARSER_XHTML
 
-apf.XhtmlOptionElement = function(struct, tagName){
-    this.$init(tagName || "option", apf.NODE_VISIBLE, struct);
+ppc.XhtmlOptionElement = function(struct, tagName){
+    this.$init(tagName || "option", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -34,7 +34,7 @@ apf.XhtmlOptionElement = function(struct, tagName){
         if (this.value)
             this.$int.setAttribute("value", this.value);
     }, true);
-}).call(apf.XhtmlOptionElement.prototype = new apf.AmlElement());
+}).call(ppc.XhtmlOptionElement.prototype = new ppc.AmlElement());
 
-apf.xhtml.setElement("option", apf.XhtmlOptionElement);
+ppc.xhtml.setElement("option", ppc.XhtmlOptionElement);
 //#endif

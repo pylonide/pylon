@@ -21,7 +21,7 @@
 
 //#ifdef __WITH_CONTENTEDITABLE
 
-apf.visualSelect = function(selection){
+ppc.visualSelect = function(selection){
     this.$init();
 
     var _self = this;
@@ -63,18 +63,18 @@ apf.visualSelect = function(selection){
             this.style.top = "-10000px";
             var el = document.elementFromPoint(e.clientX, e.clientY);
             this.style.top = prevTop;
-            apf.fireEvent(el, (e.type || e.name), e);
+            ppc.fireEvent(el, (e.type || e.name), e);
             
             e.cancelBubble = true;
         }
         
         //@todo this should be cleaned up
         /*var _self = this;
-        apf.window.addEventListener("focus", function(e){
+        ppc.window.addEventListener("focus", function(e){
             if (lastSelection && lastSelection.length)
                 _self.show();
         });
-        apf.window.addEventListener("blur", function(e){
+        ppc.window.addEventListener("blur", function(e){
             _self.hide();
         });*/
         
@@ -113,7 +113,7 @@ apf.visualSelect = function(selection){
     };
     
     this.$finishResize = function(noGeo){
-        apf.setStyleClass(resizing, "", ["idegrabber_resizing"]);
+        ppc.setStyleClass(resizing, "", ["idegrabber_resizing"]);
         resizing = false;
         
         if (lastSelection.length == 1)
@@ -130,26 +130,26 @@ apf.visualSelect = function(selection){
         //#ifdef __WITH_LAYOUT
         for (var s, i = 0, l = lastSelection.length; i < l; i++) {
             if (nodes.indexOf(s = lastSelection[i]) == -1) {
-                apf.layout.removeRule(s.$ext, "visualselect");
-                apf.layout.activateRules(s.$ext);
+                ppc.layout.removeRule(s.$ext, "visualselect");
+                ppc.layout.activateRules(s.$ext);
             }
         }
         for (i = 0, l = nodes.length; i < l; i++) {
             if (lastSelection.indexOf(s = nodes[i]) == -1) {
-                apf.layout.setRules(s.$ext, "visualselect", "apf.all[" 
+                ppc.layout.setRules(s.$ext, "visualselect", "ppc.all[" 
                     + this.$uniqueId + "].updateGeo()", true);
-                apf.layout.queue(s.$ext);
+                ppc.layout.queue(s.$ext);
             }
         }
         
         if (s.$ext.parentNode.tagName == "BODY") {
-            apf.layout.setRules(document.documentElement, "visualselect", 
-              "apf.all[" + this.$uniqueId + "].updateGeo()", true);
-            apf.layout.queue(document.documentElement);
+            ppc.layout.setRules(document.documentElement, "visualselect", 
+              "ppc.all[" + this.$uniqueId + "].updateGeo()", true);
+            ppc.layout.queue(document.documentElement);
         }
         else {
-            apf.layout.removeRule(document.documentElement, "visualselect");
-            apf.layout.activateRules(document.documentElement);
+            ppc.layout.removeRule(document.documentElement, "visualselect");
+            ppc.layout.activateRules(document.documentElement);
         }
         //#endif
         lastSelection = nodes;
@@ -198,7 +198,7 @@ apf.visualSelect = function(selection){
                 : [sel.top, sel.right, sel.bottom, sel.left])
               : [];
 
-            //!apf.dragMode && 
+            //!ppc.dragMode && 
             if (anchors && !resizing && !this.renaming) {
                 var pel = sel.parentNode;
                 var name = pel.localName;
@@ -208,41 +208,41 @@ apf.visualSelect = function(selection){
 
                 var pack = sel.align || pel.pack;
 
-                apf.setStyleClass(nodes.n, fullDisabled || name == "table" 
+                ppc.setStyleClass(nodes.n, fullDisabled || name == "table" 
                   || name == "vbox" && pack == "start" || name == "hbox" 
                     ? "idegrabber_disabled"
                     : (!exclPNode && (anchors[0] || anchors[0] === 0)
                         ? "idegrabber_selected" 
                         : ""), ["idegrabber_selected", "idegrabber_disabled"]);
-                apf.setStyleClass(nodes.e, fullDisabled || name == "table" 
+                ppc.setStyleClass(nodes.e, fullDisabled || name == "table" 
                   || name == "hbox" && pack == "end"
                     ? "idegrabber_disabled"
                     : (!exclPNode && (anchors[1] || anchors[1] === 0)
                         ? "idegrabber_selected" 
                         : ""), ["idegrabber_selected", "idegrabber_disabled"]);
-                apf.setStyleClass(nodes.s, fullDisabled 
+                ppc.setStyleClass(nodes.s, fullDisabled 
                   || name == "vbox" && pack == "end" 
                     ? "idegrabber_disabled"
                     : (!exclPNode && (anchors[2] || anchors[2] === 0)
                         ? "idegrabber_selected" 
                         : ""), ["idegrabber_selected", "idegrabber_disabled"]);
-                apf.setStyleClass(nodes.w, fullDisabled || name == "table" 
+                ppc.setStyleClass(nodes.w, fullDisabled || name == "table" 
                   || name == "vbox" || name == "hbox" && pack == "start" 
                     ? "idegrabber_disabled"
                     : (!exclPNode && ( anchors[3] || anchors[3] === 0)
                         ? "idegrabber_selected" 
                         : ""), ["idegrabber_selected", "idegrabber_disabled"]);
 
-                apf.setStyleClass(nodes.nw, fullDisabled || name == "table" 
+                ppc.setStyleClass(nodes.nw, fullDisabled || name == "table" 
                   || name == "vbox" && pack == "start" || name == "hbox"
                     ? "idegrabber_disabled" : "", ["idegrabber_disabled"]);
-                apf.setStyleClass(nodes.ne, fullDisabled || name == "table" 
+                ppc.setStyleClass(nodes.ne, fullDisabled || name == "table" 
                   || name == "hbox" && pack == "end"
                     ? "idegrabber_disabled" : "", ["idegrabber_disabled"]);
-                apf.setStyleClass(nodes.sw, fullDisabled 
+                ppc.setStyleClass(nodes.sw, fullDisabled 
                   || name == "vbox" && pack == "end"
                     ? "idegrabber_disabled" : "", ["idegrabber_disabled"]);
-                apf.setStyleClass(nodes.se, fullDisabled
+                ppc.setStyleClass(nodes.se, fullDisabled
                     ? "idegrabber_disabled" : "", ["idegrabber_disabled"]);
             
                 this.$selection.dispatchEvent("update-content", {sel: sel});
@@ -256,10 +256,10 @@ apf.visualSelect = function(selection){
                 return (recursion = false); //@error
 
             //oHtml.offsetParent.appendChild(oOutline); 
-            if (apf.isIE) //@notice this solves an IE drawing bug
+            if (ppc.isIE) //@notice this solves an IE drawing bug
                 oHtml.parentNode.appendChild(txt || (txt = document.createTextNode("")));
             
-            var pos = apf.getAbsolutePosition(oHtml);
+            var pos = ppc.getAbsolutePosition(oHtml);
             pos.push(oHtml.offsetWidth, oHtml.offsetHeight);
         }
         else {
@@ -271,7 +271,7 @@ apf.visualSelect = function(selection){
                 }
                 
                 oHtml  = selection[i].$ext;
-                opos   = apf.getAbsolutePosition(oHtml); //@notice in IE this calls onresize, make this function reentrant, fixed by using the recursion variable
+                opos   = ppc.getAbsolutePosition(oHtml); //@notice in IE this calls onresize, make this function reentrant, fixed by using the recursion variable
                 
                 if (opos[0] < pos[0]) pos[0] = opos[0];
                 if (opos[1] < pos[1]) pos[1] = opos[1];
@@ -282,7 +282,7 @@ apf.visualSelect = function(selection){
             if (!oHtml.offsetParent)
                 return (recursion = false); //@error
                 
-            //if (apf.isIE) //@notice this solves an IE drawing bug
+            //if (ppc.isIE) //@notice this solves an IE drawing bug
                 oHtml.offsetParent.appendChild(oOutline);
                 //oHtml.parentNode.appendChild(txt || (txt = document.createTextNode("")));
             
@@ -290,12 +290,12 @@ apf.visualSelect = function(selection){
             pos[3] -= pos[1];
             
             for (i = 0, l = nodes.length; i < l; i++)
-                apf.setStyleClass(nodes[i], "idegrabber_disabled", 
+                ppc.setStyleClass(nodes[i], "idegrabber_disabled", 
                     ["idegrabber_selected", "idegrabber_disabled"]);
             
-            var diff = apf.getDiff(oOutline), ppos = oHtml.offsetParent.tagName == "BODY" //@todo can we generalize this for ce2 use?
+            var diff = ppc.getDiff(oOutline), ppos = oHtml.offsetParent.tagName == "BODY" //@todo can we generalize this for ce2 use?
                 ? [0,0]
-                : apf.getAbsolutePosition(oHtml.offsetParent, null, true);
+                : ppc.getAbsolutePosition(oHtml.offsetParent, null, true);
             oOutline.style.left   = (pos[0] - ppos[0]) + "px";
             oOutline.style.top    = (pos[1] - ppos[1]) + "px";
             oOutline.style.width  = Math.max(0, pos[2] - diff[0]) + "px";
@@ -309,7 +309,7 @@ apf.visualSelect = function(selection){
                     ext  = selection[i].$ext;
                     if (!ext.offsetWidth && !ext.offsetHeight)
                         continue;
-                    epos = apf.getAbsolutePosition(ext);
+                    epos = ppc.getAbsolutePosition(ext);
                     html = oOutline.childNodes[i];
                     html.style.left   = (epos[0] - pos[0]) + "px";
                     html.style.top    = (epos[1] - pos[1]) + "px";
@@ -320,27 +320,27 @@ apf.visualSelect = function(selection){
         }
 
         /*if (oOutline.parentNode.tagName == "BODY") {
-            var ppos = apf.getAbsolutePosition(document.documentElement, null, true);
-            ppos[0] += (apf.isIE ? 2 : 0);
-            ppos[1] += (apf.isIE ? 2 : 0);
+            var ppos = ppc.getAbsolutePosition(document.documentElement, null, true);
+            ppos[0] += (ppc.isIE ? 2 : 0);
+            ppos[1] += (ppc.isIE ? 2 : 0);
         }
         else
-            var ppos = apf.getAbsolutePosition(oOutline.parentNode, null, true);
+            var ppos = ppc.getAbsolutePosition(oOutline.parentNode, null, true);
 
         lastPos = pos.slice();
         lastPos[0] -= ppos[0];
         lastPos[1] -= ppos[1];
         
-        var x, y, w, h, diff = apf.getDiff(oOutline);
+        var x, y, w, h, diff = ppc.getDiff(oOutline);
         oOutline.style.left  = (x = lastPos[0]) + "px";
         oOutline.style.top   = (y = lastPos[1]) + "px";
         oOutline.style.width = (w = Math.max(0, pos[2] - diff[0])) + "px";
         oOutline.style.height = (h = Math.max(0, pos[3] - diff[1])) + "px";
         
-        apf.config.setProperty("x", x);
-        apf.config.setProperty("y", y);
-        apf.config.setProperty("w", w);
-        apf.config.setProperty("h", h);*/
+        ppc.config.setProperty("x", x);
+        ppc.config.setProperty("y", y);
+        ppc.config.setProperty("w", w);
+        ppc.config.setProperty("h", h);*/
 
         //Middle ones (hor)
         nodes.s.style.left = 
@@ -399,7 +399,7 @@ apf.visualSelect = function(selection){
             }
             
             var value = sel[map[type]];
-            apf.setStyleClass(this, !value && value !== 0 
+            ppc.setStyleClass(this, !value && value !== 0 
                 ? "idegrabber_selected" : "", ["idegrabber_selected"]);
 
             var pHtmlNode = sel.$ext.offsetParent;
@@ -412,29 +412,29 @@ apf.visualSelect = function(selection){
             var prop = map[type];
             if (sel[prop] || sel[prop] === 0) {
                 if (prop == "right" && !sel.left && sel.left !== 0)
-                    sel.setAttribute("left", apf.getHtmlLeft(sel.$ext));
+                    sel.setAttribute("left", ppc.getHtmlLeft(sel.$ext));
                 else if (prop == "bottom" && !sel.top && sel.top !== 0)
-                    sel.setAttribute("top", apf.getHtmlTop(sel.$ext));
+                    sel.setAttribute("top", ppc.getHtmlTop(sel.$ext));
                 else if (prop == "left" && !sel.right && sel.right !== 0)
-                    sel.setAttribute("right", apf.getHtmlRight(sel.$ext));
+                    sel.setAttribute("right", ppc.getHtmlRight(sel.$ext));
                 else if (prop == "top" && !sel.bottom && sel.bottom !== 0)
-                    sel.setAttribute("bottom", apf.getHtmlBottom(sel.$ext));
+                    sel.setAttribute("bottom", ppc.getHtmlBottom(sel.$ext));
 
                 sel.removeAttribute(prop);
             }
             else {
                 switch(type) {
                     case "e":
-                        sel.setAttribute("right", apf.getHtmlRight(sel.$ext));
+                        sel.setAttribute("right", ppc.getHtmlRight(sel.$ext));
                         break;
                     case "w":
-                        sel.setAttribute("left", apf.getHtmlLeft(sel.$ext));
+                        sel.setAttribute("left", ppc.getHtmlLeft(sel.$ext));
                         break;
                     case "n":
-                        sel.setAttribute("top", apf.getHtmlTop(sel.$ext));
+                        sel.setAttribute("top", ppc.getHtmlTop(sel.$ext));
                         break;
                     case "s":
-                        sel.setAttribute("bottom", apf.getHtmlBottom(sel.$ext));
+                        sel.setAttribute("bottom", ppc.getHtmlBottom(sel.$ext));
                         break;
                 }
             }
@@ -460,9 +460,9 @@ apf.visualSelect = function(selection){
             });
             
             resizing = this;
-            apf.setStyleClass(this, "idegrabber_resizing");
+            ppc.setStyleClass(this, "idegrabber_resizing");
         }
     }
-}).call(apf.visualSelect.prototype = new apf.Class());
+}).call(ppc.visualSelect.prototype = new ppc.Class());
 
 //#endif

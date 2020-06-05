@@ -20,8 +20,8 @@
  */
 
 //#ifdef __WITH_XSDRESTRICTION
-apf.XsdRestriction = function(struct, tagName){
-    this.$init(tagName || "restriction", apf.NODE_HIDDEN, struct);
+ppc.XsdRestriction = function(struct, tagName){
+    this.$init(tagName || "restriction", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -30,7 +30,7 @@ apf.XsdRestriction = function(struct, tagName){
     }
     
     this.$compile = function(stack){
-        stack.push("if (!apf.xsd.matchType(value, '"
+        stack.push("if (!ppc.xsd.matchType(value, '"
             + this.base + "')) return false;");
 
         var i, l, node,
@@ -38,7 +38,7 @@ apf.XsdRestriction = function(struct, tagName){
         for (i = 0, l = nodes.length; i < l; i++)
             (node = nodes[i]).$compile && node.$compile(stack);
     }
-}).call(apf.XsdRestriction.prototype = new apf.XsdElement());
+}).call(ppc.XsdRestriction.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("restriction", apf.XsdRestriction);
+ppc.xsd.setElement("restriction", ppc.XsdRestriction);
 //#endif

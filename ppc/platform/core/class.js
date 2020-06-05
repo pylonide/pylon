@@ -167,7 +167,7 @@ ppc.Class.prototype = new (function(){
                         bObject.setProperty(bProp, value, true, false, 10);
 
                         //#ifdef __WITH_LANG_SUPPORT
-                        //@todo apf3.0
+                        //@todo ppc3.0
                         if (ppc.$lm_has_lang && !isLang) {
                             isLang = true;
                             //@todo should auto remove
@@ -196,7 +196,7 @@ ppc.Class.prototype = new (function(){
                 bObject.setProperty(bProp, value, true, false, 10);//e.initial ? 0 :
 
             //#ifdef __WITH_LANG_SUPPORT
-            //@todo apf3.0
+            //@todo ppc3.0
             if (ppc.$lm_has_lang && !isLang) {
                 isLang = true;
                 //@todo should auto remove
@@ -257,7 +257,7 @@ ppc.Class.prototype = new (function(){
         var exclNr = this.$attrExcludePropBind[prop],
             options;
 
-        //@todo apf3.0, please generalize this - cache objects, seems slow
+        //@todo ppc3.0, please generalize this - cache objects, seems slow
         if (SEL.indexOf(prop) > -1 || exclNr == 3) {
             options = {
                 xpathmode : 2
@@ -304,11 +304,11 @@ ppc.Class.prototype = new (function(){
 
         //if it's only text return setProperty()
         if (fParsed.type == 2) {
-            this[prop] = !pValue; //@todo apf3.0 is this needed?
+            this[prop] = !pValue; //@todo ppc3.0 is this needed?
             return this.setProperty(prop, fParsed.str, null, null, 10); //@todo is 10 here right?
         }
 
-        //if there's xpath: Add apf.DataBinding if not inherited.
+        //if there's xpath: Add ppc.DataBinding if not inherited.
         //Add compiled binding rule. Load databinding if not loaded.
         //#ifdef __WITH_DATABINDING
         var check = 1;
@@ -325,7 +325,7 @@ ppc.Class.prototype = new (function(){
         //#endif
 
         //if there's prop binding: Add generated function to each obj/prop in the list
-        var matches = exclNr && exclNr != 3 && prop != MODEL ? {} : fParsed.props, //@todo apf3.0 sign of broken abstraction, please fix this with a bit mask
+        var matches = exclNr && exclNr != 3 && prop != MODEL ? {} : fParsed.props, //@todo ppc3.0 sign of broken abstraction, please fix this with a bit mask
             found   = false,
             _self   = this,
             o, node, bProp, p;
@@ -337,7 +337,7 @@ ppc.Class.prototype = new (function(){
             //#endif
 
             o = p.split(".");
-            if (o.length > 2) { //apf.offline.syncing
+            if (o.length > 2) { //ppc.offline.syncing
                 bProp = o.pop();
                 try{
                     node  = eval(o.join("."));
@@ -435,7 +435,7 @@ ppc.Class.prototype = new (function(){
                         _self.setProperty(prop, value, true, null, 10); //@todo is 10 here right?
 
                         //#ifdef __WITH_LANG_SUPPORT
-                        //@todo apf3.0
+                        //@todo ppc3.0
                         if (ppc.$lm_has_lang)
                             ppc.language.addProperty(this, prop, fParsed); //@todo should auto remove
                         //#endif
@@ -455,21 +455,21 @@ ppc.Class.prototype = new (function(){
             this.setProperty(prop, value, true, null, 10); //@todo is 10 here right?
 
             //#ifdef __WITH_LANG_SUPPORT
-            //@todo apf3.0
+            //@todo ppc3.0
             if (ppc.$lm_has_lang)
                 ppc.language.addProperty(this, prop, fParsed); //@todo should auto remove
             //#endif
         }
     };
 
-    //@todo setAttribute should delete this from apf.language when not doing
+    //@todo setAttribute should delete this from ppc.language when not doing
     //$setDynamicProperty
     this.$clearDynamicProperty = function(prop){
         if (this.$removeAttrBind)
             this.$removeAttrBind(prop);
 
         //#ifdef __WITH_LANG_SUPPORT
-        //@todo apf3.0
+        //@todo ppc3.0
         ppc.language.removeProperty(this, prop);
         //#endif
 
@@ -582,7 +582,7 @@ ppc.Class.prototype = new (function(){
                     if (r.cvalue.type == 3) {
                         //#ifdef __ENABLE_UIRECORDER_HOOK
                         if (ppc.uirecorder && ppc.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
-                            if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                            if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) {// only capture events when recording  ppc.uirecorder.isLoaded
                                 if (this.ownerDocument && this.$aml && this.$amlLoaded)
                                     ppc.uirecorder.capture.capturePropertyChange(this, prop, value, oldvalue);
                             }
@@ -617,7 +617,7 @@ ppc.Class.prototype = new (function(){
 
             //#ifdef __ENABLE_UIRECORDER_HOOK
             if (ppc.uirecorder && ppc.uirecorder.captureDetails && inherited != 10 && inherited != 2) {
-                if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
+                if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) {// only capture events when recording  ppc.uirecorder.isLoaded
                     if (this.ownerDocument && this.$aml && this.$amlLoaded)
                         ppc.uirecorder.capture.capturePropertyChange(this, prop, this[prop], oldvalue);
                 }
@@ -630,7 +630,7 @@ ppc.Class.prototype = new (function(){
         //Optimized event calling
         if ((arr = this.$eventsStack[eventName]) && isChanged) {
             /*for (i = 0, l = arr.length; i < l; i++) {
-                if (arr[i].call(this, e || (e = new apf.AmlEvent(eventName, {
+                if (arr[i].call(this, e || (e = new ppc.AmlEvent(eventName, {
                     prop     : prop,
                     value    : value,
                     oldvalue : oldvalue
@@ -800,7 +800,7 @@ ppc.Class.prototype = new (function(){
         //#ifdef __WITH_EVENT_BUBBLING
         if ((e && e.bubbles && !e.cancelBubble || !e && options && options.bubbles) && this != ppc) {
             rValue = (this.parentNode || this.ownerElement || ppc).dispatchEvent(eventName, options, e);
-            // || (e = new apf.AmlEvent(eventName, options))
+            // || (e = new ppc.AmlEvent(eventName, options))
 
             if (typeof rValue != UNDEF)
                 result = rValue;
@@ -831,7 +831,7 @@ ppc.Class.prototype = new (function(){
                 // when eventName == "load" all elements are loaded and drawn
                 /*
                 if (eventName == "load" && this.isIE != undefined)
-                    apf.uirecorder.isLoaded = true;
+                    ppc.uirecorder.isLoaded = true;
                 */
             }
         }
@@ -922,7 +922,7 @@ ppc.Class.prototype = new (function(){
      * @param {Boolean} [clean]
      */
     this.destroy = function(deep, clean){
-        //Remove from apf.all
+        //Remove from ppc.all
         if (typeof this.$uniqueId == UNDEF && this.nodeType != 2)
             return;
 

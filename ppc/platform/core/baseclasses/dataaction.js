@@ -19,36 +19,36 @@
  *
  */
 
-apf.__DATAACTION__ = 1 << 25;
+ppc.__DATAACTION__ = 1 << 25;
 
 // #ifdef __WITH_DATAACTION
 /**
  * A [[term.baseclass baseclass]] that adds data action features to this element.
- * @class apf.DataAction
+ * @class ppc.DataAction
  */
-apf.DataAction = function(){
-    this.$regbase = this.$regbase | apf.__DATAACTION__;
+ppc.DataAction = function(){
+    this.$regbase = this.$regbase | ppc.__DATAACTION__;
 
     // *** Public Methods *** //
 
     /**
      * Gets the ActionTracker this element communicates with.
      *
-     * @return {apf.actiontracker}
-     * @see apf.smartbinding
+     * @return {ppc.actiontracker}
+     * @see ppc.smartbinding
      */
     this.getActionTracker = function(ignoreMe){
-        if (!apf.AmlNode)
-            return apf.window.$at;
+        if (!ppc.AmlNode)
+            return ppc.window.$at;
 
         var pNode = this, tracker = ignoreMe ? null : this.$at;
         if (!tracker && this.dataParent)
-            tracker = this.dataParent.parent.$at; //@todo apf3.0 change this to be recursive??
+            tracker = this.dataParent.parent.$at; //@todo ppc3.0 change this to be recursive??
 
         while (!tracker) {
             if (!pNode.parentNode && !pNode.$parentNode) {
                 var model;
-                return (model = this.getModel && this.getModel(true)) && model.$at || apf.window.$at;
+                return (model = this.getModel && this.getModel(true)) && model.$at || ppc.window.$at;
             }
 
             tracker = (pNode = pNode.parentNode || pNode.$parentNode).$at;
@@ -105,14 +105,14 @@ apf.DataAction = function(){
             return false;
 
         var actionRule = this.$actions && this.$actions.getRule(name, xmlContext);
-        if (!actionRule && apf.config.autoDisableActions && this.$actions) {
+        if (!actionRule && ppc.config.autoDisableActions && this.$actions) {
             //#ifdef __DEBUG
             if (!xmlContext) {
-                apf.console.warn("Tried starting new action but no xml \
+                ppc.console.warn("Tried starting new action but no xml \
                     context was specified.");
             }
             else {
-                apf.console.warn("Tried starting new action but no '" + name
+                ppc.console.warn("Tried starting new action but no '" + name
                     + "' action rule was found.");
             }
             //#endif
@@ -120,9 +120,9 @@ apf.DataAction = function(){
             return false;
         }
 
-        var bHasOffline = typeof apf.offline != "undefined";
+        var bHasOffline = typeof ppc.offline != "undefined";
         //#ifdef __WITH_OFFLINE
-        if (bHasOffline && !apf.offline.canTransact())
+        if (bHasOffline && !ppc.offline.canTransact())
             return false;
         //#endif
 
@@ -136,7 +136,7 @@ apf.DataAction = function(){
         //Requesting a lock, whilst we still have one open
         if (this.$lock[name] && !this.$lock[name].stopped) {
             //#ifdef __DEBUG
-            apf.console.warn("Starting new action whilst previous \
+            ppc.console.warn("Starting new action whilst previous \
                 action wasn't terminated:" + name);
             //#endif
 
@@ -145,10 +145,10 @@ apf.DataAction = function(){
 
         //Check if we should attain a lock (when offline, we just pretend to get it)
         var lockInstruction = actionRule ? actionRule.lock : null;
-        if ((bHasOffline && (!apf.offline.enabled || !apf.offline.onLine)) && lockInstruction) {
+        if ((bHasOffline && (!ppc.offline.enabled || !ppc.offline.onLine)) && lockInstruction) {
             var curLock = this.$lock[name] = {
-                    start      : bHasOffline && !apf.offline.onLine
-                                    ? apf.offline.offlineTime
+                    start      : bHasOffline && !ppc.offline.onLine
+                                    ? ppc.offline.offlineTime
                                     : new Date().toISOString(),
                     stopped    : false,
                     xmlContext : xmlContext,
@@ -158,15 +158,15 @@ apf.DataAction = function(){
                 _self = this;
 
             //Execute pessimistic locking request
-            apf.saveData(lockInstruction, {
+            ppc.saveData(lockInstruction, {
               xmlNode  : xmlContext,
               unlock   : false,
               callback : function(data, state, extra){
-                    if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
+                    if (state == ppc.TIMEOUT && extra.retries < ppc.maxHttpRetries)
                         return extra.tpModule.retry(extra.id);
 
-                    if (state == apf.SUCCESS) {
-                        _self.dispatchEvent("locksuccess", apf.extend({
+                    if (state == ppc.SUCCESS) {
+                        _self.dispatchEvent("locksuccess", ppc.extend({
                             state   : extra.status,
                             bubbles : true
                         }, extra));
@@ -186,7 +186,7 @@ apf.DataAction = function(){
                         //Cancel the action, because we didnt get a lock
                         fRollback.call(_self, xmlContext);
 
-                        _self.dispatchEvent("lockfailed", apf.extend({
+                        _self.dispatchEvent("lockfailed", ppc.extend({
                             state   : extra.status,
                             bubbles : true
                         }, extra));
@@ -204,11 +204,11 @@ apf.DataAction = function(){
     //#ifdef __WITH_RDB
     // @todo think about if this is only for rdb
     this.addEventListener("xmlupdate", function(e){
-        if (apf.xmldb.disableRDB != 2)
+        if (ppc.xmldb.disableRDB != 2)
             return;
 
         for (var name in this.$actionsLog) {
-            if (apf.isChildOf(this.$actionsLog[name], e.xmlNode, true)) {
+            if (ppc.isChildOf(this.$actionsLog[name], e.xmlNode, true)) {
                 //this.$stopAction(name, true);
                 this.$actionsLog[name].rollback.call(this, this.$actionsLog[name].xmlContext);
             }
@@ -230,19 +230,19 @@ apf.DataAction = function(){
             if (isCancelled && curLock.retrieved) {
                 //Execute unlocking request
                 var _self = this;
-                apf.saveData(curLock.instr, {
+                ppc.saveData(curLock.instr, {
                   xmlNode    : curLock.xmlContext,
                   unlock     : true,
                   callback   : function(data, state, extra){
-                        if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
+                        if (state == ppc.TIMEOUT && extra.retries < ppc.maxHttpRetries)
                             return extra.tpModule.retry(extra.id);
 
                         //Do we care if an unlock failed/succeeded?
                         _self.dispatchEvent(
-                            (state == apf.SUCCESS
+                            (state == ppc.SUCCESS
                                 ? "unlocksuccess"
                                 : "unlockfailed"),
-                            apf.extend({
+                            ppc.extend({
                                 state   : extra.status,
                                 bubbles : true
                             }, extra));
@@ -256,7 +256,7 @@ apf.DataAction = function(){
     };
 
     /*
-     * Executes an action using action rules set in the {@link apf.actions actions element}.
+     * Executes an action using action rules set in the {@link ppc.actions actions element}.
      *
      * @param {String}      atAction      The name of the action to be performed by the [[ActionTracker]]. Possible values include:
      *                                 - `"setTextNode"`:   Sets the first text node of an XML element. For more information, see {@link core.xmldb.method.setTextNode}
@@ -284,24 +284,24 @@ apf.DataAction = function(){
      *                                    (such as RPC calls). Usually the same
      *                                    as <code>xmlNode</code>
      * @return {Boolean} specifies success or failure
-     * @see apf.smartbinding
+     * @see ppc.smartbinding
      */
     this.$executeAction = function(atAction, args, action, xmlNode, noevent, contextNode, multiple){
         //#ifdef __WITH_OFFLINE
-        if (typeof apf.offline != "undefined" && !apf.offline.canTransact())
+        if (typeof ppc.offline != "undefined" && !ppc.offline.canTransact())
             return false;
         //#endif
 
         //#ifdef __DEBUG
-        apf.console.info("Executing action '" + action + "' for " + (this.name || "")
+        ppc.console.info("Executing action '" + action + "' for " + (this.name || "")
                          + " [" + (this.localName || "") + "]");
         //#endif
 
         //Get Rules from Array
         var rule = this.$actions && this.$actions.getRule(action, xmlNode);
-        if (!rule && this.$actions && apf.config.autoDisableActions
+        if (!rule && this.$actions && ppc.config.autoDisableActions
           && "action|change".indexOf(action) == -1) {
-            apf.console.warn("Could not execute action '" + action + "'. \
+            ppc.console.warn("Could not execute action '" + action + "'. \
               No valid action rule was found and auto-disable-actions is enabled");
 
             return false;
@@ -324,8 +324,8 @@ apf.DataAction = function(){
             }
         }
 
-        //@todo apf3.0 Shouldn't the contextNode be made by the match
-        var ev = new apf.AmlEvent("before" + action.toLowerCase(), {
+        //@todo ppc3.0 Shouldn't the contextNode be made by the match
+        var ev = new ppc.AmlEvent("before" + action.toLowerCase(), {
             action        : atAction,
             args          : args,
             xmlActionNode : rule,
@@ -350,7 +350,7 @@ apf.DataAction = function(){
 
         //Call ActionTracker and return ID of Action in Tracker
         var at      = this.getActionTracker();
-        if (!at)// This only happens at destruction of apf
+        if (!at)// This only happens at destruction of ppc
             return UndoObj;
 
         var UndoObj = at.execute(ev);
@@ -386,7 +386,7 @@ apf.DataAction = function(){
                 throw new Error("There is no rule that matches the xml node for this operation.\
                                  Please make sure you are matching a node and using the value to \
                                  specify it's value <a:" + setName + " match='person' \
-                                 value='[@name]' /> : " + xmlNode.xml); //@todo make apf Error
+                                 value='[@name]' /> : " + xmlNode.xml); //@todo make ppc Error
             else
             //#endif
                 return false;
@@ -407,7 +407,7 @@ apf.DataAction = function(){
 
         //#ifdef __DEBUG
         if (!compiled)
-            throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make apf Error
+            throw new Error("Cannot create from rule that isn't a single xpath"); //@todo make ppc Error
         //#endif
 
         var atAction, model, node,
@@ -415,7 +415,7 @@ apf.DataAction = function(){
             shouldLoad = false;
 
         if (sel[0] == "#" || sel[1] == "#") {
-            var m = (rule.cvalue3 || (rule.cvalue3 = apf.lm.compile(rule.value, {
+            var m = (rule.cvalue3 || (rule.cvalue3 = ppc.lm.compile(rule.value, {
                 xpathmode: 5
             })))(xmlNode);
 
@@ -425,7 +425,7 @@ apf.DataAction = function(){
                 xmlNode = model.data;
             }
             else if (m.model){
-                model = apf.xmldb.findModel(m.model);
+                model = ppc.xmldb.findModel(m.model);
                 node  = m.model.selectSingleNode(m.xpath);
                 xmlNode = m.model;
             }
@@ -437,7 +437,7 @@ apf.DataAction = function(){
         }
         else {
             //#ifdef __WITH_NAMESERVER
-            model = sel[0] && apf.nameserver.get("model", sel[0]) || this.$model,
+            model = sel[0] && ppc.nameserver.get("model", sel[0]) || this.$model,
             node  = model
                 ? model.queryNode(sel[1])
                 : (xmlNode || this.xmlRoot).selectSingleNode(sel[1]);
@@ -447,7 +447,7 @@ apf.DataAction = function(){
         }
 
         if (node) {
-            if (apf.queryValue(node) == value) return; // Do nothing if value is unchanged
+            if (ppc.queryValue(node) == value) return; // Do nothing if value is unchanged
 
             atAction = (node.nodeType == 1 || node.nodeType == 3
                 || node.nodeType == 4) ? "setTextNode" : "setAttribute";
@@ -518,7 +518,7 @@ apf.DataAction = function(){
      * @param  {String} [string] The new value of this element.
      * 
      */
-    this.change = function(value, force){ // @todo apf3.0 maybe not for multiselect?? - why is clearError handling not in setProperty for value
+    this.change = function(value, force){ // @todo ppc3.0 maybe not for multiselect?? - why is clearError handling not in setProperty for value
         // #ifdef __WITH_VALIDATION
         if (this.errBox && this.errBox.visible && this.isValid && this.isValid())
             this.clearError();
@@ -527,7 +527,7 @@ apf.DataAction = function(){
         // #ifdef __WITH_DATABINDING
         //Not databound
         if (!this.xmlRoot && !this.$createModel || !(this.$mainBind == "value"
-          && this.hasFeature(apf.__MULTISELECT__)
+          && this.hasFeature(ppc.__MULTISELECT__)
             ? this.$attrBindings["value"]
             : this.$hasBindRule(this.$mainBind))) {
         // #endif
@@ -608,6 +608,6 @@ apf.DataAction = function(){
     });
 };
 
-apf.config.$inheritProperties["create-model"] = 1;
+ppc.config.$inheritProperties["create-model"] = 1;
 
 //#endif

@@ -29,14 +29,14 @@
  * @param {String} [stylesheet] The name of the stylesheet to change.
  * @param {Object} [win]        A reference to a window
  */
-apf.setStyleRule = function(name, type, value, stylesheet, win){
+ppc.setStyleRule = function(name, type, value, stylesheet, win){
     name = name.toLowerCase();
     
     if (!stylesheet) {
         var sheets = (win || self).document.styleSheets;
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
-                var rules = sheets[j][apf.styleSheetRules];
+                var rules = sheets[j][ppc.styleSheetRules];
                 if (!rules) return false;
                 
                 for (var i = 0; i < rules.length; i++) {
@@ -53,7 +53,7 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
         if (!stylesheet)
             stylesheet = (win || self).document.styleSheets[0];
         
-        var rules = stylesheet[apf.styleSheetRules];
+        var rules = stylesheet[ppc.styleSheetRules];
         if (!rules) return false;
         
         for (var i = 0; i < rules.length; i++) {
@@ -74,14 +74,14 @@ apf.setStyleRule = function(name, type, value, stylesheet, win){
  * @param {String} [stylesheet] The name of the stylesheet to change.
  * @param {Object} [win]        A reference to a window
  */
-apf.getStyleRule = function(name, type, stylesheet, win){
+ppc.getStyleRule = function(name, type, stylesheet, win){
     name = name.toLowerCase();
     
     if (!stylesheet) {
         var sheets = (win || self).document.styleSheets;
         for (var j = sheets.length - 1; j >= 0; j--) {
             try {
-                var rules = sheets[j][apf.styleSheetRules];
+                var rules = sheets[j][ppc.styleSheetRules];
                 for (var i = 0; i < rules.length; i++) {
                     if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                         return rules.item(i).style[type];
@@ -92,7 +92,7 @@ apf.getStyleRule = function(name, type, stylesheet, win){
         }
     }
     else {
-        var rules = (win || self).document.styleSheets[stylesheet || 0][apf.styleSheetRules];
+        var rules = (win || self).document.styleSheets[stylesheet || 0][ppc.styleSheetRules];
         for (var i = 0; i < rules.length; i++) {
             if (rules.item(i).selectorText && rules.item(i).selectorText.toLowerCase() == name) {
                 return rules.item(i).style[type];
@@ -110,13 +110,13 @@ apf.getStyleRule = function(name, type, stylesheet, win){
  * @param {Array}       [exclusion]  A list of strings specifying names of CSS classes to remove.
  * @returns {HTMLElement} The modified `oHtml` element.
  */
-apf.setStyleClass = function(oHtml, className, exclusion, userAction){
+ppc.setStyleClass = function(oHtml, className, exclusion, userAction){
     if (!oHtml || userAction && this.disabled)
         return;
 
     //#ifdef __DEBUG
     if (oHtml.nodeFunc) {
-        throw new Error(apf.formatErrorString(0, this,
+        throw new Error(ppc.formatErrorString(0, this,
             "Setting style class",
             "Trying to set style class on aml node. Only xml or html nodes can \
              be passed to this function"));
@@ -149,12 +149,12 @@ apf.setStyleClass = function(oHtml, className, exclusion, userAction){
  * @param {Object} [doc]      The reference to the document where the CSS is applied on
  * @param {String} [media]    The media to which this CSS applies (_i.e._ `print` or `screen`)
  */
-apf.importCssString = function(cssString, doc, media){
+ppc.importCssString = function(cssString, doc, media){
     doc = doc || document;
     var htmlNode = doc.getElementsByTagName("head")[0];//doc.documentElement.getElementsByTagName("head")[0];
 
     //#ifdef __WITH_OPACITY_RUNTIME_FIX
-    if (!apf.supportOpacity) {
+    if (!ppc.supportOpacity) {
         cssString = cssString.replace(/opacity[ \s]*\:[ \s]*([\d\.]+)/g,
             function(m, m1){
                 return "filter:progid:DXImageTransform.Microsoft.Alpha(opacity=" + (m1*100) + ")";
@@ -162,7 +162,7 @@ apf.importCssString = function(cssString, doc, media){
     }
     //#endif
 
-    if (apf.canCreateStyleNode) {
+    if (ppc.canCreateStyleNode) {
         //var head  = document.getElementsByTagName("head")[0];
         var style = doc.createElement("style");
         style.appendChild(doc.createTextNode(cssString));
@@ -189,8 +189,8 @@ apf.importCssString = function(cssString, doc, media){
  * @param {String}      prop  The property to read
  * @returns {String} The retrieved value
  */
-apf.getStyleRecur = function(el, prop) {
-    var value = apf.hasComputedStyle
+ppc.getStyleRecur = function(el, prop) {
+    var value = ppc.hasComputedStyle
         ? document.defaultView.getComputedStyle(el,'').getPropertyValue(
             prop.replace(/([A-Z])/g, function(m, m1){
                 return "-" + m1.toLowerCase();
@@ -210,7 +210,7 @@ apf.getStyleRecur = function(el, prop) {
  * @method
  * @deprecated
  */    
-apf.importStylesheet = function (def, win, stylesheet) {
+ppc.importStylesheet = function (def, win, stylesheet) {
     if (!def.length)
         return;
     
@@ -226,13 +226,13 @@ apf.importStylesheet = function (def, win, stylesheet) {
     }
     
     if (!stylesheet)
-        stylesheet = apf.createStylesheet(win);
+        stylesheet = ppc.createStylesheet(win);
     
     for (var i = 0; i < def.length; i++) {
         if (!def[i][1])
             continue;
 
-        if (apf.isIE)
+        if (ppc.isIE)
             stylesheet.addRule(def[i][0], def[i][1]);
         else {
             var rule = def[i][0] + " {" + def[i][1] + "}";
@@ -252,7 +252,7 @@ apf.importStylesheet = function (def, win, stylesheet) {
  * @param {Object}  [win] A reference to a window
  * @returns {String} The created CSS stylesheet
  */ 
-apf.createStylesheet = function(win){
+ppc.createStylesheet = function(win){
     var doc = (win || window).document;
     
     if (doc.createStyleSheet)
@@ -272,7 +272,7 @@ apf.createStylesheet = function(win){
  * @param {Number}      y   The y-coordinate in pixels
  * @returns {Boolean} `true` if the coordinates are within the element.
  */
-apf.isInRect = function(oHtml, x, y){
+ppc.isInRect = function(oHtml, x, y){
     var pos = this.getAbsolutePosition(oHtml);
     if (x < pos[0] || y < pos[1] || x > oHtml.offsetWidth + pos[0] - 10
       || y > oHtml.offsetHeight + pos[1] - 10)
@@ -287,7 +287,7 @@ apf.isInRect = function(oHtml, x, y){
  * @param {HTMLElement} o  The element to check
  * @returns {HTMLElement} The parent element
  */
-apf.getOverflowParent = function(o){
+ppc.getOverflowParent = function(o){
     //not sure if this is the correct way. should be tested
 
     o = o.offsetParent;
@@ -304,7 +304,7 @@ apf.getOverflowParent = function(o){
  * @param {HTMLElement} o  The element to check
  * @returns {HTMLElement} The parent element
  */
-apf.getPositionedParent = function(o){
+ppc.getPositionedParent = function(o){
     o = o.offsetParent;
     while (o && o.tagName.toLowerCase() != "body"
       && "absolute|relative".indexOf(this.getStyle(o, "position")) == -1) {
@@ -321,13 +321,13 @@ apf.getPositionedParent = function(o){
  * @param {Boolean}     [inclSelf]  Whether to include the position of the element to check in the return value.
  * @returns {Array} The x- and y-coordinates of `oHtml`.
  */
-apf.getAbsolutePosition = function(o, refParent, inclSelf){
+ppc.getAbsolutePosition = function(o, refParent, inclSelf){
     if ("getBoundingClientRect" in document.documentElement) { 
-        if (apf.doesNotIncludeMarginInBodyOffset && o == document.body) {
+        if (ppc.doesNotIncludeMarginInBodyOffset && o == document.body) {
             return [
-                o.offsetLeft + (parseFloat(apf.getStyle(o, "marginLeft")) || 0),
+                o.offsetLeft + (parseFloat(ppc.getStyle(o, "marginLeft")) || 0),
                   + (o.scrollLeft || 0),
-                o.offsetTop  + (parseFloat(apf.getStyle(o, "marginTop")) || 0)
+                o.offsetTop  + (parseFloat(ppc.getStyle(o, "marginTop")) || 0)
                   + (o.scrollTop || 0)
             ];
         }
@@ -335,22 +335,22 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         var box  = o.getBoundingClientRect(), 
             top  = box.top,
             left = box.left,
-            corr = (apf.isIE && apf.isIE < 8);
+            corr = (ppc.isIE && ppc.isIE < 8);
 
         if (refParent && refParent != document.body) {
-            var pos = apf.getAbsolutePosition(refParent, null, true);
+            var pos = ppc.getAbsolutePosition(refParent, null, true);
             top -= pos[1];
             left -= pos[0];
         }
         
-        if (!(apf.isIE && o == document.documentElement)) {
+        if (!(ppc.isIE && o == document.documentElement)) {
             left += (refParent || document.body).scrollLeft || document.documentElement.scrollLeft || 0;
             top  += (refParent || document.body).scrollTop  || document.documentElement.scrollTop  || 0;
         }
         
         if (inclSelf && !refParent) {
-            left += parseInt(apf.getStyle(o, "borderLeftWidth")) || 0
-            top  += parseInt(apf.getStyle(o, "borderTopWidth")) || 0;
+            left += parseInt(ppc.getStyle(o, "borderLeftWidth")) || 0
+            top  += parseInt(ppc.getStyle(o, "borderTopWidth")) || 0;
         }
 
         return [left - (corr ? 2 : 0), top - (corr ? 2 : 0)];
@@ -360,32 +360,32 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
     var wt = inclSelf ? 0 : o.offsetLeft, ht = inclSelf ? 0 : o.offsetTop;
     o = inclSelf ? o : o.offsetParent || o.parentNode ;
 
-    if (apf.isIE8 && refParent) {
+    if (ppc.isIE8 && refParent) {
         bw = this.getStyle(o, "borderLeftWidth");
-        wt -= (apf.isIE && o.currentStyle.borderLeftStyle != "none" 
+        wt -= (ppc.isIE && o.currentStyle.borderLeftStyle != "none" 
           && bw == "medium" ? 2 : parseInt(bw) || 0);
         bh = this.getStyle(o, "borderTopWidth");
-        ht -= (apf.isIE && o.currentStyle.borderTopStyle != "none" 
+        ht -= (ppc.isIE && o.currentStyle.borderTopStyle != "none" 
           && bh == "medium" ? 2 : parseInt(bh) || 0);
     }
 
     var bw, bh, fl;
     while (o && o != refParent) {//&& o.tagName.toLowerCase() != "html"
         //Border - Left
-        bw = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, "borderLeftWidth");
+        bw = ppc.isOpera || ppc.isIE8 ? 0 : this.getStyle(o, "borderLeftWidth");
 
-        wt += (apf.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium"
+        wt += (ppc.isIE && o.currentStyle.borderLeftStyle != "none" && bw == "medium"
             ? 2
             : parseInt(bw) || 0) + o.offsetLeft;
 
-        if (apf.isIE && !apf.isIE8 && apf.getStyle(o, "styleFloat") == "none" 
-          && apf.getStyle(o, "position") == "relative") {
+        if (ppc.isIE && !ppc.isIE8 && ppc.getStyle(o, "styleFloat") == "none" 
+          && ppc.getStyle(o, "position") == "relative") {
             var q = o.previousSibling;
             while (q) {
                 if (q.nodeType == 1) {
-                    fl = apf.getStyle(q, "styleFloat");
+                    fl = ppc.getStyle(q, "styleFloat");
                     if (fl == "left") {
-                        wt -= parseInt(apf.getStyle(o, "marginLeft")) 
+                        wt -= parseInt(ppc.getStyle(o, "marginLeft")) 
                             || 0;//-1 * (o.parentNode.offsetWidth - o.offsetWidth)/2; //assuming auto
                         break;
                     }
@@ -397,13 +397,13 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
         }
 
         //Border - Top
-        bh = apf.isOpera || apf.isIE8 ? 0 : this.getStyle(o, "borderTopWidth");
-        ht += (apf.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium"
+        bh = ppc.isOpera || ppc.isIE8 ? 0 : this.getStyle(o, "borderTopWidth");
+        ht += (ppc.isIE && o.currentStyle.borderTopStyle != "none" && bh == "medium"
             ? 2
             : parseInt(bh) || 0) + o.offsetTop;
 
         //Scrolling
-        if (!apf.isGecko && o != refParent && (o.tagName != "HTML" || o.ownerDocument != document)) {
+        if (!ppc.isGecko && o != refParent && (o.tagName != "HTML" || o.ownerDocument != document)) {
             wt -= o.scrollLeft;
             ht -= o.scrollTop;
         }
@@ -420,7 +420,7 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
                 ht -= (o = o.previousSibling).offsetHeight + cp;
         }
 
-        if (apf.isIE && !o.offsetParent && o.parentNode.nodeType == 1) {
+        if (ppc.isIE && !o.offsetParent && o.parentNode.nodeType == 1) {
             wt -= o.parentNode.scrollLeft;
             ht -= o.parentNode.scrollTop;
         }
@@ -431,17 +431,17 @@ apf.getAbsolutePosition = function(o, refParent, inclSelf){
     return [wt, ht];
 };
 
-//@todo its much faster to move these to browser specific files and eliminate apf.getStyle()
+//@todo its much faster to move these to browser specific files and eliminate ppc.getStyle()
 /**
  * Returns the distance between the border left and border right values of an element.
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation, or 0, if there's no difference
- * @see apf.getWidthDiff
+ * @see ppc.getWidthDiff
  */
-apf.getHorBorders = function(oHtml){
+ppc.getHorBorders = function(oHtml){
     return Math.max(0,
-          (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
+          (parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
 /**
@@ -449,27 +449,27 @@ apf.getHorBorders = function(oHtml){
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation, or 0, if there's no difference
  */
-apf.getVerBorders = function(oHtml){
+ppc.getVerBorders = function(oHtml){
     return Math.max(0,
-          (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
+          (parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderBottomWidth")) || 0));
 };
 
 /**
  * Returns the distance between the border left and border right values of an element, taking padding into consideration.
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation, or 0, if there's no difference
- * @see apf.getHorBorders
+ * @see ppc.getHorBorders
  */
-apf.getWidthDiff = function(oHtml){
-    if (apf.hasFlexibleBox 
-      && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
+ppc.getWidthDiff = function(oHtml){
+    if (ppc.hasFlexibleBox 
+      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
         return 0;
     
-    return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
+    return Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingLeft")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "paddingRight")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
 /**
@@ -477,15 +477,15 @@ apf.getWidthDiff = function(oHtml){
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation, or 0, if there's no difference
  */
-apf.getHeightDiff = function(oHtml){
-    if (apf.hasFlexibleBox 
-      && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
+ppc.getHeightDiff = function(oHtml){
+    if (ppc.hasFlexibleBox 
+      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
         return 0;
     
-    return Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
+    return Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingTop")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "paddingBottom")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderBottomWidth")) || 0));
 };
 
 /**
@@ -494,19 +494,19 @@ apf.getHeightDiff = function(oHtml){
  * @param {HTMLElement} oHtml The element to check
  * @returns {[Number]} An array containing the differences
  */
-apf.getDiff = function(oHtml){
-    if (apf.hasFlexibleBox 
-      && apf.getStyle(oHtml, apf.CSSPREFIX + "BoxSizing") != "content-box")
+ppc.getDiff = function(oHtml){
+    if (ppc.hasFlexibleBox 
+      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
         return [0,0];
     
-    return [Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingLeft")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "paddingRight")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0)),
-        Math.max(0, (parseInt(apf.getStyle(oHtml, "paddingTop")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "paddingBottom")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0))];
+    return [Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingLeft")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "paddingRight")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderRightWidth")) || 0)),
+        Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingTop")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "paddingBottom")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "borderBottomWidth")) || 0))];
 };
 
 /**
@@ -515,11 +515,11 @@ apf.getDiff = function(oHtml){
  * @param {HTMLElement} oHtml The element to check
  * @returns {[Number]} An array containing the differences
  */
-apf.getMargin = function(oHtml) {
-    return [(parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "marginRight")) || 0),
-      (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
-        + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)]
+ppc.getMargin = function(oHtml) {
+    return [(parseInt(ppc.getStyle(oHtml, "marginLeft")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "marginRight")) || 0),
+      (parseInt(ppc.getStyle(oHtml, "marginTop")) || 0)
+        + (parseInt(ppc.getStyle(oHtml, "marginBottom")) || 0)]
 };
 
 /**
@@ -527,10 +527,10 @@ apf.getMargin = function(oHtml) {
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation
  */
-apf.getHtmlInnerWidth = function(oHtml){
+ppc.getHtmlInnerWidth = function(oHtml){
     return (oHtml.offsetWidth
-        - (parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0)
-        - (parseInt(apf.getStyle(oHtml, "borderRightWidth")) || 0));
+        - (parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0)
+        - (parseInt(ppc.getStyle(oHtml, "borderRightWidth")) || 0));
 };
 
 /**
@@ -538,10 +538,10 @@ apf.getHtmlInnerWidth = function(oHtml){
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation
  */
-apf.getHtmlInnerHeight = function(oHtml){
+ppc.getHtmlInnerHeight = function(oHtml){
     return (oHtml.offsetHeight
-        - (parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0)
-        - (parseInt(apf.getStyle(oHtml, "borderBottomWidth")) || 0));
+        - (parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0)
+        - (parseInt(ppc.getStyle(oHtml, "borderBottomWidth")) || 0));
 };
 
 /**
@@ -550,7 +550,7 @@ apf.getHtmlInnerHeight = function(oHtml){
  * @param  {WindowImplementation} [win] The window to take the measurements of.
  * @returns {Object}                    Viewport object with  x, y, w, and h properties.
  */
-apf.getViewPort = function(win) {
+ppc.getViewPort = function(win) {
     win = win || window;
     var doc = (!win.document.compatMode
       || win.document.compatMode == "CSS1Compat")

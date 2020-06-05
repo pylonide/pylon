@@ -20,7 +20,7 @@
  */
 // #ifdef __WITH_DRAW
 //#ifdef __ENABLE_DRAW_VML
-apf.draw.vml = {
+ppc.draw.vml = {
    //----------------------------------------------------------------------
     
     // initialization
@@ -29,8 +29,8 @@ apf.draw.vml = {
      
     initRoot : function(r){
         // Note to microsoft: !@#$&(@#*& you destroyed VML performance on purpose didnt you. Get people to go silverlight. 
-        if(!apf.isIE8){
-            apf.importCssString("v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
+        if(!ppc.isIE8){
+            ppc.importCssString("v\\:fill {behavior: url(#default#VML);display:inline-block} v\\:stroke {behavior: url(#default#VML);} v\\:shape {behavior: url(#default#VML);} v\\:path {behavior: url(#default#VML);}");
             r.$ext.innerHTML = "\
                 <div style='z-index:10000;position:absolute;left:0px;width:0px;\
                             background:url(images/spacer.gif);width:"+
@@ -159,7 +159,7 @@ apf.draw.vml = {
                 p.push("_styles[",i,"]={",
                        "_domnode:_n=l._vmlgroup.childNodes[",j,"]");
                 if(style.$stylelist){
-                    p.push(",",apf.draw.serializeStyleState(style))
+                    p.push(",",ppc.draw.serializeStyleState(style))
                 }
                 if(style.isshape){
                     s.push(this.$finalizeShape(style));
@@ -350,10 +350,10 @@ apf.draw.vml = {
                         s.push("_s._vmlstroke.color=",this.getColor(style.stroke),";");
                 }
                     
-                //@todo @rik please check this I changed getColor(stroke) to getColor(stroke.dataType == apf.ARRAY ? stroke[0] : stroke)
+                //@todo @rik please check this I changed getColor(stroke) to getColor(stroke.dataType == ppc.ARRAY ? stroke[0] : stroke)
                 child.push("<v:stroke opacity='",
                     weight<1?(opacity<weight?opacity:weight):opacity,
-                    "' weight='",weight,"' color=",this.getColor(stroke.dataType == apf.ARRAY ? stroke[0] : stroke),"/>");
+                    "' weight='",weight,"' color=",this.getColor(stroke.dataType == ppc.ARRAY ? stroke[0] : stroke),"/>");
             } else {
                 shape.push("stroke='f'"), path.push("strokeok='f'");
             }

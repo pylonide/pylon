@@ -24,10 +24,10 @@
  * Implementation of the W3C event object. An instance of this class is passed as
  * the first argument of any event handler. As per event, it contains different
  * properties giving context based information about the event.
- * @class apf.AmlEvent
+ * @class ppc.AmlEvent
  * @default_private
  */
-apf.AmlEvent = function(name, data){
+ppc.AmlEvent = function(name, data){
     this.name = name;
     
     var prop;
@@ -35,7 +35,7 @@ apf.AmlEvent = function(name, data){
         this[prop] = data[prop];
 };
 
-apf.AmlEvent.prototype = {
+ppc.AmlEvent.prototype = {
     // #ifdef __WITH_EVENT_BUBBLING
     bubbles : false,
     cancelBubble : false,

@@ -31,19 +31,19 @@
  *
  */
 
-apf.asyncCheck = 1;
-apf.asyncCheckError = 1;
-apf.asyncCheckIgnore = 0;
-apf.asyncCheckTimeout = 0;
+ppc.asyncCheck = 1;
+ppc.asyncCheckError = 1;
+ppc.asyncCheckIgnore = 0;
+ppc.asyncCheckTimeout = 0;
 
-apf.hookWrapAsync = function(inner){
+ppc.hookWrapAsync = function(inner){
     var outer = function() {
         try {
             if(outer._hooks){
                
                 var args = Array.prototype.slice.call(arguments)
                 
-                if(outer._posts || apf.asyncCheck){
+                if(outer._posts || ppc.asyncCheck){
                     var callback = args.splice(-1,1,function(err){
                         var results = null;
                         if(outer._posts){
@@ -51,8 +51,8 @@ apf.hookWrapAsync = function(inner){
                             for(var i = 0;i<outer._posts.length;i++)
                                  outer._posts[i].call(this,outer,inner,args,callback,results);
                         }
-                        if(apf.asyncCheck && err)
-                            apf.console.error("Caught asyncSafe error: "+err+"\n"+(new Error()).stack);
+                        if(ppc.asyncCheck && err)
+                            ppc.console.error("Caught asyncSafe error: "+err+"\n"+(new Error()).stack);
                             
                         callback.apply(this,results?results:arguments);
                     })[0];
@@ -63,22 +63,22 @@ apf.hookWrapAsync = function(inner){
                 }
                 return inner.apply(this, args);
             }
-            if(apf.asyncCheck){
-                if(apf.asyncCheckError){
+            if(ppc.asyncCheck){
+                if(ppc.asyncCheckError){
                     var args = Array.prototype.slice.call(arguments);
                     var oldcb = args.splice(-1,1,function(err){
                         if(err)
-                            apf.console.error("Caught hookAsync error: "+err+"\n"+(new Error()).stack);
+                            ppc.console.error("Caught hookAsync error: "+err+"\n"+(new Error()).stack);
                         oldcb.apply(this,arguments);
                     })[0];
                 }
-                if(apf.asyncCheckIgnore){
-                    var names = apf.getFunctionArgs(oldcb);
+                if(ppc.asyncCheckIgnore){
+                    var names = ppc.getFunctionArgs(oldcb);
                     if(names[0]!='err'){
-                         apf.console.error("Caught hookAsync error ignore in function \n"+oldcb.toString());
+                         ppc.console.error("Caught hookAsync error ignore in function \n"+oldcb.toString());
                     }
                 }
-                if(apf.asyncCheckTimeout){
+                if(ppc.asyncCheckTimeout){
                     // lets inject a timeout check
                     var args = Array.prototype.slice.call(arguments);
                     var timeout;
@@ -93,7 +93,7 @@ apf.hookWrapAsync = function(inner){
                         clearTimeout(timeout);
                         var cb = oldcb; oldcb = null;
                         if(cb){
-                            apf.console.log("Hook Timeout: " + outer._name + "(" + apf.hookArgDump(args, apf.getFunctionArgs(inner)) + ")" + inner.toString());
+                            ppc.console.log("Hook Timeout: " + outer._name + "(" + ppc.hookArgDump(args, ppc.getFunctionArgs(inner)) + ")" + inner.toString());
                             //cb.call(this,new Error("Timeout ocurred in hookAsync for callback"));
                         }
                     },3000);
@@ -102,7 +102,7 @@ apf.hookWrapAsync = function(inner){
             }
             return inner.apply(this, arguments);
         } catch (e) {
-            apf.console.error("Caught hookAsync exception: " + e.stack);
+            ppc.console.error("Caught hookAsync exception: " + e.stack);
 //			process.exit(0);
             arguments[arguments.length-1](e);
         }
@@ -111,7 +111,7 @@ apf.hookWrapAsync = function(inner){
     return outer;
 }
 
-apf.hookWrapSync = function(inner){
+ppc.hookWrapSync = function(inner){
     var outer = function() {
         if(outer._hooks){
         	
@@ -144,40 +144,40 @@ apf.hookWrapSync = function(inner){
     return outer;
 }
 
-apf.getFunctionArgs = function(func){
+ppc.getFunctionArgs = function(func){
     return func._argnames || (func._argnames= (func.toString().match(/\((.*?)\)/)[1] || "").split(/\s*,\s*/))
 }
 
-apf.hookWrap = function ( func, onlyasync ){
+ppc.hookWrap = function ( func, onlyasync ){
     if(func._outer) 
         return func._outer;
     var names;
     if(!func._inner){ // lets detect async or sync hooking
-        names = apf.getFunctionArgs(func);
+        names = ppc.getFunctionArgs(func);
         var last = names[names.length-1];
         if(last == 'callback' || last=='_isasync')
-            return apf.hookWrapAsync( func );
+            return ppc.hookWrapAsync( func );
         else if(!onlyasync)
-            return apf.hookWrapSync( func );
+            return ppc.hookWrapSync( func );
     }
     return func;
 }
 
-apf.hookPre = function ( func, forcesync, cb){
-    var hooked = func._inner?func:(forcesync?apf.hookWrapSync(func):apf.hookWrap(func));
+ppc.hookPre = function ( func, forcesync, cb){
+    var hooked = func._inner?func:(forcesync?ppc.hookWrapSync(func):ppc.hookWrap(func));
     (hooked._pres || (hooked._pres=[])).push(cb);
     hooked._hooks = 1;
     return hooked;
 }
 
-apf.hookPost = function ( func, forcesync, cb){
-    var hooked = func._inner?func:(forcesync?apf.hookWrapSync(func):apf.hookWrap(func));
+ppc.hookPost = function ( func, forcesync, cb){
+    var hooked = func._inner?func:(forcesync?ppc.hookWrapSync(func):ppc.hookWrap(func));
     (hooked._posts || (hooked._posts=[])).push(cb);
     hooked._hooks = 1;
     return hooked;
 }
 
-apf.hookUnwrap = function( func ){
+ppc.hookUnwrap = function( func ){
 
     if(func._inner){
         func._inner._outer = func;
@@ -186,7 +186,7 @@ apf.hookUnwrap = function( func ){
     return func;
 }
 
-apf.hookClear = function( func ){
+ppc.hookClear = function( func ){
     var f = func;
     if(f._outer)
         f = f._outer;
@@ -197,7 +197,7 @@ apf.hookClear = function( func ){
     return func;
 }
 
-apf.hookArgDump = function(data,names,opts){
+ppc.hookArgDump = function(data,names,opts){
     // lets dump some stuff
 	if(!opts) opts = {maxdepth:1};
     if (typeof(names) == 'number')
@@ -206,25 +206,25 @@ apf.hookArgDump = function(data,names,opts){
     if(names){
         var s = [];
         for(var i = 0;i<names.length;i++)
-             s.push(names[i]+" = "+apf.dump(data[i],opts));
+             s.push(names[i]+" = "+ppc.dump(data[i],opts));
         for(;i<data.length;i++)
-             s.push('ext'+(i-names.length)+" = "+apf.dump(data[i],opts));
+             s.push('ext'+(i-names.length)+" = "+ppc.dump(data[i],opts));
         return s.join(', ');
     }
-    return apf.dump(data,opts);
+    return ppc.dump(data,opts);
 }
 
-apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) {
+ppc.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) {
     // compile our livemarkup format
     var global = {};
     
-    var code = apf.lm.parseExpression(format);
+    var code = ppc.lm.parseExpression(format);
     // lets create the log function code
     function stack(){
         return new Error().stack;
     }
     
-    var dump = apf.hookArgDump;
+    var dump = ppc.hookArgDump;
     
     function where(equal){
         if(!equal) throw 0;
@@ -255,7 +255,7 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
    
     // lets put a log hook pre or post
     if( pre ) {// we are a pre log hook
-        return apf.hookPre( func, forcesync, function(outer, inner, args){
+        return ppc.hookPre( func, forcesync, function(outer, inner, args){
 
             arg2obj(inner, args, global, 'args');
             global._name = name;
@@ -275,7 +275,7 @@ apf.hookFormat = function(func, pre, format, name, module, forcesync, outputcb) 
             return args;
         });
     } else { // post log hook
-        return apf.hookPost( func, forcesync, function(outer, inner, args, callback, results){
+        return ppc.hookPost( func, forcesync, function(outer, inner, args, callback, results){
 
             arg2obj(inner, args, global, 'args');
             if(callback)

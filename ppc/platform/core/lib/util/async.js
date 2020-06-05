@@ -31,7 +31,7 @@
  * @param {Function} callback A function of the form `function(error)`, which is
  *      called after all items have been processed
  */
-apf.asyncForEach = function(list, async, callback) {
+ppc.asyncForEach = function(list, async, callback) {
     var i = 0;
     var len = list.length;
 
@@ -59,7 +59,7 @@ apf.asyncForEach = function(list, async, callback) {
  * @param {Function} callback  A function of the form `function(error)`, which is
  *                             called after all items have been processed
  */
-apf.asyncWhile = function(condition, async, callback) {
+ppc.asyncWhile = function(condition, async, callback) {
     var i = 0;
     async(i, function handler(err) {
         if (err)
@@ -87,7 +87,7 @@ apf.asyncWhile = function(condition, async, callback) {
  * @param {Function}  mapper A function of the form `function(item, next)`
  * @param {Function} callback A function of the form `function(error, result)`
  */
-apf.asyncMap = function(list, mapper, callback) {
+ppc.asyncMap = function(list, mapper, callback) {
     var i = 0;
     var len = list.length;
 
@@ -119,7 +119,7 @@ apf.asyncMap = function(list, mapper, callback) {
  * 
  * @param {Array} funcs An array of functions to chain together.
  */
-apf.asyncChain = function(funcs) {
+ppc.asyncChain = function(funcs) {
     var i = 0;
     var len = funcs.length;
     

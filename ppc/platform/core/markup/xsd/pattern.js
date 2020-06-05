@@ -23,8 +23,8 @@
 /**
  * Defines the exact sequence of characters that are acceptable
  */
-apf.XsdPattern = function(struct, tagName){
-    this.$init(tagName || "pattern", apf.NODE_HIDDEN, struct);
+ppc.XsdPattern = function(struct, tagName){
+    this.$init(tagName || "pattern", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -36,7 +36,7 @@ apf.XsdPattern = function(struct, tagName){
         stack.push("if (!/^" + this.value
             .replace(/(\/|\^|\$)/g, "\\$1") + "$/.test(value)) return false;")
     };
-}).call(apf.XsdPattern.prototype = new apf.XsdElement());
+}).call(ppc.XsdPattern.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("pattern", apf.XsdPattern);
+ppc.xsd.setElement("pattern", ppc.XsdPattern);
 //#endif

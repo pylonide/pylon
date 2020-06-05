@@ -19,7 +19,7 @@
  *
  */
 
-apf.__CACHE__ = 1 << 2;
+ppc.__CACHE__ = 1 << 2;
 
 // #ifdef __WITH_CACHE
 
@@ -29,13 +29,13 @@ apf.__CACHE__ = 1 << 2;
  * to overcome the waiting time while rendering the contents every time the
  * data is loaded.
  *
- * @class apf.Cache
+ * @class ppc.Cache
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.Cache = function(){
+ppc.Cache = function(){
     /* ********************************************************************
                                         PROPERTIES
     *********************************************************************/
@@ -43,7 +43,7 @@ apf.Cache = function(){
     this.$subTreeCacheContext = null;
 
     this.caching  = true;
-    this.$regbase = this.$regbase | apf.__CACHE__;
+    this.$regbase = this.$regbase | ppc.__CACHE__;
 
     /* ********************************************************************
                                         PUBLIC METHODS
@@ -56,8 +56,8 @@ apf.Cache = function(){
         // retrieve the cacheId
         if (!this.cacheId) {
             this.cacheId = this.$generateCacheId && this.$generateCacheId(e.xmlNode) 
-                || e.xmlNode.getAttribute(apf.xmldb.xmlIdTag) 
-                || apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(e.xmlNode), e.xmlNode);//e.xmlNode
+                || e.xmlNode.getAttribute(ppc.xmldb.xmlIdTag) 
+                || ppc.xmldb.nodeConnect(ppc.xmldb.getXmlDocId(e.xmlNode), e.xmlNode);//e.xmlNode
         }
 
         // Retrieve cached version of document if available
@@ -76,7 +76,7 @@ apf.Cache = function(){
                     this.select(nodes[0], null, null, null, true);
             }
             else if (this.clearSelection)
-                this.clearSelection(); //@todo apf3.0 was setProperty("selected", null
+                this.clearSelection(); //@todo ppc3.0 was setProperty("selected", null
 
             if (!nodes.length) {
                 // Remove message notifying user the control is without data
@@ -107,7 +107,7 @@ apf.Cache = function(){
             (but since I'm lazy it's not doing this right now)
             There might also be problems when removing the xmlroot
         */
-        if (this.hasFeature(apf.__MULTISELECT__)
+        if (this.hasFeature(ppc.__MULTISELECT__)
           && this.$subTreeCacheContext && this.$subTreeCacheContext.oHtml) {
             if (this.renderRoot) {
                 this.$subTreeCacheContext.parentNode.insertBefore(
@@ -138,8 +138,8 @@ apf.Cache = function(){
                 
                 if (this.cacheId || this.xmlRoot)
                     setCache.call(this, this.cacheId ||
-                        this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag) || "doc"
-                        + this.xmlRoot.getAttribute(apf.xmldb.xmlDocTag), fragment);
+                        this.xmlRoot.getAttribute(ppc.xmldb.xmlIdTag) || "doc"
+                        + this.xmlRoot.getAttribute(ppc.xmldb.xmlDocTag), fragment);
             }
         }
     });
@@ -160,9 +160,9 @@ apf.Cache = function(){
             a sub tree of an already rendered part
         */
         //#ifdef __WITH_MULTISELECT
-        if (xmlNode && this.hasFeature(apf.__MULTISELECT__) && this.$isTreeArch) {
+        if (xmlNode && this.hasFeature(ppc.__MULTISELECT__) && this.$isTreeArch) {
             var cacheItem,
-                htmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId,
+                htmlId = xmlNode.getAttribute(ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId,
                 node   = this.$pHtmlDoc.getElementById(htmlId);
             if (node) 
                 cacheItem = id ? false : this.$container; //@todo what is the purpose of this statement?
@@ -185,7 +185,7 @@ apf.Cache = function(){
                     get ambiguous, so we have to put it back later
                 */
                 var oHtml = this.$findHtmlNode(
-                    xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    xmlNode.getAttribute(ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
                 this.$subTreeCacheContext = {
                     oHtml      : oHtml,
                     parentNode : oHtml.parentNode,
@@ -193,7 +193,7 @@ apf.Cache = function(){
                     cacheItem  : cacheItem
                 };
 
-                this.documentId = apf.xmldb.getXmlDocId(xmlNode);
+                this.documentId = ppc.xmldb.getXmlDocId(xmlNode);
                 this.cacheId    = id;
                 this.xmlRoot    = xmlNode;
 
@@ -278,7 +278,7 @@ apf.Cache = function(){
         this.cache[id].xmlRoot    = null;
 
         if (remove)
-            apf.destroyHtmlNode(this.cache[id]);
+            ppc.destroyHtmlNode(this.cache[id]);
 
         this.cache[id] = null;
     };
@@ -332,7 +332,7 @@ apf.Cache = function(){
         this.$setCurrentFragment = function(fragment){
             this.$container.appendChild(fragment);
     
-            if (!apf.window.hasFocus(this) && this.blur)
+            if (!ppc.window.hasFocus(this) && this.blur)
                 this.blur();
         };
     }
@@ -349,11 +349,11 @@ apf.Cache = function(){
     });
 };
 
-apf.GuiElement.propHandlers["caching"] = function(value) {
-    if (!apf.isTrue(value)) return;
+ppc.GuiElement.propHandlers["caching"] = function(value) {
+    if (!ppc.isTrue(value)) return;
     
-    if (!this.hasFeature(apf.__CACHE__))
-        this.implement(apf.Cache);
+    if (!this.hasFeature(ppc.__CACHE__))
+        this.implement(ppc.Cache);
 };
 
 // #endif

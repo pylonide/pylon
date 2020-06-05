@@ -31,8 +31,8 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.html5 = new apf.AmlNamespace();
-apf.setNamespace("", apf.html5);
+ppc.html5 = new ppc.AmlNamespace();
+ppc.setNamespace("", ppc.html5);
 //#endif
 
 //#ifdef __WITH_HTML5
@@ -63,7 +63,7 @@ apf.setNamespace("", apf.html5);
 /**
  * @private
  */
-apf.HTML5INPUT = {
+ppc.HTML5INPUT = {
     "email"    : "textbox",
     "url"      : "textbox",
     "password" : "textbox",
@@ -85,7 +85,7 @@ apf.HTML5INPUT = {
 /* way to implement this:
 var o = (new function(){
 })
-o.constructor.prototype = new apf.list();
+o.constructor.prototype = new ppc.list();
 
 */
 
@@ -93,7 +93,7 @@ o.constructor.prototype = new apf.list();
 
 /* #-ifdef __WITH_HTML5
 if (tagName == "input") {
-    objName = apf.HTML5INPUT[objName = x.getAttribute("type")]
+    objName = ppc.HTML5INPUT[objName = x.getAttribute("type")]
         || objName || "textbox";
 }
 //#-endif*/

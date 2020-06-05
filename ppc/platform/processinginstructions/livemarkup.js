@@ -28,7 +28,7 @@
  * @since       0.9
  */
 
-apf.LiveMarkupPi = function(){
+ppc.LiveMarkupPi = function(){
     //this.$data;
     this.$init();
 };
@@ -37,12 +37,12 @@ apf.LiveMarkupPi = function(){
     @todo optimize the pi, possible with this code:
     var div, doc = this.ownerDocument, domParser = doc.$domParser, 
         docFrag = doc.createDocumentFragment(),
-        sStart  = "<a:application xmlns:a='" + apf.ns.aml + "'>",
+        sStart  = "<a:application xmlns:a='" + ppc.ns.aml + "'>",
         sEnd    = "</a:application>";
     
     docFrag.$int = div;
     
-    domParser.parseFromXml(apf.getXml(sStart + this.$bindingQueue[i] + sEnd), { //@todo might be optimized by doing it only once
+    domParser.parseFromXml(ppc.getXml(sStart + this.$bindingQueue[i] + sEnd), { //@todo might be optimized by doing it only once
         doc        : doc,
         amlNode    : docFrag,
         beforeNode : null,
@@ -52,14 +52,14 @@ apf.LiveMarkupPi = function(){
 (function(){
     this.mainBind = "data";
     
-    this.implement(apf.StandardBinding);
+    this.implement(ppc.StandardBinding);
 
     this.getDocument = function(){
         return this.$data && this.$data.ownerDocument;
     };
     
     this.clear = function(msg){
-        if (msg == "loading" && apf.getInheritedAttribute(this, "loading-message")) {
+        if (msg == "loading" && ppc.getInheritedAttribute(this, "loading-message")) {
             this.$propHandlers["calcdata"].call(this, "<span class='loading'>Loading...</span>");
             this.calcdata = "";
         }
@@ -72,13 +72,13 @@ apf.LiveMarkupPi = function(){
         if (this.$data) {
             // #ifdef __WITH_XMLDIFF
             if (this.$useXmlDiff) {
-                var newXml = apf.getXml("<a:application xmlns:a='" 
-                    + apf.ns.apf + "'>" + apf.escapeXML(data) + "</a:application>", 
+                var newXml = ppc.getXml("<a:application xmlns:a='" 
+                    + ppc.ns.ppc + "'>" + ppc.escapeXML(data) + "</a:application>", 
                   null, 
-                  this.ownerDocument.$domParser.preserveWhiteSpace); //@todo apf3.0 slow, rethink escapeXML
+                  this.ownerDocument.$domParser.preserveWhiteSpace); //@todo ppc3.0 slow, rethink escapeXML
                   
                 var oldXml = this.$data;
-                apf.xmlDiff(oldXml, newXml);
+                ppc.xmlDiff(oldXml, newXml);
                 
                 return;
             }
@@ -98,14 +98,14 @@ apf.LiveMarkupPi = function(){
             this.$ext.innerHTML = "";//data;
 
             var doc = this.ownerDocument.$domParser.parseFromString("<a:application xmlns:a='" 
-              + apf.ns.apf + "'>" + data + "</a:application>", "text/xml", {
+              + ppc.ns.ppc + "'>" + data + "</a:application>", "text/xml", {
                 htmlNode : this.$ext,
                 host     : this
                 //nodelay  : true
             })
             this.$data = doc.documentElement;
             
-            //apf.queue.empty();
+            //ppc.queue.empty();
             
             //alert(new Date().getTime() - dt);
         }
@@ -119,10 +119,10 @@ apf.LiveMarkupPi = function(){
                 this.$ext.innerHTML = data || "";
         }
     };
-}).call(apf.LiveMarkupPi.prototype = new apf.AmlProcessingInstruction(true));
+}).call(ppc.LiveMarkupPi.prototype = new ppc.AmlProcessingInstruction(true));
 
-apf.aml.setProcessingInstruction("lm", apf.LiveMarkupPi);
-apf.aml.setProcessingInstruction("lm-debug", apf.LiveMarkupPi);
-apf.aml.setProcessingInstruction("livemarkup", apf.LiveMarkupPi);
+ppc.aml.setProcessingInstruction("lm", ppc.LiveMarkupPi);
+ppc.aml.setProcessingInstruction("lm-debug", ppc.LiveMarkupPi);
+ppc.aml.setProcessingInstruction("livemarkup", ppc.LiveMarkupPi);
 
 // #endif

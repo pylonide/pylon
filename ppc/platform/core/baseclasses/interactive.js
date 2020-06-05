@@ -19,7 +19,7 @@
  *
  */
 
-apf.__INTERACTIVE__ = 1 << 21;
+ppc.__INTERACTIVE__ = 1 << 21;
 
 //#ifdef __WITH_INTERACTIVE
 
@@ -33,16 +33,16 @@ apf.__INTERACTIVE__ = 1 << 21;
  *  <a:textarea draggable="true" resizable="true" />
  * ```
  * 
- * @class apf.Interactive
+ * @class ppc.Interactive
  * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       1.0
  *
- * @see apf.appsettings.outline
- * @see apf.appsettings.resize-outline
- * @see apf.appsettings.drag-outline
+ * @see ppc.appsettings.outline
+ * @see ppc.appsettings.resize-outline
+ * @see ppc.appsettings.drag-outline
  */
 /**
  * @attribute {Boolean} draggable Sets or gets whether an element is draggable. The user will
@@ -106,13 +106,13 @@ apf.__INTERACTIVE__ = 1 << 21;
  * @event resize        Fires when the widget has been resized.
  *
  */
-apf.Interactive = function(){
+ppc.Interactive = function(){
     var nX, nY, rX, rY, startPos, lastCursor = null, l, t, r, b, lMax, tMax, lMin,
         tMin, w, h, we, no, ea, so, rszborder, rszcorner, marginBox,
         verdiff, hordiff, _self = this, posAbs, oX, oY, overThreshold,
         dragOutline, resizeOutline, myPos, startGeo;
 
-    this.$regbase = this.$regbase | apf.__INTERACTIVE__;
+    this.$regbase = this.$regbase | ppc.__INTERACTIVE__;
 
     this.$dragStart = function(e, reparent){
         var nativeEvent = e || event;
@@ -128,11 +128,11 @@ apf.Interactive = function(){
                 ctrlKey: event.ctrlKey
             };
             var o = nativeEvent.srcElement || this;
-            apf.addEventListener("mousedown", f = function(){
+            ppc.addEventListener("mousedown", f = function(){
                 dragStart.call(o, ev, reparent);
-                apf.removeEventListener("mousedown", f);
+                ppc.removeEventListener("mousedown", f);
             });
-            apf.cancelBubble(nativeEvent, nativeEvent.srcElement || this);
+            ppc.cancelBubble(nativeEvent, nativeEvent.srcElement || this);
         } 
         else
         // #endif
@@ -142,16 +142,16 @@ apf.Interactive = function(){
     }
 
     this.$propHandlers["draggable"] = function(value){
-        if (apf.isFalse(value))
+        if (ppc.isFalse(value))
             this.draggable = value = false;
-        else if (apf.isTrue(value))
+        else if (ppc.isTrue(value))
             this.draggable = value = true;
 
         var o = this.editable ? this.$ext : this.oDrag || this.$ext;
         if (value)
-            apf.addListener(o, "mousedown", this.$dragStart);
+            ppc.addListener(o, "mousedown", this.$dragStart);
         else
-            apf.removeListener(o, "mousedown", this.$dragStart);
+            ppc.removeListener(o, "mousedown", this.$dragStart);
         
         //deprecated??
         if (o.interactive & 1) 
@@ -162,9 +162,9 @@ apf.Interactive = function(){
     };
 
     this.$propHandlers["resizable"] = function(value){
-        if (apf.isFalse(value))
+        if (ppc.isFalse(value))
             this.resizable = false;
-        else if (apf.isTrue(value))
+        else if (ppc.isTrue(value))
             this.resizable = "true";
         
         this.$ext.style.cursor = "";
@@ -174,11 +174,11 @@ apf.Interactive = function(){
             return;
 
         if (!_self.editable) {        
-            apf.addListener(o, "mousedown", function(){
+            ppc.addListener(o, "mousedown", function(){
                 resizeStart.apply(o, arguments);
             });
     
-            apf.addListener(o, "mousemove", function(){
+            ppc.addListener(o, "mousemove", function(){
                 resizeIndicate.apply(o, arguments);
             });
         }
@@ -189,7 +189,7 @@ apf.Interactive = function(){
         
         rszborder = this.$getOption && parseInt(this.$getOption("Main", "resize-border")) || 3;
         rszcorner = this.$getOption && parseInt(this.$getOption("Main", "resize-corner")) || 12;
-        marginBox = apf.getBox(apf.getStyle(this.$ext, "borderWidth"));
+        marginBox = ppc.getBox(ppc.getStyle(this.$ext, "borderWidth"));
     };
     
     /*
@@ -212,11 +212,11 @@ apf.Interactive = function(){
     function dragStart(e, reparent){
         if (!e) e = event;
 
-        if (!reparent && (!_self.draggable || apf.dragMode))//_self.editable || 
+        if (!reparent && (!_self.draggable || ppc.dragMode))//_self.editable || 
             return;
         
         //#ifdef __WITH_OUTLINE
-        dragOutline = _self.dragOutline == true || apf.config.dragOutline;
+        dragOutline = _self.dragOutline == true || ppc.config.dragOutline;
         /*#else
         dragOutline = false;        
         #endif */
@@ -224,7 +224,7 @@ apf.Interactive = function(){
         if (_self.dispatchEvent("beforedragstart", {htmlEvent: e}) === false)
             return;
         
-        apf.dragMode  = true;
+        ppc.dragMode  = true;
         if (reparent) {
             _self.dispatchEvent("beforedrag")
             overThreshold = true;
@@ -233,10 +233,10 @@ apf.Interactive = function(){
             overThreshold = false;
         
         //#ifdef __WITH_POPUP
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
         //#endif
         
-        posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.$ext, "position")) > -1;
+        posAbs = "absolute|fixed".indexOf(ppc.getStyle(_self.$ext, "position")) > -1;
         if (!posAbs) {
             _self.$ext.style.position = posAbs //(posAbs = _self.dragSelection) 
                 ? "absolute" : "relative";
@@ -247,7 +247,7 @@ apf.Interactive = function(){
         //@todo not for docking
         //#ifdef __WITH_PLANE
         if (posAbs && !_self.aData) {
-            apf.plane.show(dragOutline
+            ppc.plane.show(dragOutline
                 ? oOutline
                 : _self.$ext, e.reappend);//, true
         }
@@ -257,9 +257,9 @@ apf.Interactive = function(){
             ? oOutline 
             : _self.$ext;
         var pos = posAbs
-            ? apf.getAbsolutePosition(ext, ext.offsetParent, true) 
-            : [parseInt(apf.getStyle(ext, "left")) || 0, 
-               parseInt(apf.getStyle(ext, "top")) || 0];
+            ? ppc.getAbsolutePosition(ext, ext.offsetParent, true) 
+            : [parseInt(ppc.getStyle(ext, "left")) || 0, 
+               parseInt(ppc.getStyle(ext, "top")) || 0];
 
         //#ifdef __ENABLE_INTERACTIVE_CANCEL
         startGeo = [ext.style.left, ext.style.top, ext.style.right, 
@@ -269,7 +269,7 @@ apf.Interactive = function(){
         nX = pos[0] - (oX = e.clientX);
         nY = pos[1] - (oY = e.clientY);
         
-        //if (_self.hasFeature && _self.hasFeature(apf.__ANCHORING__))
+        //if (_self.hasFeature && _self.hasFeature(ppc.__ANCHORING__))
             //_self.$disableAnchoring();
 
         if (!(reparent || (oOutline && oOutline.self))) {
@@ -277,7 +277,7 @@ apf.Interactive = function(){
             if (posAbs && dragOutline) {
                 oOutline.className     = "drag";
                 
-                var diffOutline = apf.getDiff(oOutline);
+                var diffOutline = ppc.getDiff(oOutline);
                 _self.$ext.offsetParent.appendChild(oOutline);
                 oOutline.style.left    = pos[0] + "px";
                 oOutline.style.top     = pos[1] + "px";
@@ -307,7 +307,7 @@ apf.Interactive = function(){
 
             //#ifdef __WITH_PLANE
             if (posAbs && !_self.aData)
-                apf.plane.hide();
+                ppc.plane.hide();
             //#endif
             
             var htmlNode = dragOutline
@@ -349,12 +349,12 @@ apf.Interactive = function(){
                 _self.$ext.style.position = "relative";
             
             if (_self.showdragging)
-                apf.setStyleClass(_self.$ext, "", ["dragging"]);
+                ppc.setStyleClass(_self.$ext, "", ["dragging"]);
             
             if (posAbs && dragOutline && !oOutline.self) //little dirty hack to detect outline set by visualselect
                 oOutline.style.display = "none";
             
-            apf.dragMode = false;
+            ppc.dragMode = false;
 
             if (!cancel && _self.dispatchEvent && overThreshold)
                 _self.dispatchEvent("afterdrag", {
@@ -365,8 +365,8 @@ apf.Interactive = function(){
         
         if (reparent)
             document.onmousemove(e);
-        //else if (apf.isIE)
-            //apf.window.$mousedown(e);
+        //else if (ppc.isIE)
+            //ppc.window.$mousedown(e);
 
         return false;
     };
@@ -378,7 +378,7 @@ apf.Interactive = function(){
             //overThreshold = true;
         
         if (!overThreshold && _self.showdragging)
-            apf.setStyleClass(_self.$ext, "dragging");
+            ppc.setStyleClass(_self.$ext, "dragging");
         
         // usability rule: start dragging ONLY when mouse pointer has moved delta x pixels
         var dx = e.clientX - oX,
@@ -432,23 +432,23 @@ apf.Interactive = function(){
             return;
 
         //#ifdef __WITH_OUTLINE
-        resizeOutline = !(_self.resizeOutline == false || !apf.config.resizeOutline);
+        resizeOutline = !(_self.resizeOutline == false || !ppc.config.resizeOutline);
         /*#else
         resizeOutline = false;        
         #endif */
         
         var ext = _self.$ext;
         if (!resizeOutline) {
-            var diff = apf.getDiff(ext);
+            var diff = ppc.getDiff(ext);
             hordiff  = diff[0];
             verdiff  = diff[1];
         }
         
         //@todo This is probably not gen purpose
-        startPos = apf.getAbsolutePosition(ext);//, ext.offsetParent);
+        startPos = ppc.getAbsolutePosition(ext);//, ext.offsetParent);
         startPos.push(ext.offsetWidth);
         startPos.push(ext.offsetHeight);
-        myPos    = apf.getAbsolutePosition(ext, ext.offsetParent, true);
+        myPos    = ppc.getAbsolutePosition(ext, ext.offsetParent, true);
 
         //#ifdef __ENABLE_INTERACTIVE_CANCEL
         startGeo = [ext.style.left, ext.style.top, ext.style.right, 
@@ -462,7 +462,7 @@ apf.Interactive = function(){
             resizeType;
 
         if (options && options.resizeType) {
-            posAbs = "absolute|fixed".indexOf(apf.getStyle(ext, "position")) > -1;
+            posAbs = "absolute|fixed".indexOf(ppc.getStyle(ext, "position")) > -1;
             resizeType = options.resizeType;
         }
         else {
@@ -480,19 +480,19 @@ apf.Interactive = function(){
                 resizeType = type;
             }
           }) === false) {
-            //if (apf.isIE)
-                //apf.window.$mousedown(e); //@todo is this necessary?
+            //if (ppc.isIE)
+                //ppc.window.$mousedown(e); //@todo is this necessary?
             return;
         }
         
         //#ifdef __WITH_POPUP
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
         //#endif
 
-        //if (_self.hasFeature && _self.hasFeature(apf.__ANCHORING__))
+        //if (_self.hasFeature && _self.hasFeature(ppc.__ANCHORING__))
             //_self.$disableAnchoring();
         
-        apf.dragMode  = true;
+        ppc.dragMode  = true;
         overThreshold = false;
 
         we = resizeType.indexOf("w") > -1;
@@ -514,7 +514,7 @@ apf.Interactive = function(){
 
         //#ifdef __WITH_PLANE
         if (posAbs) {
-            apf.plane.show(resizeOutline
+            ppc.plane.show(resizeOutline
                 ? oOutline
                 : ext);//, true
         }
@@ -525,7 +525,7 @@ apf.Interactive = function(){
         //#ifdef __WITH_OUTLINE
         if (resizeOutline) {
             oOutline.className     = "resize";
-            var diffOutline = apf.getDiff(oOutline);
+            var diffOutline = ppc.getDiff(oOutline);
             hordiff = diffOutline[0];
             verdiff = diffOutline[1];
             
@@ -553,7 +553,7 @@ apf.Interactive = function(){
         
         if (!options || !options.nocursor) {
             if (lastCursor === null)
-                lastCursor = document.body.style.cursor;//apf.getStyle(document.body, "cursor");
+                lastCursor = document.body.style.cursor;//ppc.getStyle(document.body, "cursor");
             document.body.style.cursor = getCssCursor(resizeType) + "-resize";
         }
         
@@ -563,13 +563,13 @@ apf.Interactive = function(){
             
             //#ifdef __WITH_PLANE
             if (posAbs)
-                apf.plane.hide();
+                ppc.plane.hide();
             //#endif
             
             clearTimeout(timer);
             
             if (resizeOutline) {
-                var diff = apf.getDiff(_self.$ext);
+                var diff = ppc.getDiff(_self.$ext);
                 hordiff  = diff[0];
                 verdiff  = diff[1];
             }
@@ -600,7 +600,7 @@ apf.Interactive = function(){
             if (resizeOutline)
                 oOutline.style.display = "none";
             
-            apf.dragMode = false;
+            ppc.dragMode = false;
 
             if (!cancel && _self.dispatchEvent)
                 _self.dispatchEvent("afterresize", {
@@ -610,8 +610,8 @@ apf.Interactive = function(){
             l = t = w = h = null;
         };
         
-        //if (apf.isIE)
-            //apf.window.$mousedown(e);
+        //if (ppc.isIE)
+            //ppc.window.$mousedown(e);
 
         return false;
     }
@@ -634,10 +634,10 @@ apf.Interactive = function(){
                 : _self.$ext;
 
             if (hasRight && !(right || right === 0))
-                right = apf.getHtmlRight(htmlNode);
+                right = ppc.getHtmlRight(htmlNode);
 
             if (hasBottom && !(bottom || bottom === 0))
-                bottom = apf.getHtmlBottom(htmlNode);
+                bottom = ppc.getHtmlBottom(htmlNode);
 
             if (hasRight) {
                 _self.setProperty("right", right, 0, _self.editable);
@@ -682,7 +682,7 @@ apf.Interactive = function(){
         
         clearTimeout(timer);
         if (lastTime && new Date().getTime() 
-          - lastTime < (resizeOutline ? 6 : apf.mouseEventBuffer)) {
+          - lastTime < (resizeOutline ? 6 : ppc.mouseEventBuffer)) {
             var z = {
                 clientX: e.clientX,
                 clientY: e.clientY
@@ -741,17 +741,17 @@ apf.Interactive = function(){
                     e.clientY - startPos[1] + (startPos[3] - rY) + sTop)
                     - verdiff)) + "px";
 
-        //@todo apf3.0 this is execution wise inefficient
+        //@todo ppc3.0 this is execution wise inefficient
         if (_self.parentNode && _self.parentNode.localName == "table") {
             updateProperties();
-            apf.layout.processQueue();
+            ppc.layout.processQueue();
         }
         
         if (_self.realtime) {
             var change = _self.$stick = {};
             
             //@todo calc l and t once at start of resize (subtract borders)
-            _self.$showResize(l || apf.getHtmlLeft(oHtml), t || apf.getHtmlTop(oHtml), 
+            _self.$showResize(l || ppc.getHtmlLeft(oHtml), t || ppc.getHtmlTop(oHtml), 
                 w && w + hordiff || oHtml.offsetWidth, 
                 h && h + verdiff || oHtml.offsetHeight, e, change, we, no, ea, so);
 
@@ -772,15 +772,15 @@ apf.Interactive = function(){
         }
 
         //#ifdef __WITH_LAYOUT
-        if (apf.hasSingleRszEvent)
-            apf.layout.forceResize(_self.$int);
+        if (ppc.hasSingleRszEvent)
+            ppc.layout.forceResize(_self.$int);
         //#endif
     }
     
     function getResizeType(x, y){
         var cursor  = "", 
             tcursor = "";
-        posAbs = "absolute|fixed".indexOf(apf.getStyle(_self.$ext, "position")) > -1;
+        posAbs = "absolute|fixed".indexOf(ppc.getStyle(_self.$ext, "position")) > -1;
         if (_self.resizable == "true" || _self.resizable == "vertical" || _self.resizable.indexOf('top') > -1 || _self.resizable.indexOf('bottom') > -1) {
             if (y < rszborder + marginBox[0] && _self.resizable.indexOf('bottom') == -1)
                 cursor = posAbs ? "n" : "";
@@ -806,14 +806,14 @@ apf.Interactive = function(){
             return;
 
         //@todo This is probably not gen purpose
-        var pos   = apf.getAbsolutePosition(_self.$ext),//, _self.$ext.offsetParent
+        var pos   = ppc.getAbsolutePosition(_self.$ext),//, _self.$ext.offsetParent
             sLeft = 0,
             sTop  = 0,
             x     = e.clientX - pos[0] + sLeft + document.documentElement.scrollLeft,
             y     = e.clientY - pos[1] + sTop + document.documentElement.scrollTop;
         
         if (!originalCursor)
-            originalCursor = apf.getStyle(this, "cursor");
+            originalCursor = ppc.getStyle(this, "cursor");
 
         var cursor = getResizeType.call(_self.$ext, x, y);
         
@@ -824,7 +824,7 @@ apf.Interactive = function(){
     
     function getCssCursor(cursor){
         var cssCursor = cursor;
-        if (apf.isWebkit) {
+        if (ppc.isWebkit) {
             if (cursor == "se" || cursor == "nw")
                 cssCursor = "nwse";
             else if (cursor == "sw" || cursor == "ne")
@@ -842,23 +842,23 @@ apf.Interactive = function(){
     //#ifdef __WITH_OUTLINE
     function initOutline(e){
         var doc = this.$pHtmlDoc || document;
-        oOutline = doc.getElementById("apf_outline");
+        oOutline = doc.getElementById("ppc_outline");
         if (!oOutline) {
             oOutline = doc.body.appendChild(doc.createElement("div"));
             
             oOutline.refCount = 0;
-            oOutline.setAttribute("id", "apf_outline");
+            oOutline.setAttribute("id", "ppc_outline");
             
             oOutline.style.position = "absolute";
             oOutline.style.display  = "none";
             //oOutline.style.zIndex   = 2000000;
-            apf.window.zManager.set("drag", oOutline);
+            ppc.window.zManager.set("drag", oOutline);
             oOutline.host = false;
         }
         oOutline.refCount++
     }
     
-    if (this.addEventListener && this.hasFeature(apf.__AMLNODE__) && !this.$amlLoaded) {
+    if (this.addEventListener && this.hasFeature(ppc.__AMLNODE__) && !this.$amlLoaded) {
         if (document.body)
             initOutline.call(this);
         else
@@ -883,16 +883,16 @@ apf.Interactive = function(){
     });*/
 };
 
-apf.GuiElement.propHandlers["resizable"] = function(value){
-    this.implement(apf.Interactive);
+ppc.GuiElement.propHandlers["resizable"] = function(value){
+    this.implement(ppc.Interactive);
     this.$propHandlers["resizable"].apply(this, arguments);
 }
 
-apf.GuiElement.propHandlers["draggable"] = function(value){
-    this.implement(apf.Interactive);
+ppc.GuiElement.propHandlers["draggable"] = function(value){
+    this.implement(ppc.Interactive);
     this.$propHandlers["draggable"].apply(this, arguments);
 };
 
-apf.Init.run("interactive");
+ppc.Init.run("interactive");
 
 // #endif

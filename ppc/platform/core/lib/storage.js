@@ -22,10 +22,10 @@
 // #ifdef __WITH_STORAGE
 /**
  * Stores JavaScript structures based on a name and a namespace. This object
- * is used by {@link apf.offline APF offline support} as well as the 
- * {@link apf.registry registry} and the {@link apf.http HTTP object} for 
+ * is used by {@link ppc.offline PPC offline support} as well as the 
+ * {@link ppc.registry registry} and the {@link ppc.http HTTP object} for 
  * caching. All but the memory storage provider, provide persistent storage. 
- * This means the data is kept between browser sessions. This allows APF to
+ * This means the data is kept between browser sessions. This allows PPC to
  * have inter-session communication. For instance offline support uses it to
  * store data that could not be send to the server. When the application does 
  * go online (and this could be several sessions later), the data is send to the
@@ -38,10 +38,10 @@
  * browser containers that provide solutions for this. Among them are google 
  * gears and adobe's flash. Storage providers for these and others are available.
  *
- * @class apf.storage
+ * @class ppc.storage
  * @default_private
  */
-apf.storage = {
+ppc.storage = {
     modules : {},
 
     /**
@@ -62,11 +62,11 @@ apf.storage = {
         var provider = this.getProvider(name);
 
         //Install the provider
-        apf.storage = apf.extend(this, provider);
-        apf.storage.init = null;
+        ppc.storage = ppc.extend(this, provider);
+        ppc.storage.init = null;
         
         //#ifdef __DEBUG
-        apf.console.info("Installed storage provider '" + name + "'");
+        ppc.console.info("Installed storage provider '" + name + "'");
         //#endif
         
         return provider;
@@ -86,11 +86,11 @@ apf.storage = {
      *   html5      data is stored in a local storage object specified by the WHATWG html5 standard.
      */
     getProvider : function(name){
-        var provider = apf.storage.modules[name];
+        var provider = ppc.storage.modules[name];
 
         if(!provider || typeof provider != "object") {
             //#ifdef __DEBUG
-            apf.console.warn("Could not find storage provider '" + name + "'");
+            ppc.console.warn("Could not find storage provider '" + name + "'");
             //#endif
             
             return false;
@@ -98,7 +98,7 @@ apf.storage = {
         
         if (!provider.isAvailable()) {
             //#ifdef __DEBUG
-            apf.console.warn(
+            ppc.console.warn(
                 "Storage provider '" + name + "' is not available");
             //#endif
             
@@ -108,7 +108,7 @@ apf.storage = {
         if(!provider.initialized 
           && (!provider.init || provider.init() === false)) {
             //#ifdef __DEBUG
-            apf.console.warn(
+            ppc.console.warn(
                 "Could not install storage provider '" + name + "");
             //#endif
             
@@ -116,7 +116,7 @@ apf.storage = {
         }
         
         provider.name = name;
-        apf.extend(provider, this.base);
+        ppc.extend(provider, this.base);
 
         return provider;
     },

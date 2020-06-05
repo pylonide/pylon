@@ -40,8 +40,8 @@
     </xs:restriction>
   </xs:simpleType>
 */
-apf.XsdUnion = function(struct, tagName){
-    this.$init(tagName || "union", apf.NODE_HIDDEN, struct);
+ppc.XsdUnion = function(struct, tagName){
+    this.$init(tagName || "union", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -54,14 +54,14 @@ apf.XsdUnion = function(struct, tagName){
         var i, l, node,
             nodes = this.childNodes;
         for (i = 0, l = this.$memberTypes.length; i < l; i++) {
-            stack.push("if (apf.xsd.checkType('"
+            stack.push("if (ppc.xsd.checkType('"
               + this.$memberTypes[i] + "', value)) return true;");
         }
 
         for (i = 0, l = nodes.length; i < l; i++)
             (node = nodes[i]).$compile && node.$compile(stack);
     }
-}).call(apf.XsdUnion.prototype = new apf.XsdElement());
+}).call(ppc.XsdUnion.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("union", apf.XsdUnion);
+ppc.xsd.setElement("union", ppc.XsdUnion);
 //#endif

@@ -2,13 +2,13 @@
 /**
  * @private
  */
-apf.initGears = function(){
+ppc.initGears = function(){
     // summary:
     //		factory method to get a Google Gears plugin instance to
     //		expose in the browser runtime environment, if present
     var factory, results;
     //#ifdef __WITH_NAMESERVER
-    var gearsObj = apf.nameserver.get("google", "gears");
+    var gearsObj = ppc.nameserver.get("google", "gears");
     if(gearsObj)
         return gearsObj; // already defined elsewhere
 
@@ -16,7 +16,7 @@ apf.initGears = function(){
         factory = new GearsFactory();
     }
     else {
-        if(apf.isIE){
+        if(ppc.isIE){
             // IE
             try {
                 factory = new ActiveXObject("Gears.Factory");
@@ -40,7 +40,7 @@ apf.initGears = function(){
     if (!factory)
         return null;
 
-    return apf.nameserver.register("google", "gears", factory);
+    return ppc.nameserver.register("google", "gears", factory);
     //#endif
 };
 //#endif

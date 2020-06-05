@@ -21,7 +21,7 @@ function SeleniumPlayer(browser){
     
     function findElement(element, contexts, stack, extra) {
         var elName;
-        var obj = extra ? apf.extend({}, element, extra) : element;
+        var obj = extra ? ppc.extend({}, element, extra) : element;
         var serialized = JSON.stringify(obj);
         
         if (!contexts[serialized]) {
@@ -178,7 +178,7 @@ function SeleniumPlayer(browser){
                 if (def.id) 
                     res = def.id;
                 else
-                    res = "apf.document.selectSingleNode(\"" 
+                    res = "ppc.document.selectSingleNode(\"" 
                       + def.xpath
                         .replace(/^html\[1\]\//i, "")
                         .replace(/"/g, "\\\"") + "\")";
@@ -196,7 +196,7 @@ function SeleniumPlayer(browser){
                 if (value && (value.id || value.xpath 
                   || value.htmlXpath || value.xml || value.eval))
                     return contextToExpression(prop.value);
-                else if (value.dataType == apf.ARRAY) {
+                else if (value.dataType == ppc.ARRAY) {
                     var o = [];
                     for (var i = 0; i < value.length; i++) {
                         o.push(value[i] && value[i].eval

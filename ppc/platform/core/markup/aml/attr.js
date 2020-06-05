@@ -20,7 +20,7 @@
  */
 
 // #ifdef __WITH_AMLATTR
-apf.AmlAttr = function(ownerElement, name, value){
+ppc.AmlAttr = function(ownerElement, name, value){
     this.$init();
     
     if (ownerElement) {
@@ -41,7 +41,7 @@ apf.AmlAttr = function(ownerElement, name, value){
     
     this.serialize = 
     this.toString  = function(){
-        return this.name + "=\"" + apf.escapeXML(String(this.value)) + "\"";
+        return this.name + "=\"" + ppc.escapeXML(String(this.value)) + "\"";
     };
     
     //#ifndef __PACKAGED
@@ -70,7 +70,7 @@ apf.AmlAttr = function(ownerElement, name, value){
         this.nodeValue = this.value = value;
         this.specified = true;
 
-        //@todo apf3.0 domattr
+        //@todo ppc3.0 domattr
         this.ownerElement.dispatchEvent("DOMAttrModified", {
             relatedNode : this,
             attrChange  : this.MODIFICATION,
@@ -105,7 +105,7 @@ apf.AmlAttr = function(ownerElement, name, value){
                 host.addEventListener(name, (host.$events[name] = 
                   (typeof value == "string"
                     ? // #ifdef __WITH_JSLT_EVENTS
-                      apf.lm.compile(value, {event: true, parsecode: true})
+                      ppc.lm.compile(value, {event: true, parsecode: true})
                       /* #else
                       new Function('event', value)
                       #endif */
@@ -122,12 +122,12 @@ apf.AmlAttr = function(ownerElement, name, value){
         else
         //#endif
         {
-            host.setProperty(name, value); //@todo apf3.0 is this a lot slower?
+            host.setProperty(name, value); //@todo ppc3.0 is this a lot slower?
         }
         //host.$handlePropSet(name, value);
 
         if (this.specified) {
-            //@todo apf3.0 domattr - slow?
+            //@todo ppc3.0 domattr - slow?
             host.dispatchEvent("DOMAttrModified", { //@todo this is not good, node might not be specified at init
                 relatedNode : this,
                 attrChange  : this.MODIFICATION,
@@ -142,7 +142,7 @@ apf.AmlAttr = function(ownerElement, name, value){
         this.$lastValue = value;
     };
     
-    //@todo apf3.0 domattr
+    //@todo ppc3.0 domattr
     this.addEventListener("DOMNodeInsertedIntoDocument", this.$triggerUpdate);
-}).call(apf.AmlAttr.prototype = new apf.AmlNode());
+}).call(ppc.AmlAttr.prototype = new ppc.AmlNode());
 // #endif

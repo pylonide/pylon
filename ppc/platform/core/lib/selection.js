@@ -22,15 +22,15 @@
 // #ifdef __WITH_SELECTION || __INC_ALL
 
 /**
- * @class apf.selection
+ * @class ppc.selection
  * @constructor
  * @author Mike de Boer  (mike AT javeline DOT com)
  */
-apf.selection = function(oWin, oDoc, editor) {
+ppc.selection = function(oWin, oDoc, editor) {
     /*
-     * Initialize the apf.selection class.
+     * Initialize the ppc.selection class.
      *
-     * @type apf.selection
+     * @type ppc.selection
      */
     oWin = oWin || window;
     oDoc = oDoc || window.document;
@@ -52,20 +52,20 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {Selection}
      */
     this.get = function() {
-        return apf.w3cRange ? oWin.getSelection() : oDoc.selection;
+        return ppc.w3cRange ? oWin.getSelection() : oDoc.selection;
     };
 
     /**
      * Set or move the current selection to the cached one.
      * At the moment, this function is very IE specific and is used to make sure
      * that there's a correct selection object available at all times.
-     * @see apf.selection.cache
+     * @see ppc.selection.cache
      * 
      * @type {Range}
      */
     this.set = function() {
         if (!this.current) return null;
-        if (apf.w3cRange) {
+        if (ppc.w3cRange) {
             this.moveToBookmark(this.current);
             return this.current;
         }
@@ -98,7 +98,7 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {void}
      */
     this.cache = function(w3cToo) {
-        if (apf.w3cRange) {
+        if (ppc.w3cRange) {
             if (w3cToo)
                 this.current = this.getBookmark();
             return this;
@@ -145,7 +145,7 @@ apf.selection = function(oWin, oDoc, editor) {
         // This can occur when the editor is placed in a hidden container
         // element on Gecko. Or on IE when there was an exception
         if (!range)
-            range = apf.w3cRange
+            range = ppc.w3cRange
                 ? oDoc.createRange()
                 : oDoc.body.createTextRange();
 
@@ -160,7 +160,7 @@ apf.selection = function(oWin, oDoc, editor) {
      * @type {void}
      */
     this.setRange = function(range) {
-        if (apf.w3cRange) {
+        if (ppc.w3cRange) {
             var oSel = this.get();
 
             if (oSel) {
@@ -192,15 +192,15 @@ apf.selection = function(oWin, oDoc, editor) {
     this.form    = _form;
 
     function trimNl(str) {
-        return (apf.isOpera || apf.isIE) ? str : str.replace(/\r\n/g, " ");
+        return (ppc.isOpera || ppc.isIE) ? str : str.replace(/\r\n/g, " ");
     }
 
     function getText(node) {
-        return String(apf.isIE ? node.nodeType == 3 ? node.nodeValue : node.innerText : node.textContent);
+        return String(ppc.isIE ? node.nodeType == 3 ? node.nodeValue : node.innerText : node.textContent);
     }
     
     function getHtml(node) {
-        return String(node.nodeType == 3 ? apf.isIE ? node.nodeValue : node.textContent : node.innerHTML);
+        return String(node.nodeType == 3 ? ppc.isIE ? node.nodeValue : node.textContent : node.innerHTML);
     }
 
     function textContent(node, o) {
@@ -212,11 +212,11 @@ apf.selection = function(oWin, oDoc, editor) {
         for (; i < l; i++) {
             cn = node.childNodes[i];
             if (reForm.test(cn.nodeName)) {
-                str += "<->" + (apf.isIE ? "" : trimNl(getText(cn)).replace(/./gi, " ")) + "</->";
+                str += "<->" + (ppc.isIE ? "" : trimNl(getText(cn)).replace(/./gi, " ")) + "</->";
             }
             else {
                 if (reBlock.test(cn.nodeName)) {
-                    str += "<+>" + (apf.isIE ? "" : trimNl(getText(cn)).replace(/./gi, " ")) + "</+>";
+                    str += "<+>" + (ppc.isIE ? "" : trimNl(getText(cn)).replace(/./gi, " ")) + "</+>";
                 }
                 else {
                     if (reInline.test(cn.nodeName)) {
@@ -271,7 +271,7 @@ apf.selection = function(oWin, oDoc, editor) {
     this.getBookmark = function(type, callback) {
         var ch    = -16777215,
             range = this.getRange(),
-            vp    = apf.getViewPort(oWin),
+            vp    = ppc.getViewPort(oWin),
             c     = oDoc.body,
             o     = {
                 scrollX : vp.x,
@@ -286,7 +286,7 @@ apf.selection = function(oWin, oDoc, editor) {
             o.rng = range;
             return o;
         }
-        if (!apf.w3cRange) {
+        if (!ppc.w3cRange) {
             if (range.item) {
                 var e = range.item(0),
                     n = c.getElementsByTagName(e.nodeName),
@@ -296,7 +296,7 @@ apf.selection = function(oWin, oDoc, editor) {
                     if (e == n[i])
                         return !(sp = i);
                 }
-                return apf.extend(o, {
+                return ppc.extend(o, {
                     tag  : e.nodeName,
                     index: sp
                 });
@@ -320,7 +320,7 @@ apf.selection = function(oWin, oDoc, editor) {
                 if (getParent(tr.parentElement(), _block, null, c) != parN)
                     activeEl = parN;
             }
-            return apf.extend(o, {
+            return ppc.extend(o, {
                 start : sp - bp - offset,
                 length: Math.abs(tr.move(CHAR, ch)) - sp
             });
@@ -390,7 +390,7 @@ apf.selection = function(oWin, oDoc, editor) {
                     n = n.previousSibling;
                 }
             }
-            apf.extend(o, {
+            ppc.extend(o, {
                 block : p,
                 node  : sc,
                 offset: range.startOffset
@@ -409,7 +409,7 @@ apf.selection = function(oWin, oDoc, editor) {
             }
             p += trimNl(n.nodeValue || "").length;
         }
-        apf.extend(o, {
+        ppc.extend(o, {
             start: s[0] + range.startOffset,
             end  : s[1] + range.endOffset,
             block: c
@@ -469,7 +469,7 @@ apf.selection = function(oWin, oDoc, editor) {
         if (!b)
             return false;
 
-        if (!apf.w3cRange) {
+        if (!ppc.w3cRange) {
             oDoc.body.setActive();
             if (crt = b.rng) {
                 try {
@@ -547,7 +547,7 @@ apf.selection = function(oWin, oDoc, editor) {
                     a = true;
                 }
                 if (a) {
-                    if (!apf.isOpera)
+                    if (!ppc.isOpera)
                         sel.removeAllRanges();
                     sel.addRange(crt);
                     c.focus();
@@ -562,13 +562,13 @@ apf.selection = function(oWin, oDoc, editor) {
                         crt.setStart(sd.startNode, sd.startOffset);
                         crt.setEnd(sd.endNode, sd.endOffset);
                         oWin.scrollTo(b.scrollX, b.scrollY);
-                        if (!apf.isOpera)
+                        if (!ppc.isOpera)
                             sel.removeAllRanges();
                         sel.addRange(crt);
                     }
                 }
                 catch(ex) {
-                    apf.console.error(ex);
+                    ppc.console.error(ex);
                 }
             }
             return;
@@ -645,7 +645,7 @@ apf.selection = function(oWin, oDoc, editor) {
 
         // #ifdef __WITH_HTML_CLEANER
         if (!bNoPrepare)
-            html = apf.htmlCleaner.prepare(html, true);
+            html = ppc.htmlCleaner.prepare(html, true);
         // #endif
 
         if (range.insertNode) {
@@ -715,7 +715,7 @@ apf.selection = function(oWin, oDoc, editor) {
      */
     this.getType = function() {
         var oSel = this.get();
-        if (apf.isIE) {
+        if (ppc.isIE) {
             return oSel.type;
         }
         else {
@@ -744,7 +744,7 @@ apf.selection = function(oWin, oDoc, editor) {
     this.getSelectedNode = function() {
         var range = this.getRange();
 
-        if (!apf.isIE) {
+        if (!ppc.isIE) {
             // Range maybe lost after the editor is made visible again
             if (!range)
                 return oDoc;
@@ -756,7 +756,7 @@ apf.selection = function(oWin, oDoc, editor) {
             if (!range.collapsed) {
                 // If the anchor node is an element instead of a text node then
                 // return this element
-                if (apf.isWebkit && oSel.anchorNode && oSel.anchorNode.nodeType == 1)
+                if (ppc.isWebkit && oSel.anchorNode && oSel.anchorNode.nodeType == 1)
                     return oSel.anchorNode.childNodes[oSel.anchorOffset];
 
                 if (range.startContainer == range.endContainer) {
@@ -785,7 +785,7 @@ apf.selection = function(oWin, oDoc, editor) {
     this.getParentNode = function() {
         switch (this.getType()) {
             case CTRL :
-                if (apf.isIE)
+                if (ppc.isIE)
                     return this.getSelectedNode().parentElement;
                 else
                     return this.getSelectedNode().parentNode;
@@ -793,7 +793,7 @@ apf.selection = function(oWin, oDoc, editor) {
                 return;
             default :
                 var oSel = this.get();
-                if (apf.isIE) {
+                if (ppc.isIE) {
                     return oSel.createRange().parentElement();
                 }
                 else {
@@ -821,7 +821,7 @@ apf.selection = function(oWin, oDoc, editor) {
         while (node.nodeType == 1 && node.firstChild)
             node = node.firstChild;
 
-        if (apf.isIE) {
+        if (ppc.isIE) {
             oSel = this.get();
             
             if (!node)
@@ -911,9 +911,9 @@ apf.selection = function(oWin, oDoc, editor) {
      */
     this.hasAncestorNode = function(nodeTagName) {
         var oContainer, range = this.getRange();
-        if (this.getType() == CTRL || !apf.isIE) {
+        if (this.getType() == CTRL || !ppc.isIE) {
             oContainer = this.getSelectedNode();
-            if (!oContainer && !apf.isIE) {
+            if (!oContainer && !ppc.isIE) {
                 try {
                     oContainer = range.startContainer;
                 }
@@ -924,7 +924,7 @@ apf.selection = function(oWin, oDoc, editor) {
             oContainer = range.parentElement();
         }
         while (oContainer) {
-            if (apf.isIE)
+            if (ppc.isIE)
                 if (oContainer.tagName == nodeTagName)
                     return true;
                 else if (oContainer.nodeType == 1
@@ -945,7 +945,7 @@ apf.selection = function(oWin, oDoc, editor) {
     this.moveToAncestorNode = function(nodeTagName) {
         var oNode, i, range = this.getRange();
         nodeTagName = nodeTagName.toUpperCase();
-        if (apf.isIE) {
+        if (ppc.isIE) {
             if (this.getType() == CTRL) {
                 for (i = 0; i < range.length; i++) {
                     if (range(i).parentNode) {
@@ -981,7 +981,7 @@ apf.selection = function(oWin, oDoc, editor) {
      */
     this.remove = function() {
         var oSel = this.get(), i;
-        if (apf.isIE) {
+        if (ppc.isIE) {
             if (oSel.type != NONE)
                 oSel.clear();
         }

@@ -32,17 +32,17 @@
  * Example:
  * Retrieving content over socket synchronously:
  * <code>
- *  var socket = new apf.socket();
+ *  var socket = new ppc.socket();
  *  var data = socket.get("http://www.example.com/mydata.jsp", {async: false});
  *  alert(data);
  * </code>
  * Example:
  * Retrieving content over socket asynchronously:
  * <code>
- *  var socket = new apf.socket();
+ *  var socket = new ppc.socket();
  *  socket.get("socket://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
- *         if (state != apf.SUCCESS)
+ *         if (state != ppc.SUCCESS)
  *             return alert('an error has occurred');
  *
  *         alert(data);
@@ -52,11 +52,11 @@
  * Example:
  * Async socket request with retry.
  * <code>
- *  var socket = new apf.socket();
+ *  var socket = new ppc.socket();
  *  socket.get("http://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
- *          if (state != apf.SUCCESS) {
- *              var oError = new Error(apf.formatErrorString(0, null,
+ *          if (state != ppc.SUCCESS) {
+ *              var oError = new Error(ppc.formatErrorString(0, null,
  *                  "While loading data", "Could not load data\n" + extra.message));
  *
  *              if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
@@ -78,10 +78,10 @@
  *                                callback doesn't return false.
  *     {Number}         state     the state of the call
  *       Possible values:
- *       apf.SUCCESS  the request was successfull
- *       apf.TIMEOUT  the request has timed out.
- *       apf.ERROR    an error has occurred while making the request.
- *       apf.OFFLINE  the request was made while the application was offline.
+ *       ppc.SUCCESS  the request was successfull
+ *       ppc.TIMEOUT  the request has timed out.
+ *       ppc.ERROR    an error has occurred while making the request.
+ *       ppc.OFFLINE  the request was made while the application was offline.
  *     {Mixed}          userdata  data that the caller wanted to be available in
  *                                the callback of the socket request.
  *     {XMLHttpRequest} socket      the object that executed the actual socket request.
@@ -99,7 +99,7 @@
  * @version     %I%, %G%
  * @since       3.0
  */
-apf.socket = function(){
+ppc.socket = function(){
     this.pool      = {};
     this.callbacks = {};
     this.cache     = {};
@@ -110,7 +110,7 @@ apf.socket = function(){
     this.timeout   = this.timeout || 10000; //default 10 seconds
 
     if (!this.$uniqueId)
-        this.$uniqueId = apf.all.push(this) - 1;
+        this.$uniqueId = ppc.all.push(this) - 1;
 
     this.toString = this.toString || function(){
         return "[Ajax.org Teleport Component : (Socket)]";
@@ -118,11 +118,11 @@ apf.socket = function(){
 
     //#ifdef __WITH_STORAGE && __WITH_HTTP_CACHE
     
-    this.saveCache = apf.K;
+    this.saveCache = ppc.K;
 
     this.loadCache = function(){ return true; };
 
-    this.clearCache = apf.K;
+    this.clearCache = ppc.K;
     //#endif
 
     /**
@@ -174,10 +174,10 @@ apf.socket = function(){
             var msg = "File or Resource not available " + url;
 
             //#ifdef __DEBUG
-            apf.console.warn(msg, "teleport");
+            ppc.console.warn(msg, "teleport");
             // #endif
             
-            var state = apf.ERROR;
+            var state = ppc.ERROR;
 
             // File not found
             if (options.callback) {
@@ -209,8 +209,8 @@ apf.socket = function(){
         }
         
         if (!(socket = this.pool[id] ? this.pool[id].socket : null)) {
-            //socket = apf.getSocket();
-            var oUrl = new apf.url(url);
+            //socket = ppc.getSocket();
+            var oUrl = new ppc.url(url);
             if (!oUrl.host || !oUrl.port)
                 throw new Error("no valid connection string for a socket connection: " + url);
             
@@ -231,17 +231,17 @@ apf.socket = function(){
             
             //#ifdef __DEBUG
             socket.addListener("close", function() {
-                apf.console.log("[socket] connection closed");
+                ppc.console.log("[socket] connection closed");
             });
             
             socket.addListener("error", function(e) {
-                apf.console.log("[socket] connection error: " + e);
+                ppc.console.log("[socket] connection error: " + e);
             });
             //#endif
             
             socket.addListener("end", function() {
                 //#ifdef __DEBUG
-                apf.console.log("[socket] connection ended");
+                ppc.console.log("[socket] connection ended");
                 //#endif
                 _self.pool[id] = null;
                 delete _self.pool[id];
@@ -280,7 +280,7 @@ apf.socket = function(){
             if (!options.callback)
                 options.callback = callback;
 
-            this.$get(apf.getAbsolutePath(apf.config.baseurl, url), options);
+            this.$get(ppc.getAbsolutePath(ppc.config.baseurl, url), options);
         }
     }
     // #endif
@@ -339,9 +339,9 @@ apf.socket = function(){
                 errorMessage.push("Received an empty XML document (0 bytes)");
             else {
                 try {
-                    var xmlDoc = apf.getXmlDom(data);
+                    var xmlDoc = ppc.getXmlDom(data);
 
-                    if (!apf.supportNamespaces)
+                    if (!ppc.supportNamespaces)
                         xmlDoc.setProperty("SelectionLanguage", "XPath");
 
                     extra.data = xmlDoc.documentElement;
@@ -358,14 +358,14 @@ apf.socket = function(){
 
             // Send callback error state
             if (callback)
-                callback(extra.data, apf.ERROR, extra);
+                callback(extra.data, ppc.ERROR, extra);
 
             return;
         }
 
         //Http call was successfull Success
         if (callback)
-            callback(extra.data, apf.SUCCESS, extra);
+            callback(extra.data, ppc.SUCCESS, extra);
 
         return extra.data;
     };
@@ -393,11 +393,11 @@ apf.socket = function(){
         socket.abort();
 
         // #ifdef __DEBUG
-        apf.console.info("Socket Timeout [" + id + "]", "teleport");
+        ppc.console.info("Socket Timeout [" + id + "]", "teleport");
         // #endif
 
         var extra;
-        var noClear = callback ? callback(null, apf.TIMEOUT, extra = {
+        var noClear = callback ? callback(null, ppc.TIMEOUT, extra = {
             //#ifdef __DEBUG
             end     : new Date(),
             //#endif
@@ -420,27 +420,27 @@ apf.socket = function(){
      *                             argument of the socket request callback.
      * @param {Number}  state      the return code of the socket request.
      *   Possible values:
-     *   apf.SUCCESS  the request was successfull
-     *   apf.TIMEOUT  the request has timed out.
-     *   apf.ERROR    an error has occurred while making the request.
-     *   apf.OFFLINE  the request was made while the application was offline.
-     * @param {apf.AmlNode} [amlNode]    the element receiving the error event.
+     *   ppc.SUCCESS  the request was successfull
+     *   ppc.TIMEOUT  the request has timed out.
+     *   ppc.ERROR    an error has occurred while making the request.
+     *   ppc.OFFLINE  the request was made while the application was offline.
+     * @param {ppc.AmlNode} [amlNode]    the element receiving the error event.
      * @param {Error}   [oError]     the error to be thrown when the request is
      *                               not retried.
      * @param {Number}  [maxRetries] the number of retries that are done before
      *                               the request times out. Default is 3.
      */
     this.retryTimeout = function(extra, state, amlNode, oError, maxRetries){
-        if (state == apf.TIMEOUT
-          && extra.retries < (maxRetries || apf.maxHttpRetries))
+        if (state == ppc.TIMEOUT
+          && extra.retries < (maxRetries || ppc.maxHttpRetries))
             return extra.tpModule.retry(extra.id);
 
-        oError = oError || new Error(apf.formatErrorString(0,
-            this, "Communication " + (state == apf.TIMEOUT
+        oError = oError || new Error(ppc.formatErrorString(0,
+            this, "Communication " + (state == ppc.TIMEOUT
                 ? "timeout"
                 : "error"), "Url: " + extra.url + "\nInfo: " + extra.message));
 
-        if ((amlNode || apf).dispatchEvent("error", apf.extend({
+        if ((amlNode || ppc).dispatchEvent("error", ppc.extend({
             error   : oError,
             state   : state,
             bubbles : true
@@ -464,7 +464,7 @@ apf.socket = function(){
      * Example:
      * <code>
      *  function callback(data, state, extra){
-     *      if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
+     *      if (state == ppc.TIMEOUT && extra.retries < ppc.maxHttpRetries)
      *          return extra.tpModule.retry(extra.id);
      *
      *      //Do stuff here
@@ -479,7 +479,7 @@ apf.socket = function(){
         var qItem = this.pool[id];
 
         // #ifdef __DEBUG
-        apf.console.info("[Socket] Retrying request [" + id + "]", "teleport");
+        ppc.console.info("[Socket] Retrying request [" + id + "]", "teleport");
         // #endif
 
         qItem.retries++;
@@ -545,7 +545,7 @@ apf.socket = function(){
             }
 
             var name = "socket" + Math.round(Math.random() * 100000);
-            apf.setReference(name, this);
+            ppc.setReference(name, this);
 
             return name + ".getURL()";
         };
@@ -560,7 +560,7 @@ apf.socket = function(){
 };
 
 //#ifdef __DEBUG
-apf.teleportLog = function(extra){
+ppc.teleportLog = function(extra){
     // @todo when WebSockets are implemented
     this.setXml = function(pNode){ return; };
     this.request = function(headers){ return; };

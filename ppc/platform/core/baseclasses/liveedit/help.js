@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_HELP || __INC_ALL
 
-apf.LiveEdit.plugin("help", function(){
+ppc.LiveEdit.plugin("help", function(){
     this.name        = "help";
     this.icon        = "help";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+h";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
         // @todo: implement this plugin

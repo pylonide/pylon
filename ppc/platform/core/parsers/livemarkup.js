@@ -31,7 +31,7 @@
  * @version     %I%, %G%
  * @since       3.0
  */
-apf.lm = new (function(){
+ppc.lm = new (function(){
 
     var statement_lut = { // all js statements to see its NOT an expression
             "var": 1, "for": 1, "while": 1, "do": 1, "if": 1, "else": 1,
@@ -181,11 +181,11 @@ apf.lm = new (function(){
         macro_c = {},
         macro_m = {},
         // config vars
-        c_async_lut = apf.$asyncObjects || { // used to figure out if the thing before the. is an async obj
+        c_async_lut = ppc.$asyncObjects || { // used to figure out if the thing before the. is an async obj
             "comm" :1,
             "rpc"  :1,
             "http" :1,
-            "apf.ajax" :1
+            "ppc.ajax" :1
         },
         c_process_async,
         c_xpathmode,    // guess 'node' as the type for {} o_xpathpairs, 1 = node, 2 = nodes
@@ -261,7 +261,7 @@ apf.lm = new (function(){
     macro_c.output      = ")",
     macro_o.reset       = "(_o=[],l=0",
     macro_c.reset       = ")",
-    macro_o.index       = "apf.getChildNumber.call(apf",
+    macro_o.index       = "ppc.getChildNumber.call(ppc",
     macro_c.index       = ")",
     macro_o.item        = "(_t[_t.length-1][_t[_t.length-2]-1]",
     macro_c.item        = ")",
@@ -314,22 +314,22 @@ apf.lm = new (function(){
         cc_v_blk_o     = "var _o=[],_l=0;_o[_l++]=",
         cc_v_blk_ob    = "var _o=[],_l=0;\n",
         cc_v_blk_c     = ";\nreturn _ret(_l==1?_o[0]:_o.join(''));",
-        cc_v_blk_cb    = ";\n_c(_ret(_l==1?_o[0]:_o.join('')),apf.SUCCESS,apf.$lmx);apf.$lmx=null;",
+        cc_v_blk_cb    = ";\n_c(_ret(_l==1?_o[0]:_o.join('')),ppc.SUCCESS,ppc.$lmx);ppc.$lmx=null;",
         cc_v_ret_o     = "return _ret(",
         cc_v_ret_c     = ");",
         cc_v_cb_o      = "_c(_ret(",
-        cc_v_cb_c      = "),apf.SUCCESS,apf.$lmx);apf.$lmx=null;\n",
+        cc_v_cb_c      = "),ppc.SUCCESS,ppc.$lmx);ppc.$lmx=null;\n",
 
         cc_o_blk_o     = "var _r=",
         cc_o_blk_ob    = "var _r;",
 
         cc_o_blk_c     = ";\nreturn _r;",
-        cc_o_blk_cb    = ";\n_c(_r,apf.SUCCESS,apf.$lmx);apf.$lmx=null;",
-        cc_o_blk_ce    = ";\n_c(0,apf.SUCCESS,apf.$lmx);apf.$lmx=null;;",
+        cc_o_blk_cb    = ";\n_c(_r,ppc.SUCCESS,ppc.$lmx);ppc.$lmx=null;",
+        cc_o_blk_ce    = ";\n_c(0,ppc.SUCCESS,ppc.$lmx);ppc.$lmx=null;;",
         cc_o_ret_o     = "return ",
         cc_o_ret_c     = "",
         cc_o_cb_o      = "_c(",
-        cc_o_cb_c      = ",apf.SUCCESS);",
+        cc_o_cb_c      = ",ppc.SUCCESS);",
         cc_f_async_o   = "var _f=function(_n,_c,_w,_a){",
         cc_f_opt_o     = "var _f=function(_n,_w){",
         cc_f_o         = "var _f=function(_n){",
@@ -1408,21 +1408,21 @@ apf.lm = new (function(){
     };
 
     function handleError(e, last_line, part, linenr){
-        // TODO: make a proper APF exception with this information:
+        // TODO: make a proper PPC exception with this information:
         if (e.t) {
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Parsing live markup source",
                 "Error whilst parsing: " + e.t + " on line:"+ line_no
                 + " col:" + (e.p - last_line - 2)
                 + (part ? (" part: " + part) : "") + "\n" + str));
         }
         else {
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Compiling live markup function on line " + linenr,
                 "Error whilst compiling: " + e.message
                 //+ "\nStack Trace:\n" + e.stack
                 + "\nInput:\n" + str
-                + "\nGenerated:\n" + apf.lm.lastCode()));
+                + "\nGenerated:\n" + ppc.lm.lastCode()));
         }
     }
 
@@ -1493,7 +1493,7 @@ apf.lm = new (function(){
         // lets see if we need to fetch precompiled cachemarker
         var c, f, is_single_prop;
         if(istr.charAt(0)=="~" && (c=istr.match(lmcache_rx))){
-            if(c=apf.lm_exec[c[1]]) return c;
+            if(c=ppc.lm_exec[c[1]]) return c;
             alert("ERROR, undefined live markup cache marker found:"+istr);
             return {type:2,str:istr};
         }
@@ -1643,21 +1643,21 @@ apf.lm = new (function(){
         }
 
         if (cfg.nothrow) {
-            f = apf.lm_exec.compile(o.join(""));
+            f = ppc.lm_exec.compile(o.join(""));
         }
         else {
             try {
-                f = apf.lm_exec.compile(o.join(""));
+                f = ppc.lm_exec.compile(o.join(""));
             }
             catch(e){
-                if (!apf.isIE) {
+                if (!ppc.isIE) {
                     var oErr = window.onerror;
                     window.onerror = function(x,y,line){
                         window.onerror = oErr;
                         handleError(e, last_line, null, line);
                         return true;
                     }
-                    apf.include("", "", null, o.join(""));
+                    ppc.include("", "", null, o.join(""));
                     window.onerror = oErr;
                 }
                 else {
@@ -1807,11 +1807,11 @@ apf.lm = new (function(){
 
         var f;
         if (cfg.nothrow) {
-            f = apf.lm_exec.compile(o.join(""));
+            f = ppc.lm_exec.compile(o.join(""));
         }
         else {
             try{
-                f = apf.lm_exec.compile(o.join(""));
+                f = ppc.lm_exec.compile(o.join(""));
             }
             catch(e){
                 handleError(e,last_line);
@@ -1825,7 +1825,7 @@ apf.lm = new (function(){
     };
 
     this.setWarnLevel = function(lvl){
-        apf.lm_exec.setWarnLevel(lvl);
+        ppc.lm_exec.setWarnLevel(lvl);
     };
 
     this.parseExpression = function(istr, cfg){
@@ -1858,8 +1858,8 @@ apf.lm = new (function(){
 
 })();
 
-// apf lm_exec makes sure there is no scope pollution for eval'ed live markup.
-apf.lm_exec = new (function(){
+// ppc lm_exec makes sure there is no scope pollution for eval'ed live markup.
+ppc.lm_exec = new (function(){
     //#ifdef __WITH_NAMESERVER
     var wlvl = 1; // 0: no warnings 1: language/models missing, 2:nodes missing, 3:all failed xpaths
 
@@ -1869,24 +1869,24 @@ apf.lm_exec = new (function(){
     };
 
     function wxpath(x, t){
-        apf.console.warn("Live Markup warning in " + t + ", no results for xpath: '" + x + "'");
+        ppc.console.warn("Live Markup warning in " + t + ", no results for xpath: '" + x + "'");
     }
 
     function wnode(x, t){
-        apf.console.warn("Live Markup warning in " + t + ", xpath on null node: '" + x + "'");
+        ppc.console.warn("Live Markup warning in " + t + ", xpath on null node: '" + x + "'");
     }
 
     function wmodel(m, x, t){
-        apf.console.log("Live Markup warning in " + t + ", xpath on empty model: '" + m + "' xpath: '" + x + "'");
+        ppc.console.log("Live Markup warning in " + t + ", xpath on empty model: '" + m + "' xpath: '" + x + "'");
     }
 
     function wlang(x, t){
-        apf.console.log("Live Markup warning in " + t + ", language symbol not found: '" + x + "'");
+        ppc.console.log("Live Markup warning in " + t + ", language symbol not found: '" + x + "'");
     }
 
     // xml parse function used by all livemarkup objects
     function xmlParse(str){
-        var n = apf.getXmlDom("<_apflmlist_>" + str + "</_apflmlist_>");
+        var n = ppc.getXmlDom("<_ppclmlist_>" + str + "</_ppclmlist_>");
         if (!n || !(n = n.documentElement))
             return null;
         return (n.firstChild == n.lastChild) ? n.firstChild : n;
@@ -1896,7 +1896,7 @@ apf.lm_exec = new (function(){
     function __val(n, x){
         if (!n)
             return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
-        return apf.escapeXML((n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1
+        return ppc.escapeXML((n = (!n.nodeType && n || (n = n.selectSingleNode(x)) //!= 1
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
           && n.nodeValue || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/""));
     }
@@ -1908,7 +1908,7 @@ apf.lm_exec = new (function(){
     function __valattr(n, x){
         if (!n)
             return (/*#ifdef __DEBUG*/wlvl > 1 && wnode(x),/*#endif*/"")
-        return apf.escapeXML((n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
+        return ppc.escapeXML((n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
           && (n.nodeType != 1 && n || (n = n.firstChild) && n.nodeType!=1 && n)))
           &&  n.nodeValue.replace(__valattrrx,__valattrrp) || (/*#ifdef __DEBUG*/wlvl > 2 && wxpath(x, "_val"),/*#endif*/""));
     }
@@ -1918,7 +1918,7 @@ apf.lm_exec = new (function(){
     function __valm(m, x){
         var n;
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
-          || ((n = apf.nameserver.lookup.model[m]) && n.data)))
+          || ((n = ppc.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
             return (/*#ifdef __DEBUG*/wlvl > 0 && wmodel(m, x, "_valm"),/*#endif*/"");
         return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x))
@@ -1937,7 +1937,7 @@ apf.lm_exec = new (function(){
     function __nodm(m, x){          // node of model by xpath
         var n;
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
-          || ((n = apf.nameserver.lookup.model[m]) && n.data)))
+          || ((n = ppc.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
             return (/*#ifdef __DEBUG*/wlvl > 0 && wmodel(m, x, "_nodm"),/*#endif*/null);
 
@@ -1947,7 +1947,7 @@ apf.lm_exec = new (function(){
     function _nodsm(m, x){          // array of nodes from model by xpath
         var n;
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
-          || ((n = apf.nameserver.lookup.model[m]) && n.data)))
+          || ((n = ppc.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
             return (/*#ifdef __DEBUG*/wlvl > 0 && wmodel(m, x, "_nodsm"),/*#endif*/[]);
 
@@ -1961,7 +1961,7 @@ apf.lm_exec = new (function(){
     function __cntm(m, x){      // count nodes from model by xpath
         var n;
         if (!m || !(n = (m.charAt && ((m.charAt(0) == "<" && xmlParse(m))
-          || ((n = apf.nameserver.lookup.model[m]) && n.data)))
+          || ((n = ppc.nameserver.lookup.model[m]) && n.data)))
           || (m.$isModel ? m.data : (m.charAt ? 0 : m))))
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_cntm"),/*#endif*/0);
 
@@ -1980,8 +1980,8 @@ apf.lm_exec = new (function(){
     function _xptm(m, x){       // return the query with model wrapped in an object
         if (m && !m.$isModel) {
             var node = m;
-            m = apf.xmldb.findModel(m);
-            x = apf.xmlToXpath(node, m.data) + "/" + x;
+            m = ppc.xmldb.findModel(m);
+            x = ppc.xmlToXpath(node, m.data) + "/" + x;
         }
 
         return {
@@ -1998,7 +1998,7 @@ apf.lm_exec = new (function(){
     function _xml(n, m, x){     // serialize node by xpath via .xml
         if(n) x = m;
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
+            ((n = ppc.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_xml"),/*#endif*/"");
 
@@ -2009,7 +2009,7 @@ apf.lm_exec = new (function(){
     function _xmls(n, m, x){    // serialize nodes by xpath with .xml concatenated
         if(n) x = m;
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
+            ((n = ppc.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_xmls"),/*#endif*/"");
         for(var i = 0,j = ((n=n.selectNodes(x))).length,o = [];i<j;i++)
@@ -2020,12 +2020,12 @@ apf.lm_exec = new (function(){
     function _valcr(n, cr, m, x){ // value with a create flag
         if(n) x = m;
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
+            ((n = ppc.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_valcr"),/*#endif*/"");
 
         if(cr){
-            apf.createNodeFromXpath( ni, x );
+            ppc.createNodeFromXpath( ni, x );
         }else
         if( n = ni.selectSingleNode(x) ){
             return (n = (n.nodeType != 1 && n || (n = n.selectSingleNode(x)) &&
@@ -2037,22 +2037,22 @@ apf.lm_exec = new (function(){
     function _nodcr(n, cr, m, x){ // node with create flag
         if(n) x = m;
         else if(!m || !(n=(m.charAt && ((m.charAt(0)=="<" && xmlParse(m)) ||
-            ((n = apf.nameserver.lookup.model[m]) && n.data))) ||
+            ((n = ppc.nameserver.lookup.model[m]) && n.data))) ||
         (m.$isModel?m.data:(m.charAt?0:m))))
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_nodcr"),/*#endif*/null);
-        return n.selectSingleNode(x) || (cr && apf.createNodeFromXpath( n, x ));
+        return n.selectSingleNode(x) || (cr && ppc.createNodeFromXpath( n, x ));
     }
 
     function _valst(n, x){      // a value with state holding
-        var m = apf.xmldb.findModel(n);
+        var m = ppc.xmldb.findModel(n);
         if(!m)
             return (/*#ifdef __DEBUG*/wlvl>0&&wmodel(m,x,"_valst"),/*#endif*/"");
-        return "[" + m.id + "::" + apf.xmlToXpath(n, m.data, true) + (!x || x == "." ? "" : "/" + x) + "]";
+        return "[" + m.id + "::" + ppc.xmlToXpath(n, m.data, true) + (!x || x == "." ? "" : "/" + x) + "]";
     }
 
     function _asn(o, p, v){     // assign propert
         if(!o || typeof(o)!="object")
-            throw new Error(apf.formatErrorString(0,0,"LM Property Assign",
+            throw new Error(ppc.formatErrorString(0,0,"LM Property Assign",
                 "Cannot assign property on non object, property:"+p));
 
         if(o.setAttribute)
@@ -2082,7 +2082,7 @@ apf.lm_exec = new (function(){
     function _local(n){         // local(x) for local n
         // check what n is.. if string parse
         if(n && n.charAt && n.charAt(0)=="<")
-            return apf.getXmlDom(n).documentElement;
+            return ppc.getXmlDom(n).documentElement;
         /*#ifdef __DEBUG*/if(!n && wlvl>1)wnode("-","_local");/*#endif*/
         return n;
     }
@@ -2092,7 +2092,7 @@ apf.lm_exec = new (function(){
     }
 
     function _localName(n1, n2){    // localname macro
-        return (n2 && n2[apf.TAGNAME]) || (n1 && n1[apf.TAGNAME]);
+        return (n2 && n2[ppc.TAGNAME]) || (n1 && n1[ppc.TAGNAME]);
     }
 
     function _nodeValue(n,n2){      // value of a node, or localnode.
@@ -2104,12 +2104,12 @@ apf.lm_exec = new (function(){
     // Language processing
 //#ifdef __WITH_MULTI_LANG
     var langrx = /(\\*)\$\[(.*?)\]/g;
-    var lang = apf.language;
+    var lang = ppc.language;
 
-    apf.$lm_has_lang = 0;
+    ppc.$lm_has_lang = 0;
 
     function _lngrx(tok,esc,x){ // language replacement regex callback
-        apf.$lm_has_lang = 1;
+        ppc.$lm_has_lang = 1;
         if(esc)
             return "$["+x+"]";
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lngrx"),/*#endif*/"");
@@ -2126,7 +2126,7 @@ apf.lm_exec = new (function(){
 
     function __lng(x,x2){           // the language macro
 //#ifdef __WITH_MULTI_LANG
-        apf.$lm_has_lang = 1;
+        ppc.$lm_has_lang = 1;
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lng"),/*#endif*/"");
 /*#else
         return "$["+x+"]";
@@ -2135,7 +2135,7 @@ apf.lm_exec = new (function(){
 
     function _lnged(x,x2){          // editable language macro
 //#ifdef __WITH_MULTI_LANG
-        apf.$lm_has_lang = 1;
+        ppc.$lm_has_lang = 1;
         return lang.words[x] || (/*#ifdef __DEBUG*/wlvl>1&&wlang(x,"_lnged"),/*#endif*/"");
 /*#else
         return "$["+x+"]";
@@ -2145,13 +2145,13 @@ apf.lm_exec = new (function(){
     function _(n, m, x){   // wrap a value with editable div
         return '<span class="liveEdit" xpath="' + (n
             ? (m.substr(0,1) != "/"
-                ? apf.xmlToXpath(n, null, false)
+                ? ppc.xmlToXpath(n, null, false)
                 : "") + "/" + m
             : "") + '">' + ((n?__val(n,m):__valm(m,x)) || "&#32;") + '</span>';
     }
 
 //    function _edit(n, opts){
-//        return '<span class="liveEdit" xpath="' + (apf.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';
+//        return '<span class="liveEdit" xpath="' + (ppc.xmlToXpath(n, null, false)  '">' + ((n?__val(n,m):__valm(m,x)) || "&nbsp;") + '</span>';
 //    }
 
     function _argwrap(n,x){
@@ -2177,16 +2177,16 @@ apf.lm_exec = new (function(){
         if (editMode !== false) {
             var value = res || options && options.initial || "&#32;";
             if (!options || !options.richtext)
-                value = apf.htmlentities(value);
+                value = ppc.htmlentities(value);
             if (options && options.multiline)
                 value = value
                     .replace(/&lt;br ?\/?&gt;/g, "<br />")
                     .replace(/&lt;(\/?div)&gt;/g, "<$1>");
 
             return '<div'
-              + ' onmousedown="apf.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n
+              + ' onmousedown="ppc.LiveEdit.mousedown(this, event)" class="liveEdit' + (options && options.multiline ? ' liveeditMultiline' : '') + (!res && options && options.initial ? ' liveEditInitial' : '') + '" xpath="' + (n
                 ? ((m.substr(0,1) != "/"
-                    ? apf.xmlToXpath(n, null, false)
+                    ? ppc.xmlToXpath(n, null, false)
                     : "") + "/" + m).replace(/([\[\{\}\]])/g, "\\$1")
                 : (self[m]
                     ? (m + ".queryNode('" + x.replace(/'/g, "\\'") + "')").replace(/([\[\{\}\]])/g, "\\$1")
@@ -2210,7 +2210,7 @@ apf.lm_exec = new (function(){
         return s.charAt?s.replace(selfrx, "$1self::"):s;
     }
 
-    apf.$lmx = null;
+    ppc.$lmx = null;
 
     function _async(_n,_c,_a,_w,_f,_this,obj,func,args){ // Async handling
         var i = _a.i, v;
@@ -2229,11 +2229,11 @@ apf.lm_exec = new (function(){
             if (_w)
                 delete _w._pc;
 
-            if (state != apf.SUCCESS){
+            if (state != ppc.SUCCESS){
                 _c(null, state, extra);
             }
             else{
-                apf.$lmx = extra;
+                ppc.$lmx = extra;
                 _a.ret[i] = data;
 
                 if (_w)
@@ -2270,10 +2270,10 @@ apf.lm_exec = new (function(){
         throw({x:1});
     }
 
-    var _clut = apf.color?apf.color.colorshex:{}, _cparse = /^(rgb|hsv|hsb)\(\s+(\d+)\s+,\s+(\d+)\s+,\s+(\d+)\)/
+    var _clut = ppc.color?ppc.color.colorshex:{}, _cparse = /^(rgb|hsv|hsb)\(\s+(\d+)\s+,\s+(\d+)\s+,\s+(\d+)\)/
 
     function sort(set, xpath, options){
-        var s = new apf.Sort();
+        var s = new ppc.Sort();
         options = options || {};
         if(!xpath.charAt)xpath = "";
         if(xpath.charAt(0)=='@'){
@@ -2283,11 +2283,11 @@ apf.lm_exec = new (function(){
             }
         }else{
             options.getValue = function(n){
-                return apf.queryValue(n,xpath);
+                return ppc.queryValue(n,xpath);
             }
         }
         s.set(options);
-        return s.apply(apf.getArrayFromNodelist(set));
+        return s.apply(ppc.getArrayFromNodelist(set));
     }
 
     function _cthex(c){
@@ -2379,7 +2379,7 @@ apf.lm_exec = new (function(){
     // replace
     d.replace(/var_LMBEGINCACHE;[\s\S]*var_LMBEGINCACHE;/,"code");
     _async(_n,_c,_a,_w,_f,this,
-    _async(_n,_c,_a,_w,apf.lm_exec.c342,this,
+    _async(_n,_c,_a,_w,ppc.lm_exec.c342,this,
     LIVEMARKUP END CACHE*/
     var LMENDCACHE;
     // #endif

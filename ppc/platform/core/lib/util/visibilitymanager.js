@@ -26,7 +26,7 @@
  *
  * @private
  */
-apf.visibilitymanager = function(){
+ppc.visibilitymanager = function(){
     var tree  = {};
     var _self  = this;
     var inited = false;
@@ -57,7 +57,7 @@ apf.visibilitymanager = function(){
         }
 
         function check(e){
-            //apf.isTrue(e.value)
+            //ppc.isTrue(e.value)
             if (!amlNode.$ext.offsetHeight && !amlNode.$ext.offsetWidth)
                 return;
                 

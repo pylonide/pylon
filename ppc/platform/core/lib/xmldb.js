@@ -26,7 +26,7 @@
  * routes all changes to the XML data to the data bound objects. It also
  * provides utility functions for XML handling.
  *
- * @class apf.xmldb
+ * @class ppc.xmldb
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -35,7 +35,7 @@
  *
  * @default_private
  */
-apf.xmldb = new (function(){
+ppc.xmldb = new (function(){
     var _self = this;
 
     this.xmlDocTag    = "a_doc";
@@ -54,15 +54,15 @@ apf.xmldb = new (function(){
      * Clear XML document cache periodically when no model is referencing it
      */
     this.garbageCollect = function(){
-        var xmlNode, cache = apf.xmldb.$xmlDocLut, docId, model;
+        var xmlNode, cache = ppc.xmldb.$xmlDocLut, docId, model;
         for (var i = 0, l = cache.length; i < l; i++) {
             xmlNode = cache[i];
 
             if (!xmlNode || xmlNode.nodeFunc)
                 continue;
 
-            docId = i;//xmlNode.getAttribute(apf.xmldb.xmlDocTag);
-            model = apf.nameserver.get("model", docId);
+            docId = i;//xmlNode.getAttribute(ppc.xmldb.xmlDocTag);
+            model = ppc.nameserver.get("model", docId);
 
             if (!model || model.data != xmlNode) {
                 cache[i] = null;
@@ -146,12 +146,12 @@ apf.xmldb = new (function(){
     /**
      * Sets the model of an element.
      *
-     * @param {apf.model} The model to be set
+     * @param {ppc.model} The model to be set
      *
      */
     this.setModel = function(model){
         //#ifdef __WITH_NAMESERVER
-        apf.nameserver.register("model", model.data.ownerDocument
+        ppc.nameserver.register("model", model.data.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag), model);
         //#endif
     };
@@ -164,7 +164,7 @@ apf.xmldb = new (function(){
      */
     this.findModel = function(xmlNode){
         //#ifdef __WITH_NAMESERVER
-        return apf.nameserver.get("model", xmlNode.ownerDocument
+        return ppc.nameserver.get("model", xmlNode.ownerDocument
             .documentElement.getAttribute(this.xmlDocTag));
         //#endif
     };
@@ -174,14 +174,14 @@ apf.xmldb = new (function(){
      */
     this.getXmlId = function(xmlNode){
         return xmlNode.getAttribute(this.xmlIdTag) ||
-          this.nodeConnect(apf.xmldb.getXmlDocId(xmlNode), xmlNode);
+          this.nodeConnect(ppc.xmldb.getXmlDocId(xmlNode), xmlNode);
     };
 
     /**
      * Gets the HTML representation of an XML node for a certain element.
      *
      * @param {XMLNode} xmlNode  The {@link term.datanode data node} which is represented by the HTML element.
-     * @param {apf.AmlNode} oComp    The element that has created the representation.
+     * @param {ppc.AmlNode} oComp    The element that has created the representation.
      * @return {DOMNode} The HTML node representing the XML node.
      */
     this.getHtmlNode = function(xmlNode, oComp){
@@ -196,7 +196,7 @@ apf.xmldb = new (function(){
      * Finds the HTML representation of an XML node for a certain element.
      *
      * @param {XMLNode} xmlNode  The {@link term.datanode data node} which is represented by the HTML element.
-     * @param {apf.AmlNode} oComp    The element that has created the representation.
+     * @param {ppc.AmlNode} oComp    The element that has created the representation.
      * @return {DOMNode} The HTML node representing the XML node.
      */
     this.findHtmlNode = function(xmlNode, oComp){
@@ -244,7 +244,7 @@ apf.xmldb = new (function(){
         return this.getNode(htmlNode);
     };
 
-    this.getXml = apf.getXml;
+    this.getXml = ppc.getXml;
 
     /*
      * @private
@@ -280,7 +280,7 @@ apf.xmldb = new (function(){
     this.addNodeListener = function(xmlNode, o, uId){
         // #ifdef __DEBUG
         if (!o || (!o.$xmlUpdate && !o.setProperty))
-            throw new Error(apf.formatErrorString(1040, null,
+            throw new Error(ppc.formatErrorString(1040, null,
                 "Adding Node listener",
                 "Interface not supported."));
         // #endif
@@ -292,22 +292,22 @@ apf.xmldb = new (function(){
         if (uId.charAt(0) == "p") {
             var sUId = uId.split("|");
             id = this.$listeners.push(function(args){
-                //@todo apf3.0 should this be exactly like in class.js?
+                //@todo ppc3.0 should this be exactly like in class.js?
                 //@todo optimize this to check the async flag: parsed[3] & 4
 
-                var amlNode = apf.all[sUId[1]]; //It's possible the aml node dissapeared in this loop.
+                var amlNode = ppc.all[sUId[1]]; //It's possible the aml node dissapeared in this loop.
                 if (amlNode) {
-                    var model = apf.all[sUId[3]];
+                    var model = ppc.all[sUId[3]];
                     if (!model)
                         return;
 
                     if (model.$propBinds[sUId[1]][sUId[2]]) {
-                        if (!apf.isChildOf(model.data, xmlNode, true))
+                        if (!ppc.isChildOf(model.data, xmlNode, true))
                             return false;
 
                         var xpath = model.$propBinds[sUId[1]][sUId[2]].listen; //root
                         var node  = xpath
-                            ? apf.queryNode(model.data, xpath)
+                            ? ppc.queryNode(model.data, xpath)
                             : xmlNode;
                     }
                     if (node)
@@ -317,11 +317,11 @@ apf.xmldb = new (function(){
             this.$listeners[uId] = id;
         }
         else {
-            //@todo apf3 potential cleanup problem
+            //@todo ppc3 potential cleanup problem
             id = "e" + uId;
             if (!this.$listeners[id]) {
                 this.$listeners[id] = function(args){
-                    var amlNode = apf.all[uId];
+                    var amlNode = ppc.all[uId];
                     if (amlNode)
                         amlNode.$xmlUpdate.apply(amlNode, args);
                 };
@@ -350,7 +350,7 @@ apf.xmldb = new (function(){
                     }
 
                     //if ((node.parentNode && node.parentNode.nodeType == 1))
-                        apf.xmldb.$listeners[id]([action, node, this, null, node.parentNode]);
+                        ppc.xmldb.$listeners[id]([action, node, this, null, node.parentNode]);
                 });
                 xmlNode.addEventListener("DOMCharacterDataModified", rFn);
                 xmlNode.addEventListener("DOMAttrModified",          rFn);
@@ -412,10 +412,10 @@ apf.xmldb = new (function(){
      * @param {XMLElement} pNode     The parent of the text node.
      * @param {String}     value     The value of the text node.
      * @param {String}     [xpath]   The xpath statement which selects the text node.
-     * @param {apf.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.setTextNode =
-    apf.setTextNode  = function(pNode, value, xpath, undoObj, range){
+    ppc.setTextNode  = function(pNode, value, xpath, undoObj, range){
         var tNode;
 
         if (xpath) {
@@ -440,7 +440,7 @@ apf.xmldb = new (function(){
         }
 
         //Apply Changes
-        if (range) { //@todo apf3.0 range
+        if (range) { //@todo ppc3.0 range
             undoObj.extra.range = range;
 
         }
@@ -454,7 +454,7 @@ apf.xmldb = new (function(){
         this.applyChanges("text", tNode.parentNode, undoObj);
 
         // #ifdef __WITH_RDB
-        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj || {xmlNode: pNode}); //@todo apf3.0 for range support
+        this.applyRDB(["setTextNode", pNode, value, xpath], undoObj || {xmlNode: pNode}); //@todo ppc3.0 for range support
         // #endif
     };
 
@@ -466,10 +466,10 @@ apf.xmldb = new (function(){
      * @param {String}     name      The name of the attribute.
      * @param {String}     value     The value of the attribute.
      * @param {String}     [xpath]   The xpath statement to select the attribute.
-     * @param {apf.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.setAttribute =
-    apf.setAttribute  = function(xmlNode, name, value, xpath, undoObj, range){
+    ppc.setAttribute  = function(xmlNode, name, value, xpath, undoObj, range){
         //Action Tracker Support
         if (undoObj && !undoObj.$filled) {
             undoObj.name = name;
@@ -477,7 +477,7 @@ apf.xmldb = new (function(){
         }
 
         //Apply Changes
-        if (range) { //@todo apf3.0 range
+        if (range) { //@todo ppc3.0 range
             undoObj.extra.range = range;
         }
         else
@@ -485,7 +485,7 @@ apf.xmldb = new (function(){
 
         this.applyChanges("attribute", xmlNode, undoObj);
         // #ifdef __WITH_RDB
-        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj || {xmlNode: xmlNode});  //@todo apf3.0 for range support
+        this.applyRDB(["setAttribute", xmlNode, name, value, xpath], undoObj || {xmlNode: xmlNode});  //@todo ppc3.0 for range support
         // #endif
     };
 
@@ -496,10 +496,10 @@ apf.xmldb = new (function(){
      * @param {XMLElement} xmlNode   The XML node to delete the attribute from
      * @param {String}     name      The name of the attribute.
      * @param {String}     [xpath]   The xpath statement to select the attribute.
-     * @param {apf.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.removeAttribute =
-    apf.removeAttribute  = function(xmlNode, name, xpath, undoObj){
+    ppc.removeAttribute  = function(xmlNode, name, xpath, undoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
 
         //Action Tracker Support
@@ -524,10 +524,10 @@ apf.xmldb = new (function(){
      * @param {XMLElement} oldNode   The XML node to remove.
      * @param {XMLElement} newNode   The XML node to set.
      * @param {String}     [xpath]   The xpath statement to select the attribute.
-     * @param {apf.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData}    [undoObj] The undo object that is responsible for archiving the changes.
      */
     this.replaceNode =
-    apf.replaceNode  = function(newNode, oldNode, xpath, undoObj){
+    ppc.replaceNode  = function(newNode, oldNode, xpath, undoObj){
         //if(xmlNode.nodeType != 1) xmlNode.nodeValue = value;
 
         //Apply Changes
@@ -576,10 +576,10 @@ apf.xmldb = new (function(){
      * @param {Array}      attr        list of the attributes to set. Each item is another array with the name and value.
      * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
      * @param {String}     [xpath]     The xpath statement to select the attribute.
-     * @param {apf.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.addChildNode =
-    apf.addChildNode  = function(pNode, tagName, attr, beforeNode, undoObj){
+    ppc.addChildNode  = function(pNode, tagName, attr, beforeNode, undoObj){
         //Create New Node
         var xmlNode = pNode.insertBefore(pNode.ownerDocument
             .createElement(tagName), beforeNode);
@@ -612,12 +612,12 @@ apf.xmldb = new (function(){
      * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
      * @param {Boolean}    unique      Specifies whether the parent can only contain one element with a certain tag name.
      * @param {String}     [xpath]     The xpath statement to select the parent node.
-     * @param {apf.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.appendChild =
-    apf.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
+    ppc.appendChild  = function(pNode, xmlNode, beforeNode, unique, xpath, undoObj){
         if (pNode == xmlNode.parentNode) //Shouldn't this be the same document?
-            return apf.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
+            return ppc.xmldb.moveNode(pNode, xmlNode, beforeNode, null, xpath, undoObj);
 
         if (unique && pNode.selectSingleNode(xmlNode.tagName))
             return false;
@@ -637,7 +637,7 @@ apf.xmldb = new (function(){
         //Add xmlNode to parent pNode or one selected by xpath statement
         if (xpath) {
             var addedNodes = [];
-            pNode = apf.createNodeFromXpath(pNode, xpath, addedNodes);
+            pNode = ppc.createNodeFromXpath(pNode, xpath, addedNodes);
             if (addedNodes.length) {
                 pNode.appendChild(xmlNode);
                 while(addedNodes.length) {
@@ -674,10 +674,10 @@ apf.xmldb = new (function(){
      * @param {XMLElement} xmlNode     The XML node to move.
      * @param {XMLElement} beforeNode  The XML node which indicates the insertion point.
      * @param {String}     [xpath]     The xpath statement to select the parent node.
-     * @param {apf.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.moveNode =
-    apf.moveNode  = function(pNode, xmlNode, beforeNode, xpath, undoObj){
+    ppc.moveNode  = function(pNode, xmlNode, beforeNode, xpath, undoObj){
         //Action Tracker Support
         if (!undoObj)
             undoObj = {extra:{}};
@@ -690,11 +690,11 @@ apf.xmldb = new (function(){
 
         //Set new id if the node change document (for safari this should be fixed)
         //@todo I don't get this if...
-        /*if (!apf.isWebkit
+        /*if (!ppc.isWebkit
           && xmlNode.getAttribute(this.xmlIdTag)
-          && apf.xmldb.getXmlDocId(xmlNode) != apf.xmldb.getXmlDocId(pNode)) {
+          && ppc.xmldb.getXmlDocId(xmlNode) != ppc.xmldb.getXmlDocId(pNode)) {
             xmlNode.removeAttribute(this.xmlIdTag));
-            this.nodeConnect(apf.xmldb.getXmlDocId(pNode), xmlNode);
+            this.nodeConnect(ppc.xmldb.getXmlDocId(pNode), xmlNode);
         }*/
 
         // @todo: only do this once! - should store on the undo object
@@ -719,10 +719,10 @@ apf.xmldb = new (function(){
      *
      * @param {XMLElement} xmlNode     The XML node to remove from the dom tree.
      * @param {String}     [xpath]     The xpath statement to select the parent node.
-     * @param {apf.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData}    [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.removeNode =
-    apf.removeNode  = function(xmlNode, xpath, undoObj){
+    ppc.removeNode  = function(xmlNode, xpath, undoObj){
         if (xpath)
             xmlNode = xmlNode.selectSingleNode(xpath);
 
@@ -755,10 +755,10 @@ apf.xmldb = new (function(){
      * to the databound elements listening for changes on the data changed.
      *
      * @param {Array}   xmlNodeList A list of XML nodes to remove.
-     * @param {apf.UndoData} [undoObj]   The undo object that is responsible for archiving the changes.
+     * @param {ppc.UndoData} [undoObj]   The undo object that is responsible for archiving the changes.
      */
     this.removeNodeList =
-    apf.removeNodeList  = function(xmlNodeList, undoObj){
+    ppc.removeNodeList  = function(xmlNodeList, undoObj){
         // #ifdef __WITH_RDB
         this.applyRDB(["removeNodeList", xmlNodeList, null], undoObj || {xmlNode: p});
         // #endif
@@ -796,11 +796,11 @@ apf.xmldb = new (function(){
     this.applyChanges = function(action, xmlNode, undoObj, nextloop){
         if (undoObj && undoObj.$dontapply) return;
         //#ifdef __WITH_OFFLINE
-        if (typeof apf.offline != "undefined" && apf.offline.models.enabled
-          && apf.offline.models.realtime) {
+        if (typeof ppc.offline != "undefined" && ppc.offline.models.enabled
+          && ppc.offline.models.realtime) {
             //#ifdef __WITH_NAMESERVER
-            var model = apf.nameserver.get("model", apf.xmldb.getXmlDocId(xmlNode));
-            if (model) apf.offline.models.markForUpdate(model);
+            var model = ppc.nameserver.get("model", ppc.xmldb.getXmlDocId(xmlNode));
+            if (model) ppc.offline.models.markForUpdate(model);
             //#endif
         }
         //#endif
@@ -834,12 +834,12 @@ apf.xmldb = new (function(){
                     /*if (uId.charAt(0) == "p") {
                         uId = uId.split("|");
 
-                        //@todo apf3.0 should this be exactly like in class.js?
+                        //@todo ppc3.0 should this be exactly like in class.js?
                         //@todo optimize this to check the async flag: parsed[3] & 4
 
-                        amlNode = apf.all[uId[1]]; //It's possible the aml node dissapeared in this loop.
+                        amlNode = ppc.all[uId[1]]; //It's possible the aml node dissapeared in this loop.
                         if (amlNode) {
-                            var model = apf.all[uId[3]];
+                            var model = ppc.all[uId[3]];
                             var xpath = model.$propBinds[uId[1]][uId[2]].root;
 
                             amlNode.$execProperty(uId[2], xpath
@@ -854,7 +854,7 @@ apf.xmldb = new (function(){
                         notifyQueue[uId] = hash = [];
 
                     // Filtering
-                    if (!apf.isO3 && "|update|attribute|text|".indexOf("|" + action + "|") > -1) {
+                    if (!ppc.isO3 && "|update|attribute|text|".indexOf("|" + action + "|") > -1) {
                         found = false;
                         for (j = 0; j < hash.length; j++) {
                             if (hash[j] && xmlNode == hash[j][1]
@@ -872,12 +872,12 @@ apf.xmldb = new (function(){
                     }
 
                     //!this.delayUpdate && <- that doesnt work because of information that is destroyed
-                    if (apf.isO3 || "|remove|move-away|move|add|".indexOf("|" + action + "|") > -1) {
+                    if (ppc.isO3 || "|remove|move-away|move|add|".indexOf("|" + action + "|") > -1) {
                         if (this.$listeners[uId]) {
                             this.$listeners[uId]([action, xmlNode,
                                 loopNode, undoObj, oParent]);
                         }
-                        /*amlNode = apf.all[uId];
+                        /*amlNode = ppc.all[uId];
                         if (amlNode)
                             amlNode.$xmlUpdate(action, xmlNode,
                                 loopNode, undoObj, oParent);*/
@@ -897,15 +897,15 @@ apf.xmldb = new (function(){
 
         if (true || undoObj && !this.delayUpdate) {
             //Ok this was an action let's not delay execution
-            apf.xmldb.notifyQueued();
+            ppc.xmldb.notifyQueued();
         }
         else if (runTimer) {
-            apf.setZeroTimeout.clearTimeout(notifyTimer);
+            ppc.setZeroTimeout.clearTimeout(notifyTimer);
             //@todo find a better solution for this (at the end of a event stack unroll)
             this.$hasQueue = true;
-            notifyTimer = apf.setZeroTimeout(function(){
+            notifyTimer = ppc.setZeroTimeout(function(){
                 //this.$hasQueue = true;
-                apf.xmldb.notifyQueued();
+                ppc.xmldb.notifyQueued();
             });
         }
     };
@@ -923,7 +923,7 @@ apf.xmldb = new (function(){
         var myQueue = notifyQueue;
         notifyQueue = {};
 
-        apf.setZeroTimeout.clearTimeout(notifyTimer);
+        ppc.setZeroTimeout.clearTimeout(notifyTimer);
         for (var uId in myQueue) {
             if (!uId) continue;
 
@@ -952,11 +952,11 @@ apf.xmldb = new (function(){
      */
     this.notifyListeners = function(xmlNode){
         //This should be done recursive
-        var listen = xmlNode.getAttribute(apf.xmldb.xmlListenTag);
+        var listen = xmlNode.getAttribute(ppc.xmldb.xmlListenTag);
         if (listen) {
             listen = listen.split(";");
             for (var j = 0; j < listen.length; j++) {
-                apf.all[listen[j]].$xmlUpdate("synchronize", xmlNode, xmlNode);
+                ppc.all[listen[j]].$xmlUpdate("synchronize", xmlNode, xmlNode);
                 //load(xmlNode);
             }
         }
@@ -969,7 +969,7 @@ apf.xmldb = new (function(){
      * @private
      */
     this.applyRDB = function(args, undoObj){
-        if (apf.xmldb.disableRDB)
+        if (ppc.xmldb.disableRDB)
             return;
 
         var xmlNode = undoObj.localName || !undoObj.xmlNode
@@ -979,15 +979,15 @@ apf.xmldb = new (function(){
         if (xmlNode.nodeType == 2)
             xmlNode = xmlNode.ownerElement || xmlNode.selectSingleNode("..");
         //#ifdef __WITH_NAMESERVER
-        var mdlId   = apf.xmldb.getXmlDocId(xmlNode),
-            model   = apf.nameserver.get("model", mdlId);
-        if (!model && apf.isO3)
+        var mdlId   = ppc.xmldb.getXmlDocId(xmlNode),
+            model   = ppc.nameserver.get("model", mdlId);
+        if (!model && ppc.isO3)
             model = self[mdlId];
         if (!model) {
-            if (!apf.nameserver.getAll("remote").length)
+            if (!ppc.nameserver.getAll("remote").length)
                 return;
             //#ifdef __DEBUG
-            apf.console.log("Could not find model '" + mdlId + "' for Remote DataBinding connection, not sending change");
+            ppc.console.log("Could not find model '" + mdlId + "' for Remote DataBinding connection, not sending change");
             //#endif
             return;
         }
@@ -1069,19 +1069,19 @@ apf.xmldb = new (function(){
      */
     this.copy         =
     this.getCleanCopy =
-    apf.getCleanCopy  = function(xmlNode){
-        return apf.xmldb.cleanNode(xmlNode.cloneNode(true));
+    ppc.getCleanCopy  = function(xmlNode){
+        return ppc.xmldb.cleanNode(xmlNode.cloneNode(true));
     };
 
     /**
-     * Unbind all APF Elements from a certain Form
+     * Unbind all PPC Elements from a certain Form
      * @private
      */
     this.unbind = function(frm){
-        //Loop through objects of all apf
-        for (var lookup = {}, i = 0; i < frm.apf.all.length; i++)
-            if (frm.apf.all[i] && frm.apf.all[i].unloadBindings)
-                lookup[frm.apf.all[i].unloadBindings()] = true;
+        //Loop through objects of all ppc
+        for (var lookup = {}, i = 0; i < frm.ppc.all.length; i++)
+            if (frm.ppc.all[i] && frm.ppc.all[i].unloadBindings)
+                lookup[frm.ppc.all[i].unloadBindings()] = true;
 
         //Remove Listen Nodes
         for (var k = 0; k < this.$xmlDocLut.length; k++) {
@@ -1116,13 +1116,13 @@ apf.xmldb = new (function(){
      */
     this.getXmlDocId = function(xmlNode, model){
         var docEl = xmlNode.ownerDocument.documentElement;
-        if (!apf.isChildOf(docEl, xmlNode))
+        if (!ppc.isChildOf(docEl, xmlNode))
             docEl = xmlNode;
 
         var docId = (docEl || xmlNode).getAttribute(this.xmlDocTag)
             || this.$xmlDocLut.indexOf(docEl || xmlNode.ownerDocument || xmlNode);
 
-        if (model && apf.nameserver.get("model", docId) != model) {
+        if (model && ppc.nameserver.get("model", docId) != model) {
             docId = null;
             docEl = xmlNode;
         }
@@ -1134,7 +1134,7 @@ apf.xmldb = new (function(){
         }
         //#ifdef __WITH_NAMESERVER
         if (model)
-            apf.nameserver.register("model", docId, model);
+            ppc.nameserver.register("model", docId, model);
         //#endif
 
         return docId;

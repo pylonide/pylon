@@ -21,17 +21,17 @@
 
 // #ifdef __ENABLE_EDITOR_LIST || __INC_ALL
 
-apf.LiveEdit.listPlugin = function(sName) {
+ppc.LiveEdit.listPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = sName == "bullist" ? "ctrl+shift+u" : "ctrl+shift+o";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
-    var emptyRegex = apf.isIE
-        ? /^(&nbsp;)?<DIV[^>]*_apf_placeholder(="1">&nbsp;)?<\/DIV>$/gi
+    var emptyRegex = ppc.isIE
+        ? /^(&nbsp;)?<DIV[^>]*_ppc_placeholder(="1">&nbsp;)?<\/DIV>$/gi
         : /^(&nbsp;)?<BR\/?>$/gi;
 
     this.execute = function(editor) {
@@ -104,9 +104,9 @@ apf.LiveEdit.listPlugin = function(sName) {
         //    moveListItems(oSibling.nextSibling, oSibling);
 
         editor.$selection.selectNode(oNode);
-        if (!apf.isIE)
+        if (!ppc.isIE)
             editor.$selection.getRange().setStart(oNode, 0);
-        editor.$selection.collapse(!apf.isIE);
+        editor.$selection.collapse(!ppc.isIE);
         editor.$visualFocus();
         return true;
     };
@@ -121,13 +121,13 @@ apf.LiveEdit.listPlugin = function(sName) {
         var state = editor.$queryCommandState(this.name == "bullist"
             ? "InsertUnorderedList"
             : "InsertOrderedList");
-        if (state == apf.DISABLED)
-            return apf.OFF;
+        if (state == ppc.DISABLED)
+            return ppc.OFF;
         return state;
     };
 };
 
-apf.LiveEdit.plugin("bullist", apf.LiveEdit.listPlugin);
-apf.LiveEdit.plugin("numlist", apf.LiveEdit.listPlugin);
+ppc.LiveEdit.plugin("bullist", ppc.LiveEdit.listPlugin);
+ppc.LiveEdit.plugin("numlist", ppc.LiveEdit.listPlugin);
 
 // #endif

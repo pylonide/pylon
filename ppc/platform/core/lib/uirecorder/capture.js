@@ -4,7 +4,7 @@
     @todo Socket.io support
 */
 
-apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
+ppc.uirecorder.capture = ppc.extend(new ppc.Class().$init(), {
     validKeys      : [ 37, 38, 39, 40,  //arrowkeys
                         27,             // Esc
                         16, 17, 18,     // Shift, Ctrl, Alt
@@ -18,7 +18,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
     // start capturing
     record : function() {
         // init capturing
-        apf.uirecorder.capture.init();
+        ppc.uirecorder.capture.init();
 
         this.actions    = [];
         this.startTime  = new Date().getTime();
@@ -26,8 +26,8 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         // start capturing
         this.createStream();
         
-        apf.uirecorder.captureDetails = true;
-        apf.uirecorder.isRecording    = true;
+        ppc.uirecorder.captureDetails = true;
+        ppc.uirecorder.isRecording    = true;
         this.setProperty("isRecording", true);
         
         this.dispatchEvent("record");
@@ -35,7 +35,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
     
     // stop capturing, save recorded data in this.outputXml
     stop : function() {
-        apf.uirecorder.isRecording = false;
+        ppc.uirecorder.isRecording = false;
         this.setProperty("isRecording", false);
 
         if (this.lastStream && !this.lastStream.name)
@@ -43,7 +43,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         
         this.lastStream = null;
         
-        $setTimeout = apf.uirecorder.setTimeout;
+        $setTimeout = ppc.uirecorder.setTimeout;
         
         this.dispatchEvent("stop");
     },
@@ -54,59 +54,59 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
             
         this.paused = true;
         this.wasRecording = this.isRecording;
-        apf.uirecorder.isRecording = false;
+        ppc.uirecorder.isRecording = false;
         
         //???
-        //$setTimeout = apf.uirecorder.setTimeout;
+        //$setTimeout = ppc.uirecorder.setTimeout;
     },
     
     unpause : function(){
         if (!this.paused)
             return;
         
-        apf.uirecorder.isRecording = this.wasRecording;
+        ppc.uirecorder.isRecording = this.wasRecording;
         this.paused = false;
     },
 
     canCapture : function(){
-        return !(apf.uirecorder.isPaused 
-          || !(apf.uirecorder.isPlaying 
-          || apf.uirecorder.isRecording 
-          || apf.uirecorder.isTesting));
+        return !(ppc.uirecorder.isPaused 
+          || !(ppc.uirecorder.isPlaying 
+          || ppc.uirecorder.isRecording 
+          || ppc.uirecorder.isTesting));
     },
     
     /**
      * init capturing of user interaction
      */
     init : function() {
-        if (apf.uirecorder.$inited) return;
-        apf.uirecorder.$inited = true;
+        if (ppc.uirecorder.$inited) return;
+        ppc.uirecorder.$inited = true;
 
         var _self = this;
 
         // listeners for user mouse interaction
-        /*apf.addListener(document, "dblclick", 
+        /*ppc.addListener(document, "dblclick", 
             _self.dblclick = function(e) {
                 if (!_self.canCapture())
                     return;
                 _self.captureHtmlEvent("dblclick", e || event);
             }, true);*/
 
-        apf.addListener(document, "mousedown",
+        ppc.addListener(document, "mousedown",
             _self.mousedown = function(e) {
                 if (!_self.canCapture()) 
                     return;
                 _self.captureHtmlEvent("mousedown", e || event);
             }, true);
 
-        apf.addListener(document, "mouseup",
+        ppc.addListener(document, "mouseup",
             _self.mouseup = function(e) {
                 if (!_self.canCapture()) 
                     return;
                 _self.captureHtmlEvent("mouseup", e || event);
             }, true);
         
-        apf.addListener(document, "mousemove",
+        ppc.addListener(document, "mousemove",
             _self.mousemove = function(e) {
                 if (!_self.canCapture()) 
                     return;
@@ -125,7 +125,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
                 var delta = null;
                 if (e.wheelDelta) {
                     delta = e.wheelDelta / 120;
-                    if (apf.isOpera)
+                    if (ppc.isOpera)
                         delta *= -1;
                 }
                 else if (e.detail)
@@ -144,7 +144,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
                 var delta = null;
                 if (e.wheelDelta) {
                     delta = e.wheelDelta / 120;
-                    if (apf.isOpera)
+                    if (ppc.isOpera)
                         delta *= -1;
                 }
                 else if (e.detail)
@@ -155,7 +155,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         }
         
         // listeners for keyboard interaction
-        apf.addListener(document, "keyup",
+        ppc.addListener(document, "keyup",
             _self.keyup = function(e) {
                 e = e || event;
 
@@ -166,14 +166,14 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
                 if (_self.validKeys.indexOf(keycode) == -1)
                     return;
     
-                if (apf.document.activeElement.$ignoreRecorder)
+                if (ppc.document.activeElement.$ignoreRecorder)
                     return;
     
                 _self.captureHtmlEvent("keyup", e, 
                     String.fromCharCode(keycode));
             }, true);
         
-        apf.addListener(document, "keydown",
+        ppc.addListener(document, "keydown",
             _self.keydown     = function(e) {
                 e = e || event;
                 
@@ -184,14 +184,14 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
                 if (_self.validKeys.indexOf(keycode) == -1) 
                     return;
 
-                if (apf.document.activeElement.$ignoreRecorder)
+                if (ppc.document.activeElement.$ignoreRecorder)
                     return;
 
                 _self.captureHtmlEvent("keydown", e, 
                     String.fromCharCode(keycode));
             }, true);
         
-        apf.addListener(document, "keypress",
+        ppc.addListener(document, "keypress",
             _self.keypress = function(e) {
                 e = e || event;
                 
@@ -218,7 +218,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
                 _self.captureHtmlEvent("keypress", e, character);
             }, true);
         
-        // @todo fix problem with onkeyup in apf
+        // @todo fix problem with onkeyup in ppc
     },
     
     captureHtmlEvent : function(eventName, e, value) {
@@ -274,7 +274,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         // Create the stream for the next event after all sync execution
         
         var _self = this;
-        apf.addListener(document, eventName, this.lastCleanUpCallback = function(){
+        ppc.addListener(document, eventName, this.lastCleanUpCallback = function(){
             _self.nextStream(eventName);
         });
         
@@ -284,13 +284,13 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
     },
     
     nextStream : function(eventName){
-        if (!apf.uirecorder.isRecording)
+        if (!ppc.uirecorder.isRecording)
             return;
         
         if (this.lastStream.name)
             this.createStream();
 
-        apf.removeListener(document, eventName, this.lastCleanUpCallback);
+        ppc.removeListener(document, eventName, this.lastCleanUpCallback);
     },
     
     replaceTimeout : function(stream) {
@@ -300,13 +300,13 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
             //Record current mouseEvent
             if (!ms) ms = null;
             
-            return apf.uirecorder.setTimeout.call(window, function(){
+            return ppc.uirecorder.setTimeout.call(window, function(){
                 var lastStream   = _self.lastStream; //Later in time, so potentially a different stream;
                 _self.lastStream = stream;
                 stream.async = true;
                 
                 if (typeof f == "string")
-                    apf.jsexec(f)
+                    ppc.jsexec(f)
                 else if (f)
                     f();
                 
@@ -374,7 +374,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
             this.lastStream.element = 
                 this.getElementLookupDef(htmlNode);
             
-            var pos = apf.getAbsolutePosition(htmlNode);
+            var pos = ppc.getAbsolutePosition(htmlNode);
             this.lastStream.offsetX = e.htmlEvent.x - pos[0];
             this.lastStream.offsetY = e.htmlEvent.y - pos[1];
         }
@@ -425,7 +425,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
             name        : params.action,
             async       : this.lastStream.async,
             time        : new Date().getTime() - this.lastStream.abstime,
-            xmlNode     : apf.xmlToXpath(params.xmlNode, params.amlNode.data),
+            xmlNode     : ppc.xmlToXpath(params.xmlNode, params.amlNode.data),
             element     : this.getElementLookupDef(null, target)
             //@todo params.UndoObj??
         });
@@ -470,7 +470,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
             htmlNode = e.srcElement || e.target;
         
         if (!amlNode)
-            amlNode = apf.findHost(htmlNode);
+            amlNode = ppc.findHost(htmlNode);
 
         if (amlNode && amlNode.$ignoreRecorder)
             return false;
@@ -482,26 +482,26 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
                 searchObj.id = amlNode.id;
             }
             else if (!amlNode.parentNode) {
-                if (amlNode == apf.window.getActionTracker())
-                    searchObj.eval = "apf.window.getActionTracker()";
+                if (amlNode == ppc.window.getActionTracker())
+                    searchObj.eval = "ppc.window.getActionTracker()";
                 else
                     return false;
             }
             else {
                 searchObj.xpath = 
-                    apf.xmlToXpath(amlNode, apf.document.documentElement);
+                    ppc.xmlToXpath(amlNode, ppc.document.documentElement);
             }
             
             if (!htmlNode)
                 return searchObj;
             
-            if (amlNode.hasFeature(apf.__MULTISELECT__)) {
-                xmlNode = apf.xmldb.findXmlNode(htmlNode);
+            if (amlNode.hasFeature(ppc.__MULTISELECT__)) {
+                xmlNode = ppc.xmldb.findXmlNode(htmlNode);
                 if (xmlNode) {
-                    var xpath = apf.xmlToXpath(xmlNode, amlNode.xmlRoot);
+                    var xpath = ppc.xmlToXpath(xmlNode, amlNode.xmlRoot);
                     if (xpath != ".") {
                         searchObj.xml = xpath
-                        context       = apf.xmldb.getHtmlNode(xmlNode, amlNode);
+                        context       = ppc.xmldb.getHtmlNode(xmlNode, amlNode);
                     }
                 }
             }
@@ -510,7 +510,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
                 if (amlNode.$getActiveElements) {
                     var activeElements = amlNode.$getActiveElements();
                     for (var name in activeElements) {
-                        if (apf.isChildOf(activeElements[name], htmlNode, true)) {
+                        if (ppc.isChildOf(activeElements[name], htmlNode, true)) {
                             searchObj.property = name;
                             context            = activeElements[name];
                             break;
@@ -519,7 +519,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
                 }
                 
                 if (context) {}
-                else if (apf.isChildOf(amlNode.$ext, htmlNode, true))
+                else if (ppc.isChildOf(amlNode.$ext, htmlNode, true))
                     context = amlNode.$ext;
                 else {
                     throw new Error ("Could not determine context for " 
@@ -529,7 +529,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         }
 
         if (context != htmlNode)
-            searchObj.htmlXpath = apf.xmlToXpath(htmlNode, context);
+            searchObj.htmlXpath = ppc.xmlToXpath(htmlNode, context);
 
         return searchObj;
     },
@@ -539,7 +539,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
         
         if (!obj || "object|array".indexOf(typeof obj) == -1)
             o = obj;
-        else if (obj.dataType == apf.ARRAY) {
+        else if (obj.dataType == ppc.ARRAY) {
             o = [];
             for (var i = 0; i < obj.length; i++) {
                 o[i] = this.getCleanCopy(obj[i]);
@@ -551,10 +551,10 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
             o = this.getElementLookupDef(obj);
         else if (obj.nodeType) {
             try {
-                var model = apf.xmldb.findModel(obj);
+                var model = ppc.xmldb.findModel(obj);
                 o = {
                     eval : model.id + ".queryNode('" 
-                        + apf.xmlToXpath(obj, model.data).replace(/'/g, "\\'")
+                        + ppc.xmlToXpath(obj, model.data).replace(/'/g, "\\'")
                         + "')",
                 }
             }
@@ -593,7 +593,7 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
     // *** OUTPUT Functions *** //
 
     toXml : function(){
-        var xml = apf.getXml("<recording />");
+        var xml = ppc.getXml("<recording />");
         var doc = xml.ownerDocument;
         
         var action, item;
@@ -610,9 +610,9 @@ apf.uirecorder.capture = apf.extend(new apf.Class().$init(), {
 });
 
 //#ifdef __ENABLE_UIRECORDER_XML
-apf.uirecorder.capture.addEventListener("record", function(e){
+ppc.uirecorder.capture.addEventListener("record", function(e){
     if (!this.model) {
-        this.model = new apf.model();
+        this.model = new ppc.model();
         this.model.$ignoreRecorder = true;
         this.model.load("<tests><test name='Test recording 1' /></tests>");
     }
@@ -621,14 +621,14 @@ apf.uirecorder.capture.addEventListener("record", function(e){
         this.model.appendXml("<test name='Test recording " + nr + "' />");
     }
 });
-apf.uirecorder.capture.addEventListener("stop", function(e){
+ppc.uirecorder.capture.addEventListener("stop", function(e){
     var nodes = this.model.queryNodes("test[last()]/action");
     for (var i = 0; i < nodes.length; i++) {
         nodes[i].setAttribute("json", 
             JSON.stringify(this.actions[nodes[i].getAttribute("index")]));
     }
 });
-apf.uirecorder.capture.addEventListener("action", function(e){
+ppc.uirecorder.capture.addEventListener("action", function(e){
     if (e.stream.name == "mousemove")
         return;
     
@@ -642,10 +642,10 @@ apf.uirecorder.capture.addEventListener("action", function(e){
     
     this.model.appendXml(actionNode, "test[last()]");
 });
-apf.uirecorder.capture.addEventListener("capture.http", function(e){
+ppc.uirecorder.capture.addEventListener("capture.http", function(e){
     
 });
-apf.uirecorder.capture.addEventListener("capture.prop", function(e){
+ppc.uirecorder.capture.addEventListener("capture.prop", function(e){
     if (!e.stream.name || e.stream.name == "mousemove")
         return;
 
@@ -663,14 +663,14 @@ apf.uirecorder.capture.addEventListener("capture.prop", function(e){
     
     this.model.appendXml(assertNode, "test[last()]/action[@index=" + index + "]");
 });
-apf.uirecorder.capture.addEventListener("capture.event", function(e){
+ppc.uirecorder.capture.addEventListener("capture.event", function(e){
     if ("dragstop|dragdrop".indexOf(e.event.name) > -1) {
         this.model.setQueryValue("test[last()]/action[@index=" 
           + this.actions.indexOf(e.stream) + "]/@element", 
             JSON.stringify(e.stream.element));
     }
 });
-apf.uirecorder.capture.addEventListener("capture.data", function(e){
+ppc.uirecorder.capture.addEventListener("capture.data", function(e){
     
 });
 //#endif

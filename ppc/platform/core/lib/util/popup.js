@@ -24,7 +24,7 @@
 /**
  * @private
  */
-apf.popup = {
+ppc.popup = {
     cache      : {},
     focusFix   : {"INPUT":1,"TEXTAREA":1,"SELECT":1},
     
@@ -39,20 +39,20 @@ apf.popup = {
         };
         content.style.position = "absolute";
         //if(content.parentNode) content.parentNode.removeChild(content);
-        //if(style) apf.importCssString(style, this.popup.document);
+        //if(style) ppc.importCssString(style, this.popup.document);
         
         content.onmousedown  = function(e) {
             if (!e) e = event;
 
             //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug 
-              && !apf.popup.focusFix[(e.srcElement || e.target).tagName]) {
-                apf.window.$focusfix();
+            if (ppc.hasFocusBug 
+              && !ppc.popup.focusFix[(e.srcElement || e.target).tagName]) {
+                ppc.window.$focusfix();
             }
             //#endif
             
             //@todo can this cancelBubble just go?
-            //apf.cancelBubble(e, null, true);
+            //ppc.cancelBubble(e, null, true);
             //e.cancelBubble = true;
         };
         
@@ -68,16 +68,16 @@ apf.popup = {
         //consider using iframe
         this.popup = {};
         
-        apf.addEventListener("hotkey", function(e){
+        ppc.addEventListener("hotkey", function(e){
             if (e.keyCode == "27" || e.altKey) 
-                apf.popup.forceHide();
+                ppc.popup.forceHide();
         });
     },
     
     show : function(cacheId, options){
         if (!this.popup) this.init();
         
-        options = apf.extend({
+        options = ppc.extend({
             x            : 0,
             y            : 0,
             animate      : false,
@@ -112,7 +112,7 @@ apf.popup = {
             fixed  = false;
 
         if (options.setZindex)
-            apf.window.zManager.set("popup", o.content);
+            ppc.window.zManager.set("popup", o.content);
         
         if ((dp = o.content.style.display) && dp.indexOf("none") > -1)
             o.content.style.display = "";
@@ -122,14 +122,14 @@ apf.popup = {
 
         var refNode = options.ref;
         while (refNode && refNode.nodeType == 1) {
-            if (fixed = apf.getStyle(refNode, "position") == "fixed")
+            if (fixed = ppc.getStyle(refNode, "position") == "fixed")
                 break;
             refNode = refNode.parentNode || refNode.$parentNode;
         }
 
         if (!fixed) {
             if (refNode) {
-                var pos = apf.getAbsolutePosition(options.ref, 
+                var pos = ppc.getAbsolutePosition(options.ref, 
                     o.content.offsetParent || o.content.parentNode);
                 x = (x || 0) + pos[0];
                 y = (y || 0) + pos[1];
@@ -141,9 +141,9 @@ apf.popup = {
             popup.style.position = "absolute";
             
             var parentMenu = this.cache[options.allowTogether];
-            var pOverflow  = apf.getOverflowParent(o.content);
+            var pOverflow  = ppc.getOverflowParent(o.content);
             var edgeY      = (pOverflow == document.documentElement
-                ? (apf.isIE 
+                ? (ppc.isIE 
                     ? pOverflow.offsetHeight 
                     : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
                 : pOverflow.offsetHeight + pOverflow.scrollTop);
@@ -166,7 +166,7 @@ apf.popup = {
             
             if (!options.noleft) {
                 var edgeX     = (pOverflow == document.documentElement
-                    ? (apf.isIE 
+                    ? (ppc.isIE 
                         ? pOverflow.offsetWidth
                         : (window.innerWidth + window.pageXOffset)) + pOverflow.scrollLeft
                     : pOverflow.offsetWidth + pOverflow.scrollLeft);
@@ -192,7 +192,7 @@ apf.popup = {
             }
         }
         else {
-            pos = apf.getAbsolutePosition(options.ref, refNode);
+            pos = ppc.getAbsolutePosition(options.ref, refNode);
             y = (y || 0) + pos[1] + refNode.offsetTop;
             pos[0] += refNode.offsetLeft;
             popup.style.position = "fixed";
@@ -205,22 +205,22 @@ apf.popup = {
         // #ifdef __WITH_STYLE
         // set a className that specifies the direction, to help skins with
         // specific styling options.
-        apf.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
-        apf.setStyleClass(popup, moveLeft ? "moveleft" : "moveright", [moveLeft ? "moveright" : "moveleft"]);
+        ppc.setStyleClass(popup, moveUp ? "upward" : "downward", [moveUp ? "downward" : "upward"]);
+        ppc.setStyleClass(popup, moveLeft ? "moveleft" : "moveright", [moveLeft ? "moveright" : "moveleft"]);
         // #endif
 
         if (options.animate) {
             if (options.animate == "fade") {
-                apf.tween.single(popup, {
+                ppc.tween.single(popup, {
                     type  : 'fade',
                     from  : 0,
                     to    : 1,
-                    anim  : apf.tween.NORMAL,
-                    steps : options.steps || 15 * apf.animSteps
+                    anim  : ppc.tween.NORMAL,
+                    steps : options.steps || 15 * ppc.animSteps
                 });
             }
             else {
-                var iVal, steps = apf.isIE8 ? 5 : 7, i = 0;
+                var iVal, steps = ppc.isIE8 ? 5 : 7, i = 0;
                 iVal = setInterval(function(){
                     var value = ++i * ((options.height || o.height) / steps);
 
@@ -257,7 +257,7 @@ apf.popup = {
         }
 
         $setTimeout(function(){
-            apf.popup.last = cacheId;
+            ppc.popup.last = cacheId;
         });
 
         if (options.draggable) {
@@ -275,7 +275,7 @@ apf.popup = {
                 o.content.style.display = "none";
 
             if (o.options && o.options.onclose) {
-                o.options.onclose(apf.extend(o.options, {htmlNode: o.content}));
+                o.options.onclose(ppc.extend(o.options, {htmlNode: o.content}));
                 o.options.onclose = false;
             }
         }
@@ -290,7 +290,7 @@ apf.popup = {
     isDragging   : false,
 
     makeDraggable: function(options) {
-        if (!apf.Interactive || this.cache[options.id].draggable) 
+        if (!ppc.Interactive || this.cache[options.id].draggable) 
             return;
 
         var oHtml = this.cache[options.id].content;
@@ -314,23 +314,23 @@ apf.popup = {
             if (!e) e = event;
             
             //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug
-              && !apf.popup.focusFix[(e.srcElement || e.target).tagName]) {
-                apf.window.$focusfix();
+            if (ppc.hasFocusBug
+              && !ppc.popup.focusFix[(e.srcElement || e.target).tagName]) {
+                ppc.window.$focusfix();
             }
             //#endif
             
             (e || event).cancelBubble = true;
         }
 
-        apf.implement.call(o, apf.Interactive);
+        ppc.implement.call(o, ppc.Interactive);
 
         o.$propHandlers["draggable"].call(o, true);
         o.$propHandlers["resizable"].call(o, true);
     },
     
     getCurrentElement : function(){
-        return typeof this.last == "number" && apf.lookup(this.last);
+        return typeof this.last == "number" && ppc.lookup(this.last);
     },
     
     $mousedownHandler : function(amlNode, e){
@@ -342,7 +342,7 @@ apf.popup = {
         var uId = this.last;
         
         while (this.cache[uId]) {
-            if (apf.isChildOf(this.cache[uId].content, htmlNode, true))
+            if (ppc.isChildOf(this.cache[uId].content, htmlNode, true))
                 return;
             
             if (!this.cache[uId].options)
@@ -357,13 +357,13 @@ apf.popup = {
     forceHide : function(){
         if (this.last 
           //#ifdef __WITH_PLANE
-          && !apf.plane.current
+          && !ppc.plane.current
           //#endif
           && this.isShowing(this.last)
           && this.cache[this.last]
           && this.cache[this.last].options
           && this.cache[this.last].options.autohide !== false) {
-            var o = apf.lookup(this.last);
+            var o = ppc.lookup(this.last);
             if (!o)
                 this.last = null;
             else if (o.dispatchEvent("popuphide") !== false)
@@ -375,7 +375,7 @@ apf.popup = {
         for (var cacheId in this.cache) {
             if (this.cache[cacheId]) {
                 this.cache[cacheId].content.onmousedown = null;
-                apf.destroyHtmlNode(this.cache[cacheId].content);
+                ppc.destroyHtmlNode(this.cache[cacheId].content);
                 this.cache[cacheId].content = null;
                 this.cache[cacheId] = null;
             }

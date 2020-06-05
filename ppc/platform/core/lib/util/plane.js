@@ -24,7 +24,7 @@
  * @todo needs refactor
  * @private
  */
-apf.plane = {
+ppc.plane = {
     $set    : [],
     $lookup : {},
     $find : function(id){
@@ -62,8 +62,8 @@ apf.plane = {
 
     $factory : function(){
         var _self = this,
-            spacerPath = "url(" + (apf.skins.skins["default"] 
-            ? apf.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
+            spacerPath = "url(" + (ppc.skins.skins["default"] 
+            ? ppc.skins.skins["default"].mediaPath + "spacer.gif" : "images/spacer.gif") + ")";
         
         function getCover(){
             var obj = document.createElement("DIV");
@@ -71,7 +71,7 @@ apf.plane = {
             if(!_self.options || !_self.options.customCover)
                 return obj;
             
-            obj.innerHTML = apf.getXmlString(_self.options.customCover);
+            obj.innerHTML = ppc.getXmlString(_self.options.customCover);
             return obj.firstChild;
         }
         
@@ -112,7 +112,7 @@ apf.plane = {
                 this.protect = options && options.protect;
                 
                 if (this.protect)
-                    apf.setProperty("planes", (apf.planes || 0) + 1);
+                    ppc.setProperty("planes", (ppc.planes || 0) + 1);
                 
                 if (o) { //@experimental
                     this.current = o;
@@ -121,21 +121,21 @@ apf.plane = {
                         this.plane.appendChild(o);
                     }
                 }
-                apf.window.zManager.set("plane", this.plane, !reAppend && o);
+                ppc.window.zManager.set("plane", this.plane, !reAppend && o);
                 
-                useRealSize = apf.isIE;
+                useRealSize = ppc.isIE;
                 var pWidth = (plane.parentNode == document.body
-                    ? useRealSize ? document.documentElement.offsetWidth : apf.getWindowWidth()
+                    ? useRealSize ? document.documentElement.offsetWidth : ppc.getWindowWidth()
                     : plane.parentNode.offsetWidth);
          
                 var pHeight = (plane.parentNode == document.body
-                    ? useRealSize ? document.documentElement.offsetHeight : apf.getWindowHeight()
+                    ? useRealSize ? document.documentElement.offsetHeight : ppc.getWindowHeight()
                     : plane.parentNode.offsetHeight);
                 
                 if (copyCursor) {
                     if (this.lastCursor === null)
                         this.lastCursor = document.body.style.cursor;
-                    document.body.style.cursor = apf.getStyle(o, "cursor");
+                    document.body.style.cursor = ppc.getStyle(o, "cursor");
                 }
                 
                 this.plane.style.display = "block";
@@ -145,9 +145,9 @@ apf.plane = {
                 var toOpacity = parseFloat(options && options.opacity) || 1;
                 if (this.animate) {
                     var _self = this;
-                    apf.setOpacity(this.plane, 0);
+                    ppc.setOpacity(this.plane, 0);
                     setTimeout(function(){
-                        apf.tween.single(_self.plane, {
+                        ppc.tween.single(_self.plane, {
                             steps    : 5,
                             interval : 10,
                             type     : "fade",
@@ -157,9 +157,9 @@ apf.plane = {
                     }, 100);
                 }
                 else
-                    apf.setOpacity(this.plane, toOpacity);
+                    ppc.setOpacity(this.plane, toOpacity);
                 
-                var diff = apf.getDiff(plane);
+                var diff = ppc.getDiff(plane);
                 this.plane.style.width  = "100%";//(pWidth - diff[0]) + "px";
                 this.plane.style.height = "100%";//(pHeight - diff[1]) + "px";
         
@@ -170,11 +170,11 @@ apf.plane = {
         
             hide : function(noAnim){
                 if (this.protect)
-                    apf.setProperty("planes", apf.planes - 1);
+                    ppc.setProperty("planes", ppc.planes - 1);
                 
                 var isChild; // try...catch block is needed to work around a FF3 Win issue with HTML elements
                 try {
-                    isChild = apf.isChildOf(this.plane, document.activeElement);
+                    isChild = ppc.isChildOf(this.plane, document.activeElement);
                 }
                 catch (ex) {
                     isChild = false;
@@ -185,32 +185,32 @@ apf.plane = {
                 if (this.animate && !noAnim) {
                     var _self = this;
                     setTimeout(function(){
-                        apf.tween.single(_self.plane, {
+                        ppc.tween.single(_self.plane, {
                             steps    : 5,
                             interval : 10,
                             type     : "fade",
-                            from     : apf.getOpacity(_self.plane),
+                            from     : ppc.getOpacity(_self.plane),
                             to       : 0,
                             onfinish : function(){
                                 _self.plane.style.display  = "none";
                                 
                                 if (_self.current)
-                                    apf.window.zManager.clear(_self.current);
+                                    ppc.window.zManager.clear(_self.current);
                             }
                         });
                     }, 100);
                 }
                 else {
-                    apf.setOpacity(this.plane, 0);
+                    ppc.setOpacity(this.plane, 0);
                     if (this.current)
-                        apf.window.zManager.clear(this.plane, this.current);
+                        ppc.window.zManager.clear(this.plane, this.current);
                     this.plane.style.display  = "none";
                 }
                 
-                if (isChild && apf.document.activeElement) {
-                    if (!apf.isIE)
+                if (isChild && ppc.document.activeElement) {
+                    if (!ppc.isIE)
                         document.activeElement.focus();
-                    apf.document.activeElement.$focus();
+                    ppc.document.activeElement.$focus();
                 }
                 
                 this.current = null;

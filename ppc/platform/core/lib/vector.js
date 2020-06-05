@@ -21,9 +21,9 @@
  
 //#ifdef __WITH_VECTOR
 
-apf.vector =  new (function(){
+ppc.vector =  new (function(){
 
-    var pe = apf.lm.parseExpression, pf = parseFloat, c = {}, style_short = {
+    var pe = ppc.lm.parseExpression, pf = parseFloat, c = {}, style_short = {
         'scale-x':'sx','scale-width':'sx','scalex':'sx','scalewidth':'sx',
         'scale-y':'sy','scale-height':'sy','scaley':'sy','scaleheight':'sy',
         'offset-x':'ox','offset-left':'ox', 'offsetx':'ox','offsetleft':'ox',
@@ -138,9 +138,9 @@ apf.vector =  new (function(){
     this.group = function(st,htmlroot){
         htmlroot = typeof(htmlroot)=='string'?document.getElementById(htmlroot):(htmlroot||document.body);
         // pick renderer to use SVG or VML
-        if(apf.supportVML)
+        if(ppc.supportVML)
             return this.vml.group(st,htmlroot);
-        else if(apf.supportSVG)
+        else if(ppc.supportSVG)
             return this.svg.group(st,htmlroot);
     }
     
@@ -257,7 +257,7 @@ apf.vector =  new (function(){
                         this.$c_z,
                     "}"
                 ].join('');
-                this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
+                this.$update = codecache[code] || (codecache[code] = ppc.lm_exec.compile(code));
                 
                 if(this.$domnode){ // if we have a vmlnode, put ourself on the update list
                     this.$parent.$dirtynodes[this.$uid] = this;
@@ -306,7 +306,7 @@ apf.vector =  new (function(){
         this.group = function(st, htmlroot){
             if(!this.$vmlInited){
                 var css = "av\\:vmlframe {behavior: url(#default#VML);} av\\:fill {behavior: url(#default#VML);} av\\:stroke {behavior: url(#default#VML);} av\\:shape {behavior: url(#default#VML);} av\\:group {behavior: url(#default#VML);} av\\:path {behavior: url(#default#VML);}";
-                apf.importCssString(css);
+                ppc.importCssString(css);
                 document.namespaces.add("av","urn:schemas-microsoft-com:vml");
                 this.$vmlInited = true;
             }
@@ -439,7 +439,7 @@ apf.vector =  new (function(){
                                 this.$c_r,
                                 "}"].join('');     
                     
-                    this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
+                    this.$update = codecache[code] || (codecache[code] = ppc.lm_exec.compile(code));
                     
                     if(this.$domnode){ // if we have a vmlnode, put ourself on the update list
                         this.$parent.$dirtynodes[this.$uid] = this; 
@@ -567,7 +567,7 @@ apf.vector =  new (function(){
                         this.$c_z,
                     "}"
                 ].join('');
-                this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
+                this.$update = codecache[code] || (codecache[code] = ppc.lm_exec.compile(code));
                 
                 if(this.$domnode){ // if we have a vmlnode, put ourself on the update list
                     this.$parent.$dirtynodes[this.$uid] = this;
@@ -734,7 +734,7 @@ apf.vector =  new (function(){
                             this.$c_r,
                         "}"
                     ].join('');     
-                    this.$update = codecache[code] || (codecache[code] = apf.lm_exec.compile(code));
+                    this.$update = codecache[code] || (codecache[code] = ppc.lm_exec.compile(code));
                     if(this.$domnode){ // if we have a vmlnode, put ourself on the update list
                         this.$parent.$dirtynodes[this.$uid] = this;
                     }

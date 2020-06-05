@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_MD5
 
-apf.crypto.MD5 = {
+ppc.crypto.MD5 = {
     /*
      * Configurable variables. You may need to tweak these to be compatible with
      * the server-side, but the defaults work in most cases.
@@ -35,7 +35,7 @@ apf.crypto.MD5 = {
      * They take string arguments and return either hex or base-64 encoded strings
      * 
      * Example:
-     * var hash = apf.crypto.MD5.hex_md5("uzza"); //fddb7463a72e6b000abf631f558cf034
+     * var hash = ppc.crypto.MD5.hex_md5("uzza"); //fddb7463a72e6b000abf631f558cf034
      */
     
     hex_md5: function(s) {

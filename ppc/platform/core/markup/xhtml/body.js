@@ -20,8 +20,8 @@
  */
 
 //#ifdef __PARSER_XHTML
-apf.XhtmlBodyElement = function(struct, tagName){
-    this.$init(tagName || "body", apf.NODE_VISIBLE, struct);
+ppc.XhtmlBodyElement = function(struct, tagName){
+    this.$init(tagName || "body", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -36,18 +36,18 @@ apf.XhtmlBodyElement = function(struct, tagName){
         this.$ext = 
         this.$int = document.body;
     }, true);
-}).call(apf.XhtmlBodyElement.prototype = new apf.AmlElement());
+}).call(ppc.XhtmlBodyElement.prototype = new ppc.AmlElement());
 
-apf.Init.addConditional(function(){
-    if (apf.isO3) return;
-    var prot = apf.XhtmlBodyElement.prototype;
+ppc.Init.addConditional(function(){
+    if (ppc.isO3) return;
+    var prot = ppc.XhtmlBodyElement.prototype;
 
     //#ifdef __WITH_CONTENTEDITABLE
     prot.implement(
-        apf.ContentEditable
+        ppc.ContentEditable
     );
     //#endif
 }, null, ["interactive"]);
 
-apf.xhtml.setElement("body", apf.XhtmlBodyElement);
+ppc.xhtml.setElement("body", ppc.XhtmlBodyElement);
 //#endif

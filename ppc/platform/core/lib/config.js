@@ -21,8 +21,8 @@
 
 //#ifdef __WITH_CONFIG
 
-apf.config = new apf.Class().$init();
-apf.extend(apf.config, {
+ppc.config = new ppc.Class().$init();
+ppc.extend(ppc.config, {
     //Defaults
     disableRightClick  : false,
     allowSelect        : false,
@@ -81,7 +81,7 @@ apf.extend(apf.config, {
     },
     //#endif
     skinset            : "default",
-    name               : apf.isO3 ? "o3App" : self.window && window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
+    name               : ppc.isO3 ? "o3App" : self.window && window.location.href.replace(/[^0-9A-Za-z_]/g, "_"),
 
     tags               : {},
     defaults           : {},
@@ -93,7 +93,7 @@ apf.extend(apf.config, {
     
     setDefaults : function(){
         //#ifdef __WITH_PARTIAL_AML_LOADING
-        if (apf.isParsingPartial) {
+        if (ppc.isParsingPartial) {
             this.disableRightClick  = false;
             this.allowSelect        = true;
             this.autoDisableActions = true;
@@ -128,37 +128,37 @@ apf.extend(apf.config, {
         })] = this[name] = value;
         
         (this.$propHandlers && this.$propHandlers[name]
-          || apf.GuiElement.propHandlers[name] || apf.K).call(this, value);
+          || ppc.GuiElement.propHandlers[name] || ppc.K).call(this, value);
     },
     
     $inheritProperties : {},
     
     $propHandlers : {
         "baseurl" : function(value){
-            this.baseurl = apf.parseExpression(value);
+            this.baseurl = ppc.parseExpression(value);
         },
         "language" : function(value){
             //#ifdef __WITH_LANG_SUPPORT
-            apf.addEventListener("load", function(){
-                apf.setModel(apf.config.language, apf.language);
+            ppc.addEventListener("load", function(){
+                ppc.setModel(ppc.config.language, ppc.language);
             });
             //#endif
         },
         "resource-path" : function(value){
-            this.resourcePath = apf.parseExpression(value || "")
+            this.resourcePath = ppc.parseExpression(value || "")
               .replace(/resources\/?|\/$/g, '');
         },
         // #ifdef __WITH_IEPNGFIX
         "iepngfix" : function(value, x){
-            this.iePngFix           = (!apf.supportPng24 
-                && (apf.isTrue(value)
+            this.iePngFix           = (!ppc.supportPng24 
+                && (ppc.isTrue(value)
                 || x.getAttribute("iepngfix-elements")));
             
             if (this.iePngFix) {
                 // run after the init() has finished, otherwise the body of the 
                 // document will still be empty, thus no elements found.
                 $setTimeout(function() {
-                    apf.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
+                    ppc.iepngfix.limitTo(x.getAttribute("iepngfix-elements") || "").run();
                 });
             }
         },
@@ -166,46 +166,46 @@ apf.extend(apf.config, {
         //#ifdef __WITH_PRESENTATION
         "skinset" : function(value) {
             if (this.$amlLoaded)
-                apf.skins.changeSkinset(value);
+                ppc.skins.changeSkinset(value);
         },
         //#endif
         //#ifdef __WITH_INTERACTIVE
         "outline" : function(value) {
             this.dragOutline    =
             this.resizeOutline  =
-            this.outline        = apf.isTrue(value);
+            this.outline        = ppc.isTrue(value);
         },
         "drag-outline" : function(value){
             this.dragOutline    = value
-              ? apf.isTrue(value)
+              ? ppc.isTrue(value)
               : false;
         },
         "resize-outline" : function(value){
             this.resizeOutline  = value
-              ? !apf.isFalse(value)
+              ? !ppc.isFalse(value)
               : false;
         },
         //#endif
         //#ifdef __WITH_AUTH
         "login" : function(value, x) {
-            apf.auth.init(x);
+            ppc.auth.init(x);
         },
         //#endif
         //#ifdef __WITH_STORAGE
         "storage" : function(value) {
             if (value)
-                apf.storage.init(value);
+                ppc.storage.init(value);
         },
         //#endif
         //#ifdef __WITH_OFFLINE
         "offline" : function(value){
-            if (value && typeof apf.offline != "undefined")
-                apf.offline.init(value);
+            if (value && typeof ppc.offline != "undefined")
+                ppc.offline.init(value);
         },
         //#endif
         //#ifdef __DESKRUN
         "disable-f5" : function(value){
-            if (apf.isDeskrun && value)
+            if (ppc.isDeskrun && value)
                 shell.norefresh = true;
         },
         //#endif
@@ -220,22 +220,22 @@ apf.extend(apf.config, {
         "debug" : function(value) {
             //#ifdef __DEBUG
             if (value) {
-                apf.$debugwin.activate();
-                apf.addEventListener("load", function(){
-                    //$setTimeout("apf.$debugwin.activate();", 200) //@todo has a bug in gecko, chrome
-                    apf.removeEventListener("load", arguments.callee);
+                ppc.$debugwin.activate();
+                ppc.addEventListener("load", function(){
+                    //$setTimeout("ppc.$debugwin.activate();", 200) //@todo has a bug in gecko, chrome
+                    ppc.removeEventListener("load", arguments.callee);
                 });
             }
             //#endif
-            apf.debug = value;
+            ppc.debug = value;
         }
     }
 });
 
 //#ifdef __WITH_HISTORY
-if (apf.history)
-    apf.addEventListener("load", function(){
-        apf.history.init(apf.config.defaultPage, "page");
+if (ppc.history)
+    ppc.addEventListener("load", function(){
+        ppc.history.init(ppc.config.defaultPage, "page");
     });
 //#endif
 

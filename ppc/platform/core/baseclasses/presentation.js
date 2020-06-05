@@ -19,7 +19,7 @@
  *
  */
 
-apf.__PRESENTATION__ = 1 << 9;
+ppc.__PRESENTATION__ = 1 << 9;
 //#ifdef __WITH_PRESENTATION
 
 /**
@@ -63,20 +63,20 @@ apf.__PRESENTATION__ = 1 << 9;
  * other elements of the widget. In this reference guide you will find these
  * skin items described on the pages of each widget.
  *
- * @class apf.Presentation
+ * @class ppc.Presentation
  * @define presentation
- * @inherits apf.GuiElement
+ * @inherits ppc.GuiElement
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
  */
-apf.Presentation = function(){
+ppc.Presentation = function(){
     this.$init(true);
 };
 
 (function(){
-    this.$regbase = this.$regbase | apf.__PRESENTATION__;
+    this.$regbase = this.$regbase | ppc.__PRESENTATION__;
     
     // *** Properties and Attributes *** //
 
@@ -147,7 +147,7 @@ apf.Presentation = function(){
         if (!value)
             this.$ext.style.borderWidth = "";
         else
-            this.$ext.style.borderWidth = apf.getBox(value).join("px ") + "px";
+            this.$ext.style.borderWidth = ppc.getBox(value).join("px ") + "px";
     }
     
     /**
@@ -157,7 +157,7 @@ apf.Presentation = function(){
         if (!value)
             this.$ext.style.margin = "";
         else
-            this.$ext.style.margin = apf.getBox(value).join("px ") + "px";
+            this.$ext.style.margin = ppc.getBox(value).join("px ") + "px";
     }
 
     /**
@@ -177,7 +177,7 @@ apf.Presentation = function(){
     function changeSkin(skin, skinset){
         clearTimeout(this.$skinTimer);
 
-        //var skinName = (skinset || this.skinset || apf.config.skinset)
+        //var skinName = (skinset || this.skinset || ppc.config.skinset)
         //    + ":" + (skin || this.skin || this.localName);
 
         //#ifdef __WITH_MULTISELECT
@@ -229,10 +229,10 @@ apf.Presentation = function(){
             if (classes[i] && classes[i].indexOf(oldBase) != 0)
                 newclasses.push(classes[i].replace(oldBase, this.$baseCSSname));
         }
-        apf.setStyleClass(this.$ext, newclasses.join(" "));
+        ppc.setStyleClass(this.$ext, newclasses.join(" "));
 
         //Copy events
-        var en, ev = apf.skins.events;
+        var en, ev = ppc.skins.events;
         for (i = 0, l = ev.length; i < l; i++) {
             en = ev[i];
             if (typeof oExt[en] == "function" && !this.$ext[en])
@@ -272,7 +272,7 @@ apf.Presentation = function(){
         
         //#ifdef __WITH_DRAGDROP
         //DragDrop
-        if (this.hasFeature(apf.__DRAGDROP__)) {
+        if (this.hasFeature(ppc.__DRAGDROP__)) {
             if (document.elementFromPointAdd) {
                 document.elementFromPointRemove(oExt);
                 document.elementFromPointAdd(this.$ext);
@@ -282,11 +282,11 @@ apf.Presentation = function(){
 
         //Check disabled state
         if (this.disabled)
-            this.$disable(); //@todo apf3.0 test
+            this.$disable(); //@todo ppc3.0 test
 
         //Check focussed state
-        if (this.$focussable && apf.document.activeElement == this)
-            this.$focus(); //@todo apf3.0 test
+        if (this.$focussable && ppc.document.activeElement == this)
+            this.$focus(); //@todo ppc3.0 test
 
         //Dispatch event
         this.dispatchEvent("$skinchange", {
@@ -296,7 +296,7 @@ apf.Presentation = function(){
 
         //#ifdef __WITH_DATABINDING
         //Reload data
-        if (this.hasFeature(apf.__DATABINDING__) && this.xmlRoot)
+        if (this.hasFeature(ppc.__DATABINDING__) && this.xmlRoot)
             this.reload();
         else
         //#endif
@@ -305,26 +305,26 @@ apf.Presentation = function(){
 
         //#ifdef __WITH_MULTISELECT
         //Set Selection
-        if (this.hasFeature(apf.__MULTISELECT__)) {
+        if (this.hasFeature(ppc.__MULTISELECT__)) {
             if (this.selectable)
                 this.selectList(valueList, true);
         }
         //#endif
 
         //Move layout rules
-        if (!apf.hasSingleRszEvent) {
-            apf.layout.activateRules(this.$ext);
+        if (!ppc.hasSingleRszEvent) {
+            ppc.layout.activateRules(this.$ext);
             if (this.$int)
-                apf.layout.activateRules(this.$int);
+                ppc.layout.activateRules(this.$int);
         }
 
 /*        //#ifdef __WITH_ANCHORING
-        if (this.hasFeature(apf.__ANCHORING__))
+        if (this.hasFeature(ppc.__ANCHORING__))
             this.$recalcAnchoring();
         //#endif
 
         //#ifdef __WITH_ALIGNMENT
-        if (this.hasFeature(apf.__ALIGNMENT__)) {
+        if (this.hasFeature(ppc.__ALIGNMENT__)) {
             if (this.aData)
                 this.aData.oHtml = this.$ext;
 
@@ -340,21 +340,21 @@ apf.Presentation = function(){
         //#endif
 */
         //#ifdef __WITH_INTERACTIVE
-        if (this.draggable && this.$propHandlers["draggable"]) //@todo move these to the event below apf3.0)
+        if (this.draggable && this.$propHandlers["draggable"]) //@todo move these to the event below ppc3.0)
             this.$propHandlers["draggable"].call(this, this.draggable);
         if (this.resizable && this.$propHandlers["resizable"])
             this.$propHandlers["resizable"].call(this, this.resizable);
         //#endif
 
         //#ifdef __WITH_LAYOUT
-        apf.layout.forceResize(this.$ext);
+        ppc.layout.forceResize(this.$ext);
         //#endif
     };
     //#endif
 
     // *** Private methods *** //
 
-    this.$setStyleClass = apf.setStyleClass;
+    this.$setStyleClass = ppc.setStyleClass;
 
     function setLeechedSkin(e){
         if (!this.$amlLoaded || e && (e.$isMoveWithinParent 
@@ -369,7 +369,7 @@ apf.Presentation = function(){
         //e.relatedNode
         var skinName, pNode = this.parentNode, skinNode;
         if ((skinName = this.$canLeechSkin.dataType 
-          == apf.STRING ? this.$canLeechSkin : this.localName)
+          == ppc.STRING ? this.$canLeechSkin : this.localName)
           && pNode.$originalNodes 
           && (skinNode = pNode.$originalNodes[skinName])
           && skinNode.getAttribute("inherit")) {
@@ -402,7 +402,7 @@ apf.Presentation = function(){
         
         var skinName, pNode = this.parentNode, skinNode;
         if (this.$canLeechSkin && !this.skin 
-          && (skinName = this.$canLeechSkin.dataType == apf.STRING 
+          && (skinName = this.$canLeechSkin.dataType == ppc.STRING 
             ? this.$canLeechSkin 
             : this.localName)
           && pNode && pNode.$originalNodes 
@@ -449,24 +449,24 @@ apf.Presentation = function(){
         //this.skinset  = this.skinName.split(":")[0];
 
         this.$pNodes = {}; //reset the this.$pNodes collection
-        this.$originalNodes = apf.skins.getTemplate(this.skinName, true);
+        this.$originalNodes = ppc.skins.getTemplate(this.skinName, true);
 
         if (!this.$originalNodes) {
             var skin = this.skin;
             if (skin) {
                 var skinset = this.skinName.split(":")[0];
                 this.baseName = this.skinName = "default:" + skin;
-                this.$originalNodes = apf.skins.getTemplate(this.skinName);
+                this.$originalNodes = ppc.skins.getTemplate(this.skinName);
                 
                 if (!this.$originalNodes && skinset != "default") {
                     this.baseName = this.skinName = skinset + ":" + this.localName;
-                    this.$originalNodes = apf.skins.getTemplate(this.skinName, true);
+                    this.$originalNodes = ppc.skins.getTemplate(this.skinName, true);
                 }
             }
             
             if (!this.$originalNodes) {
                 this.baseName = this.skinName = "default:" + this.localName;
-                this.$originalNodes = apf.skins.getTemplate(this.skinName);
+                this.$originalNodes = ppc.skins.getTemplate(this.skinName);
             }
 
             if (!this.$originalNodes) {
@@ -475,7 +475,7 @@ apf.Presentation = function(){
                         this.originalNode = null);
                 }
                 
-                throw new Error(apf.formatErrorString(1077, this,
+                throw new Error(ppc.formatErrorString(1077, this,
                     "Presentation",
                     "Could not load skin: " + this.baseSkin));
             }
@@ -484,7 +484,7 @@ apf.Presentation = function(){
         }
 
         if (this.$originalNodes)
-            apf.skins.setSkinPaths(this.skinName, this);
+            ppc.skins.setSkinPaths(this.skinName, this);
     };
 
     this.$getNewContext = function(type, amlNode){
@@ -494,7 +494,7 @@ apf.Presentation = function(){
         }
 
         if (!this.$originalNodes[type]) {
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Getting new skin item",
                 "Missing node in skin description '" + type + "'"));
         }
@@ -531,7 +531,7 @@ apf.Presentation = function(){
 
             if (!this.$dcache[type + "." + this.skinName]) {
                 this.$dcache[type + "." + this.skinName] = true;
-                apf.console.info("Could not find node '" + type
+                ppc.console.info("Could not find node '" + type
                                  + "' in '" + this.skinName + "'", "skin");
             }
             //#endif
@@ -539,15 +539,15 @@ apf.Presentation = function(){
         }
 
         if (!section)
-            return htmlNode || apf.getFirstElement(node);
+            return htmlNode || ppc.getFirstElement(node);
 
         var textNode = node.getAttribute(section);
         if (!textNode)
             return null;
 
         return (htmlNode
-            ? apf.queryNode(htmlNode, textNode)
-            : apf.getFirstElement(node).selectSingleNode(textNode));
+            ? ppc.queryNode(htmlNode, textNode)
+            : ppc.getFirstElement(node).selectSingleNode(textNode));
     };
 
     this.$getOption = function(type, section){
@@ -556,7 +556,7 @@ apf.Presentation = function(){
         //var node = this.$pNodes[type];
         var node = this.$pNodes[type] || this.$originalNodes[type];
         if (!section || !node)
-            return node;//apf.getFirstElement(node);
+            return node;//ppc.getFirstElement(node);
         var option = node.selectSingleNode("@" + section);
 
         return option ? option.nodeValue : "";
@@ -585,10 +585,10 @@ apf.Presentation = function(){
         if (func)
             func.call(this, oExt);
 
-        oExt = apf.insertHtmlNode(oExt, pNode);
+        oExt = ppc.insertHtmlNode(oExt, pNode);
         oExt.host = this;
         if (node = (aml || this).getAttributeNode("bgimage"))
-            oExt.style.backgroundImage = "url(" + apf.getAbsolutePath(
+            oExt.style.backgroundImage = "url(" + ppc.getAbsolutePath(
                 this.mediaPath, node.nodeValue) + ")";
 
         if (!this.$baseCSSname)
@@ -635,8 +635,8 @@ apf.Presentation = function(){
     this.$setClearMessage    = function(msg){};
     this.$updateClearMessage = function(){}
     this.$removeClearMessage = function(){};*/
-}).call(apf.Presentation.prototype = new apf.GuiElement());
+}).call(ppc.Presentation.prototype = new ppc.GuiElement());
 
-apf.config.$inheritProperties["skinset"] = 1;
+ppc.config.$inheritProperties["skinset"] = 1;
 
 // #endif

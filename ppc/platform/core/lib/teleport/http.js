@@ -22,7 +22,7 @@
 // #ifdef __TP_HTTP
 
 /**
- * @class apf.http
+ * @class ppc.http
  *
  * This object does what is commonly known as Ajax; it **A**synchronously 
  * communicates using **J**avaScript, **A**nd in most 
@@ -38,7 +38,7 @@
  * Retrieving content over HTTP synchronously:
  *
  * ```javascript
- *  var http = new apf.http();
+ *  var http = new ppc.http();
  *  var data = http.get("http://www.example.com/mydata.jsp", {async: false});
  *  alert(data);
  * ```
@@ -48,10 +48,10 @@
  * Retrieving content over HTTP asynchronously:
  *
  * ```javascript
- *  var http = new apf.http();
+ *  var http = new ppc.http();
  *  http.get("http://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
- *         if (state != apf.SUCCESS)
+ *         if (state != ppc.SUCCESS)
  *             return alert('an error has occurred');
  *
  *         alert(data);
@@ -64,11 +64,11 @@
  * An asynchronous HTTP request, with retry:
  *
  * ```javascript
- *  var http = new apf.http();
+ *  var http = new ppc.http();
  *  http.get("http://www.example.com/mydata.jsp", {
  *      callback: function(data, state, extra){
- *          if (state != apf.SUCCESS) {
- *              var oError = new Error(apf.formatErrorString(0, null,
+ *          if (state != ppc.SUCCESS) {
+ *              var oError = new Error(ppc.formatErrorString(0, null,
  *                  "While loading data", "Could not load data\n" + extra.message));
  *
  *              if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
@@ -90,15 +90,15 @@
  *     - error ([[Error]]): The error object that is thrown when the event
  *                                callback doesn't return false.
  *     - state ([[Number]]): The state of the call. Possible values include:
- *       - `apf.SUCCESS`:  The request was successfull
- *       - `apf.TIMEOUT`:  The request has timed out.
- *       - `apf.ERROR`:    An error has occurred while making the request.
- *       - `apf.OFFLINE`:  The request was made while the application was offline.
+ *       - `ppc.SUCCESS`:  The request was successfull
+ *       - `ppc.TIMEOUT`:  The request has timed out.
+ *       - `ppc.ERROR`:    An error has occurred while making the request.
+ *       - `ppc.OFFLINE`:  The request was made while the application was offline.
  *     - userdata (`Mixed`): Data that the caller wanted to be available in
  *                                the callback of the HTTP request.
  *     - http ([[XMLHttpRequest]]): The object that executed the actual HTTP request.
  *     - url ([[String]]): The URL that was requested.
- *     - tpModule ([[apf.http]]): The teleport module that is making the request.
+ *     - tpModule ([[ppc.http]]): The teleport module that is making the request.
  *     - id ([[Number]]): The id of the request.
  *     - message ([[String]]): The error message.
  *
@@ -109,7 +109,7 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.http = function(){
+ppc.http = function(){
     this.queue     = [null];
     this.callbacks = {};
     this.cache     = {};
@@ -125,7 +125,7 @@ apf.http = function(){
      *
      * #### Remarks
      *
-     * This can also be set on a per call basis. See {@link apf.http.get}.
+     * This can also be set on a per call basis. See {@link ppc.http.get}.
      *
      * 
      * @type {Boolean}
@@ -147,7 +147,7 @@ apf.http = function(){
     this["route-server"] = this["route-server"] || null;
 
     if (!this.$uniqueId)
-        this.$uniqueId = apf.all.push(this) - 1;
+        this.$uniqueId = ppc.all.push(this) - 1;
 
     this.toString = this.toString || function(){
         return "[Ajax.org Teleport Component : (HTTP)]";
@@ -156,33 +156,33 @@ apf.http = function(){
     //#ifdef __WITH_STORAGE && __WITH_HTTP_CACHE
     
     /**
-     * Saves the APF HTTP cache to the available storage engine.
+     * Saves the PPC HTTP cache to the available storage engine.
      */
     this.saveCache = function(){
         // #ifdef __DEBUG
-        apf.console.info("[HTTP] Loading HTTP Cache", "teleport");
+        ppc.console.info("[HTTP] Loading HTTP Cache", "teleport");
         // #endif
 
         var strResult = JSON.stringify(comm.cache);
-        apf.storage.put("cache_" + this.name, strResult,
-            apf.config.name + ".apf.http");
+        ppc.storage.put("cache_" + this.name, strResult,
+            ppc.config.name + ".ppc.http");
     };
 
     /**
-     * Loads the APF HTTP cache from the available storage engine.
+     * Loads the PPC HTTP cache from the available storage engine.
      */
     this.loadCache = function(){
-        var strResult = apf.storage.get("cache_" + this.name,
-            apf.config.name + ".apf.http");
+        var strResult = ppc.storage.get("cache_" + this.name,
+            ppc.config.name + ".ppc.http");
 
         // #ifdef __DEBUG
-        apf.console.info("[HTTP] Loading HTTP Cache", "steleport");
+        ppc.console.info("[HTTP] Loading HTTP Cache", "steleport");
         // #endif
 
         if (!strResult)
             return false;
 
-        this.cache = apf.unserialize(strResult);
+        this.cache = ppc.unserialize(strResult);
 
         return true;
     };
@@ -191,8 +191,8 @@ apf.http = function(){
      * Removes the stored HTTP cache from the available storage engine.
      */
     this.clearCache = function(){
-        apf.storage.remove("cache_" + this.name,
-            apf.config.name + ".apf.http");
+        ppc.storage.remove("cache_" + this.name,
+            ppc.config.name + ".ppc.http");
     };
     //#endif
 
@@ -252,24 +252,24 @@ apf.http = function(){
         var _self = this;
         var id    = options.id;
         //#ifdef __WITH_OFFLINE
-        var bHasOffline = (typeof apf.offline != "undefined");
-        if (bHasOffline && !apf.offline.onLine && options.notWhenOffline)
+        var bHasOffline = (typeof ppc.offline != "undefined");
+        if (bHasOffline && !ppc.offline.onLine && options.notWhenOffline)
             return false;
 
-        if (bHasOffline && !apf.offline.onLine && !options.ignoreOffline) {
-            if (apf.offline.queue.enabled) {
+        if (bHasOffline && !ppc.offline.onLine && !options.ignoreOffline) {
+            if (ppc.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
-                var info = apf.extend({
+                var info = ppc.extend({
                     url      : url,
                     callback : options.callback,
                     retry    : function(){
                         _self.get(this.url, this.options);
                     },
-                    $object : [this.name, "apf.oHttp", "new apf.http()"],
+                    $object : [this.name, "ppc.oHttp", "new ppc.http()"],
                     $retry : "this.object.get(this.url, this.options)"
                 }, options);
 
-                apf.offline.queue.add(info);
+                ppc.offline.queue.add(info);
 
                 return;
             }
@@ -281,31 +281,31 @@ apf.http = function(){
             */
 
             //#ifdef __DEBUG
-            apf.console.warn("Executing HTTP request even though application is offline");
+            ppc.console.warn("Executing HTTP request even though application is offline");
             //#endif
         }
         //#endif
         
         //#ifdef __ENABLE_UIRECORDER_HOOK
-        if (apf.uirecorder && apf.uirecorder.captureDetails) {
-            if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {// only capture events when recording  apf.uirecorder.isLoaded
-                apf.uirecorder.capture.trackHttpCall(this, url, options); 
+        if (ppc.uirecorder && ppc.uirecorder.captureDetails) {
+            if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) {// only capture events when recording  ppc.uirecorder.isLoaded
+                ppc.uirecorder.capture.trackHttpCall(this, url, options); 
             }
         }
         //#endif
 
-        var binary = apf.hasXhrBinary && options.binary;
+        var binary = ppc.hasXhrBinary && options.binary;
         var async = options.async = (options.async || binary 
-            || typeof options.async == "undefined" || apf.isOpera || false);
+            || typeof options.async == "undefined" || ppc.isOpera || false);
 
         //#ifdef __SUPPORT_WEBKIT
-        if (apf.isWebkit)
-            url = apf.html_entity_decode(url);
+        if (ppc.isWebkit)
+            url = ppc.html_entity_decode(url);
         //#endif
 
         var data = options.data || "";
 
-        if (apf.isNot(id)) {
+        if (ppc.isNot(id)) {
             //#ifdef __WITH_HTTP_CACHE
             if (this.cache[url] && this.cache[url][data]) {
                 var http = {
@@ -317,7 +317,7 @@ apf.http = function(){
             }
             else
             //#endif
-                var http = apf.getHttpReq();
+                var http = ppc.getHttpReq();
 
             id = this.queue.push({
                 http     : http,
@@ -330,7 +330,7 @@ apf.http = function(){
             //#ifdef __WITH_HTTP_CACHE
             if (http.isCaching) {
                 if (async)
-                    return $setTimeout("apf.lookup(" + this.$uniqueId
+                    return $setTimeout("ppc.lookup(" + this.$uniqueId
                         + ").receive(" + id + ");", 50);
                 else
                     return this.receive(id);
@@ -342,7 +342,7 @@ apf.http = function(){
 
             //#ifdef __WITH_HTTP_CACHE
             if (http.isCaching)
-                http = apf.getHttpReq();
+                http = ppc.getHttpReq();
             else
             //#endif
                 http.abort();
@@ -350,7 +350,7 @@ apf.http = function(){
 
         if (async) {
             //#ifdef __SUPPORT_IE5
-            if (apf.hasReadyStateBug) {
+            if (ppc.hasReadyStateBug) {
                 this.queue[id].starttime = new Date().getTime();
                 this.queue[id].timer = setInterval(function(){
                     var diff = new Date().getTime() - _self.queue[id].starttime;
@@ -379,14 +379,14 @@ apf.http = function(){
             }
         }
 
-        var autoroute = this.autoroute && apf.isOpera
+        var autoroute = this.autoroute && ppc.isOpera
             ? true //Bug in opera
             : (options.autoroute || this.shouldAutoroute),
             httpUrl = autoroute ? this["route-server"] : url;
 
         // #ifdef __DEBUG
         if (!options.hideLogMessage) {
-            apf.console.teleport(this.queue[id].log = new apf.teleportLog({
+            ppc.console.teleport(this.queue[id].log = new ppc.teleportLog({
                 id      : id,
                 tp      : this,
                 type    : options.type,
@@ -410,16 +410,16 @@ apf.http = function(){
         var errorFound = false;
         try {
             if (options.nocache)
-                httpUrl = apf.getNoCacheUrl(httpUrl);
+                httpUrl = ppc.getNoCacheUrl(httpUrl);
 
             //#ifdef __WITH_QUERYAPPEND
-            if (apf.config.queryAppend) {
+            if (ppc.config.queryAppend) {
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&")
-                    + apf.config.queryAppend;
+                    + ppc.config.queryAppend;
             }
             //#endif
             
-            var requestedWithParam = apf.config ? apf.config["requested-with-getparam"] : null;
+            var requestedWithParam = ppc.config ? ppc.config["requested-with-getparam"] : null;
             if (requestedWithParam) {
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") +
                     encodeURIComponent(requestedWithParam) + "=1";
@@ -430,17 +430,17 @@ apf.http = function(){
                 withCredentials = options.withCredentials;
             }
             else {
-                withCredentials = (apf.config && apf.config["cors-with-credentials"]) || false;
+                withCredentials = (ppc.config && ppc.config["cors-with-credentials"]) || false;
             }
             http.withCredentials = withCredentials;
 
             // global support for protection against Cross Site Request Forgery
-            // attacks by supplying a token to the global APF config object. This
+            // attacks by supplying a token to the global PPC config object. This
             // token will be appended to the URL and sent for each XHR.
             // Warning: if you are doing CORS, be sure to use a different method!
             var method = this.method || options.method || "GET";
-            var CSRFHeader = apf.config ? apf.config["csrf-header"] : null;
-            var CSRFToken = apf.config ? apf.config["csrf-token"] : null;
+            var CSRFHeader = ppc.config ? ppc.config["csrf-header"] : null;
+            var CSRFToken = ppc.config ? ppc.config["csrf-token"] : null;
             if (method !== "GET" && CSRFToken) {
                 CSRFToken = CSRFToken.split("=").map(function(s) { return encodeURIComponent(s); }).join("=");
                 httpUrl += (httpUrl.indexOf("?") == -1 ? "?" : "&") + CSRFToken;
@@ -454,7 +454,7 @@ apf.http = function(){
 
             if (options.username) {
                 setRequestHeader("Authorization", "Basic "
-                    + apf.crypto.Base64.encode(options.username + ":" + options.password))
+                    + ppc.crypto.Base64.encode(options.username + ":" + options.password))
             }
 
             //@todo OPERA ERROR's here... on retry [is this still applicable?]
@@ -488,7 +488,7 @@ apf.http = function(){
             // Retry request by routing it
             if (!useOtherXH && this.autoroute && !autoroute) {
                 //#ifdef __SUPPORT_IE5
-                if (!apf.isNot(id))
+                if (!ppc.isNot(id))
                     clearInterval(this.queue[id].timer);
                 //#endif
 
@@ -500,7 +500,7 @@ apf.http = function(){
 
             if (!useOtherXH) {
                 //Routing didn't work either... Throwing error
-                var noClear = options.callback ? options.callback(null, apf.ERROR, {
+                var noClear = options.callback ? options.callback(null, ppc.ERROR, {
                     userdata: options.userdata,
                     http    : http,
                     url     : url,
@@ -536,7 +536,7 @@ apf.http = function(){
                 : "Browser is currently working offline";
 
             //#ifdef __DEBUG
-            apf.console.warn(msg, "teleport");
+            ppc.console.warn(msg, "teleport");
             if (!options.hideLogMessage)
                 _self.queue[id].log.response({
                     //#ifdef __DEBUG
@@ -548,8 +548,8 @@ apf.http = function(){
             //#endif
 
             var state = self.navigator && navigator.onLine
-                ? apf.ERROR
-                : apf.TIMEOUT;
+                ? ppc.ERROR
+                : ppc.TIMEOUT;
 
             // File not found
             var noClear = options.callback ? options.callback(null, state, {
@@ -567,7 +567,7 @@ apf.http = function(){
         function send(isLocal){
             var hasError;
 
-            if (apf.isIE && isLocal) { //When local IE calls onreadystate immediately
+            if (ppc.isIE && isLocal) { //When local IE calls onreadystate immediately
                 var oldWinOnerror = window.onerror;
                 window.onerror = function(){
                     if (arguments.caller && arguments.caller.callee == send) {
@@ -606,7 +606,7 @@ apf.http = function(){
             }
             else if (binary && http.upload) {
                 http.upload.onprogress = function(e) {
-                    apf.dispatchEvent("http.uploadprogress", {
+                    ppc.dispatchEvent("http.uploadprogress", {
                         loaded  : e.loaded - binary.blob.size,
                         extra   : e,
                         bubbles : true
@@ -620,7 +620,7 @@ apf.http = function(){
             return this.receive(id);
         }
         else {
-            if (apf.loadsLocalFilesSync && location.protocol == "file:"
+            if (ppc.loadsLocalFilesSync && location.protocol == "file:"
               && url.indexOf("http://") == -1) {
                 $setTimeout(function(){
                     send.call(_self, true);
@@ -652,10 +652,10 @@ apf.http = function(){
             
             this.contentType = "application/x-www-form-urlencoded";
             this.$get(
-                apf.getAbsolutePath(apf.config.baseurl, url), 
+                ppc.getAbsolutePath(ppc.config.baseurl, url), 
                 options.method == "GET" 
                     ? options 
-                    : apf.extend({data : query}, options)
+                    : ppc.extend({data : query}, options)
             );
         }
     }
@@ -668,7 +668,7 @@ apf.http = function(){
      * @private
      */
     function getBinaryBlob(data, http, binary) {
-        var boundary      = "----apfbound".appendRandomNumber(5),
+        var boundary      = "----ppcbound".appendRandomNumber(5),
             dashdash      = "--",
             crlf          = "\r\n",
             multipartBlob = "",
@@ -702,8 +702,8 @@ apf.http = function(){
         var qItem    = this.queue[id],
             http     = qItem.http,
             callback = qItem.callback;
-        //if (apf.isGecko)
-        //    var apf = self.apf || apf;     // needed here to fix a rare ReferenceError in FF
+        //if (ppc.isGecko)
+        //    var ppc = self.ppc || ppc;     // needed here to fix a rare ReferenceError in FF
 
         //#ifdef __SUPPORT_IE5
         clearInterval(qItem.timer);
@@ -729,7 +729,7 @@ apf.http = function(){
         
         /* #ifdef __DEBUG
         if (!qItem.options.hideLogMessage) {
-            apf.console.info("[HTTP] Receiving [" + id + "]"
+            ppc.console.info("[HTTP] Receiving [" + id + "]"
                 + (http.isCaching
                     ? "[<span style='color:orange'>cached</span>]"
                     : "")
@@ -765,11 +765,11 @@ apf.http = function(){
             : http.responseText; //Can this error?
 
         if (http.status >= 400 && http.status < 600 || http.status < 10 
-          && (http.status != 0 || !apf.isIE && !http.responseText)) { //qItem.url.substr(0, 6) == "file:/"
+          && (http.status != 0 || !ppc.isIE && !http.responseText)) { //qItem.url.substr(0, 6) == "file:/"
             //#ifdef __WITH_AUTH
             //@todo This should probably have an RPC specific handler
             if (http.status == 401) {
-                var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+                var auth = ppc.document.getElementsByTagNameNS(ppc.ns.ppc, "auth")[0];
                 if (auth) {
                     var wasDelayed = qItem.isAuthDelayed;
                     qItem.isAuthDelayed = true;
@@ -796,10 +796,10 @@ apf.http = function(){
             else {
                 try {
                     var xmlDoc = (http.responseXML && http.responseXML.documentElement)
-                        ? apf.xmlParseError(http.responseXML)
-                        : apf.getXmlDom(http.responseText);
+                        ? ppc.xmlParseError(http.responseXML)
+                        : ppc.getXmlDom(http.responseText);
 
-                    if (!apf.supportNamespaces)
+                    if (!ppc.supportNamespaces)
                         xmlDoc.setProperty("SelectionLanguage", "XPath");
 
                     extra.data = xmlDoc.documentElement;
@@ -820,7 +820,7 @@ apf.http = function(){
             //#endif
 
             // Send callback error state
-            if (!callback || !callback(extra.data, apf.ERROR, extra))
+            if (!callback || !callback(extra.data, ppc.ERROR, extra))
                 this.clearQueueItem(id);
 
             return;
@@ -841,7 +841,7 @@ apf.http = function(){
         //#endif
 
         //Http call was successfull Success
-        if (!callback || !callback(extra.data, apf.SUCCESS, extra))
+        if (!callback || !callback(extra.data, ppc.SUCCESS, extra))
             this.clearQueueItem(id);
 
         return extra.data;
@@ -874,11 +874,11 @@ apf.http = function(){
         http.abort();
 
         // #ifdef __DEBUG
-        apf.console.info("HTTP Timeout [" + id + "]", "teleport");
+        ppc.console.info("HTTP Timeout [" + id + "]", "teleport");
         // #endif
 
         var extra;
-        var noClear = callback ? callback(null, apf.TIMEOUT, extra = {
+        var noClear = callback ? callback(null, ppc.TIMEOUT, extra = {
             //#ifdef __DEBUG
             end     : new Date(),
             //#endif
@@ -908,27 +908,27 @@ apf.http = function(){
      * @param {Object}  extra      The information object given as a third
      *                             argument of the HTTP request callback.
      * @param {Number}  state      The return code of the HTTP request. It contains the following properties:
-     *   - `apf.SUCCESS`:  the request was successfull
-     *   - `apf.TIMEOUT`:  the request has timed out.
-     *   - `apf.ERROR`:    an error occurred while making the request.
-     *   - `apf.OFFLINE`:  the request was made while the application was offline.
-     * @param {apf.AmlNode} [amlNode]    The element receiving the error event.
+     *   - `ppc.SUCCESS`:  the request was successfull
+     *   - `ppc.TIMEOUT`:  the request has timed out.
+     *   - `ppc.ERROR`:    an error occurred while making the request.
+     *   - `ppc.OFFLINE`:  the request was made while the application was offline.
+     * @param {ppc.AmlNode} [amlNode]    The element receiving the error event.
      * @param {Error}   [oError]     The error to be thrown when the request is
      *                               not retried.
      * @param {Number}  [maxRetries] The number of retries that are done before
      *                               the request times out. Default is 3.
      */
     this.retryTimeout = function(extra, state, amlNode, oError, maxRetries){
-        if (state == apf.TIMEOUT
-          && extra.retries < (maxRetries || apf.maxHttpRetries))
+        if (state == ppc.TIMEOUT
+          && extra.retries < (maxRetries || ppc.maxHttpRetries))
             return extra.tpModule.retry(extra.id);
 
-        oError = oError || new Error(apf.formatErrorString(0,
-            this, "Communication " + (state == apf.TIMEOUT
+        oError = oError || new Error(ppc.formatErrorString(0,
+            this, "Communication " + (state == ppc.TIMEOUT
                 ? "timeout"
                 : "error"), "Url: " + extra.url + "\nInfo: " + extra.message));
 
-        if ((amlNode || apf).dispatchEvent("error", apf.extend({
+        if ((amlNode || ppc).dispatchEvent("error", ppc.extend({
             error   : oError,
             state   : state,
             extra   : extra,
@@ -959,8 +959,8 @@ apf.http = function(){
         clearInterval(this.queue[id].timer);
         //#endif
 
-        if (apf.releaseHTTP && !apf.isGecko)
-            apf.releaseHTTP(this.queue[id].http);
+        if (ppc.releaseHTTP && !ppc.isGecko)
+            ppc.releaseHTTP(this.queue[id].http);
 
         this.queue[id] = null;
         delete this.queue[id];
@@ -976,7 +976,7 @@ apf.http = function(){
      *
      * ```javascript
      *  function callback(data, state, extra){
-     *      if (state == apf.TIMEOUT && extra.retries < apf.maxHttpRetries)
+     *      if (state == ppc.TIMEOUT && extra.retries < ppc.maxHttpRetries)
      *          return extra.tpModule.retry(extra.id);
      *
      *      //Do stuff here
@@ -996,7 +996,7 @@ apf.http = function(){
         //#endif
 
         // #ifdef __DEBUG
-        apf.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
+        ppc.console.info("[HTTP] Retrying request [" + id + "]", "teleport");
         // #endif
 
         qItem.retries++;
@@ -1010,7 +1010,7 @@ apf.http = function(){
      * Cancels a call based on its id. The id of the call is found on the
      * `'extra'` object, the third argument of the callback.
      *
-     * @see apf.http.clearQueueItem
+     * @see ppc.http.clearQueueItem
      *
      * @param {Number} id The id of the call that should be canceled.
      */
@@ -1021,7 +1021,7 @@ apf.http = function(){
         if (!this.queue[id])
             return false;
 
-        if (apf.isGecko)
+        if (ppc.isGecko)
             this.queue[id].http.abort();
 
         this.clearQueueItem(id);
@@ -1042,7 +1042,7 @@ apf.http = function(){
                     callback = self[this.childNodes[i].getAttribute("receive") || receive],
                     options  = {
                         useXML  : this.childNodes[i].getAttribute("type") == "XML",
-                        async   : !apf.isFalse(this.childNodes[i].getAttribute("async"))
+                        async   : !ppc.isFalse(this.childNodes[i].getAttribute("async"))
                     };
 
                 this[this.childNodes[i].getAttribute("name")] = function(data, userdata){
@@ -1071,7 +1071,7 @@ apf.http = function(){
             }
 
             var name = "http" + Math.round(Math.random() * 100000);
-            apf.setReference(name, this);
+            ppc.setReference(name, this);
 
             return name + ".getURL()";
         };
@@ -1087,4 +1087,4 @@ apf.http = function(){
 
 // #endif
 
-apf.Init.run("http");
+ppc.Init.run("http");

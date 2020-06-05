@@ -21,7 +21,7 @@
 
 // #ifdef __WITH_BASE64
 
-apf.crypto.Base64 = (function() {
+ppc.crypto.Base64 = (function() {
     
     var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
     
@@ -33,7 +33,7 @@ apf.crypto.Base64 = (function() {
         if (!data)
             return data;
 
-        data = apf.crypto.UTF8.encode(data + "");
+        data = ppc.crypto.UTF8.encode(data + "");
 
         do { // pack three octets into four hexets
             o1 = data.charCodeAt(i++);
@@ -98,7 +98,7 @@ apf.crypto.Base64 = (function() {
         }
         while (i < data.length);
 
-        return apf.crypto.UTF8.decode(tmp_arr.join(""));
+        return ppc.crypto.UTF8.decode(tmp_arr.join(""));
     }
     
     return {
@@ -108,7 +108,7 @@ apf.crypto.Base64 = (function() {
     
 })();
 
-apf.crypto.UTF8 = {
+ppc.crypto.UTF8 = {
     // private method for UTF-8 encoding
     encode : function (string) {
         // Encodes an ISO-8859-1 string to UTF-8

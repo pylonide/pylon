@@ -24,12 +24,12 @@
  * HTML5 Range object
  * @todo copy docs from http://www.w3.org/TR/DOM-Level-2-Traversal-Range/ranges.html
  */
-apf.AmlRange = function(doc){
+ppc.AmlRange = function(doc){
     this.$init();
 
     this.$ownerDocument = 
     this.startContainer = 
-    this.endContainer   = doc || apf.document;
+    this.endContainer   = doc || ppc.document;
     this.startOffset    = 
     this.endOffset      = 0;
     
@@ -43,14 +43,14 @@ apf.AmlRange = function(doc){
     
     this.$domNodeInsS = function(e){
         if (e.relatedNode == this && e.currentTarget.nodeType != 2) {
-            var nr = apf.getChildNumber(e.currentTarget);
+            var nr = ppc.getChildNumber(e.currentTarget);
             if (nr < _self.startOffset)
                 _self.startOffset++;
         }
     }
     this.$domNodeInsE = function(e){
         if (e.relatedNode == this && e.currentTarget.nodeType != 2) {
-            var nr = apf.getChildNumber(e.currentTarget);
+            var nr = ppc.getChildNumber(e.currentTarget);
             if (nr < _self.endOffset)
                 _self.endOffset++;
         }
@@ -58,14 +58,14 @@ apf.AmlRange = function(doc){
     
     this.$domNodeRemS = function(e){
         if (e.relatedNode == this && e.currentTarget.nodeType != 2) {
-            var nr = apf.getChildNumber(e.currentTarget);
+            var nr = ppc.getChildNumber(e.currentTarget);
             if (nr < _self.startOffset)
                 _self.startOffset--;
         }
     }
     this.$domNodeRemE = function(e){
         if (e.relatedNode == this && e.currentTarget.nodeType != 2) {
-            var nr = apf.getChildNumber(e.currentTarget);
+            var nr = ppc.getChildNumber(e.currentTarget);
             if (nr < _self.endOffset)
                 _self.endOffset--;
         }
@@ -73,11 +73,11 @@ apf.AmlRange = function(doc){
     
     //@todo this should be rewritten when fromdoc events are fixed
     this.$domNodeRemDoc = function(e){
-        if (apf.isChildOf(e.currentTarget, _self.startContainer, true)) {
-            _self.setStart(e.currentTarget.parentNode, apf.getChildNumber(e.currentTarget));
+        if (ppc.isChildOf(e.currentTarget, _self.startContainer, true)) {
+            _self.setStart(e.currentTarget.parentNode, ppc.getChildNumber(e.currentTarget));
         }
-        if (apf.isChildOf(e.currentTarget, _self.endContainer, true)) {
-            _self.setEnd(e.currentTarget.parentNode, apf.getChildNumber(e.currentTarget));
+        if (ppc.isChildOf(e.currentTarget, _self.endContainer, true)) {
+            _self.setEnd(e.currentTarget.parentNode, ppc.getChildNumber(e.currentTarget));
         }
     }
     
@@ -95,7 +95,7 @@ apf.AmlRange = function(doc){
     this.$detached      = false;
 
     this.toString = function(){
-        return "[apf.AmlRange]";
+        return "[ppc.AmlRange]";
         /*var n = this.$contents(true);
         if (n.serialize)
             return n.serialize().replace(/<[^>]*>/g, "");
@@ -119,7 +119,7 @@ apf.AmlRange = function(doc){
           : refNode.childNodes.length)) {
             //#ifdef __DEBUG_ERROR
             throw new Error("INDEX_SIZE_ERR:  Raised if offset is negative or \
-                             greater than the number of child units in refNode."); //@todo turn into decent apf error
+                             greater than the number of child units in refNode."); //@todo turn into decent ppc error
             //#endif
             return;
         }
@@ -154,11 +154,11 @@ apf.AmlRange = function(doc){
     }
     
     this.setStartBefore = function(refNode){
-        this.setStart(this.endContainer.parentNode, apf.getChildNumber(refNode));
+        this.setStart(this.endContainer.parentNode, ppc.getChildNumber(refNode));
     }
     
     this.setStartAfter = function(refNode){
-        this.setStart(this.endContainer.parentNode, apf.getChildNumber(refNode) + 1);
+        this.setStart(this.endContainer.parentNode, ppc.getChildNumber(refNode) + 1);
     }
     
     /**
@@ -177,7 +177,7 @@ apf.AmlRange = function(doc){
           : refNode.childNodes.length)) {
             //#ifdef __DEBUG_ERROR
             throw new Error("INDEX_SIZE_ERR:  Raised if offset is negative or \
-                             greater than the number of child units in refNode."); //@todo turn into decent apf error
+                             greater than the number of child units in refNode."); //@todo turn into decent ppc error
             //#endif
             return;
         }
@@ -214,14 +214,14 @@ apf.AmlRange = function(doc){
      * Sets the end position to be before a node.
      */
     this.setEndBefore = function(refNode){
-        this.setEnd(this.endContainer.parentNode, apf.getChildNumber(refNode));
+        this.setEnd(this.endContainer.parentNode, ppc.getChildNumber(refNode));
     }
     
     /**
      * Sets the end of a Range to be after a node
      */
     this.setEndAfter = function(refNode){
-        this.setEnd(this.endContainer.parentNode, apf.getChildNumber(refNode) + 1);
+        this.setEnd(this.endContainer.parentNode, ppc.getChildNumber(refNode) + 1);
     }
     
     this.collapse = function(toStart){
@@ -234,7 +234,7 @@ apf.AmlRange = function(doc){
     }
     
     this.selectNode = function(refNode){
-        this.setStart(refNode.parentNode, apf.getChildNumber(refNode), true);
+        this.setStart(refNode.parentNode, ppc.getChildNumber(refNode), true);
         this.setEnd(refNode.parentNode, this.startOffset + 1);
     }
     
@@ -248,13 +248,13 @@ apf.AmlRange = function(doc){
         var s = this.startContainer, e = this.endContainer, cA = e.childNodes[this.endOffset], 
             last, simple = s == e;
         
-        while (cA && !apf.isChildOf(cA, s, true))
+        while (cA && !ppc.isChildOf(cA, s, true))
             cA = (last = cA).parentNode;
         
         //#ifdef __DEBUG
         if (!cA) {
              //#ifdef __DEBUG_ERROR
-            throw new Error("Range start/end does not have a common ancestor"); //@todo turn into decent apf error
+            throw new Error("Range start/end does not have a common ancestor"); //@todo turn into decent ppc error
             //#endif
             return;
         }
@@ -376,7 +376,7 @@ apf.AmlRange = function(doc){
     }
     
     this.cloneRange = function(){
-        var range = new apf.AmlRange();
+        var range = new ppc.AmlRange();
         range.setStart(this.startContainer, this.startOffset, true);
         range.setEnd(this.endContainer, this.endOffset);
         return range;
@@ -388,12 +388,12 @@ apf.AmlRange = function(doc){
         function detachError(){
             //#ifdef __DEBUG_ERROR
             throw new Error("INVALID_STATE_ERR: Raised if detach() \
-                             has already been invoked on this object."); //@todo turn into decent apf error
+                             has already been invoked on this object."); //@todo turn into decent ppc error
             //#endif
         }
 
         for (var prop in this) {
-            if (typeof this[prop] == "function" && this[prop] != apf.Class.prototype[prop])
+            if (typeof this[prop] == "function" && this[prop] != ppc.Class.prototype[prop])
                 this[prop] = detachError;
         }
         
@@ -417,5 +417,5 @@ apf.AmlRange = function(doc){
             }
         }
     }
-}).call(apf.AmlRange.prototype = new apf.Class());
+}).call(ppc.AmlRange.prototype = new ppc.Class());
 // #endif

@@ -39,8 +39,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.XformsBindElement = function(struct, tagName){
-    this.$init(tagName || "Bindn", apf.NODE_VISIBLE, struct);
+ppc.XformsBindElement = function(struct, tagName){
+    this.$init(tagName || "Bindn", ppc.NODE_VISIBLE, struct);
     
     /* *********** PARSE ***********/
 
@@ -66,7 +66,7 @@ apf.XformsBindElement = function(struct, tagName){
 
             //#ifdef __DEBUG
             if (!typeHandlers[this.type]) {
-                throw new Error(apf.formatErrorString(0, this, "Validating based on a bind node", "Could not find type: " + this.type, x));
+                throw new Error(ppc.formatErrorString(0, this, "Validating based on a bind node", "Could not find type: " + this.type, x));
             }
             //#endif
 
@@ -74,7 +74,7 @@ apf.XformsBindElement = function(struct, tagName){
                 if (nodes[i].childNodes > 1)
                     continue; //The association is ignored since the element contains child elements.
                 // #ifdef __PARSER_XSD
-                if (!apf.xsd.checkType(this.type, nodes[i]))
+                if (!ppc.xsd.checkType(this.type, nodes[i]))
                     return false;
                 // #endif
             }
@@ -82,10 +82,10 @@ apf.XformsBindElement = function(struct, tagName){
             return true;
         };
 
-        //apf.makeClass(this);
+        //ppc.makeClass(this);
 
         //#ifdef __WITH_AMLNODE
-        this.implement(apf.AmlNode); /** @inherits apf.AmlNode */
+        this.implement(ppc.AmlNode); /** @inherits ppc.AmlNode */
         //#endif
     }
     //#endif
@@ -93,7 +93,7 @@ apf.XformsBindElement = function(struct, tagName){
 
 (function(){
     
-}).call(apf.XformsBindElement.prototype = new apf.XformsElement());
+}).call(ppc.XformsBindElement.prototype = new ppc.XformsElement());
 
-apf.xforms.setElement("html", apf.XformsBindElement);
+ppc.xforms.setElement("html", ppc.XformsBindElement);
 // #endif

@@ -20,18 +20,18 @@
  */
 
 //#ifdef __PARSER_XHTML
-apf.XhtmlInputElement = function(struct, tagName){
-    this.$init(tagName || "input", apf.NODE_VISIBLE, struct);
+ppc.XhtmlInputElement = function(struct, tagName){
+    this.$init(tagName || "input", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
-    this.$xae = apf.XhtmlElement.prototype.$xae;
-    this.$xre = apf.XhtmlElement.prototype.$xre;
+    this.$xae = ppc.XhtmlElement.prototype.$xae;
+    this.$xre = ppc.XhtmlElement.prototype.$xre;
     this.$handlePropSet = function(name, value, force){
         if (name == "type")
             return;
 
-        return apf.XhtmlElement.prototype.$handlePropSet.call(this, name, value, force);
+        return ppc.XhtmlElement.prototype.$handlePropSet.call(this, name, value, force);
     };
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
@@ -41,7 +41,7 @@ apf.XhtmlInputElement = function(struct, tagName){
 
         if (this.$aml) {
             this.$ext =
-            this.$int = apf.insertHtmlNode(this.$aml.serialize
+            this.$int = ppc.insertHtmlNode(this.$aml.serialize
                 ? this.$aml
                 : this.$aml.cloneNode(false), pHtmlNode);
         }
@@ -52,7 +52,7 @@ apf.XhtmlInputElement = function(struct, tagName){
             pHtmlNode.appendChild(this.$int);
         }
     }, true);
-}).call(apf.XhtmlInputElement.prototype = new apf.AmlElement());
+}).call(ppc.XhtmlInputElement.prototype = new ppc.AmlElement());
 
-apf.xhtml.setElement("input", apf.XhtmlInputElement);
+ppc.xhtml.setElement("input", ppc.XhtmlInputElement);
 //#endif

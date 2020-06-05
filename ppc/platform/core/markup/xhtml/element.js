@@ -21,8 +21,8 @@
 
 //#ifdef __PARSER_XHTML
 
-apf.XhtmlElement = function(struct, tagName){
-    this.$init(tagName || true, apf.NODE_VISIBLE, struct);
+ppc.XhtmlElement = function(struct, tagName){
+    this.$init(tagName || true, ppc.NODE_VISIBLE, struct);
     
     this.$xoe                = this.addEventListener;
     this.addEventListener    = this.$xae;
@@ -56,12 +56,12 @@ apf.XhtmlElement = function(struct, tagName){
         if (this.$ext) {
             if (type.substr(0,2) == "on")
                 type = type.substr(2);
-            apf.addListener(this.$ext, type, this.$de);
+            ppc.addListener(this.$ext, type, this.$de);
         }
     };
     
     this.$xre = function(type, fn) {
-        apf.AmlElement.prototype.removeEventListener.apply(this, arguments);
+        ppc.AmlElement.prototype.removeEventListener.apply(this, arguments);
         
         //#ifdef __WITH_CONTENTEDITABLE
         if (this.editable && "contextmenu|keydown|keypress|keyup".indexOf(type) > -1)
@@ -69,21 +69,21 @@ apf.XhtmlElement = function(struct, tagName){
         //#endif
         
         if (this.$ext)
-            apf.removeListener(this.$ext, type, this.$de);
+            ppc.removeListener(this.$ext, type, this.$de);
     }
     
     this.$handlePropSet = function(name, value, force, inherit){
         if (this.$booleanProperties[name])
-            value = apf.isTrue(value);
+            value = ppc.isTrue(value);
 
         this[name] = value;
         var handler = this.$propHandlers && this.$propHandlers[name]
-          || apf.GuiElement.propHandlers[name];
+          || ppc.GuiElement.propHandlers[name];
 
         if (handler)
             handler.call(this, value, null, name);
         else if (this.$int && (force || this.$amlLoaded)) {
-            this.$int.setAttribute(apf.isIE && apf.isIE < 8 && name == "class" 
+            this.$int.setAttribute(ppc.isIE && ppc.isIE < 8 && name == "class" 
                 ? "className" : name, value);
         }
     };
@@ -105,7 +105,7 @@ apf.XhtmlElement = function(struct, tagName){
             str = str.replace(/ on\w+="[^"]*"| on\w+='[^']*'/g, "");
             
             this.$ext = 
-            this.$int = apf.insertHtmlNode(null, pHtmlNode, null, apf.html_entity_decode(str));
+            this.$int = ppc.insertHtmlNode(null, pHtmlNode, null, ppc.html_entity_decode(str));
         }
         else {
             this.$ext = this.$int = 
@@ -126,22 +126,22 @@ apf.XhtmlElement = function(struct, tagName){
             this.$setLayout();
     });
     //#endif
-}).call(apf.XhtmlElement.prototype = new apf.AmlElement());
+}).call(ppc.XhtmlElement.prototype = new ppc.AmlElement());
 
-apf.Init.addConditional(function(){
-    if (apf.isO3) return;
-    var prot = apf.XhtmlElement.prototype;
+ppc.Init.addConditional(function(){
+    if (ppc.isO3) return;
+    var prot = ppc.XhtmlElement.prototype;
 
-    //prot.implement(apf.Interactive);
+    //prot.implement(ppc.Interactive);
     prot.implement(
         //#ifdef __WITH_ANCHORING
-        apf.Anchoring
+        ppc.Anchoring
         //#endif
     );
 
     //#ifdef __WITH_GUIELEMENT
     prot.$drawn = true;
-    prot.$setLayout = apf.GuiElement.prototype.$setLayout;
+    prot.$setLayout = ppc.GuiElement.prototype.$setLayout;
     
     prot.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this 
@@ -154,5 +154,5 @@ apf.Init.addConditional(function(){
     #endif */
 }, null, ["interactive"]);
 
-apf.xhtml.setElement("@default", apf.XhtmlElement);
+ppc.xhtml.setElement("@default", ppc.XhtmlElement);
 //#endif

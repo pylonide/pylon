@@ -46,7 +46,7 @@
  *  </a:repeat>
  *
  *  <a:button onclick="
- *      apf.xmldb.removeNode(mdlExample.data.childNodes[1]);
+ *      ppc.xmldb.removeNode(mdlExample.data.childNodes[1]);
  *  ">remove item</a:button>
  * </code>
  *
@@ -55,20 +55,20 @@
  * @allowchild {anyaml}
  *
  *
- * @inherits apf.DataAction
+ * @inherits ppc.DataAction
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.9
  */
-apf.repeat = function(struct, tagName){
-    this.$init(tagName || "repeat", apf.NODE_VISIBLE, struct);
+ppc.repeat = function(struct, tagName){
+    this.$init(tagName || "repeat", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
     );
 
@@ -91,14 +91,14 @@ apf.repeat = function(struct, tagName){
      */
     var nodes  = {}, items = [];
     this.addItem = function(xmlNode, beforeNode, nr){
-        var Lid = apf.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
+        var Lid = ppc.xmldb.nodeConnect(this.documentId, xmlNode, null, this);
         var htmlNode = this.$ext.insertBefore(document.createElement("div"), beforeNode || null);
         var oItem = nodes[Lid] = {
             childNodes: [],
             hasFeature: function(){
                 return 0
             },
-            dispatchEvent : apf.K,
+            dispatchEvent : ppc.K,
             oExt: htmlNode
         };
         
@@ -106,19 +106,19 @@ apf.repeat = function(struct, tagName){
         var amlNode = this.template.cloneNode(true);
         amlNode.setAttribute("model", "#" + this.name + ":select:(" + this.each + ")[" + (nr + 1) + "]");
         
-        if (apf.isParsing)
-            apf.AmlParser.parseChildren(amlNode, htmlNode, oItem);
+        if (ppc.isParsing)
+            ppc.AmlParser.parseChildren(amlNode, htmlNode, oItem);
         else {
-            apf.AmlParser.parseMoreAml(amlNode, htmlNode, oItem);
+            ppc.AmlParser.parseMoreAml(amlNode, htmlNode, oItem);
         }
         
-        if (apf.isGecko) //firefox bug fix?
+        if (ppc.isGecko) //firefox bug fix?
             items.push(amlNode);
     };
     
     this.getRootData = function(amlNode){
-        var id = apf.getInheritedAttribute(amlNode.$aml, "model");
-        return apf.getData(id);
+        var id = ppc.getInheritedAttribute(amlNode.$aml, "model");
+        return ppc.getData(id);
     }
     
     /**
@@ -131,7 +131,7 @@ apf.repeat = function(struct, tagName){
         for (var i = children.length - 1; i >= 0; i--) {
             children[i].destroy(true);
         }
-        apf.destroyHtmlNode(oItem.$ext);
+        ppc.destroyHtmlNode(oItem.$ext);
         delete nodes[Lid];
     };
     
@@ -156,14 +156,14 @@ apf.repeat = function(struct, tagName){
     
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(XMLRoot, this);
+        ppc.xmldb.addNodeListener(XMLRoot, this);
         
         var children = XMLRoot.selectNodes(this.each);
         for (var i = 0; i < children.length; i++) {
             this.addItem(children[i], null, i);
         }
         
-        apf.AmlParser.parseLastPass();
+        ppc.AmlParser.parseLastPass();
     };
     
     /**
@@ -179,7 +179,7 @@ apf.repeat = function(struct, tagName){
     }
     
     this.$xmlUpdate = function(action, xmlNode, listenNode, UndoObj){
-        var Lid = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+        var Lid = xmlNode.getAttribute(ppc.xmldb.xmlIdTag);
         if (!this.isTraverseNode(xmlNode)) 
             return;
         
@@ -187,8 +187,8 @@ apf.repeat = function(struct, tagName){
         
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
-            var isInThis = apf.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
-            var wasInThis = apf.isChildOf(this.xmlRoot, UndoObj.pNode, true);
+            var isInThis = ppc.isChildOf(this.xmlRoot, xmlNode.parentNode, true);
+            var wasInThis = ppc.isChildOf(this.xmlRoot, UndoObj.pNode, true);
             
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis) {
@@ -205,20 +205,20 @@ apf.repeat = function(struct, tagName){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = apf.isChildOf(this.xmlRoot, UndoObj.parent, true);
+            var goesToThis = ppc.isChildOf(this.xmlRoot, UndoObj.parent, true);
             if (!goesToThis) 
                 action = "remove";
         }
         
         if (action == "add") {
-            this.addItem(xmlNode, null, apf.getChildNumber(xmlNode));
+            this.addItem(xmlNode, null, ppc.getChildNumber(xmlNode));
         }
         else if (action == "remove") {
             this.removeItem(Lid);
         }
         /*else if (action.match(/add|insert/) && this.isTraverseNode(xmlNode)) {
             this.addItem(xmlNode, null, 5); //HACK, please determine number by position of xmlnode
-            apf.AmlParser.parseLastPass();
+            ppc.AmlParser.parseLastPass();
         }*/
         else if (action == "synchronize") {
         
@@ -238,16 +238,16 @@ apf.repeat = function(struct, tagName){
         
         if (!this.name) {
             this.name = "repeat" + this.$uniqueId;
-            apf.setReference(this.name, this);
+            ppc.setReference(this.name, this);
         }
     };
     
     this.$destroy = function(){};
 // #ifdef __WITH_DATABINDING
-}).call(apf.repeat.prototype = new apf.StandardBinding());
+}).call(ppc.repeat.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.repeat.prototype = new apf.Presentation());
+}).call(ppc.repeat.prototype = new ppc.Presentation());
 #endif */
 
-apf.aml.setElement("repeat", apf.repeat);
+ppc.aml.setElement("repeat", ppc.repeat);
 // #endif

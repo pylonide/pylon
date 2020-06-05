@@ -48,7 +48,7 @@
  * @default_private
  * @todo a later version should also clear models and thus undo state
  */
-apf.offline.application = {
+ppc.offline.application = {
     enabled   : false,
     urls      : [],
     providers : ["deskrun", "gears"],
@@ -57,7 +57,7 @@ apf.offline.application = {
         if (this.enabled)
             return;
 
-        this.namespace = apf.config.name + ".apf.offline.application";
+        this.namespace = ppc.config.name + ".ppc.offline.application";
 
         if (typeof aml == "string") {
             this.providers = aml.split("|");
@@ -70,14 +70,14 @@ apf.offline.application = {
                 this.providers = aml.getAttribute("providers").split("|");
 
             if (aml.getAttribute("auto-install"))
-                this.autoInstall = apf.isTrue(aml.getAttribute("auto-install"));
+                this.autoInstall = ppc.isTrue(aml.getAttribute("auto-install"));
         }
 
         //Check for an available offline provider
         for (var i = 0; i < this.providers.length; i++) {
             if (!this[this.providers[i]]) {
                 //#ifdef __DEBUG
-                apf.console.warn("Module not loaded for offline provider: "
+                ppc.console.warn("Module not loaded for offline provider: "
                                     + this.providers[i]);
                 //#endif
                 continue;
@@ -99,37 +99,37 @@ apf.offline.application = {
             if (this.autoInstall) {
                 if (this.install() === false) {
                     //#ifdef __DEBUG
-                    apf.console.warn("Could not install any of the preferred \
+                    ppc.console.warn("Could not install any of the preferred \
                                          offline providers:"
                                         + this.providers.join(", "));
                     //#endif
 
-                    apf.offline.application = null; //Can't put the app offline
+                    ppc.offline.application = null; //Can't put the app offline
                     return this.providers[0];
                 }
             }
             else {
                 //#ifdef __DEBUG
-                apf.console.warn("Could not find any of the specified \
+                ppc.console.warn("Could not find any of the specified \
                                      offline providers:"
                                     + this.providers.join(", "));
                 //#endif
 
-                apf.offline.application = null; //Can't put the app offline
+                ppc.offline.application = null; //Can't put the app offline
                 return this.providers[0];
             }
         }
 
-        if (!apf.loaded) { //@todo you might want to consider creating single run events
-            apf.addEventListener("load", function(){
-                if (apf.offline.application.enabled)
-                    apf.offline.application.save();
-                apf.removeEventListener("load", arguments.callee);
+        if (!ppc.loaded) { //@todo you might want to consider creating single run events
+            ppc.addEventListener("load", function(){
+                if (ppc.offline.application.enabled)
+                    ppc.offline.application.save();
+                ppc.removeEventListener("load", arguments.callee);
             });
         }
         else {
-            apf.offline.addEventListener("load", function(){
-                apf.offline.application.save();
+            ppc.offline.addEventListener("load", function(){
+                ppc.offline.application.save();
             });
         }
 
@@ -139,9 +139,9 @@ apf.offline.application = {
     },
 
     install : function(){
-        if (apf.offline.dispatchEvent("beforeinstall") === false) {
+        if (ppc.offline.dispatchEvent("beforeinstall") === false) {
             //#ifdef __DEBUG
-            apf.console.warn("Installation cancelled");
+            ppc.console.warn("Installation cancelled");
             //#endif
             return false;
         }
@@ -158,7 +158,7 @@ apf.offline.application = {
             }
         }
 
-        apf.offline.dispatchEvent("afterinstall");
+        ppc.offline.dispatchEvent("afterinstall");
 
         if (!this.provider)
             return false;
@@ -170,7 +170,7 @@ apf.offline.application = {
     },
 
     cache : function(url){
-        //if(!new apf.url(url).isSameLocation())
+        //if(!new ppc.url(url).isSameLocation())
             //return;
         if (url.indexOf(":") > -1 && url.indexOf("http://" + location.host) == -1)
             return;
@@ -183,37 +183,37 @@ apf.offline.application = {
     },
 
     refresh : function(callback){
-        var storage = apf.offline.storage;
+        var storage = ppc.offline.storage;
 
         if(this.versionGet){
             var oldVersion = storage.get("oldVersion", this.namespace);
             var newVersion = null;
             var _self      = this;
 
-            apf.getData(this.versionGet, {callback:
+            ppc.getData(this.versionGet, {callback:
                 function(newVersion, state, extra){
-                    if (state == apf.TIMEOUT)
-                        return extra.tpModule.retryTimeout(extra, state, apf.offline);
+                    if (state == ppc.TIMEOUT)
+                        return extra.tpModule.retryTimeout(extra, state, ppc.offline);
 
-                    if (state == apf.OFFLINE)
+                    if (state == ppc.OFFLINE)
                         return;
 
-                    if (state == apf.ERROR)
+                    if (state == ppc.ERROR)
                         storage.remove("oldVersion", _self.namespace);
 
-                    if (apf.debug || !newVersion || !oldVersion
+                    if (ppc.debug || !newVersion || !oldVersion
                         || oldVersion != newVersion){
 
                         //#ifdef __DEBUG
-                        apf.console.info("Refreshing offline file list");
+                        ppc.console.info("Refreshing offline file list");
                         //#endif
 
                         // #ifdef __WITH_OFFLINE_STATE
-                        if (apf.offline.state.enabled) {
-                            apf.offline.state.clear();
+                        if (ppc.offline.state.enabled) {
+                            ppc.offline.state.clear();
 
-                            if (apf.offline.state.realtime)
-                                apf.offline.state.search();
+                            if (ppc.offline.state.realtime)
+                                ppc.offline.state.search();
                         }
                         // #endif
 
@@ -223,7 +223,7 @@ apf.offline.application = {
                     }
                     else{
                         //#ifdef __DEBUG
-                        apf.console.info("No need to refresh offline file list");
+                        ppc.console.info("No need to refresh offline file list");
                         //#endif
 
                         callback({
@@ -235,7 +235,7 @@ apf.offline.application = {
         }
         else{
             //#ifdef __DEBUG
-            apf.console.info("Refreshing offline file list");
+            ppc.console.info("Refreshing offline file list");
             //#endif
 
             this.search();
@@ -274,7 +274,7 @@ apf.offline.application = {
         var _self = this, j, rule, sheet, sheets = document.styleSheets;
         for (i = 0; i < sheets.length; i++) {
             sheet = sheets[i];
-            if (apf.isIE) { //@todo multibrowser test this
+            if (ppc.isIE) { //@todo multibrowser test this
                 if (sheet.readOnly) {
                     sheet.cssText.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
                         _self.cache(url);
@@ -300,14 +300,14 @@ apf.offline.application = {
         }
 
         //Cache Skin CSS
-        apf.skins.loadedCss.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
+        ppc.skins.loadedCss.replace(/url\(\s*([^\) ]*)\s*\)/gi, function(m, url){
             _self.cache(url);
             return "";
         });
 
         //Aml based sources
-        //@todo apf3.x this needs to be rewritten
-        /*if (apf.AmlParser.$aml) { 
+        //@todo ppc3.x this needs to be rewritten
+        /*if (ppc.AmlParser.$aml) { 
             function callback(item){
                 if(!item.nodeType) return;
 
@@ -317,20 +317,20 @@ apf.offline.application = {
                 }
             }
 
-            callback(apf.AmlParser.$aml);
-            apf.includeStack.forEach(callback);
+            callback(ppc.AmlParser.$aml);
+            ppc.includeStack.forEach(callback);
         }*/
 
         //Cached resources??
     },
 
     save : function(callback){
-        if (!apf.offline.onLine) {
+        if (!ppc.offline.onLine) {
             var func = function(){
-                apf.offline.application.save();
-                apf.offline.removeEventListener("afteronline", func)
+                ppc.offline.application.save();
+                ppc.offline.removeEventListener("afteronline", func)
             }
-            apf.offline.addEventListener("afteronline", func);
+            ppc.offline.addEventListener("afteronline", func);
 
             return;
         }

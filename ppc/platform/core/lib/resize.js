@@ -36,7 +36,7 @@
  * 
  */
 
-apf.resize = function() {
+ppc.resize = function() {
     /** 
      *     {Boolean} scalex       resizing in horizontal plane, default is true
      *         Possible values:
@@ -76,14 +76,14 @@ apf.resize = function() {
 
     this.init = function() {
         squares = [
-            new apf.resize.square("top",    "left",   this),
-            new apf.resize.square("top",    "middle", this),
-            new apf.resize.square("top",    "right",  this),
-            new apf.resize.square("middle", "left",   this),
-            new apf.resize.square("middle", "right",  this),
-            new apf.resize.square("bottom", "left",   this),
-            new apf.resize.square("bottom", "middle", this),
-            new apf.resize.square("bottom", "right",  this)];
+            new ppc.resize.square("top",    "left",   this),
+            new ppc.resize.square("top",    "middle", this),
+            new ppc.resize.square("top",    "right",  this),
+            new ppc.resize.square("middle", "left",   this),
+            new ppc.resize.square("middle", "right",  this),
+            new ppc.resize.square("bottom", "left",   this),
+            new ppc.resize.square("bottom", "middle", this),
+            new ppc.resize.square("bottom", "right",  this)];
     };
     
     /**
@@ -169,7 +169,7 @@ apf.resize = function() {
  * @param {Object}   objResize   object of resize class
  * @constructor
  */
-apf.resize.square = function(posY, posX, objResize) {
+ppc.resize.square = function(posY, posX, objResize) {
     /*
      * Square visibility
      */
@@ -190,7 +190,7 @@ apf.resize.square = function(posY, posX, objResize) {
      * html represenation of square element
      */
     this.htmlElement = objResize.htmlElement.parentNode.appendChild(document.createElement('div'));
-    apf.setStyleClass(this.htmlElement, "square");
+    ppc.setStyleClass(this.htmlElement, "square");
 
     /*
      * Repaints square
@@ -200,8 +200,8 @@ apf.resize.square = function(posY, posX, objResize) {
             var block = objResize.htmlElement;
             this.htmlElement.style.display = "block";
 
-            var bw = parseInt(block.style.width) + apf.getDiff(block)[0];
-            var bh = parseInt(block.style.height) + apf.getDiff(block)[1];
+            var bw = parseInt(block.style.width) + ppc.getDiff(block)[0];
+            var bh = parseInt(block.style.height) + ppc.getDiff(block)[1];
             var bt = parseInt(block.style.top);
             var bl = parseInt(block.style.left);
 
@@ -240,16 +240,16 @@ apf.resize.square = function(posY, posX, objResize) {
     };
 
     this.destroy = function(){
-        apf.destroyHtmlNode(this.htmlElement);
+        ppc.destroyHtmlNode(this.htmlElement);
     };
 
     /* Events */
     this.htmlElement.onmouseover = function(e) {
-        apf.setStyleClass(_self.htmlElement, "squareHover");
+        ppc.setStyleClass(_self.htmlElement, "squareHover");
     };
 
     this.htmlElement.onmouseout = function(e) {
-        apf.setStyleClass(_self.htmlElement, "", ["squareHover"]);
+        ppc.setStyleClass(_self.htmlElement, "", ["squareHover"]);
     };
 
     this.htmlElement.onmousedown = function(e) {
@@ -270,7 +270,7 @@ apf.resize.square = function(posY, posX, objResize) {
             gridH = objResize.scales.gridH,
             gridW = objResize.scales.gridW,
 
-            objBlock = apf.flow.isBlock(block),
+            objBlock = ppc.flow.isBlock(block),
             r = objBlock.other.ratio,
 
             posX = _self.posX,

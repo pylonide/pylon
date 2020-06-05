@@ -21,12 +21,12 @@
 
 // #ifdef __ENABLE_EDITOR_SPELL || __INC_ALL
 
-apf.LiveEdit.plugin("spell", function(){
+ppc.LiveEdit.plugin("spell", function(){
     this.name        = "spell";
     this.icon        = "spell";
-    this.type        = apf.TEXTMACRO;
+    this.type        = ppc.TEXTMACRO;
     this.hook        = "typing";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     var engine, lastVal,
         crtLang  = null,
@@ -34,17 +34,17 @@ apf.LiveEdit.plugin("spell", function(){
         canCheck = false;
 
     this.execute = function(editor) {
-        apf.console.log("spell active..." + typeof editor);
+        ppc.console.log("spell active..." + typeof editor);
         var _self = this;
         
         if (basepath === null) {
             // #ifndef __PACKAGED
-            basepath = (apf.config.resourcePath || apf.basePath) + "core/baseclasses/liveedit/resources/";
+            basepath = (ppc.config.resourcePath || ppc.basePath) + "core/baseclasses/liveedit/resources/";
             /* #else
-            basepath = (apf.config.resourcePath || apf.basePath) + "resources/";
+            basepath = (ppc.config.resourcePath || ppc.basePath) + "resources/";
             #endif */
             /* #ifdef __WITH_CDN
-            basepath = apf.CDN + apf.VERSION + "/resources/";
+            basepath = ppc.CDN + ppc.VERSION + "/resources/";
             #endif */
         }
         if (crtLang === null || editor.language != crtLang) {
@@ -59,7 +59,7 @@ apf.LiveEdit.plugin("spell", function(){
             lastVal = editor.getValue().replace(/<span[^>]+underline[^>]+>(.*)<\/span>/gi, "$1");
             var html = engine.replace(lastVal,
                 function(word) {
-                    return "<span class='underline' onmouseover='return apf.all["
+                    return "<span class='underline' onmouseover='return ppc.all["
                         + _self.$uniqueId + "].suggest(this);'>" + word + "</span>";
                 });
             if (lastVal.replace(/[\r\n]/g, "") != html.replace(/[\r\n]/g, "")) {
@@ -77,7 +77,7 @@ apf.LiveEdit.plugin("spell", function(){
 
     this.suggest = function() {
         // @todo
-        apf.console.log('suggestions to be delivered here...');
+        ppc.console.log('suggestions to be delivered here...');
     };
 
     this.queryState = function(editor) {
@@ -95,7 +95,7 @@ apf.LiveEdit.plugin("spell", function(){
      * Revision: 1
      * ToDo: better suggestion (at least one that make more sense)
      */
-     BJSpell = apf.LiveEdit.spell = function(){
+     BJSpell = ppc.LiveEdit.spell = function(){
         /**
          * Every BJSpell call is a dictionary based singleton.
          * new BJSpell("en_US") === BJSpell("en_US")
@@ -134,19 +134,19 @@ apf.LiveEdit.plugin("spell", function(){
                     keys.indexOf = indexOf;
                     setTimeout(function(){callback.call(self)}, 1);
                 } else {
-                    apf.console.log("loading dic script: " + dic);
+                    ppc.console.log("loading dic script: " + dic);
                     var script = document.createElement("script");
                     BJSpell[lang] = self;
                     script.src = dic;
                     script.type = "text/javascript";
                     script.onload = function(){
-                        apf.console.log("incoming script...");
+                        ppc.console.log("incoming script...");
                         script.onload = script.onreadystatechange = empty;
                         script.parentNode.removeChild(script);
                         BJSpell.call(self, dic, callback);
                     };
                     script.onreadystatechange = function(){
-                        apf.console.log("script readyState change...");
+                        ppc.console.log("script readyState change...");
                         if(/loaded|completed/i.test(script.readyState))
                             script.onload();
                     };

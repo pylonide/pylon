@@ -27,8 +27,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.XformsModelElement = function(struct, tagName){
-    this.$init(tagName || "model", apf.NODE_VISIBLE, struct);
+ppc.XformsModelElement = function(struct, tagName){
+    this.$init(tagName || "model", ppc.NODE_VISIBLE, struct);
     
     this.$bindValidation = [];
     this.$submissions    = {};
@@ -39,11 +39,11 @@ apf.XformsModelElement = function(struct, tagName){
      */
     this.getBindNode = function(bindId){
         //#ifdef __WITH_NAMESERVER
-        var bindObj = apf.nameserver.get("bind", bindId);
+        var bindObj = ppc.nameserver.get("bind", bindId);
 
         //#ifdef __DEBUG
         if (!bindObj) {
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Binding Component", "Could not find bind element with name '"
                 + x.getAttribute("bind") + "'"));
         }
@@ -154,7 +154,7 @@ apf.XformsModelElement = function(struct, tagName){
         //Parse this.$submissions
         var oSub, i, l;
         //#ifdef __WITH_XFORMS
-        var subs = $xmlns(x, "submission", apf.ns.aml);
+        var subs = $xmlns(x, "submission", ppc.ns.aml);
         for (i = 0, l = subs.length; i < l; i++) {
             if (!subs[i].getAttribute("id")) {
                 if (!this.$defSubmission)
@@ -163,27 +163,27 @@ apf.XformsModelElement = function(struct, tagName){
             }
 
             this.$submissions[subs[i].getAttribute("id")] = subs[i];
-            oSub = apf.setReference(subs[i].getAttribute("id"), new cSubmission(subs[i]));
+            oSub = ppc.setReference(subs[i].getAttribute("id"), new cSubmission(subs[i]));
         }
         //#endif
         
         //#ifdef __WITH_XFORMS
         /*else {
-            instanceNode = $xmlns(x, "instance", apf.ns.aml)[0];
+            instanceNode = $xmlns(x, "instance", ppc.ns.aml)[0];
             if (instanceNode && instanceNode.getAttribute("src"))
                 this.$loadProcInstr = "" + instanceNode.getAttribute("src");
-        } ^-- @todo apf3.0 syntax error in above code... */
+        } ^-- @todo ppc3.0 syntax error in above code... */
         //#endif
         
         //Process bind nodes
         //#ifdef __WITH_XFORMS
-        /*var binds = $xmlns(x, "bind", apf.ns.aml);
+        /*var binds = $xmlns(x, "bind", ppc.ns.aml);
         for (i = 0, l = binds.length; i < l; i++) {
             this.$bindValidation.push([binds[i].getAttribute("nodeset"), binds[i]]);
             if (binds[i].getAttribute("id"))
-                apf.nameserver.register("bind", binds[i].getAttribute("id"),
+                ppc.nameserver.register("bind", binds[i].getAttribute("id"),
                     new cBind(binds[i]));
-        } ^-- @todo apf3.0 no locally declared function 'cBind' found in current scope */
+        } ^-- @todo ppc3.0 no locally declared function 'cBind' found in current scope */
         //#endif
         
         //#ifdef __WITH_XFORMS
@@ -212,7 +212,7 @@ apf.XformsModelElement = function(struct, tagName){
      * @todo: PUT ??
      * @todo: build in instruction support
      */
-     //@todo rewrite this for apf3.0
+     //@todo rewrite this for ppc3.0
     this.submit = function(instruction, xmlNode, type, useComponents, xSelectSubTree){
         //#ifdef __WITH_MODEL_VALIDATION || __WITH_XFORMS
         /*if (!this.isValid()) {
@@ -233,7 +233,7 @@ apf.XformsModelElement = function(struct, tagName){
 
         //#ifdef __DEBUG
         if (!xmlNode) {
-            throw new Error(apf.formatErrorString(0, this, 
+            throw new Error(ppc.formatErrorString(0, this, 
                 "Submitting model",
                 "Could not submit data, because no data was passed and the \
                  model does not have data loaded."));
@@ -265,13 +265,13 @@ apf.XformsModelElement = function(struct, tagName){
             }
             else {
                 //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, "Submitting a Model", "Could not find a submission with id '" + id + "'"));
+                throw new Error(ppc.formatErrorString(0, "Submitting a Model", "Could not find a submission with id '" + id + "'"));
                 //#endif
             }
 
         //#ifdef __DEBUG
         //if(type == "xml" || type == "post")
-        //    throw new Error(apf.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.$aml));
+        //    throw new Error(ppc.formatErrorString(0, this, "Submitting form", "This form has no model specified", this.$aml));
         //#endif
 
         if (this.dispatchEvent("beforesubmit", {
@@ -287,12 +287,12 @@ apf.XformsModelElement = function(struct, tagName){
 
         var model = this;
         function cbFunc(data, state, extra){
-            if ((state == apf.TIMEOUT 
-              || (_self.retryOnError && state == apf.ERROR))
-              && extra.retries < apf.maxHttpRetries)
+            if ((state == ppc.TIMEOUT 
+              || (_self.retryOnError && state == ppc.ERROR))
+              && extra.retries < ppc.maxHttpRetries)
                 return extra.tpModule.retry(extra.id);
             else
-                if (state != apf.SUCCESS) {
+                if (state != ppc.SUCCESS) {
                     model.dispatchEvent("submiterror", extra);
 
                     //#ifdef __WITH_XFORMS
@@ -301,7 +301,7 @@ apf.XformsModelElement = function(struct, tagName){
                     //#endif
                 }
                 else {
-                    model.dispatchEvent("submitsuccess", apf.extend({
+                    model.dispatchEvent("submitsuccess", ppc.extend({
                         data: data
                     }, extra));
 
@@ -324,7 +324,7 @@ apf.XformsModelElement = function(struct, tagName){
                             if ((extra.http.getResponseHeader("Content-Type") || "").indexOf("xml") > -1) {
                                 if (sub.getAttribute("replace") == "instance") {
                                     try {
-                                        var xml = apf.xmldb.getXml(xml);
+                                        var xml = ppc.xmldb.getXml(xml);
                                         this.load(xml);
                                         model.dispatchEvent("xforms-submit-done");
                                     }
@@ -352,10 +352,10 @@ apf.XformsModelElement = function(struct, tagName){
 
         if (type == "array" || type == "json" || type == "xml") {
             var data = type == "xml"
-                ? apf.getXmlString(xmlNode)
-                : apf.convertXml(xmlNode, "json");
+                ? ppc.getXmlString(xmlNode)
+                : ppc.convertXml(xmlNode, "json");
 
-            apf.saveData(instruction, {
+            ppc.saveData(instruction, {
                 xmlNode  : xmlNode,
                 args     : [data], 
                 callback : cbFunc
@@ -364,7 +364,7 @@ apf.XformsModelElement = function(struct, tagName){
         else {
             var data = useComponents
                 ? this.getCgiString()
-                : apf.convertXml(apf.xmldb.getCleanCopy(xmlNode), 
+                : ppc.convertXml(ppc.xmldb.getCleanCopy(xmlNode), 
                     type != "native" ? type : "cgivars");
 
             /*if (instruction.match(/^rpc\:/)) {
@@ -379,7 +379,7 @@ apf.XformsModelElement = function(struct, tagName){
                 if (instruction.match(/^url/))
                     instruction += (instruction.match(/\?/) ? "&" : "?") + data;
 
-                apf.saveData(instruction, xmlNode, null, cbFunc);
+                ppc.saveData(instruction, xmlNode, null, cbFunc);
             //}
         }
 
@@ -389,13 +389,13 @@ apf.XformsModelElement = function(struct, tagName){
 
 (function(){
     
-}).call(apf.XformsModelElement.prototype = new apf.XformsElement());
+}).call(ppc.XformsModelElement.prototype = new ppc.XformsElement());
 
  /*#ifdef __WITH_XFORMS
-var i, models = apf.nameserver.getAll("model");
+var i, models = ppc.nameserver.getAll("model");
 for (i = 0; i < models.length; i++)
     models[i].dispatchEvent("xforms-model-destruct");
 //#endif */
 
-apf.xforms.setElement("html", apf.XformsModelElement);
+ppc.xforms.setElement("html", ppc.XformsModelElement);
 // #endif

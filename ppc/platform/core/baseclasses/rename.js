@@ -19,7 +19,7 @@
  *
  */
 
-apf.__RENAME__ = 1 << 10;
+ppc.__RENAME__ = 1 << 10;
 
 // #ifdef __WITH_RENAME
 
@@ -58,7 +58,7 @@ apf.__RENAME__ = 1 << 10;
  *    onclick = "list.startRename()" />
  * ```
  *
- * @class apf.Rename
+ * @class ppc.Rename
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -68,8 +68,8 @@ apf.__RENAME__ = 1 << 10;
  * @event stoprename Fires when a rename action is cancelled.
  *
  */
-apf.Rename = function(){
-    this.$regbase       = this.$regbase|apf.__RENAME__;
+ppc.Rename = function(){
+    this.$regbase       = this.$regbase|ppc.__RENAME__;
 
     this.canrename      = false;
     this.$renameSubject =
@@ -106,7 +106,7 @@ apf.Rename = function(){
     }
     
     function $keydown(e){
-        if (!this.renaming && apf.isCharacter(e.keyCode))
+        if (!this.renaming && ppc.isCharacter(e.keyCode))
             this.startRename();
     }
     
@@ -148,7 +148,7 @@ apf.Rename = function(){
           || userAction && this.disabled)
             return;
 
-        this.renameTimer = $setTimeout('apf.lookup('
+        this.renameTimer = $setTimeout('ppc.lookup('
             + this.$uniqueId + ').startRename()', time || 400);
     };
     
@@ -186,8 +186,8 @@ apf.Rename = function(){
         elCaption.parentNode.replaceChild(this.$txt, elCaption);
         elCaption.host = this;
 
-        if (apf.isTrue(this.$getOption("main", "scalerename"))) {
-            var diff = apf.getWidthDiff(this.$txt);
+        if (ppc.isTrue(this.$getOption("main", "scalerename"))) {
+            var diff = ppc.getWidthDiff(this.$txt);
             this.$txt.style.width = (wdt - diff - 3) + "px";
         }
 
@@ -201,19 +201,19 @@ apf.Rename = function(){
             ? ""
             : (xmlNode.nodeType != 1
                 ? unescape(xmlNode.nodeValue) //decodeURI( - throws an error when using % in a non expected way
-                : (apf.isOnlyChild(xmlNode.firstChild, [3,4])
-                    ? apf.queryValue(xmlNode)
+                : (ppc.isOnlyChild(xmlNode.firstChild, [3,4])
+                    ? ppc.queryValue(xmlNode)
                     : this.$applyBindRule("caption", this.$renameSubject))) || "";
 
-        if (apf.hasContentEditable) {
+        if (ppc.hasContentEditable) {
             if (this.$multiLineRename)
-                this.$txt.innerHTML = apf.htmlCleaner.prepare(value.trim()
+                this.$txt.innerHTML = ppc.htmlCleaner.prepare(value.trim()
                     .replace(/</g, "&lt;")
                     .replace(/>/g, "&gt;")
                     .replace(/\n/g, "<br />"));
             else
                 this.$txt.innerHTML = value.replace(/</g, "&lt;")
-                  || apf.hasContentEditableContainerBug && "<br>" || "";
+                  || ppc.hasContentEditableContainerBug && "<br>" || "";
         }
         else 
             this.$txt.value = value;
@@ -230,7 +230,7 @@ apf.Rename = function(){
             }
             catch(e) {}
         };
-        if (apf.isIE) f() 
+        if (ppc.isIE) f() 
         else $setTimeout(f);
     };
 
@@ -250,7 +250,7 @@ apf.Rename = function(){
         this.renaming = false;
 
         if (this.$txt.parentNode && this.$txt.parentNode.nodeType == 1) {
-            if (apf.isIE8 || apf.isIE7Emulate)
+            if (ppc.isIE8 || ppc.isIE7Emulate)
                 this.$txt.blur();
             
             this.$txt.parentNode.replaceChild(this.$replacedNode, this.$txt);
@@ -261,15 +261,15 @@ apf.Rename = function(){
             this.$replacedNode.host = null;
         }
         
-        //apf.hasContentEditable ??
+        //ppc.hasContentEditable ??
         if (this.$multiLineRename) {
-            var value = apf.html_entity_decode(
-                apf.htmlCleaner.parse(this.$txt.innerHTML, true)
+            var value = ppc.html_entity_decode(
+                ppc.htmlCleaner.parse(this.$txt.innerHTML, true)
                             .replace(/<br \/>/g, "")
                             .replace(/<\/?p>/g, ""));
         }
         else {
-            var value = this.$txt[apf.hasContentEditable ? "innerText" : "value"]
+            var value = this.$txt[ppc.hasContentEditable ? "innerText" : "value"]
                             .replace(/<.*?nobr>/gi, "").replace(/\n$/, ""); //last replace is for chrome
         }
 
@@ -305,7 +305,7 @@ apf.Rename = function(){
                 e.cancelBubble = true;
                 return false;
             }
-            else if (apf.hasContentEditableContainerBug && key == 8
+            else if (ppc.hasContentEditableContainerBug && key == 8
               && this.$txt.innerHTML == "<br>") {
                 e.preventDefault();
             }
@@ -348,15 +348,15 @@ apf.Rename = function(){
         this.$txt = null;
     });
     
-    this.$init(apf.Rename.initEditableArea);
+    this.$init(ppc.Rename.initEditableArea);
 };
 
-apf.Rename.initEditableArea = function(){
+ppc.Rename.initEditableArea = function(){
     if (!(this.$txt = document.getElementById("txt_rename"))) {
-        if (apf.hasContentEditable) {
+        if (ppc.hasContentEditable) {
             this.$txt = document.createElement("DIV");
             this.$txt.contentEditable = true;
-            if (apf.isIE6)
+            if (ppc.isIE6)
                 this.$txt.style.width = "1px";
             //this.$txt.canHaveHTML = false;
         }
@@ -367,14 +367,14 @@ apf.Rename.initEditableArea = function(){
         }
     
         //#ifdef __WITH_WINDOW_FOCUS
-        //if (apf.hasFocusBug)
-            //apf.sanitizeTextbox(this.$txt);
+        //if (ppc.hasFocusBug)
+            //ppc.sanitizeTextbox(this.$txt);
         //#endif
     
         this.$txt.refCount         = 0;
         this.$txt.id               = "txt_rename";
         //this.$txt.style.whiteSpace = "nowrap";
-        apf.importCssString("#txt_rename{white-space:nowrap}");
+        ppc.importCssString("#txt_rename{white-space:nowrap}");
         this.$txt.onselectstart    = function(e){
             (e || event).cancelBubble = true;
         };
@@ -386,7 +386,7 @@ apf.Rename.initEditableArea = function(){
         this.$txt.onmouseup   = 
         this.$txt.ondblclick  =
         this.$txt.onmousedown = function(e){ 
-            apf.stopPropagation(e || event)
+            ppc.stopPropagation(e || event)
         };
     
         this.$txt.onkeyup = function(e){
@@ -395,12 +395,12 @@ apf.Rename.initEditableArea = function(){
             if (!this.host.$autocomplete)
                 return;
     
-            this.host.$lookup(this[apf.hasContentEditable ? "innerHTML" : "value"]);
+            this.host.$lookup(this[ppc.hasContentEditable ? "innerHTML" : "value"]);
         }
     
         var sel;
         this.$txt.select = function(){
-            if (!apf.hasMsRangeObject) {
+            if (!ppc.hasMsRangeObject) {
                 if (window.getSelection && document.createRange) {
                     var sel = window.getSelection();
                     sel.removeAllRanges();
@@ -411,7 +411,7 @@ apf.Rename.initEditableArea = function(){
                     sel.addRange(r)
                 }
                 else {
-                    (sel || (sel = new apf.selection())).selectNode(this);
+                    (sel || (sel = new ppc.selection())).selectNode(this);
                 }
                 return;
             }
@@ -421,7 +421,7 @@ apf.Rename.initEditableArea = function(){
             try {
                 r.moveToElementText(this);
     
-                if (apf.isFalse(this.host.$getOption("main", "selectrename"))
+                if (ppc.isFalse(this.host.$getOption("main", "selectrename"))
                   || typeof this.host.$renameStartCollapse != "undefined") //@todo please deprecate renameStartCollapse
                     r.collapse(this.host.$renameStartCollapse);
             } catch(e) {} //BUG!!!!
@@ -430,23 +430,23 @@ apf.Rename.initEditableArea = function(){
         };
     
         //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug) {
+        if (ppc.hasFocusBug) {
             this.$txt.onfocus = function(){
-                if (apf.window)
-                    apf.window.$focusfix2();
+                if (ppc.window)
+                    ppc.window.$focusfix2();
             };
         }
         //#endif
     
         this.$txt.onblur = function(){
-            //if (apf.isGecko)
+            //if (ppc.isGecko)
                 //return; //bug in firefox calling onblur too much
-            //if (apf.isChrome && !arguments.callee.caller)
+            //if (ppc.isChrome && !arguments.callee.caller)
                 //return;
 
             //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug)
-                apf.window.$blurfix();
+            if (ppc.hasFocusBug)
+                ppc.window.$blurfix();
             //#endif
     
             if (this.host.$autocomplete)

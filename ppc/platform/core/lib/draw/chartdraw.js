@@ -21,7 +21,7 @@
  
 // #ifdef __AMLCHART || __INC_ALL
 
-apf.chart_draw = {
+ppc.chart_draw = {
     // #ifdef __ENABLE_CHART_AXIS2D
     _axis2D: {
         margin : {
@@ -124,7 +124,7 @@ apf.chart_draw = {
         tickgy : {inherit : 'tick',weight:2,size:6,$:1}
     },
     axis2D : function(l,s){
-        var e = apf.draw;
+        var e = ppc.draw;
         if(!s.margin || !s.layout) return new Function('');
         var ml = s.margin.left*l.ds, mt = s.margin.top*l.ds,
             mr = s.margin.right*l.ds, mb = s.margin.bottom*l.ds;
@@ -316,11 +316,11 @@ apf.chart_draw = {
         e.endLayer()
         ]);
         try{
-            //logw(apf.highlightCode2(apf.formatJS(c)));
+            //logw(ppc.highlightCode2(ppc.formatJS(c)));
 			return new Function('l','v','m',c);
         }catch(x){
             //return new Function('l','v','m',c);
-            //c = apf.formatJS(c);
+            //c = ppc.formatJS(c);
             //window.open().document.write("<script>" + c + "</script>");
             alert("Failed to compile:\n"+x.message+'\n'+c);return 0;
         }		
@@ -487,7 +487,7 @@ apf.chart_draw = {
     
     axis3D : function(l,s){
         if(!s.layout) return new Function('');
-        var e = apf.draw;
+        var e = ppc.draw;
         var dt = (new Date()).getTime();
         var zclip = -0.01;
         function drawPlane(pr,fl,z1,z2,side,
@@ -641,8 +641,8 @@ apf.chart_draw = {
 			e.endLayer()
         ]);
         try{
-          //c = apf.formatJS(c);
-          //logw(apf.highlightCode2(c));        
+          //c = ppc.formatJS(c);
+          //logw(ppc.highlightCode2(c));        
           var f = new Function('l','v','m',c);
           //document.title = (new Date()).getTime() - dt;
           return f;
@@ -662,7 +662,7 @@ apf.chart_draw = {
     },
     line2D : function( l, d, s ){
         if(!s.graph) return new Function('');
-        var wrap = s.graph.weight*8, e = apf.draw;
+        var wrap = s.graph.weight*8, e = ppc.draw;
         var clipy = s.graph.fillout?"db":"ty";
         var c = e.optimize([
             e.vars(),
@@ -691,7 +691,7 @@ apf.chart_draw = {
             e.endLayer()
             ].join(''));
         try{
-           // c = apf.formatJS(c);
+           // c = ppc.formatJS(c);
 			return new Function('l','v','m',c);
         }catch(x){
             alert("Failed to compile:\n"+c);return 0;
@@ -714,7 +714,7 @@ apf.chart_draw = {
     
     line3D : function( l, d, s ){
         if(!s.graph) return new Function('');
-        var e = apf.draw, wrap = s.graph.weight*4; 
+        var e = ppc.draw, wrap = s.graph.weight*4; 
 
         var c = e.optimize([
             e.vars(),
@@ -748,11 +748,11 @@ apf.chart_draw = {
             "}",
             e.endLayer()]);
         try{        
-            //c = apf.formatJS(c);
-            //logw(apf.highlightCode2(c));
+            //c = ppc.formatJS(c);
+            //logw(ppc.highlightCode2(c));
             return new Function('l','v','m',c);
         }catch(x){
-//            window.open().document.write("<script>function(){" + apf.formatJS(c) + "}</script>");
+//            window.open().document.write("<script>function(){" + ppc.formatJS(c) + "}</script>");
             alert("Failed to compile:\n"+c);return 0;
         }
     },
@@ -770,7 +770,7 @@ apf.chart_draw = {
     
     bar3D : function(l,d,s){
         if(!s.graph) return new Function('');
-        var e = apf.draw, g = apf.visualize;
+        var e = ppc.draw, g = ppc.visualize;
          
         var c = e.optimize([
             "if(m){return -1;}",
@@ -814,7 +814,7 @@ apf.chart_draw = {
     
     height3D : function( l, d, s ){
         if(!s.graph) return new Function('');
-        var e = apf.draw;
+        var e = ppc.draw;
         var c = e.optimize([
             e.vars(),
             "if(m){",
@@ -884,8 +884,8 @@ apf.chart_draw = {
             "}",
             e.endLayer()]);
         try{        
-            //c = apf.formatJS(c);
-            //logw(apf.highlightCode2(c));
+            //c = ppc.formatJS(c);
+            //logw(ppc.highlightCode2(c));
             return new Function('l','v','m',c);
         }catch(x){
             //window.open().document.write("<script>" + c + "</script>");
@@ -972,7 +972,7 @@ apf.chart_draw = {
         $:1}
     },
     bar2D : function(l,d,s){
-        var e = apf.draw, g = apf.visualize;
+        var e = ppc.draw, g = ppc.visualize;
         if(!s.graph) return new Function('');
             
         var c = e.optimize([
@@ -1002,10 +1002,10 @@ apf.chart_draw = {
             e.endLayer()]);
         // lets return a mouse tracking function too.
         try{
-            //logw(apf.highlightCode2(c=apf.formatJS(c)));
+            //logw(ppc.highlightCode2(c=ppc.formatJS(c)));
             return new Function('l','v','m',c);
         }catch(x){
-            //window.open().document.write("<script>" +apf.formatJS(c)+ "</script>");
+            //window.open().document.write("<script>" +ppc.formatJS(c)+ "</script>");
             alert(x.message+"\nFailed to compile:\n"+c);return 0;
         }
     },
@@ -1026,7 +1026,7 @@ apf.chart_draw = {
     },
     shape2D : function(l,d,s){
         if(!s.graph) return new Function('');
-        var e = apf.draw, g = apf.visualize;
+        var e = ppc.draw, g = ppc.visualize;
          
         var c = e.optimize([
             "if(m){return -1;}",
@@ -1074,7 +1074,7 @@ apf.chart_draw = {
     pie2D : function(l,d,s){
         if(!s.graph) return new Function('');
        
-        var e = apf.draw, g = apf.visualize;
+        var e = ppc.draw, g = ppc.visualize;
         var c = e.optimize([
             "/*------ pie2D Init ------*/\n",
             e.vars(),
@@ -1113,7 +1113,7 @@ apf.chart_draw = {
         // lets return a mouse tracking function too.
         try{
             //;
-//            logw(apf.highlightCode2(apf.formatJS(c)));
+//            logw(ppc.highlightCode2(ppc.formatJS(c)));
             return new Function('l','v','m',c);
         }catch(x){
             alert(x.message+"\nFailed to compile:\n"+c);return 0;
@@ -1131,7 +1131,7 @@ apf.chart_draw = {
             stats : "", seek : "",
             forx : "",  ifx : "", incx : "",ifdraw : "",
             x : "x",
-            y : "("+apf.draw.getXYWH(l.pformula,'x')+")"
+            y : "("+ppc.draw.getXYWH(l.pformula,'x')+")"
         };
     },
     
@@ -1145,8 +1145,8 @@ apf.chart_draw = {
             xs : "(x2-x1)/_stp",
             stats : "", seek : "",
             forx : "",  ifx : "", incx : "",ifdraw : "",
-            x : "("+apf.draw.getXYWH(l.pformula,'x')+")",
-            y : "("+apf.draw.getXYWH(l.pformula,'y')+")"
+            x : "("+ppc.draw.getXYWH(l.pformula,'x')+")",
+            y : "("+ppc.draw.getXYWH(l.pformula,'y')+")"
         };
     },
     dt_math1XZ : function(l){
@@ -1176,7 +1176,7 @@ apf.chart_draw = {
             forz : "",  ifz : "", incz : "",ifdraw : "",            
             x : "x",
             z : "z",
-            y : "("+apf.draw.getXYWH(l.pformula,'x')+")"
+            y : "("+ppc.draw.getXYWH(l.pformula,'x')+")"
         };
     },
     
@@ -1188,8 +1188,8 @@ apf.chart_draw = {
             x1 : 0, 
             x2 : "Math.PI*2+(Math.PI*2/(l.style.steps-1))", 
             xs : "l.style.steps",
-            x : "__sin(_p="+apf.visualize.mathParse(part[0])+
-                ")*(_r="+apf.visualize.mathParse(part[1])+")",
+            x : "__sin(_p="+ppc.visualize.mathParse(part[0])+
+                ")*(_r="+ppc.visualize.mathParse(part[1])+")",
             y : "__cos(_p)*_r"
         };
     },    
@@ -1263,7 +1263,7 @@ apf.chart_draw = {
         };
     },
 $:0};
-apf.chart_draw.height2D = apf.chart_draw.line2D;
-apf.chart_draw._height2D = apf.chart_draw._line2D;
+ppc.chart_draw.height2D = ppc.chart_draw.line2D;
+ppc.chart_draw._height2D = ppc.chart_draw._line2D;
 
 //#endif

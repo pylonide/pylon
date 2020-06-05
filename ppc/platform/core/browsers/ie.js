@@ -24,7 +24,7 @@
  * Compatibility layer for Internet Explorer browsers.
  * @private
  */
-apf.runIE = function(){
+ppc.runIE = function(){
     /* ******** XML Compatibility ************************************************
      Extensions to the xmldb
      ****************************************************************************/
@@ -48,38 +48,38 @@ apf.runIE = function(){
 
     /* #ifdef __TP_IFRAME
      if (hasIESecurity)
-        apf.importClass(runTpIframe, true, self);
+        ppc.importClass(runTpIframe, true, self);
      #endif */
     //#ifndef __PACKAGED
     if (hasIESecurity)
-        apf.include(apf.basePath + "teleport/iframe.js");
+        ppc.include(ppc.basePath + "teleport/iframe.js");
     //#endif
 
-    apf.getHttpReq = hasIESecurity
+    ppc.getHttpReq = hasIESecurity
         ? function(){
-            if (apf.availHTTP.length)
-                return apf.availHTTP.pop();
+            if (ppc.availHTTP.length)
+                return ppc.availHTTP.pop();
 
             // #ifdef __DESKRUN
-            //if(apf.isDeskrun && !self.useNativeHttp)
+            //if(ppc.isDeskrun && !self.useNativeHttp)
             //    return jdshell.CreateComponent("XMLHTTP");
             // #endif
 
             return new XMLHttpRequest();
         }
         : function(){
-            if (apf.availHTTP.length)
-                return apf.availHTTP.pop();
+            if (ppc.availHTTP.length)
+                return ppc.availHTTP.pop();
 
             // #ifdef __DESKRUN
-            //if(apf.isDeskrun && !apf.useNativeHttp)
+            //if(ppc.isDeskrun && !ppc.useNativeHttp)
             //    return jdshell.CreateComponent("XMLHTTP");
             // #endif
 
             return new ActiveXObject("microsoft.XMLHTTP");
         };
 
-    apf.getXmlDom = hasIESecurity
+    ppc.getXmlDom = hasIESecurity
         ? function(message, noError){
             var xmlParser = getDOMParser(message, noError);
             return xmlParser;
@@ -91,19 +91,19 @@ apf.runIE = function(){
                 xmlParser.preserveWhiteSpace = true;
 
             if (message) {
-                if (apf.cantParseXmlDefinition)
+                if (ppc.cantParseXmlDefinition)
                     message = message.replace(/\] \]/g, "] ]")
                                      .replace(/^<\?[^>]*\?>/, "");//replace xml definition <?xml .* ?> for IE5.0
 
                 xmlParser.loadXML(message);
 
                 //#ifdef __WITH_JSON2XML
-                if (xmlParser.parseError != 0 && apf.xmldb && apf.isJson(message)) {
+                if (xmlParser.parseError != 0 && ppc.xmldb && ppc.isJson(message)) {
                     try {
-                        xmlParser = apf.json2Xml(message, noError);
+                        xmlParser = ppc.json2Xml(message, noError);
                     }
                    catch(e) {
-                        throw new Error(apf.formatErrorString(1051, null,
+                        throw new Error(ppc.formatErrorString(1051, null,
                            "JSON to XML conversion error occurred."+e.message,
                            "\nSource Text : " + message.replace(/\t/gi, " ")));
                     }
@@ -117,7 +117,7 @@ apf.runIE = function(){
             return xmlParser;
         };
 
-    apf.xmlParseError = function(xml){
+    ppc.xmlParseError = function(xml){
         var xmlParseError = xml.parseError;
         if (xmlParseError != 0) {
             /*
@@ -131,7 +131,7 @@ apf.runIE = function(){
              srcText         Returns the full text of the line containing the error. Read-only.
              url             Contains the URL of the XML document containing the last error. Read-only.
              */
-            throw new Error(apf.formatErrorString(1050, null,
+            throw new Error(ppc.formatErrorString(1050, null,
                 "XML Parse error on line " + xmlParseError.line,
                 xmlParseError.reason + "Source Text:\n"
                     + xmlParseError.srcText.replace(/\t/gi, " ")
@@ -147,19 +147,19 @@ apf.runIE = function(){
      * @param {String}      prop  the property to read
      * @returns {String}
      */
-    apf.getStyle = function(el, prop) {
+    ppc.getStyle = function(el, prop) {
         return el.currentStyle[prop];
     };
   
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s){
+    ppc.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s){
         var str;
         if (nodeList) {
 	        for (str = [], i = 0, l = nodeList.length; i < l; i++)
 	            str[i] = nodeList[i].xml;
         }
-        str = s || apf.html_entity_decode(str.join(""));
+        str = s || ppc.html_entity_decode(str.join(""));
         
-        if (apf.isIE < 7)
+        if (ppc.isIE < 7)
             str = str.replace(/style="background-image:([^"]*)"/g, 
               "find='$1' style='background-image:$1'");
 
@@ -175,16 +175,16 @@ apf.runIE = function(){
 
             var x = document.body.lastChild.firstChild.firstChild;
             for (i = x.childNodes.length - 1; i >= 0; i--)
-                htmlNode.appendChild(x.childNodes[apf.hasDynamicItemList ? 0 : i]);
+                htmlNode.appendChild(x.childNodes[ppc.hasDynamicItemList ? 0 : i]);
         }
 
         //Fix IE image loading bug
-        if (apf.isIE < 7) {
+        if (ppc.isIE < 7) {
             $setTimeout(function(){
                 var nodes = htmlNode.getElementsByTagName("*");
                 for (var s, i = 0, l = nodes.length; i < l; i++) {
                     if (s = nodes[i].getAttribute("find"))
-                        nodes[i].style.backgroundImage = s.trim(); //@todo apf3.0 why is this needed?
+                        nodes[i].style.backgroundImage = s.trim(); //@todo ppc3.0 why is this needed?
                 }
             });
         }
@@ -195,19 +195,19 @@ apf.runIE = function(){
     if (pNode.nodeType == 11) {
         id = xmlNode.getAttribute("id");
         if (!id)
-            throw new Error(apf.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
+            throw new Error(ppc.formatErrorString(1049, null, "xmldb", "Inserting Cache Item in Document Fragment without an ID"));
 
         document.body.insertAdjacentHTML(beforeNode ? "beforebegin" : "beforeend", strHTML);
         pNode.appendChild(document.getElementById(id));
     }*/
-    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, str){
+    ppc.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, str){
         if (htmlNode.nodeType != 11 && !htmlNode.style)
             return htmlNode.appendChild(xmlNode);
         
         var pNode = beforeNode || htmlNode;
         
         if (!str)
-            str = apf.html_entity_decode(xmlNode.serialize
+            str = ppc.html_entity_decode(xmlNode.serialize
                 ? xmlNode.serialize(true)
                 : xmlNode.xml || xmlNode.outerHTML || xmlNode.nodeValue);
         try {
@@ -217,7 +217,7 @@ apf.runIE = function(){
         }
         catch(e) {
             //#ifdef __DEBUG
-            apf.console.warn("Warning found block element inside a " 
+            ppc.console.warn("Warning found block element inside a " 
               + pNode.tagName 
               + " element. Rendering will give unexpected results");
             //#endif
@@ -235,46 +235,46 @@ apf.runIE = function(){
             
     };
 
-    apf.getHtmlLeft = function(oHtml){
+    ppc.getHtmlLeft = function(oHtml){
         return (oHtml.offsetLeft
-            - (apf.isIE > 7 && parseInt(oHtml.parentNode.currentStyle["borderLeftWidth"]) || 0));
+            - (ppc.isIE > 7 && parseInt(oHtml.parentNode.currentStyle["borderLeftWidth"]) || 0));
     };
 
-    apf.getHtmlRight = function(oHtml){
+    ppc.getHtmlRight = function(oHtml){
         var p;
         return (((p = oHtml.offsetParent).tagName == "BODY"
-          ? apf.getWindowWidth()
+          ? ppc.getWindowWidth()
           : p.offsetWidth)
             - oHtml.offsetLeft - oHtml.offsetWidth
-            - (apf.isIE < 8 && parseInt(p.currentStyle["borderLeftWidth"]) || 0)
+            - (ppc.isIE < 8 && parseInt(p.currentStyle["borderLeftWidth"]) || 0)
             - (parseInt(p.currentStyle["borderRightWidth"]) || 0));
     };
 
-    apf.getHtmlTop = function(oHtml){
+    ppc.getHtmlTop = function(oHtml){
         return (oHtml.offsetTop
-            - (apf.isIE > 7 && parseInt(oHtml.offsetParent.currentStyle["borderTopWidth"]) || 0));
+            - (ppc.isIE > 7 && parseInt(oHtml.offsetParent.currentStyle["borderTopWidth"]) || 0));
     };
 
-    apf.getHtmlBottom = function(oHtml){
+    ppc.getHtmlBottom = function(oHtml){
         var p;
         return (((p = oHtml.offsetParent).tagName == "BODY"
-          ? apf.getWindowHeight()
+          ? ppc.getWindowHeight()
           : p.offsetHeight)
             - oHtml.offsetTop - oHtml.offsetHeight
-            - (apf.isIE < 8 && parseInt(p.currentStyle["borderTopWidth"]) || 0)
+            - (ppc.isIE < 8 && parseInt(p.currentStyle["borderTopWidth"]) || 0)
             - (parseInt(p.currentStyle["borderBottomidth"]) || 0));
     };
 
-    apf.getBorderOffset = function(oHtml){
-        return apf.isIE < 8 && [0,0] || [parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0,
+    ppc.getBorderOffset = function(oHtml){
+        return ppc.isIE < 8 && [0,0] || [parseInt(oHtml.currentStyle["borderLeftWidth"]) || 0,
                 parseInt(oHtml.currentStyle["borderTopWidth"]) || 0]
     };
     
-    apf.getOpacity = function(oHtml) {
+    ppc.getOpacity = function(oHtml) {
         return parseInt(((oHtml.currentStyle["filter"] || "").match(/alpha\(opacity=(\d*)\)/) || [0,0])[1]) / 100;
     };
     
-    apf.setOpacity = function(oHtml, value){
+    ppc.setOpacity = function(oHtml, value){
         oHtml.style.filter = value == 1
             ? ""
             : "alpha(opacity=" + Math.round(value * 100) + ")";
@@ -284,7 +284,7 @@ apf.runIE = function(){
     /**
      * @private
      */
-    apf.popup2 = {
+    ppc.popup2 = {
         cache: {},
         setContent: function(cacheId, content, style, width, height){
             if (!this.popup)
@@ -299,7 +299,7 @@ apf.runIE = function(){
             if (content.parentNode)
                 content.parentNode.removeChild(content);
             if (style)
-                apf.importCssString(style, this.popup.document);
+                ppc.importCssString(style, this.popup.document);
 
             return this.popup.document;
         },
@@ -313,10 +313,10 @@ apf.runIE = function(){
             this.popup = window.createPopup();
 
             this.popup.document.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
-                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:a=' + apf.ns.aml + ' xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
+                <html xmlns="http://www.w3.org/1999/xhtml" xmlns:a=' + ppc.ns.aml + ' xmlns:xsl="http://www.w3.org/1999/XSL/Transform">\
                 <head>\
                     <script>\
-                    var apf = {\
+                    var ppc = {\
                         all: [],\
                         lookup:function(uniqueId){\
                             return this.all[uniqueId] || {\
@@ -325,7 +325,7 @@ apf.runIE = function(){
                         }\
                     };\
                     function destroy(){\
-                        apf.all=null;\
+                        ppc.all=null;\
                     }\
                     </script>\
                     <style>\
@@ -333,10 +333,10 @@ apf.runIE = function(){
                     BODY{margin:0}\
                     </style>\
                 </head>\
-                <body onmouseover="if(!self.apf) return;if(this.c){apf.all = this.c.all;this.c.Popup.parentDoc=self;}"></body>\
+                <body onmouseover="if(!self.ppc) return;if(this.c){ppc.all = this.c.all;this.c.Popup.parentDoc=self;}"></body>\
                 </html>');
 
-            var c = apf;
+            var c = ppc;
             this.popup.document.body.onmousemove = function(){
                 this.c = c
             }
@@ -376,7 +376,7 @@ apf.runIE = function(){
 
         forceHide: function(){
             if (this.last)
-                apf.lookup(this.last).dispatchEvent("popuphide");
+                ppc.lookup(this.last).dispatchEvent("popuphide");
         },
 
         destroy: function(){
@@ -389,7 +389,7 @@ apf.runIE = function(){
     //#endif
 
     //#ifdef __WITH_PRESENTATION
-    apf.importClass(apf.runXpath, true, self);
+    ppc.importClass(ppc.runXpath, true, self);
     //#endif
 };
 

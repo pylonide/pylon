@@ -30,52 +30,52 @@ function prettySize(size) {
         return Math.round(size/(1024*102.4))/10 + " MB";
 }
 
-apf.$debugwin = {
+ppc.$debugwin = {
     showtime    : true,
-    nativedebug : apf.debug ? true : false,
+    nativedebug : ppc.debug ? true : false,
     highlighthover : true,
     selecteditable : true,
     
     cache : (function(){
-        apf.isDebugWindow = self.frameElement 
+        ppc.isDebugWindow = self.frameElement 
             && self.frameElement.isDebugWin > -1;
 
-        return apf.isDebugWindow ? self.parent.apf.$debugwin.cache : [];
+        return ppc.isDebugWindow ? self.parent.ppc.$debugwin.cache : [];
     })(),
     
-    apf  : (function(){
-        if (apf.isDebugWindow) {//assuming we are the debug window
-            var upapf = self.parent.apf;
+    ppc  : (function(){
+        if (ppc.isDebugWindow) {//assuming we are the debug window
+            var upppc = self.parent.ppc;
 
-            apf.xmldb.$xmlDocLut = upapf.xmldb.$xmlDocLut;
-            apf.xmldb.$listeners = upapf.xmldb.$listeners;
-            apf.xmldb.$nodeCount = upapf.xmldb.$nodeCount;
+            ppc.xmldb.$xmlDocLut = upppc.xmldb.$xmlDocLut;
+            ppc.xmldb.$listeners = upppc.xmldb.$listeners;
+            ppc.xmldb.$nodeCount = upppc.xmldb.$nodeCount;
             
-            (apf.$asyncObjects || (apf.$asyncObjects = {}))["$apf_ide_mdlProps"] = 1;
+            (ppc.$asyncObjects || (ppc.$asyncObjects = {}))["$ppc_ide_mdlProps"] = 1;
             
-            return upapf;
+            return upppc;
         }
         
-        return apf;
+        return ppc;
     })(),
     
     init : function(){
         this.updateLog();
-        this.apf.addEventListener("debug", this.debugHandler);
+        this.ppc.addEventListener("debug", this.debugHandler);
         
-        apf.importCssString(".console_date{display:inline}");
+        ppc.importCssString(".console_date{display:inline}");
         
         //#ifdef __WITH_STORAGE
-        apf.storage.init();
+        ppc.storage.init();
 
-        this.showtime       = apf.storage.get("apfdebug_console_date") !== false;
-        this.nativedebug    = apf.storage.get("apfdebug_debugger") == true;
-        this.highlighthover = apf.storage.get("apfdebug_highlight_hover") !== false;
-        this.selecteditable = apf.storage.get("apfdebug_select_editable") !== false;
+        this.showtime       = ppc.storage.get("ppcdebug_console_date") !== false;
+        this.nativedebug    = ppc.storage.get("ppcdebug_debugger") == true;
+        this.highlighthover = ppc.storage.get("ppcdebug_highlight_hover") !== false;
+        this.selecteditable = ppc.storage.get("ppcdebug_select_editable") !== false;
         
-        txtCode.setValue(apf.storage.get("jsexec") || "");
-        codetype.setProperty("value", apf.storage.get("scriptype") || "Javascript");
-        txtModel.setValue(apf.storage.get("mdlvalue") || "");
+        txtCode.setValue(ppc.storage.get("jsexec") || "");
+        codetype.setProperty("value", ppc.storage.get("scriptype") || "Javascript");
+        txtModel.setValue(ppc.storage.get("mdlvalue") || "");
         
         this.setNativeDebug(this.nativedebug);
         //#endif
@@ -85,7 +85,7 @@ apf.$debugwin = {
         cbHighlightHover.setAttribute("checked", this.highlighthover);
         cbSelectEditable.setAttribute("checked", this.selecteditable);
         
-        $apf_ide_mdl.load(this.apf.document.documentElement);//"debugwin.html");//
+        $ppc_ide_mdl.load(this.ppc.document.documentElement);//"debugwin.html");//
 
         var _self = this, excl = {"DIV":1,"BLOCKQUOTE":1,"SPAN":1,"I":1};
         this.$mmouseover = function(e){
@@ -95,40 +95,40 @@ apf.$debugwin = {
             var oHtml = e.htmlEvent.srcElement || e.htmlEvent.target;
             var xmlNode = excl[oHtml.tagName] 
                 ? null
-                : apf.xmldb.findXmlNode(oHtml);
+                : ppc.xmldb.findXmlNode(oHtml);
             
-            _self.apf.$debugwin.highlightAmlNode(xmlNode, !xmlNode);
+            _self.ppc.$debugwin.highlightAmlNode(xmlNode, !xmlNode);
             //e.cancelBubble = true;
         }
         
         this.$mmouseout = function(e){
-            _self.apf.$debugwin.highlightAmlNode(null, true);
+            _self.ppc.$debugwin.highlightAmlNode(null, true);
             //(e || event).cancelBubble = true;
         }
         
-        $apf_ide_mdlProps.exec = function(method, args, callback, options){
+        $ppc_ide_mdlProps.exec = function(method, args, callback, options){
             if (method == "getProperty" && args[0]) {
                 var xml, tag = args[0];
-                if (xml = $apf_ide_mdlProps.queryNode(tag))
-                    return callback(xml, apf.SUCCESS);
+                if (xml = $ppc_ide_mdlProps.queryNode(tag))
+                    return callback(xml, ppc.SUCCESS);
 
                 if (!options)
                     options = {};
                 if (!options.callback)
                     options.callback = function(data, state, extra){
-                        if (state != apf.SUCCESS) {
-                            $apf_ide_mdlProps.exec(method, ["empty"], callback, options);
+                        if (state != ppc.SUCCESS) {
+                            $ppc_ide_mdlProps.exec(method, ["empty"], callback, options);
                             tag = "empty";
                             return false;
                         }
                         else
-                            callback($apf_ide_mdlProps.queryNode(tag), state, extra);
+                            callback($ppc_ide_mdlProps.queryNode(tag), state, extra);
                     }
                 this.insert("props/" + tag + ".xml", options);
             }
         };
         
-        apf.addEventListener("mousedown", function(){
+        ppc.addEventListener("mousedown", function(){
             errBox.hide();
         });
         
@@ -140,7 +140,7 @@ apf.$debugwin = {
         tabDebug.$ext.onmousedown = function(e){
             if (!e) e = event;
             if (e.clientY < 5)
-                apf.$debugwin.apf.$debugwin.$startResize(e.clientY, apf);
+                ppc.$debugwin.ppc.$debugwin.$startResize(e.clientY, ppc);
         }
         
         //@todo dirty hack! need to fix layout engine
@@ -152,28 +152,28 @@ apf.$debugwin = {
             if (this.$lastObj) {
                 switch(e.value){
                     case "doc":
-                        apf.$debugwin.showDocs(this.$lastObj);
+                        ppc.$debugwin.showDocs(this.$lastObj);
                         break;
                     case "remove":
                         mrkAml.remove(this.$lastObj);
                         break;
                     case "aml":
-                        apf.$debugwin.showAmlNode(this.$lastObj);
+                        ppc.$debugwin.showAmlNode(this.$lastObj);
                         break;
                     case "data":
-                        apf.$debugwin.showXmlNode(this.$lastObj);
+                        ppc.$debugwin.showXmlNode(this.$lastObj);
                         break;
                     case "obj":
-                        apf.$debugwin.showObject(this.$lastObj);
+                        ppc.$debugwin.showObject(this.$lastObj);
                         break;
                     case "model-data":
-                        apf.$debugwin.showXmlNode(this.$lastObj.data);
+                        ppc.$debugwin.showXmlNode(this.$lastObj.data);
                         break;
                     case "root-data":
-                        apf.$debugwin.showXmlNode(this.$lastObj.xmlRoot);
+                        ppc.$debugwin.showXmlNode(this.$lastObj.xmlRoot);
                         break;
                     case "sel-data":
-                        apf.$debugwin.showXmlNode(this.$lastObj.selected);
+                        ppc.$debugwin.showXmlNode(this.$lastObj.selected);
                         break;
                 }
                 return;
@@ -197,22 +197,22 @@ apf.$debugwin = {
                     break;
                 case "model-data":
                     var hasData = eval(mnuData.$lastCl.replace(/showAmlNode/, "$hasAmlData"));
-                    apf.$debugwin.showXmlNode(hasData[3]);
+                    ppc.$debugwin.showXmlNode(hasData[3]);
                     break;
                 case "root-data":
                     var hasData = eval(mnuData.$lastCl.replace(/showAmlNode/, "$hasAmlData"));
-                    apf.$debugwin.showXmlNode(hasData[0]);
+                    ppc.$debugwin.showXmlNode(hasData[0]);
                     break;
                 case "sel-data":
                     var hasData = eval(mnuData.$lastCl.replace(/showAmlNode/, "$hasAmlData"));
-                    apf.$debugwin.showXmlNode(hasData[1]);
+                    ppc.$debugwin.showXmlNode(hasData[1]);
                     break;
             }
         }
     },
     
     start : function(){
-        if (!apf.isDebugWindow)
+        if (!ppc.isDebugWindow)
             window.onerror = this.nativedebug ? null : this.errorHandler;
     },
     
@@ -220,23 +220,23 @@ apf.$debugwin = {
         if (!message) message = "";
 
         if (!isForced) {
-            apf.$debugwin.apf.console.error(
-              (apf.$debugwin.apf != apf ? "[Debug Window Error]: " : "") 
+            ppc.$debugwin.ppc.console.error(
+              (ppc.$debugwin.ppc != ppc ? "[Debug Window Error]: " : "") 
                 + "Error on line " + linenr + " of " 
-                + apf.removePathContext(apf.hostPath, filename) + "\n" + message);
+                + ppc.removePathContext(ppc.hostPath, filename) + "\n" + message);
                 //.replace(/</g, "&lt;")
                 //.replace(/\n/g, "\n<br />")
         }
         
-        if (apf.$debugwin.apf == apf) 
-            apf.$debugwin.show();
+        if (ppc.$debugwin.ppc == ppc) 
+            ppc.$debugwin.show();
 
         return true;
     },
     
     updateLog : function(){
-        apf_console.clear();
-        apf_console.setValue(this.apf.console.getAll(
+        ppc_console.clear();
+        ppc_console.setValue(this.ppc.console.getAll(
             btnError.value,
             btnWarn.value,
             btnLog.value
@@ -255,7 +255,7 @@ apf.$debugwin = {
     
     debugHandler : function(e){
         if ((self["btn" + e.type.uCaseFirst()] || btnLog).value || e.type == "custom")
-            apf_console.setValue(e.message);
+            ppc_console.setValue(e.message);
         
         if (e.type == "error" && tabDebug.activepagenr != 0) {
             errBox.setMessage(";<a href='javascript:void(0)' onclick='tabDebug.set(0);errBox.hide()'>" + e.message + "</a>");
@@ -275,7 +275,7 @@ apf.$debugwin = {
         
         if (!mrkAml.xmlRoot) {
             mrkAml.addEventListener("afterload", function(){
-                apf.$debugwin.showAmlNode(node);
+                ppc.$debugwin.showAmlNode(node);
                 mrkAml.removeEventListener("afterload", arguments.callee);
             });
         }
@@ -297,23 +297,23 @@ apf.$debugwin = {
         
         var lastAmlNode;
         document.onmousemove = function(e){
-            if (apf.$debugwin.$hdiv)
-                apf.$debugwin.$hdiv.style.top = "10000px";
+            if (ppc.$debugwin.$hdiv)
+                ppc.$debugwin.$hdiv.style.top = "10000px";
             
             var x = (e || (e = event)).clientX;
             var y = e.clientY;
             var htmlNode = document.elementFromPoint(x, y);
 
-            var amlNode  = apf.findHost(htmlNode);
+            var amlNode  = ppc.findHost(htmlNode);
             if (lastAmlNode != amlNode)
-                apf.$debugwin.highlightAmlNode(null, true);
+                ppc.$debugwin.highlightAmlNode(null, true);
             
             if (lastAmlNode = amlNode)
-                apf.$debugwin.highlightAmlNode(amlNode, false, true);
+                ppc.$debugwin.highlightAmlNode(amlNode, false, true);
         }
         
         document.onmousedown = function(e){
-            var amlNode = lastAmlNode || apf.findHost((e || (e = event)).srcElement || e.target);
+            var amlNode = lastAmlNode || ppc.findHost((e || (e = event)).srcElement || e.target);
             if (amlNode) {
                 if (options.value == "markup")
                     debugwin.showAmlNode(amlNode);
@@ -326,7 +326,7 @@ apf.$debugwin = {
                 else if (options.value == "prop")
                     debugwin.showObject(amlNode);
 
-                apf.$debugwin.highlightAmlNode(null, true);
+                ppc.$debugwin.highlightAmlNode(null, true);
                 btn.setValue(false);
                 
                 document.onmousemove = 
@@ -346,14 +346,14 @@ apf.$debugwin = {
             return;
         
         if (!this.$hdiv) {
-            apf.importCssString(
-                ".apf_highlight_div{\
+            ppc.importCssString(
+                ".ppc_highlight_div{\
                     background : #004eff;\
                     position   : absolute;\
                     z-index    : 1000000;\
                     opacity    : 0.3;\
                 }\
-                .apf_border_div{\
+                .ppc_border_div{\
                     background : url(images/spacer.gif);\
                     position   : absolute;\
                     z-index    : 1000000;\
@@ -362,12 +362,12 @@ apf.$debugwin = {
             
             this.$hdiv = document.body.appendChild(document.createElement("div"));
             this.$hdiv.style.display = "none";
-            //apf.setStyleClass(this.$hdiv, "apf_highlight_div");
+            //ppc.setStyleClass(this.$hdiv, "ppc_highlight_div");
         }
         
-        apf.setStyleClass(this.$hdiv, border 
-            ? "apf_border_div" 
-            : "apf_highlight_div", ["apf_border_div", "apf_highlight_div"]);
+        ppc.setStyleClass(this.$hdiv, border 
+            ? "ppc_border_div" 
+            : "ppc_highlight_div", ["ppc_border_div", "ppc_highlight_div"]);
         
         if (false && node.tagName == "html") {
             this.$hdiv.style.left = "0px";
@@ -377,10 +377,10 @@ apf.$debugwin = {
             this.$hdiv.style.display = "block";
         }
         else if (node.$ext && (node.$ext.offsetHeight || node.$ext.offsetWidth)) {
-            var pos = apf.getAbsolutePosition(node.$ext);
+            var pos = ppc.getAbsolutePosition(node.$ext);
             this.$hdiv.style.left  = pos[0] + "px";
             this.$hdiv.style.top   = pos[1] + "px";
-            var diff = apf.getDiff(this.$hdiv);
+            var diff = ppc.getDiff(this.$hdiv);
             this.$hdiv.style.width = (node.$ext.offsetWidth - diff[0]) + "px";
             this.$hdiv.style.height = (node.$ext.offsetHeight - diff[1]) + "px";
             this.$hdiv.style.display = "block";
@@ -396,7 +396,7 @@ apf.$debugwin = {
 
         if (!name && obj && obj.$regbase) {
             name = obj.getAttribute("id") || "Aml Node";
-            id   = this.apf.$debugwin.cache.push(obj) - 1;
+            id   = this.ppc.$debugwin.cache.push(obj) - 1;
         }
 
         txtCurObject.setValue(name);
@@ -405,10 +405,10 @@ apf.$debugwin = {
         var _self = this;
         setTimeout(function(){
             if (!id && id !== 0)
-                $apf_ide_mdlObject.load(_self.analyze(obj, name, name));
+                $ppc_ide_mdlObject.load(_self.analyze(obj, name, name));
             else
-                $apf_ide_mdlObject.load(_self.analyze(_self.apf.$debugwin.cache[id], 
-                    "apf.$debugwin.cache[" + id + "]", name));
+                $ppc_ide_mdlObject.load(_self.analyze(_self.ppc.$debugwin.cache[id], 
+                    "ppc.$debugwin.cache[" + id + "]", name));
         }, 10);
     },
     
@@ -470,7 +470,7 @@ apf.$debugwin = {
         }
             
         if (pNode && pNode.tagName == "method") {
-            var xml = apf.getXml("<method />");
+            var xml = ppc.getXml("<method />");
             var doc = xml.ownerDocument;
             for (prop in o) {
                 if (typeof o[prop] == "function" && prop.charAt(0) != "$") {
@@ -485,18 +485,18 @@ apf.$debugwin = {
     
         var n;
         if (!pNode) {
-            /*var xml = apf.getXml("<obj><item " + (ref ? "name='" + ref + "'" : "") 
+            /*var xml = ppc.getXml("<obj><item " + (ref ? "name='" + ref + "'" : "") 
                 + (displayName ? " display=\"" + displayName.replace(/"/g, "&quot;") + "\"" : "")
                 + " expand='true' /></obj>").firstChild;*/
-            var xml = apf.getXml("<obj />");
+            var xml = ppc.getXml("<obj />");
             n = {};
             n[displayName] = o;
-            if (typeof o == "object" || typeof o == "function" || o && o.dataType == apf.ARRAY)
+            if (typeof o == "object" || typeof o == "function" || o && o.dataType == ppc.ARRAY)
                 n.$isSingleValue = true;
             o = n;
         }
         else {
-            var xml = apf.getXml("<item " + (ref ? "name='" + ref + "'" : "") 
+            var xml = ppc.getXml("<item " + (ref ? "name='" + ref + "'" : "") 
                 + (displayName ? " display=\"" + displayName.replace(/"/g, "&quot;") + "\"" : "")
                 + " expand='true' />");
         }
@@ -514,7 +514,7 @@ apf.$debugwin = {
             if (prop.charAt(0) == "$" || prop.substr(0, 2) == "a_") //@todo this could be a setting
                 continue;
             
-            if (typeof obj == "function" && (!n || obj != n[displayName]) && (o.dataType != apf.ARRAY || prop != parseInt(prop))) {
+            if (typeof obj == "function" && (!n || obj != n[displayName]) && (o.dataType != ppc.ARRAY || prop != parseInt(prop))) {
                 hasMethods = true;
                 continue;
             }
@@ -539,7 +539,7 @@ apf.$debugwin = {
         
             var str, hasMethods;
             switch (obj.dataType) {
-                case apf.STRING:
+                case ppc.STRING:
                     if (obj.length > 10000) 
                         item.setAttribute("value", "String of " + obj.length + " bytes (too large to display)");
                     else 
@@ -549,19 +549,19 @@ apf.$debugwin = {
                           .replace(/\n/g, "\\n")
                           .replace(/\r/g, "\\r") + '"');
                     break;
-                case apf.NUMBER:
+                case ppc.NUMBER:
                     item.setAttribute("value", obj);
                     break;
-                case apf.BOOLEAN:
+                case ppc.BOOLEAN:
                     item.setAttribute("value", obj ? "true" : "false");
                     break;
-                case apf.DATE:
+                case ppc.DATE:
                     item.setAttribute("value", "[" + obj.toString() + "]");
                     break;
-                case apf.FUNCTION:
+                case ppc.FUNCTION:
                     item.setAttribute("value", prop + o[prop].toString().match(/function\s*[\w-]*(\([\s\S]*?\))/)[1]);
                     break;
-                case apf.ARRAY:
+                case ppc.ARRAY:
                     item.setAttribute("value", "(" + obj.length + " items)");
                     break;
                 default:
@@ -577,21 +577,21 @@ apf.$debugwin = {
                             : "HTML" + this.domtypes[obj.nodeType]);
                     else if (obj.nodeType !== undefined) {
                         var s;
-                        if (obj.$regbase & apf.__AMLNODE__) {
+                        if (obj.$regbase & ppc.__AMLNODE__) {
                             if (obj.nodeType == 1) {
-                                if (obj.namespaceURI == apf.ns.xhtml) {
-                                    item.setAttribute("type", "apf.Xhtml" + obj.localName.uCaseFirst() + "Element");
+                                if (obj.namespaceURI == ppc.ns.xhtml) {
+                                    item.setAttribute("type", "ppc.Xhtml" + obj.localName.uCaseFirst() + "Element");
                                     break;
                                 }
-                                else if (obj.namespaceURI == apf.ns.xsd) {
-                                    item.setAttribute("type", "apf.Xsd" + obj.localName.uCaseFirst() + "Element");
+                                else if (obj.namespaceURI == ppc.ns.xsd) {
+                                    item.setAttribute("type", "ppc.Xsd" + obj.localName.uCaseFirst() + "Element");
                                     break;
                                 }
                             }
 
                             item.setAttribute("type", obj.nodeType == 1 
-                                ? "apf." + obj.localName
-                                : "apf.Aml" + this.domtypes[obj.nodeType]);
+                                ? "ppc." + obj.localName
+                                : "ppc.Aml" + this.domtypes[obj.nodeType]);
                             break;
                         }
                         
@@ -610,7 +610,7 @@ apf.$debugwin = {
             xml.firstChild.setAttribute("name", ref);
             xml.firstChild.setAttribute("expand", "true");
             if (o.$isSingleValue)
-                apf.mergeXml(this.analyze(xml.firstChild, name), xml.firstChild);
+                ppc.mergeXml(this.analyze(xml.firstChild, name), xml.firstChild);
         }
         
         if (hasMethods) {
@@ -654,11 +654,11 @@ apf.$debugwin = {
         tabDebug.set(1);
         pgBrowse.set(1);
         
-        var lut = apf.xmldb.$xmlDocLut;
+        var lut = ppc.xmldb.$xmlDocLut;
         var doc = xml.ownerDocument.documentElement;
-        var id = xml.getAttribute(apf.xmldb.xmlIdTag);
+        var id = xml.getAttribute(ppc.xmldb.xmlIdTag);
         if (!id) 
-            id = apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(xml), xml);
+            id = ppc.xmldb.nodeConnect(ppc.xmldb.getXmlDocId(xml), xml);
         var docId = id.split("\|")[0];
         
         if (!lut[docId]) {
@@ -666,14 +666,14 @@ apf.$debugwin = {
         }
         else if (lut[docId] != doc) {
             //#ifdef __WITH_NAMESERVER
-            var model1 = this.apf.nameserver.get("model", docId);
+            var model1 = this.ppc.nameserver.get("model", docId);
             lut[docId] = doc;
 
-            var model2 = apf.nameserver.get("model", docId);
-            apf.xmldb.getXmlDocId(doc, model2);
+            var model2 = ppc.nameserver.get("model", docId);
+            ppc.xmldb.getXmlDocId(doc, model2);
             
             if (model1)
-                apf.nameserver.register("model", docId, model1);
+                ppc.nameserver.register("model", docId, model1);
             //#endif
         }
         
@@ -682,7 +682,7 @@ apf.$debugwin = {
     
     $handleDataContext : function(ev, obj){
         if (obj) {
-            this.apf.$debugwin.highlightAmlNode(null, true);
+            this.ppc.$debugwin.highlightAmlNode(null, true);
             
             if (obj.$regbase) {
                 itInspAml.hide();
@@ -773,13 +773,13 @@ apf.$debugwin = {
     
     jRunCode : function(code, scripttype,  model){
         //#ifdef __WITH_STORAGE
-        apf.storage.put("jsexec", code);
-        apf.storage.put("scriptype", scripttype);
-        apf.storage.put("mdlvalue", model);
+        ppc.storage.put("jsexec", code);
+        ppc.storage.put("scriptype", scripttype);
+        ppc.storage.put("mdlvalue", model);
         //#endif
         var islm = scripttype == 'Live Markup';
 
-        this.apf.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>"
+        this.ppc.console.write("<span style='color:blue'><span style='float:left'>&gt;&gt;&gt;</span><div style='margin:0 0 0 30px'>"
             + code.replace(/ /g, "&nbsp;")
                   .replace(/\t/g, "&nbsp;&nbsp;&nbsp;")
                   .replace(/</g, "&lt;")
@@ -789,21 +789,21 @@ apf.$debugwin = {
         var _self = this;
         var doIt  = function(data, loaded){
             if (islm) {
-                var func = apf.$debugwin.apf.lm.compile(code, {parsecode : true});
+                var func = ppc.$debugwin.ppc.lm.compile(code, {parsecode : true});
                 if (model && !loaded) {
                     //#ifdef __WITH_NAMESERVER
-                    if (data = apf.$debugwin.apf.nameserver.get("model", model))
+                    if (data = ppc.$debugwin.ppc.nameserver.get("model", model))
                         data = data.data;
                     //#endif
                     if (!data) {
-                        var data = _self.apf.getData(model, {
+                        var data = _self.ppc.getData(model, {
                             useXML   : true,
                             callback : function(data, state, extra){
-                                if (state == apf.SUCCESS) {
+                                if (state == ppc.SUCCESS) {
                                      doIt(data, true);
                                 }
                                 else {
-                                    _self.apf.console.error("Could not find resource '" + model + "'\nMessage:" + extra.message);
+                                    _self.ppc.console.error("Could not find resource '" + model + "'\nMessage:" + extra.message);
                                 }
                             }
                         })
@@ -818,23 +818,23 @@ apf.$debugwin = {
 
             var s = _self.$serializeObject(x, code);
             if (typeof s == "string") {
-                _self.apf.console.write(s, "custom", null, null, null, true);
+                _self.ppc.console.write(s, "custom", null, null, null, true);
             }
             else {
-                _self.apf.console.write(x
+                _self.ppc.console.write(x
                     ? "Could not serialize object: " + s.message
                     : x, "error", null, null, null, true);
             }
         }
 
-        if (apf.$debugwin.nativedebug)
+        if (ppc.$debugwin.nativedebug)
             doIt();
         else {
             try{
                 doIt();
             }
             catch(e) {
-                this.apf.console.write(e.message, "error", null, null, null, true);
+                this.ppc.console.write(e.message, "error", null, null, null, true);
             }
         }
     },
@@ -851,16 +851,16 @@ apf.$debugwin = {
                 if (x.nodeType == 1 || x.nodeType == 7) {
                     if (x.serialize) //aml
                         str = "<a class='xmlhl' href='javascript:void(0)' \
-                          onmouseout='if (cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(null, true)' \
-                          onmouseover='if(!mnuData.visible &amp;&amp; cbHighlightHover.checked) apf.$debugwin.apf.$debugwin.highlightAmlNode(apf.$debugwin.apf.all[" 
-                            + x.$uniqueId + "])' onclick='apf.$debugwin.showAmlNode(apf.$debugwin.apf.all[" 
-                            + x.$uniqueId + "])'>" + apf.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
+                          onmouseout='if (cbHighlightHover.checked) ppc.$debugwin.ppc.$debugwin.highlightAmlNode(null, true)' \
+                          onmouseover='if(!mnuData.visible &amp;&amp; cbHighlightHover.checked) ppc.$debugwin.ppc.$debugwin.highlightAmlNode(ppc.$debugwin.ppc.all[" 
+                            + x.$uniqueId + "])' onclick='ppc.$debugwin.showAmlNode(ppc.$debugwin.ppc.all[" 
+                            + x.$uniqueId + "])'>" + ppc.highlightXml(x.serialize().split(">")[0] + ">").replace(/<\/?a(?:>| [^>]*>)/g, "")  + "</a>";
                     //else if (x.style) //html
                         //str = x.outerHTML.replace(/</g, "&lt;").replace(/\n/g, "\n<br />")
                     else
-                        str = "<a class='xmlhl' href='javascript:void(0)' onclick='apf.$debugwin.showXmlNode(apf.$debugwin.cache[" 
-                            + (apf.$debugwin.cache.push(x) - 1) + "])'>" 
-                            + apf.highlightXml(apf.getCleanCopy(x).xml.split(">")[0] + ">") + "</a>";
+                        str = "<a class='xmlhl' href='javascript:void(0)' onclick='ppc.$debugwin.showXmlNode(ppc.$debugwin.cache[" 
+                            + (ppc.$debugwin.cache.push(x) - 1) + "])'>" 
+                            + ppc.highlightXml(ppc.getCleanCopy(x).xml.split(">")[0] + ">") + "</a>";
                 }
                 else
                     str = x.xml || x.serialize();
@@ -868,7 +868,7 @@ apf.$debugwin = {
                 return str;
             }
             else if (typeof x == "object") {
-                if (x.dataType == apf.ARRAY) {
+                if (x.dataType == ppc.ARRAY) {
                     var out = ["Array { length: " + x.length];
                 }
                 else {
@@ -883,8 +883,8 @@ apf.$debugwin = {
                     }
                 }
 
-                return "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='apf.$debugwin.showObject(null, " 
-                        + (this.apf.$debugwin.cache.push(x) - 1) + ", \"" + (code || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>" 
+                return "<a class='xmlhl' href='javascript:void(0)' style='font-weight:bold;font-size:7pt;color:green' onclick='ppc.$debugwin.showObject(null, " 
+                        + (this.ppc.$debugwin.cache.push(x) - 1) + ", \"" + (code || "").split(";").pop().replace(/"/g, "\\&quot;") + "\")'>" 
                         + out.join(" ") + " }</a>";
             }
             else {
@@ -906,26 +906,26 @@ apf.$debugwin = {
             return false;
         }
         else if(e.keyCode == 13 && e.ctrlKey) {
-            apf.$debugwin.jRunCode(txtCode.value, codetype.value, txtModel.value);
+            ppc.$debugwin.jRunCode(txtCode.value, codetype.value, txtModel.value);
             return false;
         }
     },
     
     setShowTime : function(c){
         //#ifdef __WITH_STORAGE
-        apf.storage.put("apfdebug_console_date", c);
+        ppc.storage.put("ppcdebug_console_date", c);
         //#endif
-        apf.setStyleRule('.console_date', 'display', c ? 'inline' : 'none');
+        ppc.setStyleRule('.console_date', 'display', c ? 'inline' : 'none');
         this.showtime = c;
     },
     
     setNativeDebug : function(c, admin){
         if (!admin) {
             //#ifdef __WITH_STORAGE
-            apf.storage.put("apfdebug_debugger", c);
+            ppc.storage.put("ppcdebug_debugger", c);
             //#endif
 
-            this.apf.$debugwin.setNativeDebug(c, true);
+            this.ppc.$debugwin.setNativeDebug(c, true);
         }
         else
             window.onerror = c ? null : this.errorHandler;
@@ -935,14 +935,14 @@ apf.$debugwin = {
     
     setHighlightHover : function(c){
         //#ifdef __WITH_STORAGE
-        apf.storage.put("apfdebug_highlight_hover", c);
+        ppc.storage.put("ppcdebug_highlight_hover", c);
         //#endif
         this.highlighthover = c;
     },
     
     setSelectEditable : function(c){
         //#ifdef __WITH_STORAGE
-        apf.storage.put("apfdebug_select_editable", c);
+        ppc.storage.put("ppcdebug_select_editable", c);
         //#endif
         this.selecteditable = c;
     },
@@ -950,17 +950,17 @@ apf.$debugwin = {
     firstEdit : true,
     $setEditable : function(value){
         if (value) {
-            apf.document.documentElement
+            ppc.document.documentElement
                 .setAttribute("editable", "true");
         }
         else {
-            apf.document.documentElement
+            ppc.document.documentElement
                 .removeAttribute("editable");
         }
     },
     
     setEditable : function(value){
-        this.apf.$debugwin.$setEditable(value);
+        this.ppc.$debugwin.$setEditable(value);
         //if (!self.pgBrowse) return;
         
         if (value){
@@ -982,39 +982,39 @@ apf.$debugwin = {
     
     first : true,
     show : function(){
-        if (apf.isDebugWindow)
+        if (ppc.isDebugWindow)
             return;
         
-        if (apf.loadScreen)
-            apf.loadScreen.hide();
+        if (ppc.loadScreen)
+            ppc.loadScreen.hide();
 
         //Initialize css for showing debugwindow
         if (this.first) {
             var p, m, o;
-            if (apf.isIE) {
-                apf.setStyleRule("BODY", "overflow", "", 0);
+            if (ppc.isIE) {
+                ppc.setStyleRule("BODY", "overflow", "", 0);
     
-                p = apf.getBox(apf.getStyle(document.body, "padding"));
-                m = apf.getBox(apf.getStyle(document.body, "margin"));
-                o = [apf.getStyle(document.documentElement, "overflow"),
-                         apf.getStyle(document.documentElement, "overflowX"),
-                         apf.getStyle(document.documentElement, "overflowY")];
+                p = ppc.getBox(ppc.getStyle(document.body, "padding"));
+                m = ppc.getBox(ppc.getStyle(document.body, "margin"));
+                o = [ppc.getStyle(document.documentElement, "overflow"),
+                         ppc.getStyle(document.documentElement, "overflowX"),
+                         ppc.getStyle(document.documentElement, "overflowY")];
             }
             else {
-                p = [parseInt(apf.getStyle(document.body, "paddingTop")),
-                     parseInt(apf.getStyle(document.body, "paddingRight")),
-                     parseInt(apf.getStyle(document.body, "paddingBottom")),
-                     parseInt(apf.getStyle(document.body, "paddingLeft"))];
-                m = [parseInt(apf.getStyle(document.body, "marginTop")),
-                     parseInt(apf.getStyle(document.body, "marginRight")),
-                     parseInt(apf.getStyle(document.body, "marginBottom")),
-                     parseInt(apf.getStyle(document.body, "marginLeft"))];
-                o = [apf.getStyleRule("html", "overflow") || "auto",
-                         apf.getStyleRule("html", "overflowX") || "auto",
-                         apf.getStyleRule("html", "overflowY") || "auto"];
+                p = [parseInt(ppc.getStyle(document.body, "paddingTop")),
+                     parseInt(ppc.getStyle(document.body, "paddingRight")),
+                     parseInt(ppc.getStyle(document.body, "paddingBottom")),
+                     parseInt(ppc.getStyle(document.body, "paddingLeft"))];
+                m = [parseInt(ppc.getStyle(document.body, "marginTop")),
+                     parseInt(ppc.getStyle(document.body, "marginRight")),
+                     parseInt(ppc.getStyle(document.body, "marginBottom")),
+                     parseInt(ppc.getStyle(document.body, "marginLeft"))];
+                o = [ppc.getStyleRule("html", "overflow") || "auto",
+                         ppc.getStyleRule("html", "overflowX") || "auto",
+                         ppc.getStyleRule("html", "overflowY") || "auto"];
             }
     
-            apf.importCssString("\
+            ppc.importCssString("\
                 html{\
                     height : 100%;\
                     overflow : hidden;\
@@ -1038,7 +1038,7 @@ apf.$debugwin = {
                                   (p[3] + m[3]) + "px;\
                     width : auto;\
                 }\
-                #apf_debugwin {\
+                #ppc_debugwin {\
                     position: fixed;\
                     bottom: 0px;\
                     text-align: left;\
@@ -1052,19 +1052,19 @@ apf.$debugwin = {
             this.first = false;
             
             //src='debugwin.html' 
-            document.body.insertAdjacentHTML("beforeend", "<div id='apf_debugwin'><iframe frameborder='0' width='100%' height='100%' /></div>");
-            this.$iframe = (this.$ext = document.getElementById("apf_debugwin")).firstChild;
+            document.body.insertAdjacentHTML("beforeend", "<div id='ppc_debugwin'><iframe frameborder='0' width='100%' height='100%' /></div>");
+            this.$iframe = (this.$ext = document.getElementById("ppc_debugwin")).firstChild;
             this.$iframe.isDebugWin = true;
 
-            apf.getWindowWidth = function(){
+            ppc.getWindowWidth = function(){
                 return document.body.offsetWidth;
             };
-            apf.getWindowHeight = function(){
+            ppc.getWindowHeight = function(){
                 return document.body.offsetHeight;
             };
             
             setTimeout(function(){
-                apf.$debugwin.$iframe.src = apf.basePath + "debugwin/debugwin.html";
+                ppc.$debugwin.$iframe.src = ppc.basePath + "debugwin/debugwin.html";
             });
         };
 
@@ -1077,7 +1077,7 @@ apf.$debugwin = {
         document.body.style.bottom = "0";
         document.body.focus();
         
-        /*if (apf.isIE8) {
+        /*if (ppc.isIE8) {
             document.body.style.overflow = "";
             document.body.style.position = "";
         }*/
@@ -1085,8 +1085,8 @@ apf.$debugwin = {
     
     $startResize : function(offset, oApf){
         var $ext = this.$ext;
-        apf.plane.show(null, null, null, true);
-        apf.dragMode = true;
+        ppc.plane.show(null, null, null, true);
+        ppc.dragMode = true;
         oApf.dragMode = true;
 
         document.body.style.cursor = "s-resize";
@@ -1094,14 +1094,14 @@ apf.$debugwin = {
         var lastTime, timer,
             body  = document.body,
             start = $ext.offsetHeight,
-            sY    = document.documentElement.offsetHeight - start + ((apf.isIE ? 0 : 1) * offset);
+            sY    = document.documentElement.offsetHeight - start + ((ppc.isIE ? 0 : 1) * offset);
         document.onmousemove = f = function(e){
             if (!e) e = event;
             
             var offsetY = e.offsetY || e.pageY;
             clearTimeout(timer);
             if (lastTime && new Date().getTime() 
-              - lastTime < apf.mouseEventBuffer) {
+              - lastTime < ppc.mouseEventBuffer) {
                 var z = {
                     clientX: e.clientX,
                     clientY: e.clientY
@@ -1125,10 +1125,10 @@ apf.$debugwin = {
             document.onmousemove = 
             document.onmouseup   = null;
             
-            apf.dragMode = false;
+            ppc.dragMode = false;
             oApf.dragMode = false;
             
-            apf.plane.hide();
+            ppc.plane.hide();
         }
     },
     

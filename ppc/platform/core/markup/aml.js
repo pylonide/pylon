@@ -35,6 +35,6 @@
  * @attribute {String} src the location of the aml file to include in this application.
  *
  */
-apf.aml = new apf.AmlNamespace();
-apf.setNamespace("https://github.com/pylonide/pylon", apf.aml);
+ppc.aml = new ppc.AmlNamespace();
+ppc.setNamespace("https://github.com/pylonide/pylon", ppc.aml);
 //#endif

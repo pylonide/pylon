@@ -20,7 +20,7 @@
  */
 //#ifdef __WITH_DRAW
 //#ifdef __ENABLE_DRAW_CANVAS
-apf.draw.canvas = {
+ppc.draw.canvas = {
    
    //----------------------------------------------------------------------
     
@@ -128,7 +128,7 @@ apf.draw.canvas = {
             }else {
                 p.push("_styles[",i,"]={");
                 if(style.$stylelist){
-                    p.push(apf.draw.serializeStyleState(style));
+                    p.push(ppc.draw.serializeStyleState(style));
                 }
                 p.push("};");
             }    
@@ -210,7 +210,7 @@ apf.draw.canvas = {
             fillmode |= 1;
             // lets do a nice inline tile image cachin
             if(this.isDynamic(style.tile)){
-                if(apf.isGecko && style.fillopacity != 1){
+                if(ppc.isGecko && style.fillopacity != 1){
                     if(this.isDynamic(style.fillopacity)){
                          s.push(
                         "if(!(_u=l.imgcache[_t=",style.tile,"])){",
@@ -280,13 +280,13 @@ apf.draw.canvas = {
                         style._img = img;
 
                         // Dirty hack to make gecko support transparent tiling
-                        if(apf.isGecko && style.fillopacity != 1){
+                        if(ppc.isGecko && style.fillopacity != 1){
                             style._canvas = document.createElement("canvas");
                             style._canvas.setAttribute("width", img.width);
                             style._canvas.setAttribute("height", img.height);
                             style._ctx = style._canvas.getContext('2d');
                             // check if we have dynamic opacity
-                            if(!apf.draw.isDynamic(style.fillopacity)){
+                            if(!ppc.draw.isDynamic(style.fillopacity)){
                                 style._ctx.globalAlpha=style.fillopacity;
                                 style._ctx.drawImage(img,0,0);
                             }
@@ -299,7 +299,7 @@ apf.draw.canvas = {
                     }
                     
                     // Dirty hack to make gecko support transparent tiling                    
-                    if(apf.isGecko && this.isDynamic(style.fillopacity)){
+                    if(ppc.isGecko && this.isDynamic(style.fillopacity)){
                         s.push("if(_s._ctx){",
                                "_s._ctx.clearRect(0,0,_s._img.width,_s._img.height);",
                                "_s._ctx.globalAlpha=",style.fillopacity,";",

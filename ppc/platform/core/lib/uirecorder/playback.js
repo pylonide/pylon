@@ -1,5 +1,5 @@
 // #ifdef __WITH_UIRECORDER
-apf.uirecorder.playback = {
+ppc.uirecorder.playback = {
     $playSpeed      : "realtime",   // speed of the playback
     $curTestXml     : null,         // contains the full actions list in xml format
     $curActionIdx   : 0,            // current index of action that is being played
@@ -113,30 +113,30 @@ apf.uirecorder.playback = {
     
     // playback current test
     play : function(testXml, playSpeed, o3, offset, testing) {
-        apf.uirecorder.$o3          = o3;
+        ppc.uirecorder.$o3          = o3;
         this.$playSpeed             = playSpeed;
         this.$curTestXml            = testXml;
         this.$curActionIdx          = 0;
         this.$windowOffset          = offset;
         this.$keyActions            = testXml.selectNodes("action[@keyActionIdx]");
-        apf.uirecorder.isPlaying    = true;
+        ppc.uirecorder.isPlaying    = true;
         
         if (testing) {
-            apf.uirecorder.isTesting    = true;
-            apf.uirecorder.captureDetails   = true;
+            ppc.uirecorder.isTesting    = true;
+            ppc.uirecorder.captureDetails   = true;
         
             this.createCheckList();
 
             // if capturing
-            apf.uirecorder.capture.$init();
-            apf.uirecorder.capture.$startTime = new Date().getTime();
-            apf.uirecorder.capture.$curTestFile = this.$curTestXml.getAttribute("file");
-            apf.uirecorder.capture.$curTestId = this.$curTestXml.getAttribute("name");
+            ppc.uirecorder.capture.$init();
+            ppc.uirecorder.capture.$startTime = new Date().getTime();
+            ppc.uirecorder.capture.$curTestFile = this.$curTestXml.getAttribute("file");
+            ppc.uirecorder.capture.$curTestId = this.$curTestXml.getAttribute("name");
         }
         
         // hide debugwin if it's open
-        if (apf.isDebugWindow)
-            apf.$debugwin.hide();
+        if (ppc.isDebugWindow)
+            ppc.$debugwin.hide();
 
         
         this.$startTime = new Date().getTime();
@@ -145,14 +145,14 @@ apf.uirecorder.playback = {
     
     // pause playback
     pause : function() {
-        if (apf.uirecorder.isPaused) return;
-        apf.uirecorder.isPaused = true;
+        if (ppc.uirecorder.isPaused) return;
+        ppc.uirecorder.isPaused = true;
         this.$startDelay = new Date().getTime();
     },
     
     // resume playback
     resume : function() {
-        apf.uirecorder.isPaused = false;
+        ppc.uirecorder.isPaused = false;
         
         // no actions to execute
         var moreActions = (this.$playSpeed == "realtime") 
@@ -173,42 +173,42 @@ apf.uirecorder.playback = {
             this.$activeEl.focus();
         }
         
-        //if (!apf.uirecorder.isPaused) debugger;
-//        if (this.$waitElementsInterval || apf.uirecorder.testing.$waitForInterval || apf.uirecorder.output.$popup) return;
+        //if (!ppc.uirecorder.isPaused) debugger;
+//        if (this.$waitElementsInterval || ppc.uirecorder.testing.$waitForInterval || ppc.uirecorder.output.$popup) return;
         
         
-        if (apf.uirecorder.isPaused)
+        if (ppc.uirecorder.isPaused)
             this.$testDelay += new Date().getTime() - this.$startDelay;
         
         // small delay before continuing
         setTimeout(function() {
-            apf.uirecorder.playback.$playAction();
+            ppc.uirecorder.playback.$playAction();
         }, 500);
     },
     
     // stop playing
     stop : function() {
-        apf.uirecorder.isTesting = false;
-        apf.uirecorder.isPlaying = false;
-        apf.uirecorder.capture.stop();
+        ppc.uirecorder.isTesting = false;
+        ppc.uirecorder.isPlaying = false;
+        ppc.uirecorder.capture.stop();
     },
     
     $waitForChecks : function() {
         // check if not too much time has passed, 10 seconds
         var checkList;
-        if ((checkList=apf.uirecorder.playback.$waitForList).length) {
-            if (new Date().getTime() - apf.uirecorder.playback.$waitForStartTime > 10000) {
-                clearInterval(apf.uirecorder.playback.$waitForInterval);
-                apf.uirecorder.playback.$testError("It takes too long to set " + checkList[0].type + " " + checkList[0].name + " on element " + checkList[0].elName);
+        if ((checkList=ppc.uirecorder.playback.$waitForList).length) {
+            if (new Date().getTime() - ppc.uirecorder.playback.$waitForStartTime > 10000) {
+                clearInterval(ppc.uirecorder.playback.$waitForInterval);
+                ppc.uirecorder.playback.$testError("It takes too long to set " + checkList[0].type + " " + checkList[0].name + " on element " + checkList[0].elName);
                 return;
             }
             for (var found = [], amlNode, w, i = 0, l = checkList.length; i < l; i++) {
                 // loop through detailList of action to check if event is captured
-                if (!(apf.uirecorder.capture.$actionList[checkList[i].actionIdx] && apf.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList && apf.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx] && apf.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx][checkList[i].elName] && apf.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx][checkList[i].elName][checkList[i].detailType])) continue;
+                if (!(ppc.uirecorder.capture.$actionList[checkList[i].actionIdx] && ppc.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList && ppc.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx] && ppc.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx][checkList[i].elName] && ppc.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx][checkList[i].elName][checkList[i].detailType])) continue;
                 //if (!(checkList[i].actionObj && checkList[i].actionObj.detailList && checkList[i].actionObj.detailList[checkList[i].checkIdx] && checkList[i].actionObj.detailList[checkList[i].checkIdx][checkList[i].elName] && checkList[i].actionObj.detailList[checkList[i].checkIdx][checkList[i].elName][checkList[i].detailType])) continue;
-                for (var ji = 0, jl = apf.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx][checkList[i].elName][checkList[i].detailType].length; ji < jl; ji++) {
-                    if (checkList[i].name == apf.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx][checkList[i].elName][checkList[i].detailType][ji].name) {
-                        delete apf.uirecorder.playback.$waitForList[i];
+                for (var ji = 0, jl = ppc.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx][checkList[i].elName][checkList[i].detailType].length; ji < jl; ji++) {
+                    if (checkList[i].name == ppc.uirecorder.capture.$actionList[checkList[i].actionIdx].detailList[checkList[i].checkIdx][checkList[i].elName][checkList[i].detailType][ji].name) {
+                        delete ppc.uirecorder.playback.$waitForList[i];
                         i--;
                         l--;
                         break;
@@ -221,15 +221,15 @@ apf.uirecorder.playback = {
         
         // no more waitFor checks, continue playback
         if (!checkList.length) {
-            clearInterval(apf.uirecorder.playback.$waitForInterval);
-            apf.uirecorder.playback.playAction();
-            apf.dispatchEvent("aftertestwaiting");
+            clearInterval(ppc.uirecorder.playback.$waitForInterval);
+            ppc.uirecorder.playback.playAction();
+            ppc.dispatchEvent("aftertestwaiting");
         }
     },
     
     // init playback of action
     $playAction : function() {
-        if (apf.uirecorder.isPaused) return;
+        if (ppc.uirecorder.isPaused) return;
 
         // no actions to execute
         var moreActions = (this.$playSpeed == "realtime") 
@@ -247,9 +247,9 @@ apf.uirecorder.playback = {
 /*
 TEMPORARILY DISABLED
         if (this.$warningList.length && this.$curAction.getAttribute("name") != "mouseup") {
-            apf.console.info("testwarning on: " + this.$curAction.getAttribute("keyActionIdx") + ". " + this.$curAction.getAttribute("name"));
-            this.$activeEl = (apf.activeElement) ? apf.activeElement : null;
-            apf.dispatchEvent("testwarning", {warnings: this.$warningList});
+            ppc.console.info("testwarning on: " + this.$curAction.getAttribute("keyActionIdx") + ". " + this.$curAction.getAttribute("name"));
+            this.$activeEl = (ppc.activeElement) ? ppc.activeElement : null;
+            ppc.dispatchEvent("testwarning", {warnings: this.$warningList});
             this.$warningList = [];
             return;
         }
@@ -257,7 +257,7 @@ TEMPORARILY DISABLED
         // wait for events before continuing
         if (this.$waitForList.length) {
             this.$waitForStartTime = new Date().getTime();
-            apf.dispatchEvent("beforetestwaiting");
+            ppc.dispatchEvent("beforetestwaiting");
             this.$waitForInterval = setInterval(this.$waitForChecks, 50);
             return;
         }
@@ -291,7 +291,7 @@ TEMPORARILY DISABLED
             var timeout = parseInt(this.$curAction.getAttribute("time")) - this.$speedUpTime + this.$testDelay - (new Date().getTime() - this.$startTime);
             if (timeout > 0) {
                 this.$playTimer = setTimeout(function() {
-                    apf.uirecorder.playback.$execAction();
+                    ppc.uirecorder.playback.$execAction();
                 }, timeout);
             }
             
@@ -302,7 +302,7 @@ TEMPORARILY DISABLED
         }
         else {
             this.$playTimer = setTimeout(function() {
-                apf.uirecorder.playback.$execAction();
+                ppc.uirecorder.playback.$execAction();
             }, 200);
         }
         
@@ -313,14 +313,14 @@ TEMPORARILY DISABLED
         //amlNode with id
         var amlNode;
         if (amlNodeXml.getAttribute("id")) {
-            amlNode = apf.document.getElementById(amlNodeXml.getAttribute("id"));
+            amlNode = ppc.document.getElementById(amlNodeXml.getAttribute("id"));
             return amlNode;
         }
         
         
         // amlNode with certain tagName and caption
         if (!amlNode && amlNodeXml.getAttribute("tagName")) {
-            var amlNodes = apf.document.getElementsByTagName(amlNodeXml.getAttribute("tagName"))
+            var amlNodes = ppc.document.getElementsByTagName(amlNodeXml.getAttribute("tagName"))
             
             // search for amlNode with correct caption
             if (amlNodeXml.getAttribute("caption")) {
@@ -335,14 +335,14 @@ TEMPORARILY DISABLED
         
         // search for amlNode based on xpath
         if (!amlNode && amlNodeXml.getAttribute("xpath")) {
-            amlNode = apf.document.selectSingleNode(amlNodeXml.getAttribute("xpath"));
+            amlNode = ppc.document.selectSingleNode(amlNodeXml.getAttribute("xpath"));
         }
         
         return amlNode;
     },
     
     $execAction : function() {
-        if (!apf.uirecorder.isPlaying) return;
+        if (!ppc.uirecorder.isPlaying) return;
         // detect position of amlNode
         var amlNodeXml, original = {}, targetNode = null;
         if (amlNodeXml = this.$curAction.selectSingleNode("amlNode")) {
@@ -384,9 +384,9 @@ TEMPORARILY DISABLED
                         if (amlNodeXml.getAttribute("type") == "dropdown" && this.$keyActions[parseInt(this.$curAction.getAttribute("keyActionIdx"))-1]) {
                             original = null;
                             
-                            if (amlNodeXml.getAttribute("popup") && apf.popup.last) {
+                            if (amlNodeXml.getAttribute("popup") && ppc.popup.last) {
                                 targetCentre = true;
-                                var dropdownItems = apf.popup.cache[apf.popup.last].content.childNodes
+                                var dropdownItems = ppc.popup.cache[ppc.popup.last].content.childNodes
                                 for (var i = 0, l = dropdownItems.length; i < l; i++) {
                                     if (dropdownItems[i].innerHTML == selectedXml.getAttribute("value")) {
                                         htmlNode = dropdownItems[i];
@@ -420,7 +420,7 @@ TEMPORARILY DISABLED
                                 return;
                             }
 
-                            htmlNode = apf.xmldb.findHtmlNode(xmlNode, amlNode);
+                            htmlNode = ppc.xmldb.findHtmlNode(xmlNode, amlNode);
                         }
                         
                         // no htmlNode found
@@ -497,7 +497,7 @@ TEMPORARILY DISABLED
         var mousePos;
         if (targetNode) {
             if (targetNode != "lastMousePosition") {
-                mousePos = apf.getAbsolutePosition(targetNode, document.body);
+                mousePos = ppc.getAbsolutePosition(targetNode, document.body);
 
                 if (original) {
                     mousePos[0] = mousePos[0] - (original.x-parseInt(this.$curAction.getAttribute("x"))) * (targetNode.offsetWidth/original.width);
@@ -521,20 +521,20 @@ TEMPORARILY DISABLED
         
         // move mouse cursor to correct position
         // ssb
-        if (window.external.o3) { //apf.uirecorder.$o3.window
-            //apf.console.info(this.$curAction.getAttribute("name") + " moved");
-            apf.uirecorder.$o3.mouseTo(
-                parseInt(mousePos[0]) + apf.uirecorder.$o3.window.clientX + this.$windowOffset.left, 
-                parseInt(mousePos[1]) + apf.uirecorder.$o3.window.clientY + this.$windowOffset.top, 
-                window.external.o3 //apf.uirecorder.$o3.window
+        if (window.external.o3) { //ppc.uirecorder.$o3.window
+            //ppc.console.info(this.$curAction.getAttribute("name") + " moved");
+            ppc.uirecorder.$o3.mouseTo(
+                parseInt(mousePos[0]) + ppc.uirecorder.$o3.window.clientX + this.$windowOffset.left, 
+                parseInt(mousePos[1]) + ppc.uirecorder.$o3.window.clientY + this.$windowOffset.top, 
+                window.external.o3 //ppc.uirecorder.$o3.window
             );
         }
         // browser plugin
         else {
-            apf.uirecorder.$o3.mouseTo(
+            ppc.uirecorder.$o3.mouseTo(
                 parseInt(mousePos[0]) + this.$windowOffset.left, 
                 parseInt(mousePos[1]) + this.$windowOffset.top, 
-                apf.uirecorder.$o3.window
+                ppc.uirecorder.$o3.window
             );
         }
 
@@ -542,39 +542,39 @@ TEMPORARILY DISABLED
         var aName;
         if ((aName = this.$curAction.getAttribute("name")) === "keypress") {
             // check if correct element is active/focussed for typing text
-            if (amlNode && ["text", "textbox", "textarea"].indexOf(amlNode.localName) > -1 && apf.activeElement != amlNode) {
+            if (amlNode && ["text", "textbox", "textarea"].indexOf(amlNode.localName) > -1 && ppc.activeElement != amlNode) {
                 this.$testError("Keypress action not executed on element " + (amlNodeXml.getAttribute("id") || ((amlNodeXml.getAttribute("caption") ? amlNodeXml.getAttribute("tagName") + " " + amlNodeXml.getAttribute("caption") : amlNodeXml.getAttribute("xpath")))));
                 return;
             }
             if (this.$keyString) {
-                apf.uirecorder.$o3.sendAsKeyEvents(this.$keyString);
+                ppc.uirecorder.$o3.sendAsKeyEvents(this.$keyString);
                 this.$keyString = "";
             }
             else
-                apf.uirecorder.$o3.sendAsKeyEvents(this.$curAction.getAttribute("value"));
+                ppc.uirecorder.$o3.sendAsKeyEvents(this.$curAction.getAttribute("value"));
         }
         else if (aName === "keydown") {
-            apf.uirecorder.$o3.sendKeyDown(parseInt(this.$curAction.getAttribute("value")));
+            ppc.uirecorder.$o3.sendKeyDown(parseInt(this.$curAction.getAttribute("value")));
         }
         else if (aName === "keyup") {
-            apf.uirecorder.$o3.sendKeyUp(parseInt(this.$curAction.getAttribute("value")));
+            ppc.uirecorder.$o3.sendKeyUp(parseInt(this.$curAction.getAttribute("value")));
         }
         else if (aName === "mousedown") {
-            apf.uirecorder.$o3.mouseLeftDown();
+            ppc.uirecorder.$o3.mouseLeftDown();
         }
         else if (aName === "mouseup") {
-            apf.uirecorder.$o3.mouseLeftUp();
+            ppc.uirecorder.$o3.mouseLeftUp();
         }
         else if (aName === "dblClick") {
-            apf.uirecorder.$o3.mouseLeftDown();
-            apf.uirecorder.$o3.mouseLeftUp();
-            apf.uirecorder.$o3.mouseLeftDown();
-            apf.uirecorder.$o3.mouseLeftUp();
+            ppc.uirecorder.$o3.mouseLeftDown();
+            ppc.uirecorder.$o3.mouseLeftUp();
+            ppc.uirecorder.$o3.mouseLeftDown();
+            ppc.uirecorder.$o3.mouseLeftUp();
         }
         else if (aName === "mousescroll") {
-            apf.uirecorder.$o3.mouseWheel(this.$curAction.getAttribute("value"));
+            ppc.uirecorder.$o3.mouseWheel(this.$curAction.getAttribute("value"));
         }
-apf.console.info(aName + " executed");
+ppc.console.info(aName + " executed");
         this.$nextAction();
     },
     
@@ -594,22 +594,22 @@ apf.console.info(aName + " executed");
 /*
 TEMPORARILY DISABLED
             if (this.$warningList.length && this.$curAction.getAttribute("name") != "mousedown") {
-                apf.dispatchEvent("testwarning", {warnings: this.$warningList});
+                ppc.dispatchEvent("testwarning", {warnings: this.$warningList});
                 this.$warningList = [];
                 return;
             }
 */
             setTimeout(function() {
-                apf.uirecorder.playback.stop();
-                apf.dispatchEvent("testcomplete");
+                ppc.uirecorder.playback.stop();
+                ppc.dispatchEvent("testcomplete");
             }, 500);
         }
     },
     
     $testError : function(msg) {
-        apf.console.error("Playback failed: " + msg);
+        ppc.console.error("Playback failed: " + msg);
         this.stop();
-        apf.dispatchEvent("testerror", {msg: msg});
+        ppc.dispatchEvent("testerror", {msg: msg});
     }
 }
 //#endif

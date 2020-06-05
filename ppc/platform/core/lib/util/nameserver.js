@@ -24,7 +24,7 @@
 /**
  * @private
  */
-apf.nameserver = {
+ppc.nameserver = {
     lookup : {},
     
     add : function(type, item){
@@ -83,7 +83,7 @@ apf.nameserver = {
         var name, arr = [], l = this.lookup[type];
         if (!l) return arr;
         
-        if (l.dataType == apf.ARRAY) {
+        if (l.dataType == ppc.ARRAY) {
             for (var i = 0; i < l.length; i++) {
                 arr.push(l[i]);
             }
@@ -92,7 +92,7 @@ apf.nameserver = {
             for (name in l) {
                 
                 //#ifdef __SUPPORT_SAFARI2
-                if (apf.isSafariOld && (!l[name] || typeof l[name] != "object"))
+                if (ppc.isSafariOld && (!l[name] || typeof l[name] != "object"))
                     continue;
                 //#endif
                 
@@ -121,12 +121,12 @@ apf.nameserver = {
  *
  * This object's primary purpose is to provide a way to serialize the state
  * of all the custom state you introduce when building the application. This way
- * you can use apf.offline to start the application in 
+ * you can use ppc.offline to start the application in 
  * the exact state it was when your user closed the app.
  *
- * @class apf.registry
+ * @class ppc.registry
  */
-apf.registry = apf.extend({
+ppc.registry = ppc.extend({
     /**
      * Stores a key value pair.
      * @param {String} key       The identifier of the information.
@@ -189,17 +189,17 @@ apf.registry = apf.extend({
             }
         }
     }
-}, apf.nameserver);
+}, ppc.nameserver);
 
 /**
  * @private
  */
-apf.registry.lookup = {};
+ppc.registry.lookup = {};
 
-apf.registry.get = function(key, namespace){
+ppc.registry.get = function(key, namespace){
     return this.lookup[namespace] ? this.lookup[namespace][key] : null;
 };
 
-apf.Init.run("nameserver");
+ppc.Init.run("nameserver");
 
 //#endif

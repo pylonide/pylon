@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_IMAGE || __INC_ALL
 
-apf.LiveEdit.plugin("image", function(){
+ppc.LiveEdit.plugin("image", function(){
     this.name        = "image";
     this.icon        = "image";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+alt+i";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ apf.LiveEdit.plugin("image", function(){
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
         
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -67,8 +67,8 @@ apf.LiveEdit.plugin("image", function(){
     this.submit = function(e) {
         var sUrl = this.oUrl.value;
         if (sUrl) {
-            apf.popup.forceHide();
-            var oUrl = new apf.url(sUrl);
+            ppc.popup.forceHide();
+            var oUrl = new ppc.url(sUrl);
             if (!oUrl.protocol || !oUrl.host || !oUrl.file) 
                 alert("Please enter a valid URL");
             else
@@ -90,15 +90,15 @@ apf.LiveEdit.plugin("image", function(){
             <div id="' + idBtns + '" class="editor_panelrow editor_panelrowbtns"></div>';
         this.oUrl = document.getElementById(idUrl);
         this.appendAmlNode(
-            '<a:toolbar xmlns:a="' + apf.ns.aml + '"><a:bar>\
+            '<a:toolbar xmlns:a="' + ppc.ns.aml + '"><a:bar>\
              <a:button caption="Insert"\
-               onclick="apf.lookup(' + this.$uniqueId + ').submit(event)" />\
+               onclick="ppc.lookup(' + this.$uniqueId + ').submit(event)" />\
              </a:bar></a:toolbar>',
           document.getElementById(idBtns));
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug) {
-            apf.sanitizeTextbox(this.oUrl);
+        if (ppc.hasFocusBug) {
+            ppc.sanitizeTextbox(this.oUrl);
             this.oUrl.onselectstart = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
@@ -116,14 +116,14 @@ apf.LiveEdit.plugin("image", function(){
     };
 });
 
-apf.LiveEdit.plugin("imagespecial", function() {
+ppc.LiveEdit.plugin("imagespecial", function() {
     this.name        = "imagespecial";
     this.icon        = "image";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+alt+j";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     var winHandle;
 

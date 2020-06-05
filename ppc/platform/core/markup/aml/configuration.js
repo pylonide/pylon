@@ -20,7 +20,7 @@
  */
 
 // #ifdef __WITH_AMLCONFIGURATION
-apf.AmlConfiguration = function(isPrototype){
+ppc.AmlConfiguration = function(isPrototype){
     this.parameterNames = [];
 
     this.$init(isPrototype);
@@ -34,5 +34,5 @@ apf.AmlConfiguration = function(isPrototype){
     this.canSetParameter = function(name, value){ //@todo for value
         return this.parameterNames.indexOf(name) > -1;
     };
-}).call(apf.AmlConfiguration.prototype = new apf.Class());
+}).call(ppc.AmlConfiguration.prototype = new ppc.Class());
 // #endif

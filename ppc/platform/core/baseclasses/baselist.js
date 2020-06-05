@@ -25,13 +25,13 @@
  * The baseclass of elements that allows the user to select one or more items
  * out of a list.
  *
- * @class apf.BaseList
+ * @class ppc.BaseList
  * @baseclass
  *
- * @inherits apf.MultiSelect
- * @inherits apf.Cache
- * @inherits apf.DataAction
- * @inheritsElsewhere apf.XForms
+ * @inherits ppc.MultiSelect
+ * @inherits ppc.Cache
+ * @inherits ppc.DataAction
+ * @inheritsElsewhere ppc.XForms
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -121,7 +121,7 @@
  * @param {Object} e The standard event object, with the following properties:
  *                    - value ([[String]]): The value that was entered
  */
-apf.BaseList = function(){
+ppc.BaseList = function(){
     this.$init(true);
     
     // #ifdef __WITH_CSS_BINDS
@@ -135,15 +135,15 @@ apf.BaseList = function(){
     //#ifdef __WITH_CACHE || __WITH_DATAACTION
     this.implement(
         //#ifdef __WITH_CACHE
-        apf.Cache,
+        ppc.Cache,
         //#endif
         //#ifdef __WITH_DATAACTION
-        apf.DataAction,
+        ppc.DataAction,
         //#endif
         //#ifdef __WITH_XFORMS
-        //apf.XForms,
+        //ppc.XForms,
         //#endif
-        apf.K
+        ppc.K
     );
     //#endif
 
@@ -191,8 +191,8 @@ apf.BaseList = function(){
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
         if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
+            if (!this.hasFeature(ppc.__MULTICHECK__))
+                this.implement(ppc.MultiCheck);
             
             this.addEventListener("afterrename", $afterRenameMode); //what does this do?
             
@@ -207,7 +207,7 @@ apf.BaseList = function(){
         }
     };
     
-    //@todo apf3.0 retest this completely
+    //@todo ppc3.0 retest this completely
     function $afterRenameMode(){
     }
     
@@ -262,7 +262,7 @@ apf.BaseList = function(){
                 var node = this.getFirstTraverseNode();
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                if (this.hasFeature(ppc.__VIRTUALVIEWPORT__))
                     return this.$viewport.scrollIntoView(node);
                 // #endif
                     
@@ -274,7 +274,7 @@ apf.BaseList = function(){
                 var node = this.getLastTraverseNode();
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                if (this.hasFeature(ppc.__VIRTUALVIEWPORT__))
                     return this.$viewport.scrollIntoView(node, true);
                 // #endif
                 
@@ -292,16 +292,16 @@ apf.BaseList = function(){
                     return;
 
                 node   = this.$tempsel
-                    ? apf.xmldb.getNode(this.$tempsel)
+                    ? ppc.xmldb.getNode(this.$tempsel)
                     : selXml;
-                margin = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 items  = selHtml.offsetWidth
                     ? Math.floor((oExt.offsetWidth
                         - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
                         + margin[1] + margin[3]))
                     : 1;
 
-                //margin = apf.getBox(apf.getStyle(selHtml, "margin"));
+                //margin = ppc.getBox(ppc.getStyle(selHtml, "margin"));
 
                 node   = this.getNextTraverseSelected(node, false);
                 if (node)
@@ -309,7 +309,7 @@ apf.BaseList = function(){
                 else
                     return;
 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -322,10 +322,10 @@ apf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? apf.xmldb.getNode(this.$tempsel)
+                    ? ppc.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin    = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 hasScroll = oExt.scrollHeight > oExt.offsetHeight;
                 items     = selHtml.offsetWidth
                     ? Math.floor((oExt.offsetWidth
@@ -340,11 +340,11 @@ apf.BaseList = function(){
                     return;
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                if (this.hasFeature(ppc.__VIRTUALVIEWPORT__))
                     return this.$viewport.scrollIntoView(node);
                 // #endif
                 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -357,16 +357,16 @@ apf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? apf.xmldb.getNode(this.$tempsel)
+                    ? ppc.xmldb.getNode(this.$tempsel)
                     : selXml;
-                margin = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 node   = this.getNextTraverseSelected(node, true);
                 if (node)
                     this.$setTempSelected (node, ctrlKey, shiftKey);
                 else
                     return;
 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) {
                     oExt.scrollTop = selHtml.offsetTop
@@ -380,10 +380,10 @@ apf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? apf.xmldb.getNode(this.$tempsel)
+                    ? ppc.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin    = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 hasScroll = oExt.scrollHeight > oExt.offsetHeight;
                 items     = selHtml.offsetWidth
                     ? Math.floor((oExt.offsetWidth
@@ -398,11 +398,11 @@ apf.BaseList = function(){
                     return;
 
                 // #ifdef __WITH_VIRTUALVIEWPORT
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                if (this.hasFeature(ppc.__VIRTUALVIEWPORT__))
                     return this.$viewport.scrollIntoView(node, true);
                 // #endif
                 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScroll ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
@@ -416,10 +416,10 @@ apf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? apf.xmldb.getNode(this.$tempsel)
+                    ? ppc.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin     = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
                 hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
                 items      = Math.floor((oExt.offsetWidth
@@ -438,11 +438,11 @@ apf.BaseList = function(){
                     return;
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                if (this.hasFeature(ppc.__VIRTUALVIEWPORT__))
                     return this.$viewport.scrollIntoView(node);
                 // #endif
                 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oExt.scrollTop) {
                     oExt.scrollTop = Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                         ? 0
@@ -455,10 +455,10 @@ apf.BaseList = function(){
                     return;
 
                 node = this.$tempsel
-                    ? apf.xmldb.getNode(this.$tempsel)
+                    ? ppc.xmldb.getNode(this.$tempsel)
                     : selXml;
 
-                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin     = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 hasScrollY = oExt.scrollHeight > oExt.offsetHeight;
                 hasScrollX = oExt.scrollWidth > oExt.offsetWidth;
                 items      = Math.floor((oExt.offsetWidth - (hasScrollY ? 15 : 0))
@@ -475,11 +475,11 @@ apf.BaseList = function(){
                     return;
                 
                 // #ifdef __WITH_VIRTUALVIEWPORT
-                if (this.hasFeature(apf.__VIRTUALVIEWPORT__))
+                if (this.hasFeature(ppc.__VIRTUALVIEWPORT__))
                     return this.$viewport.scrollIntoView(node, true);
                 // #endif
                 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oExt.scrollTop + oExt.offsetHeight) { // - (hasScrollY ? 10 : 0)
                     oExt.scrollTop = selHtml.offsetTop
@@ -551,11 +551,11 @@ apf.BaseList = function(){
         if (elIcon) {
             if (elIcon.nodeType == 1) {
                 elIcon.style.backgroundImage = "url(" + 
-                  apf.getAbsolutePath(this.iconPath,
+                  ppc.getAbsolutePath(this.iconPath,
                       this.$applyBindRule("icon", xmlNode)) + ")";
             }
             else {
-                elIcon.nodeValue = apf.getAbsolutePath(this.iconPath,
+                elIcon.nodeValue = ppc.getAbsolutePath(this.iconPath,
                     this.$applyBindRule("icon", xmlNode));
             }
         }
@@ -565,11 +565,11 @@ apf.BaseList = function(){
             if (elImage) {
                 if (elImage.nodeType == 1) {
                     elImage.style.backgroundImage = "url(" + 
-                        apf.getAbsolutePath(apf.hostPath,
+                        ppc.getAbsolutePath(ppc.hostPath,
                             this.$applyBindRule("image", xmlNode)) + ")";
                 }
                 else {
-                    elImage.nodeValue = apf.getAbsolutePath(apf.hostPath, 
+                    elImage.nodeValue = ppc.getAbsolutePath(ppc.hostPath, 
                         this.$applyBindRule("image", xmlNode));
                 }
             }
@@ -614,7 +614,7 @@ apf.BaseList = function(){
         var oPHtmlNode = htmlNode.parentNode;
         var nNode      = this.getNextTraverse(xmlNode); //@todo could optimize because getTraverseNodes returns array indexOf
         var beforeNode = nNode
-            ? apf.xmldb.findHtmlNode(nNode, this)
+            ? ppc.xmldb.findHtmlNode(nNode, this)
             : null;
 
         oPHtmlNode.insertBefore(htmlNode, beforeNode);
@@ -633,24 +633,24 @@ apf.BaseList = function(){
 
         oItem.setAttribute("id", Lid);
 
-        elSelect.setAttribute("onmouseover",   "var o = apf.lookup(" + this.$uniqueId 
+        elSelect.setAttribute("onmouseover",   "var o = ppc.lookup(" + this.$uniqueId 
         	+ "); o.$setStyleClass(this, 'hover', null, true);");
         elSelect.setAttribute("onselectstart", "return false;");
         elSelect.setAttribute("style",         (elSelect.getAttribute("style") || "") 
         	+ ";user-select:none;-moz-user-select:none;-webkit-user-select:none;");
 
-        if (this.hasFeature(apf.__RENAME__) || this.hasFeature(apf.__DRAGDROP__)) {
-            elSelect.setAttribute("ondblclick", "var o = apf.lookup(" + this.$uniqueId + "); " +
+        if (this.hasFeature(ppc.__RENAME__) || this.hasFeature(ppc.__DRAGDROP__)) {
+            elSelect.setAttribute("ondblclick", "var o = ppc.lookup(" + this.$uniqueId + "); " +
                 // #ifdef __WITH_RENAME
                 "o.stopRename();" +
                 // #endif
                 " o.choose()");
-            elSelect.setAttribute("onmouseout", "var o = apf.lookup(" + this.$uniqueId + ");\
+            elSelect.setAttribute("onmouseout", "var o = ppc.lookup(" + this.$uniqueId + ");\
             	  o.$setStyleClass(this, '', ['hover'], true);\
                 this.hasPassedDown = false;");
             elSelect.setAttribute(this.itemSelectEvent || "onmousedown",
-                'var o = apf.lookup(' + this.$uniqueId + ');\
-                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                'var o = ppc.lookup(' + this.$uniqueId + ');\
+                 var xmlNode = ppc.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
                  if (event.button == 2) \
@@ -659,33 +659,33 @@ apf.BaseList = function(){
                     this.dorename = true;\
                  if (event.button == 2 && isSelected)\
                     return;\
-                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
+                 if (!o.hasFeature(ppc.__DRAGDROP__) || !isSelected && !event.ctrlKey)\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
-                var o = apf.lookup(' + this.$uniqueId + ');' +
+                var o = ppc.lookup(' + this.$uniqueId + ');' +
                 // #ifdef __WITH_RENAME
-                'if (o.hasFeature(apf.__RENAME__) && this.dorename)\
+                'if (o.hasFeature(ppc.__RENAME__) && this.dorename)\
                     o.startDelayedRename(event, null, true);' +
                 // #endif
                 'this.dorename = false;\
-                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var xmlNode = ppc.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
-                 if (o.hasFeature(apf.__DRAGDROP__))\
+                 if (o.hasFeature(ppc.__DRAGDROP__))\
                      o.select(this, event.ctrlKey, event.shiftKey, -1)');
         } //@todo add DRAGDROP ifdefs
         else {
-            elSelect.setAttribute("onmouseout",    "apf.setStyleClass(this, '', ['hover']);");
-            elSelect.setAttribute("ondblclick", 'var o = apf.lookup('
+            elSelect.setAttribute("onmouseout",    "ppc.setStyleClass(this, '', ['hover']);");
+            elSelect.setAttribute("ondblclick", 'var o = ppc.lookup('
                 + this.$uniqueId + '); o.choose(null, true)');
             elSelect.setAttribute(this.itemSelectEvent
-                || "onmousedown", 'var o = apf.lookup(' + this.$uniqueId
+                || "onmousedown", 'var o = ppc.lookup(' + this.$uniqueId
                 + '); o.select(this, event.ctrlKey, event.shiftKey, -1)');
         }
         
         //#ifdef __WITH_LISTGRID
         if (this.$listGrid) {
             oItem.setAttribute("onmouseover", 
-                oItem.getAttribute("onmouseover") + 'var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
+                oItem.getAttribute("onmouseover") + 'var o = ppc.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
         }
         //#endif
         
@@ -694,10 +694,10 @@ apf.BaseList = function(){
             var elCheck = this.$getLayoutNode("item", "check");
             if (elCheck) {
                 elCheck.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    "var o = ppc.lookup(" + this.$uniqueId + ");\
                     o.checkToggle(this, true);\o.$skipSelect = true;");
 
-                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                if (ppc.isTrue(this.$applyBindRule("checked", xmlNode))) {
                     this.$checkedList.push(xmlNode);
                     this.$setStyleClass(oItem, "checked");
                 }
@@ -706,7 +706,7 @@ apf.BaseList = function(){
             }
             else {
                 //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                         "Could not find check attribute",
                         'Maybe the attribute check is missing from your skin file:\
                             <a:item\
@@ -732,35 +732,35 @@ apf.BaseList = function(){
         if (elIcon) {
             if (elIcon.nodeType == 1) {
                 elIcon.setAttribute("style", "background-image:url("
-                    + apf.getAbsolutePath(this.iconPath, this.$applyBindRule("icon", xmlNode))
+                    + ppc.getAbsolutePath(this.iconPath, this.$applyBindRule("icon", xmlNode))
                     + ")");
             }
             else {
-                elIcon.nodeValue = apf.getAbsolutePath(this.iconPath,
+                elIcon.nodeValue = ppc.getAbsolutePath(this.iconPath,
                     this.$applyBindRule("icon", xmlNode));
             }
         }
         else if (elImage) {
             if (elImage.nodeType == 1) {
                 if ((elImage.tagName || "").toLowerCase() == "img") {
-                    elImage.setAttribute("src", apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode)));
+                    elImage.setAttribute("src", ppc.getAbsolutePath(ppc.hostPath, this.$applyBindRule("image", xmlNode)));
                 }
                 else {
                     elImage.setAttribute("style", "background-image:url("
-                        + apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode))
+                        + ppc.getAbsolutePath(ppc.hostPath, this.$applyBindRule("image", xmlNode))
                         + ")");
                 }
             }
             else {
-                if (apf.isSafariOld) { //@todo this should be changed... blrgh..
+                if (ppc.isSafariOld) { //@todo this should be changed... blrgh..
                     var p   = elImage.ownerElement.parentNode,
                         img = p.appendChild(p.ownerDocument.createElement("img"));
                     img.setAttribute("src", 
-                        apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode)));
+                        ppc.getAbsolutePath(ppc.hostPath, this.$applyBindRule("image", xmlNode)));
                 }
                 else {
                     elImage.nodeValue = 
-                        apf.getAbsolutePath(apf.hostPath, this.$applyBindRule("image", xmlNode));
+                        ppc.getAbsolutePath(ppc.hostPath, this.$applyBindRule("image", xmlNode));
                 }
             }
         }
@@ -772,9 +772,9 @@ apf.BaseList = function(){
                 var q = (this.$amlBindQueue || (this.$amlBindQueue = {}));
 
                 if (elCaption == oItem) {
-                    apf.setNodeValue(elCaption, "");
+                    ppc.setNodeValue(elCaption, "");
                     var span = elCaption.appendChild(elCaption.ownerDocument.createElement("span"));
-                    if (apf.isIE)
+                    if (ppc.isIE)
                         span.appendChild(elCaption.ownerDocument.createTextNode(" "));
                     span.setAttribute("id", "placeholder_" + this.$uniqueId
                         + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
@@ -782,13 +782,13 @@ apf.BaseList = function(){
                 else {
                     elCaption.setAttribute("id", "placeholder_" + this.$uniqueId
                         + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
-                    apf.setNodeValue(elCaption, "");
+                    ppc.setNodeValue(elCaption, "");
                 }
             }
             else
             //#endif
             {
-                apf.setNodeValue(elCaption,
+                ppc.setNodeValue(elCaption,
                     this.$applyBindRule("caption", xmlNode));
             }
         }
@@ -808,7 +808,7 @@ apf.BaseList = function(){
             return;
 
         if (htmlParentNode)
-            apf.insertHtmlNode(oItem, htmlParentNode, beforeNode);
+            ppc.insertHtmlNode(oItem, htmlParentNode, beforeNode);
         else
             this.listNodes.push(oItem);
     };
@@ -826,20 +826,20 @@ apf.BaseList = function(){
                 elSelect  = this.$getLayoutNode("item", "select");
 
             Item.setAttribute("class", this.$baseCSSname + "More");
-            elSelect.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId
+            elSelect.setAttribute("onmousedown", 'var o = ppc.lookup(' + this.$uniqueId
                 + ');o.clearSelection();o.$setStyleClass(this, "more_down", null, true);');
-            elSelect.setAttribute("onmouseout", 'apf.lookup(' + this.$uniqueId
+            elSelect.setAttribute("onmouseout", 'ppc.lookup(' + this.$uniqueId
                 + ').$setStyleClass(this, "", ["more_down"], true);');
-            elSelect.setAttribute("onmouseup", 'apf.lookup(' + this.$uniqueId
+            elSelect.setAttribute("onmouseup", 'ppc.lookup(' + this.$uniqueId
                 + ').startMore(this, true)');
 
             if (elCaption)
-                apf.setNodeValue(elCaption,
+                ppc.setNodeValue(elCaption,
                     this.more.match(/caption:(.*)(;|$)/i)[1]);
             this.listNodes.push(Item);
         }
 
-        apf.insertHtmlNodes(this.listNodes, this.$container);
+        ppc.insertHtmlNodes(this.listNodes, this.$container);
         this.listNodes.length = 0;
 
         if (this.more && !this.moreItem) {
@@ -864,13 +864,13 @@ apf.BaseList = function(){
         if (!this.$actions["add"]) {
             if (this.each && !this.each.match(/[\/\[]/)) {
                 xmlNode = "<" + this.each + (this.each.match(/^a:/) 
-                    ? " xmlns:a='" + apf.ns.aml + "'" 
+                    ? " xmlns:a='" + ppc.ns.aml + "'" 
                     : "") + " custom='1' />";
             }
             else {
                 //#ifdef __DEBUG
-                apf.console.warn("No add action rule is defined for element while more='true'.");
-                /*throw new Error(apf.formatErrorString(0, this,
+                ppc.console.warn("No add action rule is defined for element while more='true'.");
+                /*throw new Error(ppc.formatErrorString(0, this,
                     "Could not start more",
                     "No add action rule is defined for this component",
                     this.$aml));*/
@@ -939,7 +939,7 @@ apf.BaseList = function(){
 
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r = [],
-            nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
+            nodes = this.hasFeature(ppc.__VIRTUALVIEWPORT__)
                 ? this.xmlRoot.selectNodes(this.each)
                 : this.getTraverseNodes(),
             f, i;
@@ -1014,7 +1014,7 @@ apf.BaseList = function(){
         }
         
         //@todo this is all an ugly hack (copied from item.js line 486)
-        //this.$preventDataLoad = true;//@todo apf3.0 add remove for this
+        //this.$preventDataLoad = true;//@todo ppc3.0 add remove for this
         
         this.$initingModel = true;
         
@@ -1026,11 +1026,11 @@ apf.BaseList = function(){
         this.load("<data>" + data.join("") + "</data>");
     };
 // #ifdef __WITH_MULTISELECT
-}).call(apf.BaseList.prototype = new apf.MultiSelect());
+}).call(ppc.BaseList.prototype = new ppc.MultiSelect());
 /* #elseif __WITH_DATABINDING
-}).call(apf.BaseList.prototype = new apf.MultiselectBinding());
+}).call(ppc.BaseList.prototype = new ppc.MultiselectBinding());
 #else 
-}).call(apf.BaseList.prototype = new apf.Presentation());
+}).call(ppc.BaseList.prototype = new ppc.Presentation());
 #endif*/
 
 // #endif

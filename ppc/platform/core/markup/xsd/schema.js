@@ -20,11 +20,11 @@
  */
 
 //#ifdef __WITH_XSDSCHEMA
-apf.XsdSchema = function(struct, tagName){
+ppc.XsdSchema = function(struct, tagName){
     this.$init(true);
 };
 
-apf.XsdSchema.prototype = new apf.XsdElement();
+ppc.XsdSchema.prototype = new ppc.XsdElement();
 
-apf.xsd.setElement("schema", apf.XsdSchema);
+ppc.xsd.setElement("schema", ppc.XsdSchema);
 //#endif

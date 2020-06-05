@@ -19,27 +19,27 @@
  *
  */
 
-apf.__GUIELEMENT__ = 1 << 15;
-apf.__VALIDATION__ = 1 << 6;
+ppc.__GUIELEMENT__ = 1 << 15;
+ppc.__VALIDATION__ = 1 << 6;
 
 // #ifdef __WITH_GUIELEMENT
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} are an AML component.
  *
- * @class apf.GuiElement
+ * @class ppc.GuiElement
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  *
  * @baseclass
- * @inherits apf.AmlElement
- * @inherits apf.Anchoring
- * @inherits apf.DelayedRender
- * @inherits apf.DragDrop
- * @inherits apf.Focussable
- * @inherits apf.Interactive
- * @inherits apf.Validation
+ * @inherits ppc.AmlElement
+ * @inherits ppc.Anchoring
+ * @inherits ppc.DelayedRender
+ * @inherits ppc.DragDrop
+ * @inherits ppc.Focussable
+ * @inherits ppc.Interactive
+ * @inherits ppc.Validation
  *
  */
 /**
@@ -129,14 +129,14 @@ apf.__VALIDATION__ = 1 << 6;
  *                   - htmlEvent ([[Event]]): the HTML event object that triggered this event from being called
  * 
  */
-apf.GuiElement = function(){
+ppc.GuiElement = function(){
     this.$init(true);
 };
 
 (function(){
-    this.$regbase    = this.$regbase | apf.__GUIELEMENT__;
+    this.$regbase    = this.$regbase | ppc.__GUIELEMENT__;
     
-    this.$focussable = apf.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
+    this.$focussable = ppc.KEYBOARD_MOUSE; // Each GUINODE can get the focus by default
     this.visible     = 2; //default value;
     
     this.minwidth    = 1;
@@ -215,13 +215,13 @@ apf.GuiElement = function(){
 
     this.implement(
         //#ifdef __WITH_ANCHORING
-        apf.Anchoring
+        ppc.Anchoring
         //#endif
         //#ifdef __WITH_CONTENTEDITABLE
-        ,apf.ContentEditable
+        ,ppc.ContentEditable
         //#endif
         //#ifdef __WITH_LIVEEDIT
-        ,apf.LiveEdit
+        ,ppc.LiveEdit
         //#endif
     );
     
@@ -377,7 +377,7 @@ apf.GuiElement = function(){
      * @chainable
      */
     this.bringToFront  = function(){
-        this.setProperty("zindex", apf.all.length + 1, false, true);
+        this.setProperty("zindex", ppc.all.length + 1, false, true);
         return this;
     };
 
@@ -411,13 +411,13 @@ apf.GuiElement = function(){
         //if (!this.$pHtmlNode && this.parentNode)
         if (this.parentNode) {
             if (this.localName == "item" 
-              && this.parentNode.hasFeature(apf.__MULTISELECT__)) //special case for item nodes, using multiselect rendering
+              && this.parentNode.hasFeature(ppc.__MULTISELECT__)) //special case for item nodes, using multiselect rendering
                 this.$pHtmlNode = this.parentNode.$container;
             else
-                this.$pHtmlNode = this.parentNode.$int; //@todo apf3.0 change this in the mutation events
+                this.$pHtmlNode = this.parentNode.$int; //@todo ppc3.0 change this in the mutation events
         }
 
-        if (!this.$pHtmlNode) //@todo apf3.0 retry on DOMNodeInserted
+        if (!this.$pHtmlNode) //@todo ppc3.0 retry on DOMNodeInserted
             return;
         
         this.$pHtmlDoc  = this.$pHtmlNode.ownerDocument || document;
@@ -435,7 +435,7 @@ apf.GuiElement = function(){
             this.visible = true;
 
         // #ifdef __DEBUG
-        if (apf.debug && this.$ext && this.$ext.nodeType)
+        if (ppc.debug && this.$ext && this.$ext.nodeType)
             this.$ext.setAttribute("uniqueId", this.$uniqueId);
         // #endif
 
@@ -443,31 +443,31 @@ apf.GuiElement = function(){
     }, true);
     
     var f = function(e){
-        if (!this.$pHtmlNode) //@todo apf3.0 retry on DOMInsert or whatever its called
+        if (!this.$pHtmlNode) //@todo ppc3.0 retry on DOMInsert or whatever its called
             return;
         
-        this.$setLayout(); //@todo apf3.0 moving an element minwidth/height should be recalced
+        this.$setLayout(); //@todo ppc3.0 moving an element minwidth/height should be recalced
         
-        //@todo apf3.0 set this also for skin change
+        //@todo ppc3.0 set this also for skin change
         if (this.$ext) {
-            var hasPres = (this.hasFeature(apf.__PRESENTATION__)) || false;
+            var hasPres = (this.hasFeature(ppc.__PRESENTATION__)) || false;
             var type        = this.$isLeechingSkin ? this.localName : "main";
-            this.minwidth   = Math.max(this.minwidth || 0, apf.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 0));
-            this.minheight  = Math.max(this.minheight || 0, apf.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 0));
+            this.minwidth   = Math.max(this.minwidth || 0, ppc.getCoord(hasPres && parseInt(this.$getOption(type, "minwidth")), 0));
+            this.minheight  = Math.max(this.minheight || 0, ppc.getCoord(hasPres && parseInt(this.$getOption(type, "minheight")), 0));
             if (this.maxwidth == undefined)
-                this.maxwidth   = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxwidth")), 10000);
+                this.maxwidth   = ppc.getCoord(hasPres && parseInt(this.$getOption(type, "maxwidth")), 10000);
             if (this.maxheight == undefined)
-                this.maxheight  = apf.getCoord(hasPres && parseInt(this.$getOption(type, "maxheight")), 10000);
+                this.maxheight  = ppc.getCoord(hasPres && parseInt(this.$getOption(type, "maxheight")), 10000);
 
             //--#ifdef __WITH_CONTENTEDITABLE
             //@todo slow??
-            var diff = apf.getDiff(this.$ext);
+            var diff = ppc.getDiff(this.$ext);
             this.$ext.style.minWidth = Math.max(0, this.minwidth - diff[0]) + "px";
             this.$ext.style.minHeight = Math.max(0, this.minheight - diff[1]) + "px";
             this.$ext.style.maxWidth = Math.max(0, this.maxwidth - diff[0]) + "px";
             this.$ext.style.maxHeight = Math.max(0, this.maxheight - diff[1]) + "px";
             
-            if (this.$altExt && apf.isGecko) {
+            if (this.$altExt && ppc.isGecko) {
                 this.$altExt.style.minHeight = this.$ext.style.minHeight;
                 this.$altExt.style.maxHeight = this.$ext.style.maxHeight;
                 this.$altExt.style.minWidth = this.$ext.style.minWidth;
@@ -481,7 +481,7 @@ apf.GuiElement = function(){
         
         //#ifdef __WITH_FOCUS
         if (this.$focussable && typeof this.focussable == "undefined")
-            apf.GuiElement.propHandlers.focussable.call(this, true);
+            ppc.GuiElement.propHandlers.focussable.call(this, true);
         //#endif
         
         //#ifdef __WITH_LAYOUT
@@ -501,11 +501,11 @@ apf.GuiElement = function(){
             return;
         }
         
-        apf.layout.setRules(this.$ext, "resize", "var o = apf.all[" + this.$uniqueId + "];\
+        ppc.layout.setRules(this.$ext, "resize", "var o = ppc.all[" + this.$uniqueId + "];\
             if (o) o.dispatchEvent('resize');", true);
 
-        apf.layout.queue(this.$ext);
-        //apf.layout.activateRules(this.$ext);
+        ppc.layout.queue(this.$ext);
+        //ppc.layout.activateRules(this.$ext);
         this.removeEventListener("$event.resize", f2);
     });
     //#endif
@@ -522,9 +522,9 @@ apf.GuiElement = function(){
         
         if (!this.contextmenus) return;
         
-        if (this.hasFeature(apf.__DATABINDING__)) {
+        if (this.hasFeature(ppc.__DATABINDING__)) {
             var contextmenu;
-            var xmlNode = this.hasFeature(apf.__MULTISELECT__)
+            var xmlNode = this.hasFeature(ppc.__MULTISELECT__)
                 ? this.selected
                 : this.xmlRoot;
 
@@ -532,8 +532,8 @@ apf.GuiElement = function(){
             for (i = 0, l = this.contextmenus.length; i < l; i++) {
                 isRef  = (typeof (cm = this.contextmenus[i]) == "string");
                 result = null;
-                if (!isRef && cm.match && xmlNode) {//@todo apf3.0 cache this statement
-                    result = (cm.cmatch || (cm.cmatch = apf.lm.compile(cm.match, {
+                if (!isRef && cm.match && xmlNode) {//@todo ppc3.0 cache this statement
+                    result = (cm.cmatch || (cm.cmatch = ppc.lm.compile(cm.match, {
                         xpathmode  : 3,
                         injectself : true
                     })))(xmlNode)
@@ -546,7 +546,7 @@ apf.GuiElement = function(){
 
                     if (!self[menuId]) {
                         // #ifdef __DEBUG
-                        throw new Error(apf.formatErrorString(0, this,
+                        throw new Error(ppc.formatErrorString(0, this,
                             "Showing contextmenu",
                             "Could not find contextmenu by name: '" + menuId + "'"),
                             this.$aml);
@@ -566,7 +566,7 @@ apf.GuiElement = function(){
             //IE6 compatiblity
             /*
             @todo please test that disabling this is OK
-            if (!apf.config.disableRightClick) {
+            if (!ppc.config.disableRightClick) {
                 document.oncontextmenu = function(){
                     document.oncontextmenu = null;
                     e.cancelBubble = true;
@@ -581,7 +581,7 @@ apf.GuiElement = function(){
 
             if (!self[menuId]) {
                 // #ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Showing contextmenu",
                     "Could not find contextmenu by name: '" + menuId + "'",
                     this.$aml));
@@ -597,13 +597,13 @@ apf.GuiElement = function(){
         }
     });
     //#endif
-}).call(apf.GuiElement.prototype = new apf.AmlElement());
+}).call(ppc.GuiElement.prototype = new ppc.AmlElement());
 
 /*
- * @for apf.amlNode
+ * @for ppc.amlNode
  * @private
  */
-apf.GuiElement.propHandlers = {
+ppc.GuiElement.propHandlers = {
     /**
      * @attribute {Number} minwidth Sets or gets the minimum width for this element.
      */
@@ -616,10 +616,10 @@ apf.GuiElement.propHandlers = {
     /**
      * @attribute {Number} maxheight Sets or gets the maximum height for this element.
      */
-    "minwidth": function(value){ this.$ext.style.minWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
-    "minheight": function(value){ this.$ext.style.minHeight = Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"; },
-    "maxwidth": function(value){ this.$ext.style.maxWidth = Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"; },
-    "maxheight": function(value){ this.$ext.style.maxHeight = Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"; },
+    "minwidth": function(value){ this.$ext.style.minWidth = Math.max(0, value - ppc.getWidthDiff(this.$ext)) + "px"; },
+    "minheight": function(value){ this.$ext.style.minHeight = Math.max(0, value - ppc.getHeightDiff(this.$ext)) + "px"; },
+    "maxwidth": function(value){ this.$ext.style.maxWidth = Math.max(0, value - ppc.getWidthDiff(this.$ext)) + "px"; },
+    "maxheight": function(value){ this.$ext.style.maxHeight = Math.max(0, value - ppc.getHeightDiff(this.$ext)) + "px"; },
     
     //#ifdef __WITH_FOCUS
     /**
@@ -634,19 +634,19 @@ apf.GuiElement.propHandlers = {
             this.focussable = true;
         }
         else
-            this.focussable = apf.isTrue(value);
+            this.focussable = ppc.isTrue(value);
 
-        if (!this.hasFeature(apf.__FOCUSSABLE__)) //@todo should this be on the prototype
-            this.implement(apf.Focussable);
+        if (!this.hasFeature(ppc.__FOCUSSABLE__)) //@todo should this be on the prototype
+            this.implement(ppc.Focussable);
 
         if (this.focussable) {
-            apf.window.$addFocus(this, this.tabindex);
+            ppc.window.$addFocus(this, this.tabindex);
             
             if (value == "container")
                 this.$tabList.remove(this);
         }
         else {
-            apf.window.$removeFocus(this);
+            ppc.window.$removeFocus(this);
         }
     },
 
@@ -654,7 +654,7 @@ apf.GuiElement.propHandlers = {
      * @attribute {Number} tabindex Sets or gets the tab index for this element.
      */    
     "tabindex": function(value){
-        if (!this.hasFeature(apf.__FOCUSSABLE__)) 
+        if (!this.hasFeature(ppc.__FOCUSSABLE__)) 
             return;
         
         this.setTabIndex(parseInt(value) || null);
@@ -673,21 +673,21 @@ apf.GuiElement.propHandlers = {
      * @attribute {Boolean} visible Sets or gets whether this element is shown.
      */
     "visible": function(value){
-        if (apf.isFalse(value) || typeof value == "undefined") {
+        if (ppc.isFalse(value) || typeof value == "undefined") {
             if (this.$ext)
                 this.$ext.style.display = "none";
             
-            if (apf.document.activeElement == this || this.canHaveChildren == 2
-              && apf.isChildOf(this, apf.document.activeElement, false)) {
-                if (apf.config.allowBlur && this.hasFeature(apf.__FOCUSSABLE__))
+            if (ppc.document.activeElement == this || this.canHaveChildren == 2
+              && ppc.isChildOf(this, ppc.document.activeElement, false)) {
+                if (ppc.config.allowBlur && this.hasFeature(ppc.__FOCUSSABLE__))
                     this.blur();
                 else
-                    apf.window.moveNext();
+                    ppc.window.moveNext();
             }
             
             this.visible = false;
         }
-        else { //if (apf.isTrue(value)) default
+        else { //if (ppc.isTrue(value)) default
             if (this.$ext) {
                 this.$ext.style.display = ""; //Some form of inheritance detection
                 if (!this.$ext.offsetHeight)
@@ -695,8 +695,8 @@ apf.GuiElement.propHandlers = {
             }
             
             //#ifdef __WITH_LAYOUT
-            if (apf.layout && this.$int) //apf.hasSingleRszEvent)
-                apf.layout.forceResize(this.$int);//this.$int
+            if (ppc.layout && this.$int) //ppc.hasSingleRszEvent)
+                ppc.layout.forceResize(this.$int);//this.$int
             //#endif
             
             this.visible = true;
@@ -705,7 +705,7 @@ apf.GuiElement.propHandlers = {
 
     /**
      * @attribute {Boolean} disabled Sets or gets whether this element's functions are active.
-     * For elements that can contain other `apf.NODE_VISIBLE` elements, this
+     * For elements that can contain other `ppc.NODE_VISIBLE` elements, this
      * attribute applies to all its children.
      */
     "disabled": function(value){
@@ -715,23 +715,23 @@ apf.GuiElement.propHandlers = {
 
             this.addEventListener("DOMNodeInsertedIntoDocument", 
                 this.$updateDisabled || (this.$updateDisabled = function(e){
-                    apf.GuiElement.propHandlers.disabled.call(_self, _self.disabled);
+                    ppc.GuiElement.propHandlers.disabled.call(_self, _self.disabled);
                 }));
             return;
         }
         else
-            apf.queue.remove("disable" + this.$uniqueId);
+            ppc.queue.remove("disable" + this.$uniqueId);
 
         //For child containers we only disable its children
         if (this.canHaveChildren) {
             //@todo Fix focus here first.. else it will jump whilst looping
             if (value != -1)
-                value = this.disabled = apf.isTrue(value);
+                value = this.disabled = ppc.isTrue(value);
 
             var nodes = this.childNodes;
             for (var node, i = 0, l = nodes.length; i < l; i++) {
                 node = nodes[i];
-                if (node.nodeFunc == apf.NODE_VISIBLE) {
+                if (node.nodeFunc == ppc.NODE_VISIBLE) {
                     if (value && node.disabled != -1)
                         node.$disabled = node.disabled || false;
                     node.setProperty("disabled", value ? -1 : false);
@@ -757,15 +757,15 @@ apf.GuiElement.propHandlers = {
             }
         }
 
-        if (apf.isTrue(value) || value == -1) {
+        if (ppc.isTrue(value) || value == -1) {
             this.disabled = false;
-            if (apf.document.activeElement == this) {
-                apf.window.moveNext(true); //@todo should not include window
-                if (apf.document.activeElement == this)
+            if (ppc.document.activeElement == this) {
+                ppc.window.moveNext(true); //@todo should not include window
+                if (ppc.document.activeElement == this)
                     this.$blur();
             }
 
-            if (this.hasFeature(apf.__PRESENTATION__))
+            if (this.hasFeature(ppc.__PRESENTATION__))
                 this.$setStyleClass(this.$ext, this.$baseCSSname + "Disabled");
 
             if (this.$disable)
@@ -779,16 +779,16 @@ apf.GuiElement.propHandlers = {
             this.disabled = value;
         }
         else {
-            if (this.hasFeature(apf.__DATABINDING__) && apf.config.autoDisable
+            if (this.hasFeature(ppc.__DATABINDING__) && ppc.config.autoDisable
               && !(!this.$bindings || this.xmlRoot))
                 return false;
 
             this.disabled = false;
 
-            if (apf.document.activeElement == this)
+            if (ppc.document.activeElement == this)
                 this.$focus();
 
-            if (this.hasFeature(apf.__PRESENTATION__))
+            if (this.hasFeature(ppc.__PRESENTATION__))
                 this.$setStyleClass(this.$ext, null, [this.$baseCSSname + "Disabled"]);
 
             if (this.$enable)
@@ -803,7 +803,7 @@ apf.GuiElement.propHandlers = {
 
     /**
      * @attribute {Boolean} enables Sets or gets whether this element's functions are active.
-     * For elements that can contain other `apf.NODE_VISIBLE` elements, this
+     * For elements that can contain other `ppc.NODE_VISIBLE` elements, this
      * attribute applies to all its children.
      */
     "enabled" : function(value){
@@ -816,7 +816,7 @@ apf.GuiElement.propHandlers = {
      * focus handling.
      */
     "disable-keyboard": function(value){
-        this.disableKeyboard = apf.isTrue(value);
+        this.disableKeyboard = ppc.isTrue(value);
     },
     
     /**
@@ -825,7 +825,7 @@ apf.GuiElement.propHandlers = {
      */
     "tooltip" : function(value){
         this.$ext.setAttribute("title", (value || "") + (this.hotkey ? " ("
-            + (apf.isMac ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey) + ")" : ""));
+            + (ppc.isMac ? ppc.hotkeys.toMacNotation(this.hotkey) : this.hotkey) + ")" : ""));
     },
     
     //#ifdef __AMLCONTEXTMENU
@@ -859,7 +859,7 @@ apf.GuiElement.propHandlers = {
 
     //#ifdef __WITH_DATABINDING
     /**
-     * @attribute {String} actiontracker Sets or gets the name of the [[apf.actiontracker action tracker]] that
+     * @attribute {String} actiontracker Sets or gets the name of the [[ppc.actiontracker action tracker]] that
      * is used for this element and its children. If the actiontracker doesn't
      * exist yet, it is created.
      *
@@ -888,10 +888,10 @@ apf.GuiElement.propHandlers = {
         else {
             //#ifdef __WITH_NAMESERVER
             this.$at = typeof value == "string" && self[value]
-              ? apf.nameserver.get("actiontracker", value) || self[value].getActionTracker()
-              : apf.setReference(value,
-                  apf.nameserver.register("actiontracker",
-                      value, new apf.actiontracker()));
+              ? ppc.nameserver.get("actiontracker", value) || self[value].getActionTracker()
+              : ppc.setReference(value,
+                  ppc.nameserver.register("actiontracker",
+                      value, new ppc.actiontracker()));
 
             if (!this.$at.name)
                 this.$at.name = value;
@@ -916,7 +916,7 @@ apf.GuiElement.propHandlers = {
     // @todo Doc WTF?
     //#ifdef __WITH_CONTENTEDITABLE
     /*"editable": function(value){
-        this.implement(apf.ContentEditable);
+        this.implement(ppc.ContentEditable);
         this.$propHandlers["editable"].apply(this, arguments);
     },*/
     // #endif
@@ -935,9 +935,9 @@ apf.GuiElement.propHandlers = {
         if (!value) //@todo think about whether this has more meaning
             return;
         //#ifdef __WITH_NAMESERVER
-        var cg = apf.nameserver.get("alias", value);
+        var cg = ppc.nameserver.get("alias", value);
         if (!cg) {
-            cg = apf.nameserver.register("alias", value, {
+            cg = ppc.nameserver.register("alias", value, {
                 name  : value,
                 props : {},
                 $handlePropSet : function(prop, value, forceOnMe){
@@ -1032,8 +1032,8 @@ apf.GuiElement.propHandlers = {
                     amlNode.$alias = this;
                 }
             });
-            //apf.makeClass(cg);
-            apf.setReference(value, cg);
+            //ppc.makeClass(cg);
+            ppc.setReference(value, cg);
 
             var events = {}, events_capture = {};
             cg.addEventListener = function(eventName, callback, useCapture){

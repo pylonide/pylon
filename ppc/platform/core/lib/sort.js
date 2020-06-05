@@ -32,7 +32,7 @@
  *
  * @private
  */
-apf.Sort = function(xmlNode){
+ppc.Sort = function(xmlNode){
     var settings = {};
     
     //use this function to parse the each node
@@ -53,7 +53,7 @@ apf.Sort = function(xmlNode){
             
             //#ifdef __DEBUG
             if (!settings.method) {
-                throw new Error(apf.formatErrorString(0, null, 
+                throw new Error(ppc.formatErrorString(0, null, 
                     "Sorting nodes",
                     "Invalid or missing sort function name provided '" 
                     + xmlNode["sort-method"] + "'", xmlNode));
@@ -84,7 +84,7 @@ apf.Sort = function(xmlNode){
     this.set = function(struct, clear){
         if (clear) settings = {};
         
-        apf.extend(settings, struct);
+        ppc.extend(settings, struct);
 
         if (settings.ascending == undefined)
             settings.ascending = struct.order 
@@ -118,13 +118,13 @@ apf.Sort = function(xmlNode){
         
         if (!settings.getValue) {
             settings.getValue = function(item){
-                return apf.queryValue(item, settings.xpath);
+                return ppc.queryValue(item, settings.xpath);
             }
         }
     };
     
     this.get = function(){
-        return apf.extend({}, settings);
+        return ppc.extend({}, settings);
     };
     
     //use this function in __xmlUpdate [this function isnt done yet]
@@ -164,7 +164,7 @@ apf.Sort = function(xmlNode){
                 d = new Date(t);
             }
             else if (sort_dateFmtStr == '*') 
-                d = apf.date.getDateTime(t);
+                d = ppc.date.getDateTime(t);
             else 
                 d = (new Date(t.replace(sort_dateFormat, sort_dateReplace))).getTime();
             t = "" + d.getTime();//parseInt(d);

@@ -21,14 +21,14 @@
 
 // #ifdef __WITH_XMLDIFF
 
-apf.xmlDiff = function (doc1, doc2){
-    /*var domParser = new apf.DOMParser();
+ppc.xmlDiff = function (doc1, doc2){
+    /*var domParser = new ppc.DOMParser();
     domParser.allowAnyElement = true;
     domParser.preserveWhiteSpace = true;
-    apf.compareDoc = domParser.parseFromXml(apf.getCleanCopy(mdlTest.data)).documentElement;
+    ppc.compareDoc = domParser.parseFromXml(ppc.getCleanCopy(mdlTest.data)).documentElement;
 
-    var doc1 = apf.compareDoc,
-        doc2 = apf.getCleanCopy(mdlTest2.data),*/
+    var doc1 = ppc.compareDoc,
+        doc2 = ppc.getCleanCopy(mdlTest2.data),*/
 
     var debug = true,
         hash  = {},
@@ -311,7 +311,7 @@ apf.xmlDiff = function (doc1, doc2){
                 if (curNode[id] != max)
                     continue;
                 
-                pNode = (node = apf.all[id]).parentNode;
+                pNode = (node = ppc.all[id]).parentNode;
                 
                 if (node.$isValid || !include[node.$uniqueId] || !oldInclude[pNode.$uniqueId]) {
                     delete include[node.$uniqueId]; //@todo is this needed?
@@ -469,7 +469,7 @@ apf.xmlDiff = function (doc1, doc2){
                 var include = curItem.curParentNode.include;
                 //There's only one parent
                 if (include.length == 1) {
-                    pNode = curItem.curParentNode.curNode;//apf.all[include[0]];
+                    pNode = curItem.curParentNode.curNode;//ppc.all[include[0]];
                     for (j = 0, l = potentialMatches.length; j < l; j++) {
                         if (!(curMatch = potentialMatches[j]).$isValid
                           && curMatch.$matchedNodes == leastMatchNodes
@@ -763,7 +763,7 @@ apf.xmlDiff = function (doc1, doc2){
             case UPDATE:
                 //#ifdef __DEBUG
                 if (debug) {
-                    apf.console.log("XmlDiff: UPDATE " 
+                    ppc.console.log("XmlDiff: UPDATE " 
                         + item[1].nodeValue + " with "
                         + item[2].nodeValue);
                 }
@@ -771,9 +771,9 @@ apf.xmlDiff = function (doc1, doc2){
             
                 //item[1].nodeValue = item[2].nodeValue;
                 item[1].$setValue(item[2].nodeValue);
-                if (item[1].nodeType != 2) { //@todo apf3.0 optimize this
-                    var childNr1 = apf.getChildNumber(item[1]),
-                        childNr2 = apf.getChildNumber(item[2]);
+                if (item[1].nodeType != 2) { //@todo ppc3.0 optimize this
+                    var childNr1 = ppc.getChildNumber(item[1]),
+                        childNr2 = ppc.getChildNumber(item[2]);
                     if (childNr1 != childNr2)
                         item[1].parentNode.insertBefore(item[1], item[1].parentNode.childNodes[childNr2]);
                 }
@@ -782,7 +782,7 @@ apf.xmlDiff = function (doc1, doc2){
             case APPEND:
                 //#ifdef __DEBUG
                 if (debug) {
-                    apf.console.log("XmlDiff: APPEND " 
+                    ppc.console.log("XmlDiff: APPEND " 
                         + (item[2].tagName ? "<" + item[2].tagName + ">" : item[2].nodeValue) + " to "
                         + "<" + item[1].localName + "> [" + item[1].$uniqueId + "]");
                 }
@@ -799,7 +799,7 @@ apf.xmlDiff = function (doc1, doc2){
                     var xml = item[1].parentNode;
                     while (xml && xml.nodeType == 1 && !xml.getAttribute("render"))
                         xml = xml.parentNode;
-                    if (xml && xml.render) {// && !xml.visible) { //@todo apf3.0 add case for page
+                    if (xml && xml.render) {// && !xml.visible) { //@todo ppc3.0 add case for page
                         if (xml.$amlList)
                             xml.$amlList.push(item);
                         else {
@@ -810,7 +810,7 @@ apf.xmlDiff = function (doc1, doc2){
         
                                 for (var item, i = 0, l = nodes.length; i < l; i++) {
                                     item = nodes[i];
-                                    var childNr = apf.getChildNumber(node = item[2]);
+                                    var childNr = ppc.getChildNumber(node = item[2]);
                                     item[1].insertBefore(doc.importNode(node, true), item[1].childNodes[childNr]);
                                 }
                                 
@@ -826,10 +826,10 @@ apf.xmlDiff = function (doc1, doc2){
                     else {
                         //!preserveWhiteSpace 
                         /*var list = item[2].parentNode.selectNodes("node()[local-name() or string-length(normalize-space())]");
-                        var idx  = apf.getChildNumber(item[2], list);
+                        var idx  = ppc.getChildNumber(item[2], list);
                         if (idx < list.length) {*/
 
-                        (item[1].$amlList || (item[1].$amlList = []))[apf.getChildNumber(item[2])] = item;
+                        (item[1].$amlList || (item[1].$amlList = []))[ppc.getChildNumber(item[2])] = item;
                         q[item[1].$uniqueId] = item[1];
                     }
                 }
@@ -841,7 +841,7 @@ apf.xmlDiff = function (doc1, doc2){
         }
     }
     
-    //@todo apf3.0 optimize this
+    //@todo ppc3.0 optimize this
     var list, newNode;
     for (var id in q) {
         list = q[id].$amlList;
@@ -849,7 +849,7 @@ apf.xmlDiff = function (doc1, doc2){
             item = list[i];
             if (!item) continue;
             /*if (item[2].nodeType == 1) {
-                newNode = doc.createElementNS(item[2].namespaceURI || apf.ns.xhtml, item[2][apf.TAGNAME]);
+                newNode = doc.createElementNS(item[2].namespaceURI || ppc.ns.xhtml, item[2][ppc.TAGNAME]);
                 item[1].insertBefore(newNode, item[1].childNodes[i]);
             }
             else {*/
@@ -865,7 +865,7 @@ apf.xmlDiff = function (doc1, doc2){
             case REMOVE:
                 //#ifdef __DEBUG
                 if (debug) {
-                    apf.console.log("XmlDiff: REMOVE " 
+                    ppc.console.log("XmlDiff: REMOVE " 
                         + (item[1].localName ? "<" + item[1].localName + ">" : item[1].nodeValue) 
                         + " [" + item[1].$uniqueId + "] ");
                 }
@@ -881,7 +881,7 @@ apf.xmlDiff = function (doc1, doc2){
             case SETATTRIBUTE:
                 //#ifdef __DEBUG
                 if (debug) {
-                    apf.console.log("XmlDiff: ATTRIBUTE " 
+                    ppc.console.log("XmlDiff: ATTRIBUTE " 
                         + "<" + item[1].localName + "> [" + item[1].$uniqueId + "] " 
                         + item[2].nodeName + "=\"" + item[2].nodeValue + "\"");
                 }
@@ -902,19 +902,19 @@ apf.xmlDiff = function (doc1, doc2){
             pnode.insertBefore(node, next);
     }
     
-    apf.queue.empty();
+    ppc.queue.empty();
 
     //#ifdef __DEBUG
     if (debug)
-        apf.console.time("Diff time:" + (time = (new Date() - dt)));
+        ppc.console.time("Diff time:" + (time = (new Date() - dt)));
     
-    /*var res1 = (apf.formatXml(doc2.xml));
-    var res2 = (apf.formatXml(doc1.serialize()));
+    /*var res1 = (ppc.formatXml(doc2.xml));
+    var res2 = (ppc.formatXml(doc1.serialize()));
     
     if(res1 != res2) {
         throw new Error("A potentially serious xml diff problem was detected. \
             Please contact the author of this library:\n" 
-            + res1 + "\n\n" + res2); //@todo make this into a proper apf3.0 error
+            + res1 + "\n\n" + res2); //@todo make this into a proper ppc3.0 error
     }*/
         
     //#endif

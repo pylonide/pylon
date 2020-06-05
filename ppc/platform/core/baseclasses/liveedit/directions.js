@@ -21,13 +21,13 @@
 
 // #ifdef __ENABLE_EDITOR_DIRECTIONS || __INC_ALL
 
-apf.LiveEdit.directionPlugin = function(sName) {
+ppc.LiveEdit.directionPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
         // @todo: implement this baby
@@ -39,7 +39,7 @@ apf.LiveEdit.directionPlugin = function(sName) {
     };
 };
 
-apf.LiveEdit.plugin("ltr", apf.LiveEdit.directionPlugin);
-apf.LiveEdit.plugin("rtl", apf.LiveEdit.directionPlugin);
+ppc.LiveEdit.plugin("ltr", ppc.LiveEdit.directionPlugin);
+ppc.LiveEdit.plugin("rtl", ppc.LiveEdit.directionPlugin);
 
 // #endif

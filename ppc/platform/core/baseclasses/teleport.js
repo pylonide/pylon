@@ -127,13 +127,13 @@
  *
  *      // Send a message to John
  *      myXMPP.sendMessage('john@my-jabber-server.com', 'A test message', '',
- *          apf.xmpp.MSG_CHAT);
+ *          ppc.xmpp.MSG_CHAT);
  *  </a:script>
  * ```
  *
- * @class apf.Teleport
+ * @class ppc.Teleport
  * @define teleport
- * @inherits apf.AmlElement
+ * @inherits ppc.AmlElement
  * @allowchild {teleport}
  *
  * @default_private
@@ -159,16 +159,16 @@
  *                                       which the call is considered timed out.
  *
  */
-apf.Teleport = function(){
+ppc.Teleport = function(){
     this.$init(true);
 };
 
-apf.__TELEPORT__ = 1 << 28;
+ppc.__TELEPORT__ = 1 << 28;
 
 (function() {
     this.$parsePrio = "002";
     
-    this.$regbase = this.$regbase | apf.__TELEPORT__;
+    this.$regbase = this.$regbase | ppc.__TELEPORT__;
 
     this.$booleanProperties["autoroute"] = true;
     
@@ -176,11 +176,11 @@ apf.__TELEPORT__ = 1 << 28;
         "autoroute");
 
     this.$propHandlers["url"] = function(value) {
-        var url = new apf.url(value);
+        var url = new ppc.url(value);
 
         // do some extra startup/ syntax error checking
         if (!url.protocol) {
-            return apf.console.error(apf.formatErrorString(0, this,
+            return ppc.console.error(ppc.formatErrorString(0, this,
                 "Communication (Teleport) initialization error",
                 "Invalid server url provided: '" + value + "'"));
         }
@@ -196,11 +196,11 @@ apf.__TELEPORT__ = 1 << 28;
 
     this.$propHandlers["protocol"] = function(value) {
         var proto = value.toLowerCase();
-        if (!apf[proto]) {
-            throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass",
+        if (!ppc[proto]) {
+            throw new Error(ppc.formatErrorString(1025, null, "Teleport baseclass",
                 "Could not find Ajax.org Teleport RPC Component '" + proto + "'", this));
         }
-        this.implement(apf[proto]);
+        this.implement(ppc[proto]);
     };
     
     /**
@@ -215,30 +215,30 @@ apf.__TELEPORT__ = 1 << 28;
         var error;
         if (this.type && this.type == "socket") {
             // Implement Socket Module
-            if (!apf.socket)
+            if (!ppc.socket)
                 error = "Socket";
             else
-                this.implement(apf.socket);
+                this.implement(ppc.socket);
         }
         else {
             // Implement HTTP Module
-            if (!apf.http)
+            if (!ppc.http)
                 error = "HTTP";
             else
-                this.implement(apf.http);
+                this.implement(ppc.http);
         }
         if (error) {
-            throw new Error(apf.formatErrorString(1024, null, "Teleport baseclass", 
+            throw new Error(ppc.formatErrorString(1024, null, "Teleport baseclass", 
                     "Could not find Ajax.org Teleport " + error + " Component", this.$aml));
         }
 
         if (this.id)
-            apf.$asyncObjects[this.id] = 1;
+            ppc.$asyncObjects[this.id] = 1;
     });
-}).call(apf.Teleport.prototype = new apf.AmlElement());
+}).call(ppc.Teleport.prototype = new ppc.AmlElement());
 
 //#ifdef __DEBUG
-apf.teleportLog = function(extra){
+ppc.teleportLog = function(extra){
     var xml, request = extra.method + " " + extra.url + " HTTP/1.1\n\n" + extra.data;
 
     this.setXml = function(pNode){
@@ -249,14 +249,14 @@ apf.teleportLog = function(extra){
             xml.appendChild(doc.createElement("response")).appendChild(doc.createTextNode(response || "-"));
         }
 
-        apf.xmldb.appendChild(pNode, xml);
+        ppc.xmldb.appendChild(pNode, xml);
     }
 
     this.request = function(headers){
         request = request.replace(/\n\n/, "\n" + headers.join("\n") + "\n\n");
 
         if (xml)
-            apf.setQueryValue(xml, "request/text()", request);
+            ppc.setQueryValue(xml, "request/text()", request);
 
         this.request = function(){}
     }
@@ -270,7 +270,7 @@ apf.teleportLog = function(extra){
                 + extra.http.responseText;
 
             if (xml)
-                apf.setQueryValue(xml, "response/text()", response);
+                ppc.setQueryValue(xml, "response/text()", response);
         } catch(ex) {}
     }
 }
@@ -278,4 +278,4 @@ apf.teleportLog = function(extra){
 
 // #endif
 
-apf.Init.run("teleport");
+ppc.Init.run("teleport");

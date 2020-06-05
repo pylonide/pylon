@@ -19,7 +19,7 @@
  *
  */
 
-apf.__ANCHORING__ = 1 << 13;
+ppc.__ANCHORING__ = 1 << 13;
 
 // #ifdef __WITH_ANCHORING
 
@@ -57,8 +57,8 @@ apf.__ANCHORING__ = 1 << 13;
  * @baseclass
  * @layout
  */
-apf.Anchoring = function(){
-    this.$regbase = this.$regbase | apf.__ANCHORING__;
+ppc.Anchoring = function(){
+    this.$regbase = this.$regbase | ppc.__ANCHORING__;
     this.$anchors = [];
 
     var VERTICAL   = 1;
@@ -74,7 +74,7 @@ apf.Anchoring = function(){
     this.$rule_h      =
     this.$rule_header = "";
 
-    var l = apf.layout;
+    var l = ppc.layout;
     
     this.$supportedProperties.push("anchors");
     
@@ -86,7 +86,7 @@ apf.Anchoring = function(){
             if (!value && value !== 0)
                 this.$ext.style[prop] = "";
 
-            //@note Removed apf.isParsing here to activate general queuing
+            //@note Removed ppc.isParsing here to activate general queuing
             if (!this.$updateQueue)
                 l.queue(this.$pHtmlNode, this);
             this.$updateQueue = this.$updateQueue | HORIZONTAL;
@@ -99,7 +99,7 @@ apf.Anchoring = function(){
             if (!value && value !== 0)
                 this.$ext.style[prop] = "";
 
-            //@note Removed apf.isParsing here to activate general queuing            
+            //@note Removed ppc.isParsing here to activate general queuing            
             if (!this.$updateQueue)
                 l.queue(this.$pHtmlNode, this);
             this.$updateQueue = this.$updateQueue | VERTICAL;
@@ -114,7 +114,7 @@ apf.Anchoring = function(){
         if (!this.$anchoringEnabled && !this.$setLayout("anchoring"))
             return;
 
-        if (!this.$updateQueue && apf.loaded)
+        if (!this.$updateQueue && ppc.loaded)
             l.queue(this.$pHtmlNode, this);
         this.$updateQueue = this.$updateQueue | HORIZONTAL | VERTICAL;
     };
@@ -150,10 +150,10 @@ apf.Anchoring = function(){
         }
         
         /*if (this.right)
-            this.$ext.style.left = apf.getHtmlLeft(this.$ext) + "px";
+            this.$ext.style.left = ppc.getHtmlLeft(this.$ext) + "px";
 
         if (this.bottom)
-            this.$ext.style.top = apf.getHtmlTop(this.$ext) + "px";*/
+            this.$ext.style.top = ppc.getHtmlTop(this.$ext) + "px";*/
 
         this.removeEventListener("prop.visible", visibleHandler);
 
@@ -229,7 +229,7 @@ apf.Anchoring = function(){
             return;
 
         // *** Properties and Attributes *** //
-        apf.extend(this.$propHandlers, propHandlers);
+        ppc.extend(this.$propHandlers, propHandlers);
 
         // *** Event handlers *** //
         this.addEventListener("DOMNodeRemoved", remove); 
@@ -311,18 +311,18 @@ apf.Anchoring = function(){
     function getRuleHeader(){
         if (!this.$pHtmlDoc) return "";
         return "try{\
-            var oHtml = " + (apf.hasHtmlIdsInJs
+            var oHtml = " + (ppc.hasHtmlIdsInJs
                 ? this.$ext.getAttribute("id")
                 : "document.getElementById('"
                     + this.$ext.getAttribute("id") + "')") + ";\
             \
             var pWidth = " + (this.$pHtmlNode == this.$pHtmlDoc.body
-                ? "apf.getWindowWidth()" //@todo only needed for debug?
-                : "apf.getHtmlInnerWidth(oHtml.parentNode)") + ";\
+                ? "ppc.getWindowWidth()" //@todo only needed for debug?
+                : "ppc.getHtmlInnerWidth(oHtml.parentNode)") + ";\
             \
             var pHeight = " + (this.$pHtmlNode == this.$pHtmlDoc.body
-                ? "apf.getWindowHeight()" //@todo only needed for debug?
-                : "apf.getHtmlInnerHeight(oHtml.parentNode)") + ";\
+                ? "ppc.getWindowHeight()" //@todo only needed for debug?
+                : "ppc.getHtmlInnerHeight(oHtml.parentNode)") + ";\
             }catch(e){\
             }";
     }
@@ -334,7 +334,7 @@ apf.Anchoring = function(){
      * @returns {String} The anchor percentage
      */
     function setPercentage(expr, value){
-        return String(expr).replace(apf.percentageMatch, "((" + value + " * $1)/100)");
+        return String(expr).replace(ppc.percentageMatch, "((" + value + " * $1)/100)");
     }
 
      //#ifdef __WITH_SKIN_CHANGE
@@ -351,7 +351,7 @@ apf.Anchoring = function(){
     function visCheck(){
         if (this.$updateQueue) {
             this.$updateLayout();
-            apf.layout.activateRules(this.$ext.parentNode);
+            ppc.layout.activateRules(this.$ext.parentNode);
         }
     }
 
@@ -359,12 +359,12 @@ apf.Anchoring = function(){
         if (!this.$anchoringEnabled)
             return;
 
-        if (!apf.window.vManager.check(this, "anchoring", visCheck))
+        if (!ppc.window.vManager.check(this, "anchoring", visCheck))
             return;
 
         if (!this.$parsed) {
             if (!this.$ext.getAttribute("id"))
-                apf.setUniqueHtmlId(this.$ext);
+                ppc.setUniqueHtmlId(this.$ext);
 
             this.$rule_header = getRuleHeader.call(this);
             this.$parsed      = true;
@@ -377,17 +377,17 @@ apf.Anchoring = function(){
         }
 
         if (this.draggable == "relative") {
-            if ("absolute|fixed|relative".indexOf(apf.getStyle(this.$ext, "position")) == -1) //@todo apf3.1 the IDE doesn't like this
+            if ("absolute|fixed|relative".indexOf(ppc.getStyle(this.$ext, "position")) == -1) //@todo ppc3.1 the IDE doesn't like this
                 this.$ext.style.position = "absolute";
         }
         else if (this.left || this.left ===  0 || this.top || this.top === 0 
           || this.right || this.right === 0 || this.bottom || this.bottom === 0 
           || this.$anchors.length) {
-            if ("absolute|fixed".indexOf(apf.getStyle(this.$ext, "position")) == -1)
+            if ("absolute|fixed".indexOf(ppc.getStyle(this.$ext, "position")) == -1)
                 this.$ext.style.position = "absolute";
         }
         else if (!this.center) {
-            if ("absolute|fixed|relative".indexOf(apf.getStyle(this.$ext, "position")) == -1)
+            if ("absolute|fixed|relative".indexOf(ppc.getStyle(this.$ext, "position")) == -1)
                 this.$ext.style.position = "relative";
             if (!this.width)
                 this.$ext.style.width    = "";
@@ -399,7 +399,7 @@ apf.Anchoring = function(){
         if (this.$updateQueue & HORIZONTAL) {
             rules = [];
             
-            this.$hordiff = apf.getWidthDiff(this.$ext);
+            this.$hordiff = ppc.getWidthDiff(this.$ext);
 
             var left  = this.$anchors[3] || this.left,
                 right = this.$anchors[1] || this.right,
@@ -418,7 +418,7 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.left = left + "px";
             }
-            if ((apf.hasStyleAnchors || !hasLeft) && hasRight) {
+            if ((ppc.hasStyleAnchors || !hasLeft) && hasRight) {
                 if (parseInt(right) != right) {
                     right = setPercentage(right, "pWidth");
                     rules.push("oHtml.style.right = (" + right + ") + 'px'");
@@ -428,7 +428,7 @@ apf.Anchoring = function(){
             }
 
             if (hasLeft && hasRight) { //right != null && left != null) {
-                if (!apf.hasStyleAnchors)
+                if (!ppc.hasStyleAnchors)
                     rules.push("oHtml.style.width = (pWidth - (" + right
                         + ") - (" + left + ") - " + this.$hordiff + ") + 'px'");
                 else
@@ -460,7 +460,7 @@ apf.Anchoring = function(){
         if (this.$updateQueue & VERTICAL) {
             rules = [];
 
-            this.$verdiff = apf.getHeightDiff(this.$ext);
+            this.$verdiff = ppc.getHeightDiff(this.$ext);
 
             var top    = this.$anchors[0] || this.top,
                 bottom = this.$anchors[2] || this.bottom,
@@ -479,7 +479,7 @@ apf.Anchoring = function(){
                 else
                     this.$ext.style.top = top + "px";
             }
-            if ((apf.hasStyleAnchors || !hasTop) && hasBottom) {
+            if ((ppc.hasStyleAnchors || !hasTop) && hasBottom) {
                 if (parseInt(bottom) != bottom) {
                     rules.push("oHtml.style.bottom = (" + bottom + ") + 'px'");
                 }
@@ -487,7 +487,7 @@ apf.Anchoring = function(){
                     this.$ext.style.bottom = bottom + "px";
             }
             if (hasTop && hasBottom) { //bottom != null && top != null) {
-                if (!apf.hasStyleAnchors)
+                if (!ppc.hasStyleAnchors)
                     rules.push("oHtml.style.height = (pHeight - (" + bottom +
                         ") - (" + top + ") - " + this.$verdiff + ") + 'px'");
                 else
@@ -525,8 +525,8 @@ apf.Anchoring = function(){
 
         this.$updateQueue = 0;
         
-        if (this.$box && !apf.hasFlexibleBox) //temporary fix
-            apf.layout.forceResize(this.$ext);
+        if (this.$box && !ppc.hasFlexibleBox) //temporary fix
+            ppc.layout.forceResize(this.$ext);
     };
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){

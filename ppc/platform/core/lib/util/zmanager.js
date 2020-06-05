@@ -37,7 +37,7 @@
  *
  * @private
  */
-apf.zmanager = function(){
+ppc.zmanager = function(){
     var count = {
         "default" : {
             level  : 10

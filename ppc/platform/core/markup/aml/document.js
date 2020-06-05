@@ -23,23 +23,23 @@
 
 /**
  * The AML document. This is the root of the DOM tree and has a nodeType with 
- * value 9 (`apf.NODE_DOCUMENT`). 
+ * value 9 (`ppc.NODE_DOCUMENT`). 
  *
- * @class apf.AmlDocument
- * @inherits apf.AmlNode
- * @inherits apf.Class
+ * @class ppc.AmlDocument
+ * @inherits ppc.AmlNode
+ * @inherits ppc.Class
  * @default_private 
- * @see apf.AmlDom
+ * @see ppc.AmlDom
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.AmlDocument = function(){
+ppc.AmlDocument = function(){
     this.$prefixes      = {};
     this.$namespaceURIs = {};
     // #ifdef __WITH_AMLCONFIGURATION
-    this.domConfig      = new apf.AmlConfiguration();
+    this.domConfig      = new ppc.AmlConfiguration();
     // #endif
     
     this.$init();
@@ -51,7 +51,7 @@ apf.AmlDocument = function(){
      * @type {Number}
      */
     this.nodeType   = this.NODE_DOCUMENT;
-    this.nodeFunc   = apf.NODE_HIDDEN;
+    this.nodeFunc   = ppc.NODE_HIDDEN;
     this.nodeName   = "#document";
     
     this.$amlLoaded = true;
@@ -60,19 +60,19 @@ apf.AmlDocument = function(){
     this.doctype         = null;
     this.domConfig       = null;
     this.implementation  = null;
-    this.characterSet    = apf.characterSet;
+    this.characterSet    = ppc.characterSet;
     
     /**
      * The root element node of the AML application. This is an element with
      * the tagName `'application'`. This is similar to the `'html'` element for regular HTML.
-     * @type {apf.AmlNode}
+     * @type {ppc.AmlNode}
      */
     this.documentElement = null;
     
     /**
      * Gets a AML element based on its id.
      * @param {String} id The id of the AML element to return.
-     * @return {apf.AmlElement} The AML element with the id specified.
+     * @return {ppc.AmlElement} The AML element with the id specified.
      */
     this.getElementById = function(id){
         return self[id];
@@ -81,7 +81,7 @@ apf.AmlDocument = function(){
     /**
      * Returns a list of elements with the given tag name.
      *
-     * The subtree below the [[apf.AmlDocument.documentElement]] is searched, excluding the
+     * The subtree below the [[ppc.AmlDocument.documentElement]] is searched, excluding the
      * element itself.
      *
      * @param  {String}  tagName  The tag name to look for. The special string "*" represents any tag name.
@@ -99,7 +99,7 @@ apf.AmlDocument = function(){
     /**
      * Returns a list of elements with the given tag name and the specified namespace URI.
      *
-     * The subtree below the [[apf.AmlDocument.documentElement]] is searched, excluding the
+     * The subtree below the [[ppc.AmlDocument.documentElement]] is searched, excluding the
      * element itself.
      *
      * @param  {String}  namespaceURI  The namespace URI name to look for.
@@ -123,7 +123,7 @@ apf.AmlDocument = function(){
      *                              - [[String]]:     The tag name of the new element to create
      *                              - [[String]]:    The AML definition for a single or multiple elemnts
      *                              - [[XMLElement]]: The AML definition for a single or multiple elements
-     * @return {apf.AmlElement} The created AML element
+     * @return {ppc.AmlElement} The created AML element
      */
     this.createElement = function(qualifiedName){
         return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
@@ -138,7 +138,7 @@ apf.AmlDocument = function(){
      *                              - [[String]]:     The tag name of the new element to create
      *                              - [[String]]:     The AML definition for a single or multiple elemnts
      *                              - [[XMLElement]]: The AML definition for a single or multiple elements
-     * @return {apf.AmlElement} The created AML element
+     * @return {ppc.AmlElement} The created AML element
      */        
     this.createElementNS = function(namespaceURI, qualifiedName){
         return this.$domParser.$createNode(this, this.NODE_ELEMENT, null,
@@ -148,9 +148,9 @@ apf.AmlDocument = function(){
     /**
      * Creates a copy of a node from an external document that can be inserted into the current document.
      *
-     * @param  {apf.AmlNode}  node  The node to import and copy
+     * @param  {ppc.AmlNode}  node  The node to import and copy
      * @param {Boolean} [deep]      Indicates whether the descendants of the imported node should also be imported
-     * @return {apf.AmlNode} The imported node
+     * @return {ppc.AmlNode} The imported node
      */     
     this.importNode = function(node, deep){
         if (deep && node.nodeType == 1) {
@@ -168,7 +168,7 @@ apf.AmlDocument = function(){
      * Creates and returns a new attribute node.
      *
      * @param  {String}  nodeName  The name of the attribute
-     * @return {apf.AmlNode} The attribute node
+     * @return {ppc.AmlNode} The attribute node
      */ 
     this.createAttribute = function(nodeName){
         return this.$domParser.$createNode(this, this.NODE_ATTRIBUTE, null,
@@ -180,23 +180,23 @@ apf.AmlDocument = function(){
      *
      * @param  {String} nameSpaceURI  The name of the URI
      * @param  {String}  nodeName  The name of the attribute
-     * @return {apf.AmlNode} The attribute node
+     * @return {ppc.AmlNode} The attribute node
      */ 
     this.createAttributeNS = function(nameSpaceURI, nodeName){
         return this.$domParser.$createNode(this, this.NODE_ATTRIBUTE, null,
             nameSpaceURI, nodeName);
     };
     /**
-     * Creates and returns a new [[apf.AmlEvent]] .
+     * Creates and returns a new [[ppc.AmlEvent]] .
      */     
     this.createEvent = function(){
-        return new apf.AmlEvent();
+        return new ppc.AmlEvent();
     };
 
     /**
      * Creates and returns a new comment node.
      * @param {String} nodeValue The data to be added to the comment
-     * @return {apf.AmlNode} The comment node
+     * @return {ppc.AmlNode} The comment node
      */    
     this.createComment = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_COMMENT, null, null,
@@ -207,7 +207,7 @@ apf.AmlDocument = function(){
      * Creates and returns a new processing instruction node.
      * @param {String} target The target part of the processing instruction node, like `<?_target_ ...?>`
      * @param {String} data The data to be added to the PI
-     * @return {apf.AmlNode} The processing instruction node
+     * @return {ppc.AmlNode} The processing instruction node
      */     
     this.createProcessingInstruction = function(target, data){
         return this.$domParser.$createNode(this, this.NODE_PROCESSING_INSTRUCTION,
@@ -217,7 +217,7 @@ apf.AmlDocument = function(){
     /**
      * Creates and returns a new CDATA section node.
      * @param {String} nodeValue The data to be added to the CDATA node
-     * @return {apf.AmlNode} The CDATA section node
+     * @return {ppc.AmlNode} The CDATA section node
      */     
     this.createCDATASection = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_CDATA_SECTION, null,
@@ -227,7 +227,7 @@ apf.AmlDocument = function(){
     /**
      * Creates and returns a new Text node.
      * @param {String} nodeValue The data to be added to the text node
-     * @return {apf.AmlNode} The Text node
+     * @return {ppc.AmlNode} The Text node
      */      
     this.createTextNode = function(nodeValue){
         return this.$domParser.$createNode(this, this.NODE_TEXT, null, null,
@@ -259,7 +259,7 @@ apf.AmlDocument = function(){
      * @param {String} sExpr
      */
     this.evaluate = function(sExpr, contextNode, nsResolver, type, x){
-        var result = apf.XPath.selectNodes(sExpr,
+        var result = ppc.XPath.selectNodes(sExpr,
             contextNode || this.documentElement);
 
         /*
@@ -293,52 +293,52 @@ apf.AmlDocument = function(){
     var selection;
     this.getSelection = function(){
         if (!selection)
-            selection = new apf.AmlSelection(this);
+            selection = new ppc.AmlSelection(this);
         return selection;
     }
     
     var selectrect;
     this.$getSelectRect = function(){
         if (!selectrect)
-            selectrect = new apf.selectrect();
+            selectrect = new ppc.selectrect();
         return selectrect;
     }
     
     var visualselect;
     this.$getVisualSelect = function(){
         if (!visualselect)
-            visualselect = new apf.visualSelect(this.getSelection());
+            visualselect = new ppc.visualSelect(this.getSelection());
         return visualselect;
     }
     
     var visualconnect;
     this.$getVisualConnect = function(){
         if (!visualconnect)
-            visualconnect = new apf.visualConnect(this.getSelection());
+            visualconnect = new ppc.visualConnect(this.getSelection());
         return visualconnect;
     }
     
     this.createRange = function(){
-        return new apf.AmlRange(this);
+        return new ppc.AmlRange(this);
     }
     
     this.queryCommandState = function(commandId){
-        return (this.$commands[commandId.toLowerCase()] || apf.K)
+        return (this.$commands[commandId.toLowerCase()] || ppc.K)
             .call(this, null, null, null, 1) || false;
     };
 
     this.queryCommandValue = function(commandId){
-        return (this.$commands[commandId.toLowerCase()] || apf.K)
+        return (this.$commands[commandId.toLowerCase()] || ppc.K)
             .call(this, null, null, null, 2) || false;
     };
     
     this.queryCommandEnabled = function(commandId){
-        return (this.$commands[commandId.toLowerCase()] || apf.K)
+        return (this.$commands[commandId.toLowerCase()] || ppc.K)
             .call(this, this.getSelection().$getNodeList(), false, arguments[2], 3) || false;
     };
     
     this.queryCommandIndeterm = function(commandId){
-        return (this.$commands[commandId.toLowerCase()] || apf.K)
+        return (this.$commands[commandId.toLowerCase()] || ppc.K)
             .call(this, null, null, null, 4) || false;
     };
     
@@ -376,6 +376,6 @@ apf.AmlDocument = function(){
     
     this.$commands = {};
     //#endif
-}).call(apf.AmlDocument.prototype = new apf.AmlNode());
+}).call(ppc.AmlDocument.prototype = new ppc.AmlNode());
 
 //#endif

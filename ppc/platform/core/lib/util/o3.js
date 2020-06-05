@@ -271,6 +271,6 @@ global.o3 = {
     get: get
 };
 
-})(apf);
+})(ppc);
 
 // #endif
