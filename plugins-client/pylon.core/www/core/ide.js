@@ -10,7 +10,7 @@ define(function(require, exports, module) {
     var util = require("core/util");
     var SMITH_IO = require("smith.io");
 
-    ide = new apf.Class().$init();
+    ide = new ppc.Class().$init();
 
     ide.createDocument = function(node, value){
         return new Document(node, value);
@@ -47,7 +47,7 @@ define(function(require, exports, module) {
         {
             var oldOnError = window.onerror;
             window.onerror = function(m, u, l) {
-                apf.ajax("/api/debug", {
+                ppc.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
                     data        : JSON.stringify({
@@ -61,14 +61,14 @@ define(function(require, exports, module) {
                     oldOnError.apply(this, arguments);
             };
 
-            //Catch all APF Routed errors
-            apf.addEventListener("error", function(e){
-                apf.ajax("/api/debug", {
+            //Catch all PPC Routed errors
+            ppc.addEventListener("error", function(e){
+                ppc.ajax("/api/debug", {
                     method      : "POST",
                     contentType : "application/json",
                     data        : JSON.stringify({
                         agent       : navigator.userAgent,
-                        type        : "APF Error",
+                        type        : "PPC Error",
                         message     : e.message,
                         tgt         : e.currentTarget && e.currentTarget.serialize(),
                         url         : e.url,

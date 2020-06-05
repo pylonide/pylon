@@ -101,7 +101,7 @@
                 left:0;
             }
         ]]></a:style>
-        <a:style condition="apf.isIE"><![CDATA[
+        <a:style condition="ppc.isIE"><![CDATA[
             .barGotoline .brGtlTop, .barGotoline .brGtlBottom {
                 display: none;
             }
@@ -170,7 +170,7 @@
                 cursor : default;
             }
         ]]></a:style>
-        <a:style condition="apf.isWebkit"><![CDATA[
+        <a:style condition="ppc.isWebkit"><![CDATA[
             .tbGotoline .sbtb_middle INPUT {
                 position : relative;
                 top : -3px;

@@ -32,7 +32,7 @@ var Document = function(node, docValue){
             : docValue);
     };
 };
-Document.prototype = new apf.Class();
+Document.prototype = new ppc.Class();
 
 module.exports = Document;
 

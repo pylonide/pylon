@@ -138,10 +138,10 @@ module.exports = {
             new RegExp(searchTxt);
         }
         catch(e) {
-            tooltip.$ext.innerHTML = apf.escapeXML(e.message.replace(": /" + searchTxt + "/", ""));
-            apf.setOpacity(tooltip.$ext, 1);
+            tooltip.$ext.innerHTML = ppc.escapeXML(e.message.replace(": /" + searchTxt + "/", ""));
+            ppc.setOpacity(tooltip.$ext, 1);
 
-            var pos = apf.getAbsolutePosition(win.$ext);
+            var pos = ppc.getAbsolutePosition(win.$ext);
             tooltip.$ext.style.left = txtFind.getLeft() + "px";
             tooltip.$ext.style.top = (pos[1] - 16) + "px";
 

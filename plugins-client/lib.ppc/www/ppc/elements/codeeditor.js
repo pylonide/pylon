@@ -28,7 +28,7 @@
  * @define codeeditor
  * @addnode elements
  *
- * @inherits apf.StandardBinding
+ * @inherits ppc.StandardBinding
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @author      Fabian Jakobs (fabian AT ajax DOT org)
@@ -50,8 +50,8 @@ var dom = require("ace/lib/dom");
 require("ace/lib/fixoldbrowsers");
 require("ppc/elements/scrollbars");
 
-apf.codeeditor = module.exports = function(struct, tagName) {
-    this.$init(tagName || "codeeditor", apf.NODE_VISIBLE, struct);
+ppc.codeeditor = module.exports = function(struct, tagName) {
+    this.$init(tagName || "codeeditor", ppc.NODE_VISIBLE, struct);
 
     this.documents = [];
     this.$cache    = {};
@@ -60,7 +60,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 (function() {
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
     );
 
@@ -104,14 +104,14 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         var key;
         if (typeof value === "string") {
             if (this.xmlRoot) {
-                key = this.xmlRoot.getAttribute(apf.xmldb.xmlIdTag);
+                key = this.xmlRoot.getAttribute(ppc.xmldb.xmlIdTag);
             }
             else {
                 key = value;
             }
         }
         else if (value.nodeType) {
-            key = value.getAttribute(apf.xmldb.xmlIdTag);
+            key = value.getAttribute(ppc.xmldb.xmlIdTag);
         }
 
         return key;
@@ -132,9 +132,9 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
     /**
      * @attribute {String} value the text of this element
-     * @todo apf3.0 check use of this.$propHandlers["value"].call
+     * @todo ppc3.0 check use of this.$propHandlers["value"].call
      */
-    this.$propHandlers["value"] = function(value){ //@todo apf3.0 add support for the range object as a value
+    this.$propHandlers["value"] = function(value){ //@todo ppc3.0 add support for the range object as a value
         var doc, key;
         var _self = this;
 
@@ -150,7 +150,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
 
         if (!doc) {
             if (value.nodeType) {
-                apf.xmldb.addNodeListener(value.nodeType == 1
+                ppc.xmldb.addNodeListener(value.nodeType == 1
                     ? value : value.parentNode, this);
                 //@todo replace this by a proper function
                 if (value.nodeType > 1 && value.nodeType < 5)
@@ -341,7 +341,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
     this.addEventListener("xmlupdate", function(e){
-        var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+        var id = e.xmlNode.getAttribute(ppc.xmldb.xmlIdTag);
         if (this.$cache[id]) {
             //@todo Update document
         }
@@ -472,8 +472,8 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         this.$editor = new Editor(new VirtualRenderer(this.$input), null);
         new MultiSelect(this.$editor);
 
-        if (apf.isTrue(this.getAttribute("globalcommands"))){
-            if(this.$editor.keyBinding.setDefaultHandler && !apf.isIphone) {
+        if (ppc.isTrue(this.getAttribute("globalcommands"))){
+            if(this.$editor.keyBinding.setDefaultHandler && !ppc.isIphone) {
               // Don't remove the default handler in case of iOS devices, we might need it for
               // hardware keyboard to operate correctly in Ace
               this.$editor.keyBinding.setDefaultHandler(null);
@@ -512,7 +512,7 @@ apf.codeeditor = module.exports = function(struct, tagName) {
         if (this.selectstyle === undefined)
             this.selectstyle = ed.getSelectionStyle();//"line";
 
-        //@todo this is a workaround for a bug in handling boolean properties in apf.$setDynamicProperty
+        //@todo this is a workaround for a bug in handling boolean properties in ppc.$setDynamicProperty
         this.activeline = ed.getHighlightActiveLine();//true;
         this.gutterline = ed.getHighlightGutterLine();//true;
         this.animatedscroll = ed.getAnimatedScroll();//true
@@ -551,18 +551,18 @@ apf.codeeditor = module.exports = function(struct, tagName) {
     };
 
 // #ifdef __WITH_DATABINDING
-}).call(apf.codeeditor.prototype = new apf.StandardBinding());
+}).call(ppc.codeeditor.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.textbox.prototype = new apf.Presentation());
+}).call(ppc.textbox.prototype = new ppc.Presentation());
 #endif*/
 
-apf.config.$inheritProperties["initial-message"] = 1;
+ppc.config.$inheritProperties["initial-message"] = 1;
 
-apf.aml.setElement("codeeditor", apf.codeeditor);
+ppc.aml.setElement("codeeditor", ppc.codeeditor);
 
 
-apf.codebox = function(struct, tagName) {
-    this.$init(tagName || "codebox", apf.NODE_VISIBLE, struct);
+ppc.codebox = function(struct, tagName) {
+    this.$init(tagName || "codebox", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
@@ -618,9 +618,9 @@ apf.codebox = function(struct, tagName) {
         ace.on("blur", onBlur);
         setTimeout(onBlur, 100);
         // todo should we do this here?
-        // ace.on("resize", function(){apf.layout.forceResize();});
+        // ace.on("resize", function(){ppc.layout.forceResize();});
         
-        if (apf.isTrue(this.getAttribute("clearbutton"))) {
+        if (ppc.isTrue(this.getAttribute("clearbutton"))) {
             var _self = this;
             var visible = false;
             ace.renderer.on("afterRender", function() {
@@ -714,8 +714,8 @@ apf.codebox = function(struct, tagName) {
             this.$setInheritedAttribute("initial-message");
     };
 
-}).call(apf.codebox.prototype = new apf.StandardBinding());
-apf.aml.setElement("codebox", apf.codebox);
+}).call(ppc.codebox.prototype = new ppc.StandardBinding());
+ppc.aml.setElement("codebox", ppc.codebox);
 
 });
 // #endif

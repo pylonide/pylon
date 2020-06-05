@@ -138,11 +138,11 @@ module.exports = ext.register("ext/code/code", {
             if (!SupportedModes[value])
                 return;
 
-            apf.xmldb.setAttribute(file, "customtype", value);
+            ppc.xmldb.setAttribute(file, "customtype", value);
             fileExtensions[ext] = value;
         }
         else {
-            apf.xmldb.removeAttribute(file, "customtype", "");
+            ppc.xmldb.removeAttribute(file, "customtype", "");
 
             delete fileExtensions[ext];
             for (var mode in SupportedModes) {
@@ -393,7 +393,7 @@ module.exports = ext.register("ext/code/code", {
             var isAvailable = command.isAvailable;
             command.isAvailable = function(editor, event) {
                 if (event instanceof KeyboardEvent &&
-                 (!apf.activeElement || apf.activeElement.localName != "codeeditor"))
+                 (!ppc.activeElement || ppc.activeElement.localName != "codeeditor"))
                     return false;
 
                 return isAvailable ? isAvailable(editor) : true;
@@ -430,14 +430,14 @@ module.exports = ext.register("ext/code/code", {
         var _self = this;
         var c = 20000;
         this.menus.push(
-            menus.addItemByPath("Tools/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Tools/~", new ppc.divider(), c += 100),
             addEditorMenu("Tools/Toggle Macro Recording", "togglerecording"), //@todo this needs some more work
             addEditorMenu("Tools/Play Macro", "replaymacro")//@todo this needs some more work
         );
 
         c = 600;
         this.menus.push(
-            menus.addItemByPath("Edit/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/~", new ppc.divider(), c += 100),
             menus.addItemByPath("Edit/Line/", null, c += 100),
             menus.addItemByPath("Edit/Comment/", null, c += 100),
             menus.addItemByPath("Edit/Text/", null, c += 100),
@@ -446,7 +446,7 @@ module.exports = ext.register("ext/code/code", {
         );
 
         function addEditorMenu(path, commandName) {
-            return menus.addItemByPath(path, new apf.item({
+            return menus.addItemByPath(path, new ppc.item({
                 command : commandName
             }), c += 100);
         }
@@ -458,16 +458,16 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Edit/Line/Move Line Up", "movelinesup"),
             addEditorMenu("Edit/Line/Move Line Down", "movelinesdown"),
 
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Line/~", new ppc.divider(), c += 100),
             addEditorMenu("Edit/Line/Copy Lines Up", "copylinesup"),
             addEditorMenu("Edit/Line/Copy Lines Down", "copylinesdown"),
 
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Line/~", new ppc.divider(), c += 100),
             addEditorMenu("Edit/Line/Remove Line", "removeline"),
             addEditorMenu("Edit/Line/Remove to Line End", "removetolineend"),
             addEditorMenu("Edit/Line/Remove to Line Start", "removetolinestart"),
 
-            menus.addItemByPath("Edit/Line/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Line/~", new ppc.divider(), c += 100),
             addEditorMenu("Edit/Line/Split Line", "splitline")
         );
 
@@ -480,13 +480,13 @@ module.exports = ext.register("ext/code/code", {
         this.menus.push(
             addEditorMenu("Edit/Text/Align", "alignCursors"),
             addEditorMenu("Edit/Text/Sort Lines", "sortlines"),
-            menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Text/~", new ppc.divider(), c += 100),
             addEditorMenu("Edit/Text/Increase Number at Cursor", "modifyNumberUp"),
             addEditorMenu("Edit/Text/Decrease Number at Cursor", "modifyNumberDown"),
-            menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Text/~", new ppc.divider(), c += 100),
             addEditorMenu("Edit/Text/Remove Word Right", "removewordright"),
             addEditorMenu("Edit/Text/Remove Word Left", "removewordleft"),
-            menus.addItemByPath("Edit/Text/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Text/~", new ppc.divider(), c += 100),
             addEditorMenu("Edit/Text/Transpose Letters", "transposeletters")
         );
 
@@ -495,7 +495,7 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Edit/Code Folding/Fold", "fold"),
             addEditorMenu("Edit/Code Folding/Unfold", "unfold"),
 
-            menus.addItemByPath("Edit/Code Folding/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Edit/Code Folding/~", new ppc.divider(), c += 100),
             addEditorMenu("Edit/Code Folding/Fold All", "foldall"),
             addEditorMenu("Edit/Code Folding/Unfold All", "unfoldall")
         );
@@ -512,18 +512,18 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Selection/Split Into Lines", "splitIntoLines"),
             addEditorMenu("Selection/Single Selection", "singleSelection"),
 
-            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Selection/~", new ppc.divider(), c += 100),
             menus.addItemByPath("Selection/Multiple Selections/", null, c += 100),
 
-            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Selection/~", new ppc.divider(), c += 100),
             addEditorMenu("Selection/Select Word Right", "selectwordright"),
             addEditorMenu("Selection/Select Word Left", "selectwordleft"),
 
-            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Selection/~", new ppc.divider(), c += 100),
             addEditorMenu("Selection/Select to Line End", "selecttolineend"),
             addEditorMenu("Selection/Select to Line Start", "selecttolinestart"),
 
-            menus.addItemByPath("Selection/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Selection/~", new ppc.divider(), c += 100),
             addEditorMenu("Selection/Select to Document End", "selecttoend"),
             addEditorMenu("Selection/Select to Document Start", "selecttostart")
         );
@@ -535,11 +535,11 @@ module.exports = ext.register("ext/code/code", {
             addEditorMenu("Selection/Multiple Selections/Move Active Cursor Up", "addCursorAboveSkipCurrent"),
             addEditorMenu("Selection/Multiple Selections/Move Active Cursor Down", "addCursorBelowSkipCurrent"),
 
-            menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Selection/Multiple Selections/~", new ppc.divider(), c += 100),
             addEditorMenu("Selection/Multiple Selections/Add Next Selection Match", "selectMoreAfter"),
             addEditorMenu("Selection/Multiple Selections/Add Previous Selection Match", "selectMoreBefore"),
 
-            menus.addItemByPath("Selection/Multiple Selections/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Selection/Multiple Selections/~", new ppc.divider(), c += 100),
             addEditorMenu("Selection/Multiple Selections/Merge Selection Range", "splitIntoLines")
         );
 
@@ -547,14 +547,14 @@ module.exports = ext.register("ext/code/code", {
 
         /**** View ****/
         this.menus.push(
-            menus.addItemByPath("View/Gutter", new apf.item({
+            menus.addItemByPath("View/Gutter", new ppc.item({
                 type    : "check",
                 checked : "[{require('core/settings').model}::editors/code/@gutter]"
             }), 500),
 
-            menus.addItemByPath("View/~", new apf.divider(), 290000),
+            menus.addItemByPath("View/~", new ppc.divider(), 290000),
 
-            menus.addItemByPath("View/Syntax/", new apf.menu({
+            menus.addItemByPath("View/Syntax/", new ppc.menu({
                 "onprop.visible" : function(e){
                     if (e.value) {
                         if (!editors.currentEditor || !editors.currentEditor.amlEditor)
@@ -574,9 +574,9 @@ module.exports = ext.register("ext/code/code", {
                 }
             }), 300000),
 
-            grpNewline = new apf.group(),
+            grpNewline = new ppc.group(),
 
-            menus.addItemByPath("View/Newline Mode/", new apf.menu({
+            menus.addItemByPath("View/Newline Mode/", new ppc.menu({
                 "onprop.visible" : function(e){
                     if (e.value) {
                         grpNewline.setValue(
@@ -589,34 +589,34 @@ module.exports = ext.register("ext/code/code", {
                 }
             }), 310000),
 
-            menus.addItemByPath("View/Newline Mode/Auto", new apf.item({
+            menus.addItemByPath("View/Newline Mode/Auto", new ppc.item({
                 type    : "radio",
                 value   : "auto",
                 group   : grpNewline
             }), 100),
 
-            menus.addItemByPath("View/Newline Mode/~", new apf.divider(), 110),
+            menus.addItemByPath("View/Newline Mode/~", new ppc.divider(), 110),
 
-            menus.addItemByPath("View/Newline Mode/Windows (CRLF)", new apf.item({
+            menus.addItemByPath("View/Newline Mode/Windows (CRLF)", new ppc.item({
                 type    : "radio",
                 value   : "windows",
                 group   : grpNewline
             }), 200),
 
-            menus.addItemByPath("View/Newline Mode/Unix (LF)", new apf.item({
+            menus.addItemByPath("View/Newline Mode/Unix (LF)", new ppc.item({
                 type    : "radio",
                 value   : "unix",
                 group   : grpNewline
             }), 300),
 
-            menus.addItemByPath("View/~", new apf.divider(), 400000),
+            menus.addItemByPath("View/~", new ppc.divider(), 400000),
 
-            menus.addItemByPath("View/Wrap Lines", new apf.item({
+            menus.addItemByPath("View/Wrap Lines", new ppc.item({
                 type    : "check",
                 checked : "[{tabEditors.activepage && tabEditors.getPage(tabEditors.activepage).$model}::@wrapmode]"
             }), 500000),
 
-            menus.addItemByPath("View/Wrap To Viewport", new apf.item({
+            menus.addItemByPath("View/Wrap To Viewport", new ppc.item({
                 id : "mnuWrapView",
                 type     : "check",
                 checked  : "[{require('core/settings').model}::editors/code/@wrapmodeViewport]"
@@ -627,29 +627,29 @@ module.exports = ext.register("ext/code/code", {
 
         var otherGrpSyntax;
         this.menus.push(
-            grpSyntax = new apf.group(),
+            grpSyntax = new ppc.group(),
 
-            menus.addItemByPath("View/Syntax/Auto-Select", new apf.item({
+            menus.addItemByPath("View/Syntax/Auto-Select", new ppc.item({
                 type: "radio",
                 value: "auto",
                 group : grpSyntax
             }), c += 100),
 
-            menus.addItemByPath("View/Syntax/Plain Text", new apf.item({
+            menus.addItemByPath("View/Syntax/Plain Text", new ppc.item({
                 type: "radio",
                 value: "text",
                 group : grpSyntax
             }), c += 100),
 
-            otherGrpSyntax = window.otherGrpSyntax = new apf.group({
+            otherGrpSyntax = window.otherGrpSyntax = new ppc.group({
                 type : ""
             }),
 
-            menus.addItemByPath("View/Syntax/Other", new apf.item({
+            menus.addItemByPath("View/Syntax/Other", new ppc.item({
                 group : otherGrpSyntax
             }), c + 90000),
 
-            menus.addItemByPath("View/Syntax/~", new apf.divider(), c += 100)
+            menus.addItemByPath("View/Syntax/~", new ppc.divider(), c += 100)
         );
 
         function onModeClick(e) {
@@ -671,7 +671,7 @@ module.exports = ext.register("ext/code/code", {
                 continue;
             
             this.menus.push(
-                menus.addItemByPath("View/Syntax/" + (mode.isPrimary ? mode.caption : "Other/" + mode.caption), new apf.item({
+                menus.addItemByPath("View/Syntax/" + (mode.isPrimary ? mode.caption : "Other/" + mode.caption), new ppc.item({
                     type: "radio",
                     value: mode.id,
                     group : mode.isPrimary ? grpSyntax : otherGrpSyntax,
@@ -690,18 +690,18 @@ module.exports = ext.register("ext/code/code", {
         this.menus.push(
             /**** Goto ****/
 
-            menus.addItemByPath("Goto/~", new apf.divider(), c = 399),
+            menus.addItemByPath("Goto/~", new ppc.divider(), c = 399),
 
             addEditorMenu("Goto/Word Right", "gotowordright"),
             addEditorMenu("Goto/Word Left", "gotowordleft"),
-            menus.addItemByPath("Goto/~", new apf.divider(), 600),
+            menus.addItemByPath("Goto/~", new ppc.divider(), 600),
 
             addEditorMenu("Goto/Line End", "gotolineend"),
             addEditorMenu("Goto/Line Start", "gotolinestart"),
-            menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Goto/~", new ppc.divider(), c += 100),
 
             addEditorMenu("Goto/Jump to Matching Brace", "jumptomatching"),
-            menus.addItemByPath("Goto/~", new apf.divider(), c += 100),
+            menus.addItemByPath("Goto/~", new ppc.divider(), c += 100),
 
             addEditorMenu("Goto/Scroll to Selection", "centerselection")
         );
@@ -797,14 +797,14 @@ module.exports = ext.register("ext/code/code", {
                 renderer.onResize(true, null, null, _self.amlEditor.getHeight() + e.delta);
             }
             else if (e.type == "splitbox") {
-                if (e.options.height !== undefined && apf.isChildOf(e.other, _self.amlEditor, true)) {
+                if (e.options.height !== undefined && ppc.isChildOf(e.other, _self.amlEditor, true)) {
                     delta = e.which.getHeight() - Number(e.options.height);
                     if (delta < 0) return;
 
                     renderer = _self.amlEditor.$editor.renderer;
                     renderer.onResize(true, null, null, _self.amlEditor.getHeight() + delta);
                 }
-                else if (e.options.width !== undefined && apf.isChildOf(e.other, _self.amlEditor, true)) {
+                else if (e.options.width !== undefined && ppc.isChildOf(e.other, _self.amlEditor, true)) {
                     delta = e.which.getWidth() - Number(e.options.width);
                     if (delta < 0) return;
 
@@ -924,14 +924,14 @@ module.exports = ext.register("ext/code/code", {
             var name = ext.getAttribute("name") || "";
             node = settings.model.queryNode('auto/customtypes/mime[@filename="' + name + '"]');
             if (node)
-                apf.xmldb.removeAttribute(node, "ext");
+                ppc.xmldb.removeAttribute(node, "ext");
             else if (mode)
                 node = settings.model.appendXml('<mime filename="' + name + '" />', "auto/customtypes");
         }
         if (mode)
-            apf.xmldb.setAttribute(node, "name", mode);
+            ppc.xmldb.setAttribute(node, "name", mode);
         else if (node)
-            apf.xmldb.removeNode(node);
+            ppc.xmldb.removeNode(node);
         settings.save();
         return mode && SupportedModes[mode].mime;
     },
@@ -944,7 +944,7 @@ module.exports = ext.register("ext/code/code", {
     getCustomTypes: function(model) {
         var customTypes = model.queryNode("auto/customtypes");
         if (!customTypes)
-            customTypes = apf.createNodeFromXpath(model.data, "auto/customtypes");
+            customTypes = ppc.createNodeFromXpath(model.data, "auto/customtypes");
 
         var mimes = customTypes.selectNodes("mime");
         mimes.forEach(function(n) {

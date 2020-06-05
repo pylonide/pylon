@@ -36,8 +36,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
     hook : function(){
         var _self = this;
 
-        menus.addItemByPath("Tools/~", new apf.divider(), 1000000);
-        menus.addItemByPath("Tools/Extension Manager...", new apf.item({
+        menus.addItemByPath("Tools/~", new ppc.divider(), 1000000);
+        menus.addItemByPath("Tools/Extension Manager...", new ppc.item({
             onclick : function(){
                 _self.show();
             }
@@ -79,27 +79,27 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 eNode = null;
             }
 
-            eNode = apf.createNodeFromXpath(e.model.data, "auto/extensions");
+            eNode = ppc.createNodeFromXpath(e.model.data, "auto/extensions");
             var userExtensions = ext.model.queryNodes("plugin[@userext='1']");
             for (var u = 0; u < userExtensions.length; u++) {
-                var copy = apf.xmldb.cleanNode(userExtensions[u].cloneNode(false));
+                var copy = ppc.xmldb.cleanNode(userExtensions[u].cloneNode(false));
                 eNode.appendChild(copy);
             }
         });
 
         // Hackity hackathon
-        // @TODO the problem is apparently that APF does not
+        // @TODO the problem is apparently that PPC does not
         // like to show the datagrid records when two datagrids are
         // bound to the same model && that one of the xpath selectors
         // used to filter the model, has no results
-        // @todo I believe this is only with the debug version of apf
+        // @todo I believe this is only with the debug version of ppc
         setTimeout(function() {
             dgExt.reload();
         });
 
         var nodes = ext.model.queryNodes("plugin");
         for (var i = 0; i < nodes.length; i++) {
-            apf.xmldb.setAttribute(nodes[i], "total",
+            ppc.xmldb.setAttribute(nodes[i], "total",
                 parseInt(nodes[i].getAttribute("hook"), 10) + parseInt(nodes[i].getAttribute("init") || 0, 10));
         }
     },
@@ -182,8 +182,8 @@ module.exports = ext.register("ext/extmgr/extmgr", {
                 type: "extmgr",
                 path: path
             });
-            apf.xmldb.setAttribute(extNode, "userext", "1");
-            apf.xmldb.setAttribute(extNode, "realPath", path);
+            ppc.xmldb.setAttribute(extNode, "userext", "1");
+            ppc.xmldb.setAttribute(extNode, "realPath", path);
             settings.save();
             _self.$enableInput(true);
             clearTimeout(timer);

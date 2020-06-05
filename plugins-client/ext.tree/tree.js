@@ -33,7 +33,7 @@ function $trScroll() {
         var settingsData       = settings.model.data;
         var settingProjectTree = settingsData.selectSingleNode("auto/projecttree");
         if (settingProjectTree)
-            apf.xmldb.setAttribute(settingProjectTree, "scrollpos", trFiles.$ext.scrollTop);
+            ppc.xmldb.setAttribute(settingProjectTree, "scrollpos", trFiles.$ext.scrollTop);
     }, 1000);
 }
 
@@ -105,7 +105,7 @@ module.exports = ext.register("ext/tree/tree", {
         ide.addEventListener("settings.load", function(e){
             var model = e.model;
             (davProject.realWebdav || davProject).setAttribute("showhidden",
-                apf.isTrue(model.queryValue('auto/projecttree/@showhidden')));
+                ppc.isTrue(model.queryValue('auto/projecttree/@showhidden')));
 
             _self.scrollPos = model.queryValue('auto/projecttree/@scrollpos');
 
@@ -144,7 +144,7 @@ module.exports = ext.register("ext/tree/tree", {
             if (!_self.changed)
                 return;
 
-            var expandedNodes = apf.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
+            var expandedNodes = ppc.createNodeFromXpath(e.model.data, "auto/projecttree/text()");
             _self.expandedNodes = [];
 
             var path, id, lut = {};
@@ -204,7 +204,7 @@ module.exports = ext.register("ext/tree/tree", {
                 files[f.name] = f;
             });
 
-            if (!apf.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
+            if (!ppc.isTrue(settings.model.queryValue("auto/projecttree/@showhidden"))) {
                 var hiddenExtensions = ["pyc", "class"];
                 var hiddenExtensionsRegex = new RegExp("\\.(?:" + hiddenExtensions.join("|") + ")$");
                 for (var file in files) {
@@ -225,13 +225,13 @@ module.exports = ext.register("ext/tree/tree", {
                     removed.push(node);
             }
             removed.forEach(function (node) {
-                apf.xmldb.removeNode(node);
+                ppc.xmldb.removeNode(node);
             });
             path = parent.getAttribute("path");
             for (var filename in files) {
                 var file = files[filename];
 
-                var xmlNode = new apf.getXml("<" + apf.escapeXML(file.type) + " />");
+                var xmlNode = new ppc.getXml("<" + ppc.escapeXML(file.type) + " />");
                 xmlNode.setAttribute("type", file.type);
                 xmlNode.setAttribute("name", file.name);
                 xmlNode.setAttribute("path", path + "/" + file.name);
@@ -245,7 +245,7 @@ module.exports = ext.register("ext/tree/tree", {
         var _self = this;
         trFiles.setAttribute("model", this.model);
         
-        if(apf.isIphone) {
+        if(ppc.isIphone) {
           trFiles.$ext.style.overflow = "auto";
         }
 
@@ -289,7 +289,7 @@ module.exports = ext.register("ext/tree/tree", {
 
         // This adds a "Show Hidden Files" item to the settings dropdown
         // from the Project Files header
-        mnuFilesSettings.appendChild(new apf.item({
+        mnuFilesSettings.appendChild(new ppc.item({
             id      : "mnuitemHiddenFiles",
             type    : "check",
             caption : "Show Hidden Files",
@@ -349,12 +349,12 @@ module.exports = ext.register("ext/tree/tree", {
                 var settingsData      = settings.model.data;
                 var treeSelectionNode = settingsData.selectSingleNode("auto/tree_selection");
                 if(treeSelectionNode) {
-                    apf.xmldb.setAttribute(treeSelectionNode, "path", nodePath);
-                    apf.xmldb.setAttribute(treeSelectionNode, "type", nodeType);
+                    ppc.xmldb.setAttribute(treeSelectionNode, "path", nodePath);
+                    ppc.xmldb.setAttribute(treeSelectionNode, "type", nodeType);
                 }
                 else {
-                    apf.xmldb.appendChild(settingsData.selectSingleNode("auto"),
-                        apf.n("<tree_selection />")
+                    ppc.xmldb.appendChild(settingsData.selectSingleNode("auto"),
+                        ppc.n("<tree_selection />")
                             .attr("path", nodePath)
                             .attr("type", nodeType)
                             .node()
@@ -463,7 +463,7 @@ module.exports = ext.register("ext/tree/tree", {
 
         trFiles.addEventListener("keyup", this.$keyup = function(e){
             if(this.dragging > 0 && e.keyCode == 27) {
-                apf.DragServer.stop();
+                ppc.DragServer.stop();
             }
         });
 
@@ -479,7 +479,7 @@ module.exports = ext.register("ext/tree/tree", {
         trFiles.addEventListener("expand", this.$expand = function(e){
             if (!e.xmlNode)
                 return;
-            _self.expandedList[e.xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = e.xmlNode;
+            _self.expandedList[e.xmlNode.getAttribute(ppc.xmldb.xmlIdTag)] = e.xmlNode;
 
             // Only save if we are not loading the tree
             if (!_self.loading) {
@@ -493,7 +493,7 @@ module.exports = ext.register("ext/tree/tree", {
             if (!e.xmlNode)
                 return;
 
-            var id = e.xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+            var id = e.xmlNode.getAttribute(ppc.xmldb.xmlIdTag);
             delete _self.expandedList[id];
 
             _self.changed = true;
@@ -522,7 +522,7 @@ module.exports = ext.register("ext/tree/tree", {
     moveFile : function(node, newpath){
         var path = node.getAttribute("path");
         davProject.move(path, newpath, true, false, function(data, state, extra) {
-            if (state !== apf.SUCCESS) {
+            if (state !== ppc.SUCCESS) {
                 // TODO: revert the move!!
                 return;
             }
@@ -542,7 +542,7 @@ module.exports = ext.register("ext/tree/tree", {
         var path = node.getAttribute("path");
         var oldpath = node.getAttribute("oldpath");
         davProject.rename(oldpath, path, true, false, function(data, state, extra) {
-            if (state !== apf.SUCCESS) {
+            if (state !== ppc.SUCCESS) {
                 // TODO: revert the rename!!
                 return;
             }
@@ -593,12 +593,12 @@ module.exports = ext.register("ext/tree/tree", {
         function appendXmlToNode(parentNode, dataXml) {
             trFiles.insert(dataXml, { insertPoint: parentNode });
 
-            // Set the load status to "loaded" so APF doesn't assume the child
+            // Set the load status to "loaded" so PPC doesn't assume the child
             // nodes still need to be loaded
             trFiles.$setLoadStatus(parentNode, "loaded");
 
             // Slide open the folder
-            trFiles.slideToggle(apf.xmldb.getHtmlNode(parentNode, trFiles), 1, true, null, null);
+            trFiles.slideToggle(ppc.xmldb.getHtmlNode(parentNode, trFiles), 1, true, null, null);
         }
 
         /* Go through the orphaned children and attempt to append them to
@@ -657,7 +657,7 @@ module.exports = ext.register("ext/tree/tree", {
                     }
                 }
                 else {
-                    var dataXml = apf.getXml(data);
+                    var dataXml = ppc.getXml(data);
 
                     // Strip the extra "/" that webDav adds on
                     var cleanParentPath = extra.url.substr(0, extra.url.length-1);
@@ -707,7 +707,7 @@ module.exports = ext.register("ext/tree/tree", {
             // Scroll to last set scroll pos
             if (_self.scrollPos && _self.scrollPos > -1) {
                 if (animateScrollOnFinish) {
-                    apf.tween.single(trFiles, {
+                    ppc.tween.single(trFiles, {
                         type: "scrollTop",
                         from: 0,
                         to: _self.scrollPos

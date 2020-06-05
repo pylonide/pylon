@@ -77,7 +77,7 @@ module.exports = {
             hint: "quickfix",
             bindKey: {mac: "Ctrl-Shift-Q|Ctrl-Alt-Q", win: "Ctrl-Shift-Q|Alt-Shift-Q"},
             isAvailable : function(editor){
-                return apf.activeElement.localName == "codeeditor";
+                return ppc.activeElement.localName == "codeeditor";
             },
             exec: function(editor) {
                 _self.invoke();
@@ -86,7 +86,7 @@ module.exports = {
         
         ide.addEventListener("init.ext/code/code", function() {
             ext.nodes.push(
-                menus.addItemByPath("Tools/Quickfix", new apf.item({
+                menus.addItemByPath("Tools/Quickfix", new ppc.item({
                     caption : "Quickfix",
                     command: "quickfix"
                 }), 20001)
@@ -105,11 +105,11 @@ module.exports = {
              _self.editor = editor;
             if (!e.getButton())
                 return;
-            apf.addListener(mnuCtxEditor, "prop.visible", hideContext);
+            ppc.addListener(mnuCtxEditor, "prop.visible", hideContext);
             function hideContext(ev) {
                 // only fire when visibility is set to true
                 if (ev.value) {
-                    apf.removeListener(mnuCtxEditor, "prop.visible", hideContext);
+                    ppc.removeListener(mnuCtxEditor, "prop.visible", hideContext);
                     mnuCtxEditor.hide();
                 }
             }
@@ -213,7 +213,7 @@ module.exports = {
         
         this.populateQuickfixBox(this.quickFixes);
 
-        apf.popup.setContent("quickfixBox", barQuickfixCont.$ext);
+        ppc.popup.setContent("quickfixBox", barQuickfixCont.$ext);
         var boxLength = this.quickFixes.length || 1;
         var quickfixBoxHeight = 11 + Math.min(10 * this.lineHeight, boxLength * (this.lineHeight));
         
@@ -224,7 +224,7 @@ module.exports = {
         ignoreMouseOnce = !isPopupVisible();
         
         var pos = anno.getScreenCoordinates();
-        apf.popup.show("quickfixBox", {
+        ppc.popup.show("quickfixBox", {
             x        : pos.pageX, 
             y        : pos.pageY + _self.cursorConfig.lineHeight, 
             height   : quickfixBoxHeight,

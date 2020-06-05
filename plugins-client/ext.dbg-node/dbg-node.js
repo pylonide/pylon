@@ -116,7 +116,7 @@ oop.inherits(v8DebugClient, DebugHandler);
     };
 
     this.onAfterCompile = function(e) {
-        var script = apf.getXml(this.$getScriptXml(e.data.script));
+        var script = ppc.getXml(this.$getScriptXml(e.data.script));
         var id = script.getAttribute("scriptid");
         var oldNode = mdlDbgSources.queryNode("//file[@scriptid='" + id + "']");
         if (oldNode)
@@ -156,7 +156,7 @@ oop.inherits(v8DebugClient, DebugHandler);
         this.resume(null, null, callback);
     };
 
-    // apf xml helpers
+    // ppc xml helpers
     var hasChildren = {
         "object": 8,
         "function": 4
@@ -316,14 +316,14 @@ oop.inherits(v8DebugClient, DebugHandler);
         xmlVar.setAttribute("value", this.$valueString(fVar.value));
         xmlVar.setAttribute("type", fVar.value.type);
         xmlVar.setAttribute("ref", fVar.value.ref);
-        apf.xmldb.setAttribute(xmlVar, "children", hasChildren[fVar.value.type] ? "true" : "false");
+        ppc.xmldb.setAttribute(xmlVar, "children", hasChildren[fVar.value.type] ? "true" : "false");
     };
 
     this.$buildFrame = function(frame, ref, xml){
         var script = ref(frame.script.ref);
         xml.push(util.toXmlTag("frame", {
             index: frame.index,
-            name: apf.escapeXML(this.$frameToString(frame)), //dual escape???
+            name: ppc.escapeXML(this.$frameToString(frame)), //dual escape???
             column: frame.column,
             id: getId(frame),
             ref: frame.ref,
@@ -535,7 +535,7 @@ oop.inherits(v8DebugClient, DebugHandler);
                     props.children = "true";
                 str.push(util.toXmlTag("item", props));
             }
-            callback(apf.getXml(str.join("")), body, refs, error);
+            callback(ppc.getXml(str.join("")), body, refs, error);
         });
     };
 

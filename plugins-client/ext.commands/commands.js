@@ -15,7 +15,7 @@ var KeyBinding = require("ace/keyboard/keybinding").KeyBinding;
 var CommandManager = require("ace/commands/command_manager").CommandManager;
 var markupSettings = require("text!ext/commands/settings.xml");
 
-var commandManager = new CommandManager(apf.isMac ? "mac" : "win");
+var commandManager = new CommandManager(ppc.isMac ? "mac" : "win");
 var addCommand     = commandManager.addCommand;
 var removeCommand  = commandManager.removeCommand;
 
@@ -28,9 +28,9 @@ var kb = new KeyBinding({
 });
 event.addCommandKeyListener(document.documentElement, kb.onCommandKey.bind(kb));
 
-ide.commandManager = new apf.Class().$init();
+ide.commandManager = new ppc.Class().$init();
 
-module.exports = ext.register("ext/commands/commands", apf.extend(
+module.exports = ext.register("ext/commands/commands", ppc.extend(
     commandManager,
     {
         name    : "Keyboard Commands",
@@ -60,7 +60,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
 
         changePlatform : function(value){
             this.platform = value == "auto"
-                ? (apf.isMac ? "mac" : "win")
+                ? (ppc.isMac ? "mac" : "win")
                 : value;
             this.addCommands(this.commands);
         },
@@ -118,7 +118,7 @@ module.exports = ext.register("ext/commands/commands", apf.extend(
             if (retvalue !== false && e) {
 //                e.returnValue = false;
 //                e.preventDefault();
-                apf.queue.empty();
+                ppc.queue.empty();
             }
             return retvalue !== false;
         },

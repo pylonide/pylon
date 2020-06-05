@@ -163,7 +163,7 @@ this.tour = {
             //ideConsole.enable();
             ideConsole.show();
         },
-        el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
+        el: (ppc.XPath || ppc.runXpath() || ppc.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "After clicking the expand arrows, you'll be able to get to the full console view. Any output from your program&mdash;like console.log() messages or compilation errors&mdash;appears in the Output tab.",
         pos: "top",
         time: 4
@@ -202,7 +202,7 @@ this.tour = {
                 dockpanel.showBar(dockpanel.getBars("ext/debugger/debugger", "pgDebugNav")[0]);
             }
         },
-        el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
+        el: (ppc.XPath || ppc.runXpath() || ppc.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "Whoa! A lot of things just happened. First off, the Output tab opened up to show us that our code is running, and currently being debugged.",
         pos: "top",
         time: 4
@@ -266,7 +266,7 @@ this.tour = {
             dbg.main.step();
             txtConsoleInput.setValue("git status");
         },
-        el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
+        el: (ppc.XPath || ppc.runXpath() || ppc.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "We indicated to the debugger that we want to continue. At last, the console.log() message about the server running printed out. Now, we're going to simulate typing 'git status' in the command line.",
         pos: "top",
         time: 4
@@ -279,7 +279,7 @@ this.tour = {
                 txtConsoleInput.setValue("rm helloWorld-guidedTour.js");
             }
         },
-        el: (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[1]', tabConsole.$ext),
+        el: (ppc.XPath || ppc.runXpath() || ppc.XPath).selectNodes('DIV[1]', tabConsole.$ext),
         desc: "As expected, there's our new file being tracked by git. We're done testing it, and don't want to keep it around, so let's remove it with 'rm helloWorld-guidedTour.js'.",
         pos: "top",
         time: 4

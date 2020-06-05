@@ -31,14 +31,14 @@ module.exports = ext.register("ext/filelist/filelist", {
         var _self = this;
 
         if (!retrieveNewFromServer && this.cached)
-            return callback(this.cached, apf.SUCCESS);
+            return callback(this.cached, ppc.SUCCESS);
 
         this.queue.push(callback);
         if (this.retrieving)
             return;
 
         this.cached = "";
-        apf.ajax(ide.apiPrefix + "/fs/list?path=&showHiddenFiles=0", {
+        ppc.ajax(ide.apiPrefix + "/fs/list?path=&showHiddenFiles=0", {
             method: "GET",
             callback: function(data, state, extra) {
                 _self.cached = data || extra.http.responseText;

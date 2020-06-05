@@ -65,7 +65,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
                 var func = new Function('path', _self.getPattern());
                 var list = func(e.node.getAttribute("path"));
 
-                if (!list || list.dataType != apf.ARRAY) {
+                if (!list || list.dataType != ppc.ARRAY) {
                     util.alert("Wrong output from pattern",
                         "Wrong output from pattern",
                         "Pattern did not generate list of strings");
@@ -105,12 +105,12 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         }
 
         var altKey;
-        apf.addListener(document, "keydown", function(e){
+        ppc.addListener(document, "keydown", function(e){
             if ((e || event).keyCode == 18)
                 altKey = true;
         });
 
-        apf.addListener(document, "keyup", function(e){
+        ppc.addListener(document, "keyup", function(e){
             if ((e || event).keyCode == 18)
                 altKey = false;
         });
@@ -180,7 +180,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
 
     editAutoRunPattern : function(){
-        var node = apf.n("<file />")
+        var node = ppc.n("<file />")
             .attr("name", "Pattern.js")
             .attr("path", "/workspace/.c9.test.pattern")
             .attr("changed", "1")
@@ -276,12 +276,12 @@ module.exports = ext.register("ext/testpanel/testpanel", {
 
             var cleanNodes = node.selectNodes(".//file|.//test");
             for (var k = 0; k < cleanNodes.length; k++) {
-                apf.xmldb.removeAttribute(cleanNodes[k], "status");
+                ppc.xmldb.removeAttribute(cleanNodes[k], "status");
             }
             [".//error", ".//assert"].forEach(function(type){
                 var nodes = node.selectNodes(type);
                 for (var k = 0; k < nodes.length; k++) {
-                    apf.xmldb.removeNode(nodes[k]);
+                    ppc.xmldb.removeNode(nodes[k]);
                 }
             });
         });
@@ -290,7 +290,7 @@ module.exports = ext.register("ext/testpanel/testpanel", {
         var total = [];
         nodes.each(function(node){
             if (node.tagName == "repo")
-                total = total.concat(apf.getArrayFromNodelist(node.selectNodes("file" +
+                total = total.concat(ppc.getArrayFromNodelist(node.selectNodes("file" +
                     (_self.appliedFilter == "all"
                         ? ""
                         : "[@type='" + _self.appliedFilter + "']"))));
@@ -342,31 +342,31 @@ module.exports = ext.register("ext/testpanel/testpanel", {
     },
 
     setPass : function(xmlNode, msg){
-        apf.xmldb.setAttribute(xmlNode, "status", 1);
-        apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+        ppc.xmldb.setAttribute(xmlNode, "status", 1);
+        ppc.xmldb.setAttribute(xmlNode, "status-message", msg || "");
     },
     setError : function(xmlNode, msg){
-        apf.xmldb.setAttribute(xmlNode, "status", 0);
-        apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+        ppc.xmldb.setAttribute(xmlNode, "status", 0);
+        ppc.xmldb.setAttribute(xmlNode, "status-message", msg || "");
     },
     setLog : function(xmlNode, msg){
-        apf.xmldb.setAttribute(xmlNode, "status", -1);
-        apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+        ppc.xmldb.setAttribute(xmlNode, "status", -1);
+        ppc.xmldb.setAttribute(xmlNode, "status-message", msg || "");
     },
     lastExecuteNode : null,
     setExecute : function(xmlNode, msg){
         if (xmlNode) {
-            apf.xmldb.setAttribute(xmlNode, "status", 5);
-            apf.xmldb.setAttribute(xmlNode, "status-message", msg || "");
+            ppc.xmldb.setAttribute(xmlNode, "status", 5);
+            ppc.xmldb.setAttribute(xmlNode, "status-message", msg || "");
 
-            ide.dispatchEvent("test.pointer." + apf.queryValue(xmlNode, "ancestor-or-self::test/../@type"), {
+            ide.dispatchEvent("test.pointer." + ppc.queryValue(xmlNode, "ancestor-or-self::test/../@type"), {
                 xmlNode : xmlNode
             });
         }
         if (this.lastExecuteNode
           && this.lastExecuteNode.getAttribute("status") == 5) {
-            apf.xmldb.setAttribute(this.lastExecuteNode, "status", 1);
-            apf.xmldb.setAttribute(this.lastExecuteNode, "status-message", "");
+            ppc.xmldb.setAttribute(this.lastExecuteNode, "status", 1);
+            ppc.xmldb.setAttribute(this.lastExecuteNode, "status-message", "");
         }
         this.lastExecuteNode = xmlNode;
     },

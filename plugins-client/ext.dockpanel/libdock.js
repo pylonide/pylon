@@ -212,19 +212,19 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         copy.bars = state.bars.slice(0);
 
         (copy.bars).each(function(bar, i, list){
-            bar = list[i] = apf.extend({}, bar);
+            bar = list[i] = ppc.extend({}, bar);
             //bar.cache = undefined;
             delete bar.cache;
             bar.sections = bar.sections.slice(0);
 
             (bar.sections).each(function(section, i, list){
-                section = list[i] = apf.extend({}, section);
+                section = list[i] = ppc.extend({}, section);
                 //section.cache = undefined;
                 delete section.cache;
                 section.buttons = section.buttons.slice(0);
 
                 (section.buttons).each(function(button, i, list){
-                    button = list[i] = apf.extend({}, button);
+                    button = list[i] = ppc.extend({}, button);
                     //button.cache = undefined;
                     delete button.cache;
                 });
@@ -528,7 +528,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         var nodes = bar.vbox.selectNodes("tab");
 
         if (el)
-            return apf.getArrayFromNodelist(nodes);
+            return ppc.getArrayFromNodelist(nodes);
 
         var list = [];
         for (var i = 0; i < nodes.length; i++) {
@@ -586,7 +586,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 state.caption,
                 state.caption && state.caption.toLowerCase() || "",
                 section
-            ), apf.extend(state, this.$cbFindOptions(state.ext) || {}) //@todo options don't need to be late anymore
+            ), ppc.extend(state, this.$cbFindOptions(state.ext) || {}) //@todo options don't need to be late anymore
         );
     }
 
@@ -602,7 +602,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         bar.vbox.show();
 
         var from = bar.getWidth();
-        var to   = bar.vbox.getWidth() - apf.getWidthDiff(bar.vbox.$ext);
+        var to   = bar.vbox.getWidth() - ppc.getWidthDiff(bar.vbox.$ext);
 
         if (reverse)
             bar.hide();
@@ -615,7 +615,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 : {oHtml: bar.vbox.$ext, type: "width", from: from, to: to})
         ]
 
-        var nodes = bar.vbox.getElementsByTagNameNS(apf.ns.aml, "tab");
+        var nodes = bar.vbox.getElementsByTagNameNS(ppc.ns.aml, "tab");
         nodes.each(function(tab){
             tweens.push(reverse
                 ? {oHtml: tab.$ext, type: "fade", from: 1, to: -1}
@@ -625,18 +625,18 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
         var options = {
             steps : 6,
-            interval : apf.isChrome ? 5 : 5,
+            interval : ppc.isChrome ? 5 : 5,
             control : this.animateControl = {},
-            anim : apf.tween.easeOutCubic,
+            anim : ppc.tween.easeOutCubic,
             tweens : tweens,
             oneach: function(){
-                apf.layout.forceResize(bar.vbox.$ext);
+                ppc.layout.forceResize(bar.vbox.$ext);
             },
             onfinish : function(){
                 setTimeout(function(){
                     //if (reverse) {
                         nodes.each(function(tab){
-                            apf.setOpacity(tab.$ext, 1);
+                            ppc.setOpacity(tab.$ext, 1);
                             tab.$ext.style.width = "";
                         });
                     //}
@@ -648,7 +648,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         };
         options.onstop = options.onfinish;
 
-        apf.tween.multi(document.body, options);
+        ppc.tween.multi(document.body, options);
     }
 
     /**
@@ -669,14 +669,14 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             if (bar.$dockData.minWidth)
                 pNode.minwidth = bar.$dockData.minWidth;
 
-            bar.vbox = pNode.insertBefore(new apf.vbox({
+            bar.vbox = pNode.insertBefore(new ppc.vbox({
                 padding   : 0,
                 width     : bar.$dockData && bar.$dockData.width || 260,
                 splitters : true,
                 vdock     : 1,
                 "class"   : "dockcol unselectable expandedpanel",
                 childNodes : [
-                    new apf.button({
+                    new ppc.button({
                         dock       : 1,
                         skin       : "dockheader",
                         visible    : (bar.$dockData && bar.$dockData.headerVisibility) || "true",
@@ -697,7 +697,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
             var ps = bar.vbox.previousSibling;
 
-            bar.splitter = pNode.insertBefore(new apf.splitter({
+            bar.splitter = pNode.insertBefore(new ppc.splitter({
                 scale   : "right",
                 "class" : "splitter-editor-right" + " panelsplitter",//+ (panelSplittersCount > 0 ? " panelsplitter" : ""),
                 width   : "0",
@@ -711,7 +711,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 if (!this.previousSibling) {
                     if (!bar.splitter.parent) {
                         bar.splitter.setAttribute("parent", bar.parentNode.parentNode);
-                        apf.extend(bar.splitter, apf.splitter.templates.splitbox);
+                        ppc.extend(bar.splitter, ppc.splitter.templates.splitbox);
                         bar.splitter.decorate();
                         bar.splitter.$ext.onmousedown();
                         return false;
@@ -722,7 +722,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
                 else if (bar.splitter.parent) {
                     bar.splitter.removeAttribute("parent");
-                    apf.extend(bar.splitter, apf.splitter.templates.box);
+                    ppc.extend(bar.splitter, ppc.splitter.templates.box);
                     bar.splitter.decorate();
                     bar.splitter.$ext.onmousedown();
                     return false;
@@ -885,23 +885,23 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
     this.$startDrag = function (dragged, original){
         var last, state = 0, _self = this;
 
-        apf.setOpacity(dragged.$ext, 0.2);
+        ppc.setOpacity(dragged.$ext, 0.2);
 
-        apf.setStyleClass(dragged.$ext, "dragging");
+        ppc.setStyleClass(dragged.$ext, "dragging");
 
         var lastBar   = this.$getLastBar();
-        var leftEdge  = apf.getAbsolutePosition(lastBar.$ext)[0];
+        var leftEdge  = ppc.getAbsolutePosition(lastBar.$ext)[0];
         var indicator = this.indicator;
 
         lastInfo = null;
 
         //Fix, actually bug is in interactive
-        apf.addListener(document, "mouseup", function(e){
-            apf.removeListener(document, "mousemove", whiledrag);
-            apf.removeListener(document, "mouseup", arguments.callee);
+        ppc.addListener(document, "mouseup", function(e){
+            ppc.removeListener(document, "mousemove", whiledrag);
+            ppc.removeListener(document, "mouseup", arguments.callee);
         });
 
-        apf.addListener(document, "mousemove", whiledrag = function(e){
+        ppc.addListener(document, "mousemove", whiledrag = function(e){
             if (last) {
                 last.$ext.style.borderBottom = "";
                 last = null;
@@ -917,7 +917,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             var indicatorTop = indicator.style.top;
             dragged.$ext.style.top = "-2000px";
             indicator.style.top = "-2000px";
-            apf.plane.hide();
+            ppc.plane.hide();
 
             var info, aml;
             //Adding a column
@@ -948,7 +948,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             if (!aml || !aml.dock && !aml.bar) {
                 if (!state && false) {
                     state = 1;
-                    apf.tween.single(dragged.$ext, {
+                    ppc.tween.single(dragged.$ext, {
                         type: "fade",
                         from: 0.2,
                         to  : 1,
@@ -963,7 +963,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
             var borderColor = "rgba(154,190,144,0.50)";
             var borderColor2 = "rgba(154,190,144,0.75)";
-            var pos = apf.getAbsolutePosition(aml.$ext);
+            var pos = ppc.getAbsolutePosition(aml.$ext);
             indicator.style.left = pos[0] + "px";
             indicator.style.top  = pos[1] + "px";
             indicator.style.display = "block";
@@ -974,7 +974,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
             if (state && false) {
                 state = 0;
-                apf.tween.single(dragged.$ext, {
+                ppc.tween.single(dragged.$ext, {
                     type: "fade",
                     from: 1,
                     to  : 0.2,
@@ -994,7 +994,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     indicator.innerHTML = "<div></div><div style='position:absolute'></div>";
                     indicator.style.border = "1px solid " + borderColor2;
 
-                    var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
+                    var pos2 = ppc.getAbsolutePosition(aml.parentNode.$ext);
                     indicator.style.left = (pos2[0] - 1) + "px";
                     indicator.style.top  = pos2[1] + "px";
                     width = aml.parentNode.$ext.offsetWidth + 1;
@@ -1010,7 +1010,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         findNextElement(aml, "button") == oBtn && info.position == "after_button";
                     if (isSameElement) { //@todo Checks needs to include different representations
                         if (aml != oBtn)
-                            pos = apf.getAbsolutePosition(oBtn.$ext);
+                            pos = ppc.getAbsolutePosition(oBtn.$ext);
                         div.style.top = (pos[1] - pos2[1] + 4) + "px";
                         div.style.left = "2px";
                         div.style.right = "3px";
@@ -1037,7 +1037,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 case "after_page":
                 case "before_page":
                     var pNode = aml.parentNode;
-                    var pos2 = apf.getAbsolutePosition(pNode.$ext);
+                    var pos2 = ppc.getAbsolutePosition(pNode.$ext);
                     indicator.style.left = (pos2[0] + (!isDropExpanded ? 0 : 3)) + "px";
                     indicator.style.top  = (pos2[1] + (!isDropExpanded ? -2 : 3)) + "px";
                     indicator.style.borderColor = borderColor2;
@@ -1052,7 +1052,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     var matchAml = originalAml == aml
                         ? aml
                         : (originalAml == compareAml ? compareAml : false);
-                    var diff = apf.getAbsolutePosition((matchAml || aml).$button, pNode.$ext);
+                    var diff = ppc.getAbsolutePosition((matchAml || aml).$button, pNode.$ext);
                     if (matchAml) {
                         indicator.innerHTML = "<div style='position:absolute;'></div><div style='position:absolute;'></div><div style='position:absolute;'></div>";
                         var div1 = indicator.firstChild;
@@ -1147,11 +1147,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     div.style.width = "100%";
                     div.style.webkitBorderRadius = "0 0 4px 4px";
 
-                    /*apf.tween.single(div, {
+                    /*ppc.tween.single(div, {
                         type: "height",
                         from: 0,
                         to  : dragged.localName == "vbox" ? dragged.$ext.offsetHeight : 50,
-                        anim : apf.tween.EASEOUT,
+                        anim : ppc.tween.EASEOUT,
                         steps : 20
                     });*/
 
@@ -1173,11 +1173,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         div.style.background = "rgba(172,172,172,0.5)";
                         div.style.webkitBorderRadius = "4px 0 0 4px";
 
-                        apf.tween.single(div, {
+                        ppc.tween.single(div, {
                             type: "width",
                             from: 0,
                             to  : 40,
-                            anim : apf.tween.EASEOUT,
+                            anim : ppc.tween.EASEOUT,
                             steps : 20
                         });
                     }
@@ -1189,12 +1189,12 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     break;
                 default:
                     indicator.style.display = "none";
-                    //apf.setOpacity(dragged.$ext, 1);
-                    apf.setStyleClass(dragged.$ext, "", ["dragging"]);
+                    //ppc.setOpacity(dragged.$ext, 1);
+                    ppc.setStyleClass(dragged.$ext, "", ["dragging"]);
                     break;
             }
 
-            diff = apf.getDiff(indicator);
+            diff = ppc.getDiff(indicator);
             indicator.style.width  = (width - diff[0]) + "px";
             indicator.style.height = (height - diff[1]) + "px";
         });
@@ -1253,7 +1253,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (el == document.body)
             return {};
 
-        var aml = apf.findHost(el);
+        var aml = ppc.findHost(el);
         if (!aml)
             return {};
 
@@ -1272,19 +1272,19 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 node = node.parentNode;
 
             if (node && node.localName == "vbox") {
-                pos = apf.getAbsolutePosition(node.$ext)[1];
+                pos = ppc.getAbsolutePosition(node.$ext)[1];
                 var tabs = node.selectNodes("tab");
                 var doTest = original.parentNode.localName == "tab"
                     && original.parentNode.getPages().length == 1;
 
-                if (matchTab(apf.getAbsolutePosition(tabs[0].$ext, node.$ext)[1] + pos, e.clientY)) {
+                if (matchTab(ppc.getAbsolutePosition(tabs[0].$ext, node.$ext)[1] + pos, e.clientY)) {
                     return doTest && original.parentNode == tabs[0]
                         ? {} : {position: "before_tab", aml: tabs[0]};
                 }
 
                 for (var i = 0; i < tabs.length; i++) {
                     if (matchTab(tabs[i].$ext.offsetHeight + 1
-                      + apf.getAbsolutePosition(tabs[i].$ext, node.$ext)[1] + pos - (!aml.nextSibling ? 3 : 0), e.clientY)) {
+                      + ppc.getAbsolutePosition(tabs[i].$ext, node.$ext)[1] + pos - (!aml.nextSibling ? 3 : 0), e.clientY)) {
                         return doTest && (original.parentNode == tabs[i] || original.parentNode == tabs[i+1])
                             ? {} : {position: "after_tab", aml: tabs[i]};
                     }
@@ -1294,7 +1294,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
         if (aml.localName == "splitter") {
             //aml.$ext.style.display = "none";
-            //aml = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
+            //aml = ppc.findHost(document.elementFromPoint(e.clientX, e.clientY));
             //aml.$ext.style.display = "block";
             aml = aml.nextSibling;
         }
@@ -1308,7 +1308,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
         var l, r, t, isSameColumn, pages;
         if (bar) {
-            pos = apf.getAbsolutePosition(e.target, bar.$ext);
+            pos = ppc.getAbsolutePosition(e.target, bar.$ext);
             l = pos[0] + e.offsetX;
             r = bar.$ext.offsetWidth - l;
         }
@@ -1367,7 +1367,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (aml.localName == "page" || aml.localName == "tab" || aml.localName == "menu") {
             position = "before_page";
             if (aml.localName == "page") {
-                pos = apf.getAbsolutePosition(aml.$button);
+                pos = ppc.getAbsolutePosition(aml.$button);
                 l = e.clientX - pos[0];
 
                 if (l > aml.$button.offsetWidth/2)
@@ -1386,7 +1386,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 position = "after_page";
             }
 
-            //var pos2 = apf.getAbsolutePosition(aml.parentNode.$ext);
+            //var pos2 = ppc.getAbsolutePosition(aml.parentNode.$ext);
             //var t = e.clientY - pos2[1];
             //if (t > 18)
                 //return {};
@@ -1409,7 +1409,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }
             else if (aml.localName == "button") {
                 position = "after_button";
-                pos = apf.getAbsolutePosition(aml.$ext);
+                pos = ppc.getAbsolutePosition(aml.$ext);
                 t = e.clientY - pos[1];
                 if (t < aml.$ext.offsetHeight/2) {
                     if (aml.previousSibling && aml.previousSibling.localName == "button") {
@@ -1429,7 +1429,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 if (!buttons.length)
                     return {position: "in_section", aml: aml};
 
-                pos = apf.getAbsolutePosition(aml.$ext);
+                pos = ppc.getAbsolutePosition(aml.$ext);
                 t = e.clientY - pos[1];
                 var b = aml.$ext.offsetHeight - t;
 
@@ -1475,7 +1475,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
      */
     this.$stopDrag = function(e){
         whiledrag();
-        apf.removeListener(document, "mousemove", whiledrag);
+        ppc.removeListener(document, "mousemove", whiledrag);
 
         var indicator = this.indicator;
         var info = lastInfo;//calcAction(e);
@@ -1484,8 +1484,8 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         indicator.style.display = "none";
 
         var original = whiledrag.dragged;
-        apf.setOpacity(original.$ext, 1);
-        apf.setStyleClass(original.$ext, '', ['dragging']);
+        ppc.setOpacity(original.$ext, 1);
+        ppc.setStyleClass(original.$ext, '', ['dragging']);
 
         if (!aml) return;
         switch(info.position) {
@@ -1501,7 +1501,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             case "before_tab":
             case "after_tab":
                 var bar      = aml.parentNode.bar;
-                var childNr  = apf.getChildNumber(aml);
+                var childNr  = ppc.getChildNumber(aml);
                 var sections = bar.selectNodes("vbox");
                 var section = this.$addSection(bar, info.position == "before_tab"
                     ? sections[0]
@@ -1683,9 +1683,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             resizeTimer;
 
         if (section.$menu)
-            return apf.document.documentElement.appendChild(section.$menu);
+            return ppc.document.documentElement.appendChild(section.$menu);
 
-        var menu = new apf.menu({
+        var menu = new ppc.menu({
             id        : menuId,
             width     : options.width || "350",
             height    : options.height || "200",
@@ -1707,10 +1707,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     _self.$currentMenu.hide();
                 _self.$currentMenu = this;
 
-                var menuPos = apf.getAbsolutePosition(menu.$ext);
-                var height = apf.getWindowHeight();
-                var pos   = apf.getAbsolutePosition(menu.opener.$ext);
-                var width = apf.getWindowWidth();
+                var menuPos = ppc.getAbsolutePosition(menu.$ext);
+                var height = ppc.getWindowHeight();
+                var pos   = ppc.getAbsolutePosition(menu.opener.$ext);
+                var width = ppc.getWindowWidth();
                 var dist  = //menu.$ext.offsetWidth > width - pos[0] //Weird bug - chrome only??
                     width - pos[0]
                     //: menu.$ext.offsetWidth;
@@ -1727,10 +1727,10 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 //                    menu.$ext.style.zIndex = "9999";
 
                     if (menu.opener && menu.opener.$dockData && menu.opener.$dockData.caption) {
-                        var btnPos = apf.getAbsolutePosition(menu.opener.$ext),
+                        var btnPos = ppc.getAbsolutePosition(menu.opener.$ext),
                             arrow;
                         if (typeof menu.$ext.getElementsByClassName == "function" && (arrow = menu.$ext.getElementsByClassName("arrow")[0])) {
-                            arrow.style.top = btnPos[1] - apf.getAbsolutePosition(menu.$ext)[1] + 8 + "px"
+                            arrow.style.top = btnPos[1] - ppc.getAbsolutePosition(menu.$ext)[1] + 8 + "px"
                         }
                     }
                 });
@@ -1746,7 +1746,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 _self.$cbChange();
             },
             childNodes : [
-                new apf.tab({
+                new ppc.tab({
                     anchors : options.noTab ? "1 -7 0 4" : "5 4 5 4",
                     skin    : options.noTab ? "dockbar" : "docktab",
                     buttons : "scale, close",
@@ -1808,7 +1808,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             ]
         });
 
-        apf.document.documentElement.appendChild(menu);
+        ppc.document.documentElement.appendChild(menu);
 
         menu.show();
         menu.hide();
@@ -1843,7 +1843,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             var bar = this.$parentHBox.insertBefore(dockData.cache, before);
 
         else {
-            var bar   = this.$parentHBox.insertBefore(new apf.bar({
+            var bar   = this.$parentHBox.insertBefore(new ppc.bar({
                 skin : "debug-panel",
                 margin : "0 0 0 0",
                 dock : 1,
@@ -1851,7 +1851,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     _self.columnCounter--;
                 },
                 childNodes : [
-                    new apf.button({
+                    new ppc.button({
                         dock : 1,
                         skin : "dockheader",
                         onclick : function(){
@@ -1894,7 +1894,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                       && section.nextSibling.lastChild.$dockpage.parentNode);
             }
             else {
-                var index = apf.getArrayFromNodelist(bar.selectNodes("vbox")).indexOf(section);
+                var index = ppc.getArrayFromNodelist(bar.selectNodes("vbox")).indexOf(section);
                 var tab = bar.vbox.selectNodes("tab")[index];
 
                 tab.insertBefore(page, before);
@@ -1910,7 +1910,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         var beforeDrag;
 
         if (!page.$addedDockEvent) {
-            page.addEventListener("beforedrag", beforeDrag = function(e){ //change this to beforedrag and recompile apf
+            page.addEventListener("beforedrag", beforeDrag = function(e){ //change this to beforedrag and recompile ppc
                 this.$ext.style.zIndex = "";
 
                 var originalTab = this.parentNode;
@@ -1933,7 +1933,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 tab.setAttribute("buttons", "close"); //@todo bug in scale that doesnt resize
                 tab.removeAttribute("anchors");
 
-                apf.document.documentElement.appendChild(tab);
+                ppc.document.documentElement.appendChild(tab);
 
                 tab.setWidth(this.parentNode.$ext.offsetWidth - 6);
                 tab.setHeight(this.parentNode.$ext.offsetHeight - 6);
@@ -1948,7 +1948,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     dragPage.insertBefore(nodes[i], dragPage.firstChild);
                 }
 
-                var pos = apf.getAbsolutePosition(this.parentNode.$ext);
+                var pos = ppc.getAbsolutePosition(this.parentNode.$ext);
                 tab.setLeft(pos[0] - 1 + 3);
                 tab.setTop(pos[1] - 2 + 3);
 
@@ -1964,7 +1964,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                         page.appendChild(nodes[i], page.firstChild);
                     }
 
-                    tab.id = tab.name = ""; //@todo fix this bug in apf
+                    tab.id = tab.name = ""; //@todo fix this bug in ppc
                     tab.destroy(true, true);
                     _self.$stopDrag(e.htmlEvent);
 
@@ -2053,7 +2053,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                   before ? sections.indexOf(before.$dockData) : sections.length);
         }
         else {
-            var section = bar.insertBefore(new apf.vbox({
+            var section = bar.insertBefore(new ppc.vbox({
                 padding : 0,
                 edge    : "0 0 3 0",
                 "class" : "docksection",
@@ -2062,7 +2062,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 dock    : sectionOpt.draggable === false ? 0 : 1,
                 draggable : sectionOpt.draggable === false ? false : true,
                 childNodes : [
-                    new apf.divider({
+                    new ppc.divider({
                         skin      : "divider-debugpanel",
                         margin    : "3 2 -4 2",
                         dock      : 1,
@@ -2074,7 +2074,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
             if (sectionOpt.draggable !== false) {
                 var div = section.firstChild;
-                div.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
+                div.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile ppc
                     var section = this.parentNode;
 
                     //this.hideMenu();
@@ -2084,9 +2084,9 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     placeHolder.removeAttribute("id");
                     placeHolder.$dockfor = section;
 
-                    var diff = apf.getDiff(section.$ext);
+                    var diff = ppc.getDiff(section.$ext);
                     var height = section.$ext.offsetHeight;
-                    var pos = apf.getAbsolutePosition(section.$ext);
+                    var pos = ppc.getAbsolutePosition(section.$ext);
 
                     pNode.insertBefore(placeHolder, section);
                     placeHolder.$ext.style.background = "#434343";
@@ -2094,7 +2094,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                     placeHolder.$ext.style.height = (height - diff[1]) + "px";
 
                     section.setWidth(section.$ext.offsetWidth);
-                    apf.document.documentElement.appendChild(section);
+                    ppc.document.documentElement.appendChild(section);
                     section.setLeft(pos[0]);
                     section.setTop(pos[1]);
 
@@ -2176,7 +2176,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                   before ? buttons.indexOf(before.$dockData) : buttons.length);
         }
         else {
-            var button = section.insertBefore(new apf.button({
+            var button = section.insertBefore(new ppc.button({
                 skin    : "dockButton",
                 submenu : submenu.id,
                 dock    : drag ? 1 : "",
@@ -2300,7 +2300,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
                 }
             })
 
-            button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile apf
+            button.addEventListener("beforedrag", function(e){ //change this to beforedrag and recompile ppc
                 var originalButton = this;
 
                 this.hideMenu();
@@ -2314,11 +2314,11 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
 
                 var btn = this.cloneNode(true);
                 btn.removeAttribute("id");
-                apf.document.documentElement.appendChild(btn);
+                ppc.document.documentElement.appendChild(btn);
                 btn.setValue(true);
                 _setBtnIco(btn);
 
-                var pos = apf.getAbsolutePosition(this.$ext);
+                var pos = ppc.getAbsolutePosition(this.$ext);
                 btn.setLeft(pos[0]);
                 btn.setTop(pos[1]);
                 btn.addEventListener("afterdrag", function(e){
@@ -2376,7 +2376,7 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
             }
             else if (options.active) {
                 //Set proper event to delay rendering
-                if (apf.window.vManager.check(page.parentNode, "page", function(){
+                if (ppc.window.vManager.check(page.parentNode, "page", function(){
                     if (!page.parentNode.activepage)
                         page.parentNode.set(page);
                 }) && !page.parentNode.activepage)

@@ -17,7 +17,7 @@ var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/debugger/debugger.xml");
 var breakpoints = require("./breakpoints");
 var sources = require("./sources");
-var apfhook = require("./apfhook");
+var ppchook = require("./apfhook");
 
 require("ext/debugger/inspector");
 
@@ -43,7 +43,7 @@ module.exports = ext.register("ext/debugger/debugger", {
         var _self = this;
         this.sources = sources;
         this.breakpoints = breakpoints;
-        apfhook.registerDebugger(this);
+        ppchook.registerDebugger(this);
 
         commands.addCommand({
             name: "resume",
@@ -99,7 +99,7 @@ module.exports = ext.register("ext/debugger/debugger", {
                 if (dbg.state != "stopped")
                     return false;
                 if (event instanceof KeyboardEvent &&
-                  (!apf.activeElement || !apf.activeElement.$editor || apf.activeElement.$editor.path != "ext/code/code"))
+                  (!ppc.activeElement || !ppc.activeElement.$editor || ppc.activeElement.$editor.path != "ext/code/code"))
                     return false;
                 return true;
             },

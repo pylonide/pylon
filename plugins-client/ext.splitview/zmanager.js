@@ -13,7 +13,7 @@ module.exports = function(startIndex, increment) {
     var incrBy = increment || 2;
 
     this.set = function(htmlNode) {
-        htmlNode.$storedZ = apf.getStyle(htmlNode, "zIndex");
+        htmlNode.$storedZ = ppc.getStyle(htmlNode, "zIndex");
         base += incrBy;
         htmlNode.style.zIndex = base;
     };
@@ -26,7 +26,7 @@ module.exports = function(startIndex, increment) {
     };
 
     this.resetAll = function(nodes) {
-        if (!apf.isArray(nodes) || !nodes.length)
+        if (!ppc.isArray(nodes) || !nodes.length)
             return;
 
         base = startIndex || 1;

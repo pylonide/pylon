@@ -21,8 +21,8 @@ module.exports = {
         var _self = this;
         // register model
         var modelName = "mdlDbgBreakpoints";
-        this.model = apf.nameserver.register("model", modelName, new apf.model());
-        apf.setReference(modelName, this.model);
+        this.model = ppc.nameserver.register("model", modelName, new ppc.model());
+        ppc.setReference(modelName, this.model);
         mdlDbgBreakpoints.load("<breakpoints/>");
 
         var updateTimeout, remoteUpdateTimeout;
@@ -63,7 +63,7 @@ module.exports = {
             brokenNodes.forEach(function(bp) {
                 var script = bp.getAttribute("script");
                 if (!script)
-                    return apf.xmldb.removeNode(bp);
+                    return ppc.xmldb.removeNode(bp);
 
                 if (script.slice(0, ide.workspaceDir.length) == ide.workspaceDir)
                     script = ide.davPrefix + script.slice(ide.workspaceDir.length);
@@ -119,7 +119,7 @@ module.exports = {
                     return;
                 var className = e.target.className;
                 if (className.indexOf("btnclose") != -1) {
-                    apf.xmldb.removeNode(selected);
+                    ppc.xmldb.removeNode(selected);
                 } else if (className.indexOf("checkbox") == -1) {
                     _self.gotoBreakpoint(selected);
                 }
@@ -127,7 +127,7 @@ module.exports = {
 
             lstBreakpoints.addEventListener("aftercheck", function(e) {
                 _self.setBreakPointEnabled(e.xmlNode,
-                    apf.isTrue(e.xmlNode.getAttribute("enabled")));
+                    ppc.isTrue(e.xmlNode.getAttribute("enabled")));
             });
         });
 
@@ -214,7 +214,7 @@ module.exports = {
             var bp = breakpoints[i];
             var line = parseInt(bp.getAttribute("line"), 10);
             var offset = parseInt(bp.getAttribute("lineoffset"), 10);
-            var enabled = apf.isTrue(bp.getAttribute("enabled"));
+            var enabled = ppc.isTrue(bp.getAttribute("enabled"));
             rows[line + offset] = " ace_breakpoint " + (enabled ? "" : "disabled ");
         }
         session.$breakpoints = rows;
@@ -241,7 +241,7 @@ module.exports = {
         this.$updating = true;
         var bp = mdlDbgBreakpoints.queryNode("breakpoint[@path=" + util.escapeXpathString(path) +
             " and @line='" + row + "']");
-        bp && apf.xmldb.removeNode(bp);
+        bp && ppc.xmldb.removeNode(bp);
         this.$updating = false;
     },
 
@@ -259,7 +259,7 @@ module.exports = {
             return;
 
         var content = session.getLine(row);
-        var bp = apf.n("<breakpoint/>")
+        var bp = ppc.n("<breakpoint/>")
             .attr("path", path)
             .attr("line", row)
             .attr("text", displayText + ":" + (row + 1))
@@ -282,13 +282,13 @@ module.exports = {
 
         var bpList = mdlDbgBreakpoints.queryNodes("breakpoint[@path=" + util.escapeXpathString(path) + "]");
         for (var i = bpList.length; i--; ) {
-            apf.xmldb.removeNode(bpList[i]);
+            ppc.xmldb.removeNode(bpList[i]);
         }
 
         breakpoints.forEach(function(breakpoint, row) {
             if (!breakpoint)
                 return;
-            var bp = apf.n("<breakpoint/>")
+            var bp = ppc.n("<breakpoint/>")
                 .attr("path", path)
                 .attr("line", row)
                 .attr("text", displayText + ":" + (+row + 1))

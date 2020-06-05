@@ -40,7 +40,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     init : function(amlNode){
         var _self = this;
 
-        var vManager = new apf.visibilitymanager();
+        var vManager = new ppc.visibilitymanager();
         this.layout = new DockableLayout(hboxDockPanel,
             //Find Page
             function(arrExtension){
@@ -93,7 +93,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
             },
             //Animate Settings
             function(){
-                return apf.isTrue(settings.model.queryValue('general/@animateui'));
+                return ppc.isTrue(settings.model.queryValue('general/@animateui'));
             }
         );
 
@@ -137,7 +137,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         this.nodes.push(
             menus.addItemByPath("View/Dock Panels/", null, 150),
 
-            menus.addItemByPath("View/Dock Panels/Restore Default", new apf.item({
+            menus.addItemByPath("View/Dock Panels/Restore Default", new ppc.item({
                 onclick : function(){
                     var defaultSettings = _self.defaultState,//settings.model.queryValue("auto/dockpanel_default/text()"),
                         state;
@@ -159,7 +159,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 }
             }), 100),
 
-            menus.addItemByPath("View/Dock Panels/~", new apf.divider(), 200)
+            menus.addItemByPath("View/Dock Panels/~", new ppc.divider(), 200)
         );
     },
 
@@ -210,7 +210,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
         panel[type].mnuItem = menus.addItemByPath(
           (options.menuPath || "View/Dock Panels/") + options.menu.split("/").pop(),
-          new apf.item({
+          new ppc.item({
             id      : "mnu" + type,
             type    : "check",
             onclick : function(){
@@ -478,7 +478,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
 
         var notificationType = options.type || "";
 
-        if (apf.isGecko)
+        if (ppc.isGecko)
             notificationEl.textContent = countInner;
         else
             notificationEl.innerText = countInner;
@@ -497,7 +497,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         if(!btnPage.$active) {
             if (count > 0) {
                 caption += " (" + count + ")";
-                apf.setStyleClass(btnPage.$button, "un-read-message");
+                ppc.setStyleClass(btnPage.$button, "un-read-message");
                 if(notificationType == "chat") {
                     btnObj.notificationOpt = options;
                     if (options.name) {
@@ -507,7 +507,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
                 }
             }
             else {
-                apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
+                ppc.setStyleClass(btnPage.$button, "", ["un-read-message"]);
                 if(notificationType == "chat" && btnObj.notificationOpt) {
                     if (btnObj.notificationOpt && btnObj.notificationOpt.name) {
                         delete this.notificationMsgs[btnObj.notificationOpt.name];
@@ -519,7 +519,7 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
         }
         else {
             btnPage.setAttribute("caption", caption);
-            apf.setStyleClass(btnPage.$button, "", ["un-read-message"]);
+            ppc.setStyleClass(btnPage.$button, "", ["un-read-message"]);
             if(notificationType == "chat" && btnObj.notificationOpt) {
                 if (btnObj.notificationOpt && btnObj.notificationOpt.name) {
                     delete this.notificationMsgs[btnObj.notificationOpt.name];

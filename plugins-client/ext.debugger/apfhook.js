@@ -17,12 +17,12 @@ window.adbg = {
             var script = args[1];
             dbg.loadSource(script, function(source) {
                 if (options && options.callback) {
-                    options.callback(apf.escapeXML(source), apf.SUCCESS);
+                    options.callback(ppc.escapeXML(source), ppc.SUCCESS);
                 }
                 else {
-                    // callback("<file>" + apf.escapeXML(source) + "</file>", apf.SUCCESS);
+                    // callback("<file>" + ppc.escapeXML(source) + "</file>", ppc.SUCCESS);
                     // TODO: ugly text() bug workaround
-                    callback("<file><![CDATA[" + source.replace("]]>", "]] >") + "]]></file>", apf.SUCCESS);
+                    callback("<file><![CDATA[" + source.replace("]]>", "]] >") + "]]></file>", ppc.SUCCESS);
                 }
             });
         }
@@ -32,10 +32,10 @@ window.adbg = {
 
             dbg.loadObject(item, function(xml) {
                 if (options && options.callback) {
-                    options.callback(xml, apf.SUCCESS);
+                    options.callback(xml, ppc.SUCCESS);
                 }
                 else {
-                    callback(xml, apf.SUCCESS);
+                    callback(xml, ppc.SUCCESS);
                 }
             });
         }
@@ -45,25 +45,25 @@ window.adbg = {
 
             dbg.loadFrame(frame, function(xml) {
                 if (options && options.callback) {
-                    options.callback(xml, apf.SUCCESS);
+                    options.callback(xml, ppc.SUCCESS);
                 }
                 else {
-                    callback(xml, apf.SUCCESS);
+                    callback(xml, ppc.SUCCESS);
                 }
             });
         }
     }
 };
 
-(apf.$asyncObjects || (apf.$asyncObjects = {}))["adbg"] = 1;
+(ppc.$asyncObjects || (ppc.$asyncObjects = {}))["adbg"] = 1;
 
 
 module.exports = {
-    // registers global objects needed for apf ui elements
+    // registers global objects needed for ppc ui elements
     registerDebugger: function(_debugger) {
         if (window.dbg)
             return;
-        new apf.state({
+        new ppc.state({
             "id" : "dbg"
         });
 
@@ -72,11 +72,11 @@ module.exports = {
         dbg.sources = _debugger.sources;
 
         ide.addEventListener("dbg.changeState", function(e) {
-            apf.xmldb.setAttribute(dbg, "state", e.state || false);
+            ppc.xmldb.setAttribute(dbg, "state", e.state || false);
         });
 
         ide.addEventListener("dbg.changeFrame", function(e) {
-            apf.xmldb.setAttribute(dbg, "activeframe", e.data || false);
+            ppc.xmldb.setAttribute(dbg, "activeframe", e.data || false);
             dbg.topframe = e.data || null;
         });
     }

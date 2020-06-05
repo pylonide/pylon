@@ -24,8 +24,8 @@ define(function(require, exports, module) {
 
     init: function() {
       var _self = this;
-      apf.importCssString(this.ttycss);
-      apf.importCssString(this.xtermcss);
+      ppc.importCssString(this.ttycss);
+      ppc.importCssString(this.xtermcss);
     },
 
     hook: function() {

@@ -55,7 +55,7 @@ var createItem = module.exports.test.createItem = function(line, ide) {
         links.push(m);
         return replacer;
     });
-    line = apf.escapeXML(line);
+    line = ppc.escapeXML(line);
     line = line.replace(replacer, function() {
         return links.shift();
     });
@@ -194,7 +194,7 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
             var node = e.target;
             if (node.hasAttribute("data-wsp")) {
                 openLinkedFile.apply(null, e.target.getAttribute("data-wsp").split(","));
-                apf.preventDefault(e);
+                ppc.preventDefault(e);
                 return false;
             }
         });
@@ -242,11 +242,11 @@ module.exports.logNodeStream = function(data, stream, useOutput, ide) {
 
     childBuffer[outputId].appendChild(fragment);
 
-    //@todo this implementation is hacking the apf abstraction
+    //@todo this implementation is hacking the ppc abstraction
     //      so we have to trigger the scrollbar update ourselves
     if (window["tabConsole"]) {
         setTimeout(function(){
-            tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update();
+            tabConsole.getPage().getElementsByTagNameNS(ppc.ns.aml, "scrollbar")[0].$update();
         }, 1000);
     }
 };
@@ -267,7 +267,7 @@ var messages = {
 };
 
 module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
-    msg = apf.escapeXML(msg.toString());
+    msg = ppc.escapeXML(msg.toString());
     if (!type)
         type = "log";
 
@@ -287,11 +287,11 @@ module.exports.log = function(msg, type, pre, post, useOutput, tracerId) {
     else
         parentEl.innerHTML = containerOutput.join("");
 
-    //@todo this implementation is hacking the apf abstraction
+    //@todo this implementation is hacking the ppc abstraction
     //      so we have to trigger the scrollbar update ourselves
     if (window["tabConsole"]) {
         setTimeout(function(){
-            tabConsole.getPage().getElementsByTagNameNS(apf.ns.aml, "scrollbar")[0].$update();
+            tabConsole.getPage().getElementsByTagNameNS(ppc.ns.aml, "scrollbar")[0].$update();
         }, 1000);
     }
 };

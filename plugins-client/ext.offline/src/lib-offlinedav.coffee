@@ -31,7 +31,7 @@ define (require, exports, module) ->
         if error
           @handleError error
         else
-          callback data, apf.SUCCESS, {}
+          callback data, ppc.SUCCESS, {}
         return
       return
       
@@ -145,7 +145,7 @@ define (require, exports, module) ->
                 break;
             default:
                 //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
+                throw new Error(ppc.formatErrorString(0, null, "Saving/Loading data",
                     "Invalid WebDAV method '" + method + "'"));
                 //#endif
                 break;

@@ -135,7 +135,7 @@ module.exports = ext.register("ext/language/language", {
     init : function() {
         var _self = this;
         var worker = this.worker;
-        apf.importCssString(css);
+        ppc.importCssString(css);
 
         if (!editors.currentEditor || editors.currentEditor.path != "ext/code/code")
             return;

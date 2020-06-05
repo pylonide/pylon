@@ -75,9 +75,9 @@ module.exports = {
                 var output = rutil.formulateRevisionMetaData(logData[it], true, 30);
                 _self.timelineTooltip.innerHTML = output;
 
-                var pos = apf.getAbsolutePosition(this);
+                var pos = ppc.getAbsolutePosition(this);
 
-                var sttWidth = apf.getHtmlInnerWidth(_self.timelineTooltip);
+                var sttWidth = ppc.getHtmlInnerWidth(_self.timelineTooltip);
                 var leftPos = pos[0] - (sttWidth/2);
                 if (leftPos < 0)
                     leftPos = 5;

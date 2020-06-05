@@ -29,9 +29,9 @@ module.exports = {
      * @return {hash} x, y, width, height
      */
     getAbsolutePositionDimension : function(el) {
-        var pos = apf.getAbsolutePosition(el);
-        var iw = apf.getHtmlInnerWidth(el);
-        var ih = apf.getHtmlInnerHeight(el);
+        var pos = ppc.getAbsolutePosition(el);
+        var iw = ppc.getHtmlInnerWidth(el);
+        var ih = ppc.getHtmlInnerHeight(el);
         return { x : pos[0], y : pos[1], width : iw, height : ih };
     },
 

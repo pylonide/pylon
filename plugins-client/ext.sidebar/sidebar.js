@@ -41,7 +41,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
         }
         
         this.nodes.push(
-            hboxTabBar.insertBefore(new apf.hbox({
+            hboxTabBar.insertBefore(new ppc.hbox({
                 id: "navbar",
                 "class": "black-menu-bar",
                 style: "background:rgba(24,24,24,.9) url(" + ide.staticPrefix 
@@ -49,12 +49,12 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                     + shadowOpen,
                 "minwidth": "45",
                 childNodes : [
-                    new apf.button({
+                    new ppc.button({
                         skin    : "mnubtn",
                         "class" : "c9-logo",
                         onclick : btnClick
                     }),
-                    this.btnArrow = new apf.button({
+                    this.btnArrow = new ppc.button({
                         skin    : "mnubtn",
                         visible : "false",
                         "class" : "toggle-black-menu-bar",
@@ -77,14 +77,14 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             
             setTimeout(function(){
                 if (!e.toWidth) {
-                    apf.setStyleClass(navbar.$int, "closed");
+                    ppc.setStyleClass(navbar.$int, "closed");
                     navbar.$int.style.boxShadow = shadowClosed;
                     _self.btnArrow.show();
                     if (panels.lastPanel)
                         panels.lastPanel.button.$setState("Out", {});
                 }
                 else {
-                    apf.setStyleClass(navbar.$int, "", ["closed"]);
+                    ppc.setStyleClass(navbar.$int, "", ["closed"]);
                     navbar.$int.style.boxShadow = shadowOpen;
                     _self.btnArrow.hide();
                 }
@@ -120,10 +120,10 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             if (closed) {
                 if (!e.value) {
                     navbar.setAttribute("minwidth", 0);
-                    apf.setStyleClass(navbar.$int, "minimized");
+                    ppc.setStyleClass(navbar.$int, "minimized");
                 }
                 else {
-                    apf.setStyleClass(navbar.$int, "", ["minimized"]);
+                    ppc.setStyleClass(navbar.$int, "", ["minimized"]);
                     navbar.setWidth(8);
                 }
                 panelAnimate(e, setMinWidth);
@@ -157,7 +157,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             }
             
             var showTabs = e.model.queryValue("auto/tabs/@show");
-            toggleTabs({value: apf.isTrue(showTabs)});
+            toggleTabs({value: ppc.isTrue(showTabs)});
             
             _self.settingsLoaded = true;
         });
@@ -172,7 +172,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             timingFunction: "cubic-bezier(.10, .10, .25, .90)", 
             duration: 0.3 
         }, function(){
-            apf.layout.forceResize();
+            ppc.layout.forceResize();
         });
     },
     
@@ -184,8 +184,8 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             duration: 0.3,
             immediate: immediate
         }, function(){
-            apf.setStyleClass(navbar.$int, "closed");
-            apf.layout.forceResize();
+            ppc.setStyleClass(navbar.$int, "closed");
+            ppc.layout.forceResize();
             editors.continueTabResize();
         });
     },
@@ -206,7 +206,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
             }
         }
         
-        panelExt.button = navbar.insertBefore(new apf.button({
+        panelExt.button = navbar.insertBefore(new ppc.button({
             skin    : "mnubtn",
             state   : "true",
             "class" : options["class"],
@@ -231,7 +231,7 @@ module.exports = ext.register("ext/sidebar/sidebar", {
                 panels.deactivate(false, true);
                 
                 if (value) {
-                    if (!apf.isTrue(settings.model.queryValue('general/@animateui')))
+                    if (!ppc.isTrue(settings.model.queryValue('general/@animateui')))
                         colLeft.hide();
                     return;
                 }

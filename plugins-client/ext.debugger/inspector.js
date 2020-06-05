@@ -26,7 +26,7 @@ var MESSAGE_TYPES = {
 var numOutputSection = 0;
 function logToInspectorOutput(output, type, pre, post, existingDiv) {
     var outStr = MESSAGE_TYPES[type];
-    outStr = outStr.replace("__MSG__", apf.escapeXML(output));
+    outStr = outStr.replace("__MSG__", ppc.escapeXML(output));
 
     if (!existingDiv) {
         numOutputSection++;
@@ -109,8 +109,8 @@ exports.consoleTextHandler = function(e) {
             }
             else if (className == "Array") {
                 var pre = "<a class='xmlhl' href='javascript:void(0)' style='' onclick='require(\"ext/debugger/inspector\").showObject(\""
-                    + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
-                    + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
+                    + ppc.escapeXML(xmlNode.xml.replace(/"/g, "\\\"")) + "\", "
+                    + ref + ", \"" + ppc.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
 
 
@@ -123,9 +123,9 @@ exports.consoleTextHandler = function(e) {
                     refs.push(props[i].ref);
 
                 var pre = "<a class='xmlhl' href='javascript:void(0)' onclick='require(\"ext/debugger/inspector\").showObject(\""
-                    // replace angle brackets by unicode equivalents because apf doesn't accept angle brackets in attribute values
-                    + apf.escapeXML(xmlNode.xml.replace(/"/g, "\\\"").replace(/&lt;/g, "\u3008").replace(/&gt;/, "\u3009")) + "\", "
-                    + ref + ", \"" + apf.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
+                    // replace angle brackets by unicode equivalents because ppc doesn't accept angle brackets in attribute values
+                    + ppc.escapeXML(xmlNode.xml.replace(/"/g, "\\\"").replace(/&lt;/g, "\u3008").replace(/&gt;/, "\u3009")) + "\", "
+                    + ref + ", \"" + ppc.escapeXML((expression || "").trim().split(/;|\n/).pop().trim().replace(/"/g, "\\\"")) + "\")'>";
                 var post = " }</a>";
 
                 dbg.main.lookup(refs, false, function(body) {
@@ -157,7 +157,7 @@ exports.consoleTextHandler = function(e) {
 };
 
 exports.showObject = function(xmlNode, ref, expression) {
-    if (ref && ref.dataType == apf.ARRAY) {
+    if (ref && ref.dataType == ppc.ARRAY) {
         dbg.sources.showDebugFile(ref[0], ref[1], 0, ref[4]);
     }
     else {
@@ -165,7 +165,7 @@ exports.showObject = function(xmlNode, ref, expression) {
             quickwatch.toggleDialog(1);
 
             if (xmlNode && typeof xmlNode == "string")
-                xmlNode = apf.getXml(xmlNode);
+                xmlNode = ppc.getXml(xmlNode);
 
             var name = xmlNode && xmlNode.getAttribute("name") || expression;
             txtCurObject.setValue(name);
@@ -174,8 +174,8 @@ exports.showObject = function(xmlNode, ref, expression) {
             if (xmlNode) {
                 setTimeout(function(){
                     var model = dgWatch.getModel();
-                    var root  = apf.getXml("<data />");
-                    apf.xmldb.appendChild(root, xmlNode);
+                    var root  = ppc.getXml("<data />");
+                    ppc.xmldb.appendChild(root, xmlNode);
                     model.load(root);
                     //model.appendXml(xmlNode);
                 }, 10);

@@ -42,7 +42,7 @@ module.exports = (function () {
         });
 
         // when hovering over the inspector window we should ignore all further listeners
-        apf.addListener(datagridHtml, "mouseover", function() {
+        ppc.addListener(datagridHtml, "mouseover", function() {
             if (activeTimeout) {
                 clearTimeout(activeTimeout);
                 activeTimeout = null;
@@ -79,10 +79,10 @@ module.exports = (function () {
         });
 
         // we should track mouse movement over the whole window
-        apf.addListener(document, "mousemove", onDocumentMouseMove);
+        ppc.addListener(document, "mousemove", onDocumentMouseMove);
 
-        // yes, this is superhacky but the editor function in APF is crazy
-        apf.addListener(datagridHtml, "dblclick", initializeEditor);
+        // yes, this is superhacky but the editor function in PPC is crazy
+        ppc.addListener(datagridHtml, "dblclick", initializeEditor);
 
         // when collapsing or expanding the datagrid we want to resize
         dgLiveInspect.addEventListener("expand", resizeWindow);
@@ -135,7 +135,7 @@ module.exports = (function () {
           && target.parentNode.parentNode.childNodes[1] === target.parentNode /* [1] index */
           && !target.parentNode.hid /* and no header */) {
 
-            // bug in APF? When having only 1 item the 'selected' property isnt set properly
+            // bug in PPC? When having only 1 item the 'selected' property isnt set properly
             var selected = dgLiveInspect.selected;
             if (!selected && dgLiveInspect.getModel().data.childNodes.length === 1) {
                 // because you just doubleclicked an item, well just grab the only one
@@ -188,14 +188,14 @@ module.exports = (function () {
             };
 
             // when blurring, update
-            apf.addListener(edit, "blur", onBlur);
+            ppc.addListener(edit, "blur", onBlur);
 
             // on keydown, same same
-            apf.addListener(edit, "keydown", function(ev) {
+            ppc.addListener(edit, "keydown", function(ev) {
                 if (ev.keyCode === 27 || ev.keyCode === 13) { // tab or enter
                     return onBlur.call(this);
                 }
-                if (ev.keyCode === 32) {  // somewhere in APF the space is captured; no clue why
+                if (ev.keyCode === 32) {  // somewhere in PPC the space is captured; no clue why
                     this.value += " "; // this is super lame, but better than nothing
                 }
                 return true;
@@ -295,7 +295,7 @@ module.exports = (function () {
             .map(function (ele) { return ele.$ext; }) // then get the HTML counterpart
             .forEach(function (ele) {
                 // then detect real position
-                var position = apf.getAbsolutePosition(ele, document.body);
+                var position = ppc.getAbsolutePosition(ele, document.body);
                 var left = position[0];
                 var top = position[1];
 
@@ -360,8 +360,8 @@ module.exports = (function () {
         // evaluate the expression in the debugger, and receive model as callback
         inspector.evaluate(expr, function (model) {
             // bind it to the datagrid
-            var root  = apf.getXml("<data />");
-            apf.xmldb.appendChild(root, model);
+            var root  = ppc.getXml("<data />");
+            ppc.xmldb.appendChild(root, model);
             dgLiveInspect.getModel().load(root);
 
             // clean UI to remove selected elements

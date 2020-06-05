@@ -36,7 +36,7 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
         });
 
         ide.addEventListener("localUpdateAvailable", function(e) {
-            apf.setStyleClass(logobar.$ext, "updateAvailable");
+            ppc.setStyleClass(logobar.$ext, "updateAvailable");
             backToC9.setAttribute("onclick", "winUpdate.show();");
             backToC9.setAttribute("title", "Update available");
             backToC9.removeAttribute("href");
@@ -103,12 +103,12 @@ module.exports = ext.register("ext/remotecontrol/remotecontrol", {
 
     rebootWithUpdate : function() {
         winUpdate.hide();
-        apf.ajax("/c9local/reboot-with-update", {
+        ppc.ajax("/c9local/reboot-with-update", {
             method: "POST",
             headers: {"Content-type": "application/x-www-form-urlencoded"},
             async: true,
             callback: function( data, state, extra) {
-                if (state != apf.SUCCESS) {
+                if (state != ppc.SUCCESS) {
                     return util.alert("Update Error",
                         "Unable to reboot runtime with update.",
                         extra.http.responseText);

@@ -31,7 +31,7 @@ var searchinfiles;
 
 var oIter, oTotal;
 
-module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
+module.exports = ext.register("ext/searchreplace/searchreplace", ppc.extend({
     name    : "Searchreplace",
     dev     : "Ajax.org",
     type    : ext.GENERAL,
@@ -121,26 +121,26 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
 
         this.nodes.push(
-            menus.addItemByPath("Find/Find...", new apf.item({
+            menus.addItemByPath("Find/Find...", new ppc.item({
                 command : "find"
             }), 100),
-            menus.addItemByPath("Find/Find Next", new apf.item({
+            menus.addItemByPath("Find/Find Next", new ppc.item({
                 command : "findnext"
             }), 200),
-            menus.addItemByPath("Find/Find Previous", new apf.item({
+            menus.addItemByPath("Find/Find Previous", new ppc.item({
                 command : "findprevious"
             }), 300),
-            menus.addItemByPath("Find/~", new apf.divider(), 400),
-            menus.addItemByPath("Find/Replace...", new apf.item({
+            menus.addItemByPath("Find/~", new ppc.divider(), 400),
+            menus.addItemByPath("Find/Replace...", new ppc.item({
                 command : "replace"
             }), 500),
-            menus.addItemByPath("Find/Replace Next", new apf.item({
+            menus.addItemByPath("Find/Replace Next", new ppc.item({
                 command : "replacenext",
             }), 600),
-            menus.addItemByPath("Find/Replace Previous", new apf.item({
+            menus.addItemByPath("Find/Replace Previous", new ppc.item({
                 command : "replaceprevious",
             }), 700),
-            menus.addItemByPath("Find/Replace All", new apf.item({
+            menus.addItemByPath("Find/Replace All", new ppc.item({
                 command : "replaceall"
             }), 800)
         );
@@ -168,7 +168,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         var isAvailable = commands.commands["findnext"].isAvailable;
         commands.commands["findnext"].isAvailable =
         commands.commands["findprevious"].isAvailable = function(editor){
-            if (apf.activeElement == txtFind)
+            if (ppc.activeElement == txtFind)
                 return true;
 
             return isAvailable.apply(this, arguments);
@@ -185,7 +185,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             }
         });
 
-        apf.importCssString(_self.css);
+        ppc.importCssString(_self.css);
 
         hboxReplace.addEventListener("afterrender", function(){
             var kb = _self.addSearchKeyboardHandler(txtReplace, "replace");
@@ -198,7 +198,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         });
 
         var blur = function(e) {
-            if (hboxReplace && !apf.isChildOf(winSearchReplace, e.toElement))
+            if (hboxReplace && !ppc.isChildOf(winSearchReplace, e.toElement))
                 _self.toggleDialog(-1);
         };
 
@@ -208,7 +208,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
         document.body.appendChild(tooltipSearchReplace.$ext);
 
         chkRegEx.addEventListener("prop.value", function(e){
-            _self.$setRegexpMode(txtFind, apf.isTrue(e.value));
+            _self.$setRegexpMode(txtFind, ppc.isTrue(e.value));
         });
 
         this.decorateCheckboxes(hboxFind);
@@ -218,8 +218,8 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
             clearTimeout(_self.$timer);
             clearTimeout(_self.$matchCountTimer);
             _self.$timer = setTimeout(_self.keyStroke
-                ? function() { _self.updateCounter(0, 0, 0, true); apf.layout.forceResize(); }
-                : function() { _self.execFind(); apf.layout.forceResize(); }
+                ? function() { _self.updateCounter(0, 0, 0, true); ppc.layout.forceResize(); }
+                : function() { _self.execFind(); ppc.layout.forceResize(); }
                 , 20);
         });
     },
@@ -227,7 +227,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
     decorateCheckboxes : function(parent){
         var _self = this;
 
-        var cbs = parent.getElementsByTagNameNS(apf.ns.aml, "checkbox");
+        var cbs = parent.getElementsByTagNameNS(ppc.ns.aml, "checkbox");
 
         cbs.forEach(function(cb){
             cb.addEventListener("click", function(){
@@ -241,7 +241,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 tooltip : tooltipSearchReplace.$ext,
                 animate : false,
                 getPosition : function(){
-                    var pos = apf.getAbsolutePosition(winSearchReplace.$ext);
+                    var pos = ppc.getAbsolutePosition(winSearchReplace.$ext);
                     var left = pos[0] + cb.getLeft();
                     var top = pos[1];
                     return [left, top - 16];
@@ -372,7 +372,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
         tooltipSearchReplace.$ext.style.display = "none";
 
-        var animate = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        var animate = ppc.isTrue(settings.model.queryValue("general/@animateui"));
         if (!force && !winSearchReplace.visible || force > 0 || stateChange) {
             if (winSearchReplace.visible && !stateChange) {
                 txtFind.focus();
@@ -438,7 +438,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     _self.updateCounter();
 
                     setTimeout(function(){
-                        apf.layout.forceResize();
+                        ppc.layout.forceResize();
                     }, 50);
                 });
             }
@@ -446,7 +446,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                 winSearchReplace.$ext.style.height = "";
                 divSearchCount.$ext.style.visibility = "";
                 _self.updateCounter();
-                apf.layout.forceResize();
+                ppc.layout.forceResize();
             }
         }
         else if (winSearchReplace.visible) {
@@ -477,7 +477,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
                     setTimeout(function(){
                         callback
                             ? callback()
-                            : apf.layout.forceResize();
+                            : ppc.layout.forceResize();
                     }, 50);
                 });
             }
@@ -490,7 +490,7 @@ module.exports = ext.register("ext/searchreplace/searchreplace", apf.extend({
 
                 callback
                     ? callback()
-                    : apf.layout.forceResize();
+                    : ppc.layout.forceResize();
             }
         }
         else if (callback)

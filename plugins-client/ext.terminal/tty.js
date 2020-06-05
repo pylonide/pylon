@@ -346,8 +346,8 @@ define(function(require) {
 
       el.addEventListener('mousedown', function (ev) {
         if (ev.target !== el && ev.target !== bar) {
-          if (apf.document.activeElement == null) return;
-          return apf.document.activeElement.blur();
+          if (ppc.document.activeElement == null) return;
+          return ppc.document.activeElement.blur();
         }
 
         self.focus();
@@ -738,7 +738,7 @@ define(function(require) {
 
       this.handleTitle(this.title);
       
-      if(apf.isIphone) {
+      if(ppc.isIphone) {
         this.element.focus(); // Focus on element
       }
       else {
@@ -790,7 +790,7 @@ define(function(require) {
       var self = this;
 
       // Ctrl-V (Paste on Windows)
-      if(apf.isWin) {
+      if(ppc.isWin) {
         this.attachCustomKeyEventHandler(function (e) {
           if (e.ctrlKey == true && e.keyCode == 86) {
             return false; // Do nothing
@@ -799,7 +799,7 @@ define(function(require) {
       }
       
       // Handle space in iOS & keep focus off from the xterm.js textarea
-      if(apf.isIphone) {
+      if(ppc.isIphone) {
         self.element.addEventListener('keydown', function (ev) {
           if(ev.charCode === 0 && ev.code === "Space") {
             self.handler(" ");
@@ -858,7 +858,7 @@ define(function(require) {
         if (ev.which == 1 && self.hasSelection()) {
           var termTextarea = self._core.textarea;
 
-          apf.clipboard.put(self.getSelection());
+          ppc.clipboard.put(self.getSelection());
           termTextarea.value = self.getSelection();
           termTextarea.focus();
 
@@ -875,9 +875,9 @@ define(function(require) {
           termTextarea.value = "";
         }
         // Right mouse button
-        else if (ev.which == 3 && !apf.clipboard.empty) {
-          if (typeof apf.clipboard.store === 'string') {
-            self.handler(apf.clipboard.store);
+        else if (ev.which == 3 && !ppc.clipboard.empty) {
+          if (typeof ppc.clipboard.store === 'string') {
+            self.handler(ppc.clipboard.store);
           }
         }
       }, false);

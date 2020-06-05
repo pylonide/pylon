@@ -28,7 +28,7 @@ function throttle(timeout, callback) {
 }
 
 module.exports = {
-    model : new apf.model(),
+    model : new ppc.model(),
 
     $checkSave : function() {
         if (this.dirty)
@@ -62,7 +62,7 @@ module.exports = {
         ide.dispatchEvent("settings.save", { model : this.model });
 
         this.model.data.setAttribute("time", new Date().getTime());
-        var data = this.model.data && apf.xmldb.cleanXml(this.model.data.xml) || "";
+        var data = this.model.data && ppc.xmldb.cleanXml(this.model.data.xml) || "";
 
         if (ide.onLine) {
             this.dirty = false;
@@ -133,14 +133,14 @@ module.exports = {
     setDefaults : function(path, attr){
         var node = this.model.queryNode(path);
         if (!node)
-            node = apf.createNodeFromXpath(this.model.data, path);
+            node = ppc.createNodeFromXpath(this.model.data, path);
 
         for (var i = 0, l = attr.length; i < l; i++) {
             if (!node.getAttributeNode(attr[i][0]))
-                apf.xmldb.setAttribute(node, attr[i][0], attr[i][1]);
+                ppc.xmldb.setAttribute(node, attr[i][0], attr[i][1]);
         }
 
-        apf.xmldb.applyChanges("synchronize", node);
+        ppc.xmldb.applyChanges("synchronize", node);
     },
 
     /**
@@ -208,7 +208,7 @@ module.exports = {
         function initEvents() {
             _self.startTimer();
 
-            apf.addEventListener("exit", function(){
+            ppc.addEventListener("exit", function(){
                 _self.$checkSave();
             });
 

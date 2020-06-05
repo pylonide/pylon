@@ -5,7 +5,7 @@
         }
 
         function createPath(a, b){
-            return b + "/" + apf.getFilename(a);
+            return b + "/" + ppc.getFilename(a);
         }
     ]]></a:script>
     <a:window id="winFilesViewer"
@@ -71,25 +71,25 @@
             ">Edit</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
-            <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.startRename()" visible="{!require('core/ide').readonly}">Rename</a:item>
-            <a:item match="[file|folder[not(@root)]]" onclick="apf.activeElement.remove()" visible="{!require('core/ide').readonly}">Delete</a:item>
+            <a:item match="[file|folder[not(@root)]]" onclick="ppc.activeElement.startRename()" visible="{!require('core/ide').readonly}">Rename</a:item>
+            <a:item match="[file|folder[not(@root)]]" onclick="ppc.activeElement.remove()" visible="{!require('core/ide').readonly}">Delete</a:item>
             <a:divider />
             <a:item match="[file|folder]" command="searchinfiles">Search Files Here</a:item>
             <a:divider visible="{!require('core/ide').readonly}"/>
             <a:item match="[file|folder|project]" visible="{!require('core/ide').readonly}" onclick="
-                var store = apf.clipboard.store;
-                apf.clipboard.put(trFiles.getSelection().map(function (node) {
-                    return apf.xmldb.cleanNode(node.cloneNode(false))
+                var store = ppc.clipboard.store;
+                ppc.clipboard.put(trFiles.getSelection().map(function (node) {
+                    return ppc.xmldb.cleanNode(node.cloneNode(false))
                 }));
-                apf.clipboard.copied = true;
-                apf.clipboard.pasteSelection(apf.activeElement,
+                ppc.clipboard.copied = true;
+                ppc.clipboard.pasteSelection(ppc.activeElement,
                     trFiles.selected ? trFiles.selected.parentNode : trFiles.getFirstTraverseNode());
-                apf.clipboard.store = store;
+                ppc.clipboard.store = store;
             ">Duplicate</a:item>
             <a:divider visible="{!require('core/ide').readonly}"/>
             <a:item match="[file|folder[not(@root)]]" command="cut" visible="{!require('core/ide').readonly}">Cut</a:item>
             <a:item match="[file|folder[not(@root)]]" command="copy" visible="{!require('core/ide').readonly}">Copy</a:item>
-            <a:item match="[file|folder|project]" disabled="{apf.clipboard.empty}" visible="{!require('core/ide').readonly}" command="paste">Paste</a:item>
+            <a:item match="[file|folder|project]" disabled="{ppc.clipboard.empty}" visible="{!require('core/ide').readonly}" command="paste">Paste</a:item>
             <a:divider visible="{!require('core/ide').readonly}"/>
             <a:item id="itemCtxTreeNewFile" match="[file|folder|project]" visible="{!require('core/ide').readonly}" 
               onclick="

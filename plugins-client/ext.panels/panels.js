@@ -29,7 +29,7 @@ module.exports = ext.register("ext/panels/panels", {
 
         panelExt.mnuItem = menus.addItemByPath(
           "View/Side Bar/" + panelExt.name,
-            new apf.item({
+            new ppc.item({
                 type    : "radio",
                 value   : panelExt.path,
                 group   : this.group,
@@ -61,7 +61,7 @@ module.exports = ext.register("ext/panels/panels", {
         ide.addEventListener("settings.load", function(){
             if (!settings.model.queryNode("auto/panels/panel[@path="
                 + util.escapeXpathString(panelExt.path) + "]")) {
-                settings.model.appendXml(apf.n("<panel/>")
+                settings.model.appendXml(ppc.n("<panel/>")
                     .attr("path", panelExt.path)
                     .attr("width", panelExt.defaultWidth)
                     .node(), "auto/panels");
@@ -140,17 +140,17 @@ module.exports = ext.register("ext/panels/panels", {
                 };
 
                 if (!self["req"+"uire"]("ext/themes/themes").isDark) {
-                    apf.setOpacity(toWin.$ext, 0);
-                    anims.animate(toWin, apf.extend({ opacity: 1 }, options));
+                    ppc.setOpacity(toWin.$ext, 0);
+                    anims.animate(toWin, ppc.extend({ opacity: 1 }, options));
                 }
                 else {
                     win.hide();
                 }
                 anims.animateSplitBoxNode(colLeft,
-                    apf.extend({ width: toWidth + "px" }, options), onfinish);
+                    ppc.extend({ width: toWidth + "px" }, options), onfinish);
             }
             else {
-                winExt.style.minWidth = (winExt.offsetWidth - apf.getWidthDiff(winExt)) + "px";
+                winExt.style.minWidth = (winExt.offsetWidth - ppc.getWidthDiff(winExt)) + "px";
                 winExt.style.left = "";
                 anims.animateSplitBoxNode(colLeft, {
                     width : 0,
@@ -163,7 +163,7 @@ module.exports = ext.register("ext/panels/panels", {
             toWin.show();
             colLeft.show();
 
-            toWinExt.style.minWidth = (toWidth - apf.getWidthDiff(toWinExt)) + "px";
+            toWinExt.style.minWidth = (toWidth - ppc.getWidthDiff(toWinExt)) + "px";
             toWinExt.style.left = "";
             anims.animateSplitBoxNode(colLeft, {
                 width : toWidth + "px",
@@ -189,7 +189,7 @@ module.exports = ext.register("ext/panels/panels", {
 
         colLeft.show();
 
-        if (noAnim || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+        if (noAnim || !ppc.isTrue(settings.model.queryValue('general/@animateui'))) {
             panelExt.panel.show();
             colLeft.show();
             colLeft.setAttribute("minwidth", panelExt.panel.minwidth);
@@ -197,7 +197,7 @@ module.exports = ext.register("ext/panels/panels", {
 
             ide.dispatchEvent("panels.animate", {noanim : true, toWidth: width});
 
-            apf.layout.forceResize();
+            ppc.layout.forceResize();
         }
         else if (!noAnim) {
             var _self = this;
@@ -226,12 +226,12 @@ module.exports = ext.register("ext/panels/panels", {
         if (!this.currentPanel)
             return;
 
-        if (anim === false || !apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+        if (anim === false || !ppc.isTrue(settings.model.queryValue('general/@animateui'))) {
             this.currentPanel.panel.hide();
             colLeft.hide();
             ide.dispatchEvent("panels.animate", {noanim : true});
 
-            apf.layout.forceResize();
+            ppc.layout.forceResize();
         }
         else if (anim)
             this.animate(this.currentPanel.panel);
@@ -240,8 +240,8 @@ module.exports = ext.register("ext/panels/panels", {
             this.currentPanel.button.setValue(false);
 
         //Quick Fix
-        if (apf.isGecko)
-            apf.layout.forceResize(vbMain.$ext);
+        if (ppc.isGecko)
+            ppc.layout.forceResize(vbMain.$ext);
 
         ide.dispatchEvent("hidepanel." + this.currentPanel.path);
 
@@ -263,15 +263,15 @@ module.exports = ext.register("ext/panels/panels", {
         var _self = this;
 
         this.nodes.push(
-            this.group = apf.document.documentElement.appendChild(new apf.group({
+            this.group = ppc.document.documentElement.appendChild(new ppc.group({
                 value : "[{req" + "uire('core/settings').model}::auto/panels/@active]"
             })),
 
             menus.addItemByPath("View/Side Bar/", null, 100),
-            menus.addItemByPath("View/~", new apf.divider(), 200),
+            menus.addItemByPath("View/~", new ppc.divider(), 200),
 
             this.mnuPanelsNone =
-              menus.addItemByPath("View/Side Bar/None", new apf.item({
+              menus.addItemByPath("View/Side Bar/None", new ppc.item({
                 type: "radio",
                 selected : "true",
                 group: this.group,
@@ -279,7 +279,7 @@ module.exports = ext.register("ext/panels/panels", {
                     _self.deactivate(null, true);
                 }
               }), 100),
-            menus.addItemByPath("View/Side Bar/~", new apf.divider(), 200)
+            menus.addItemByPath("View/Side Bar/~", new ppc.divider(), 200)
         );
 
         splitterPanelLeft.addEventListener("dragdrop", function(e){

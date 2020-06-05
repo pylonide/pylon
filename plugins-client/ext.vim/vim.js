@@ -31,7 +31,7 @@ module.exports = ext.register("ext/vim/vim", {
 
     hook : function() {
         var _self = this;
-        var mnuKbModes = menus.addItemByPath("View/Keyboard Mode/", new apf.menu({
+        var mnuKbModes = menus.addItemByPath("View/Keyboard Mode/", new ppc.menu({
             "onprop.visible" : function(e){
                 if (e.value)
                     mnuKbModes.select(null, settings.model.queryValue("editors/code/@keyboardmode"));
@@ -39,7 +39,7 @@ module.exports = ext.register("ext/vim/vim", {
         }), 150000);
         var c = 1000;
         function addItem(label) {
-            menus.addItemByPath("View/Keyboard Mode/" + label, new apf.item({
+            menus.addItemByPath("View/Keyboard Mode/" + label, new ppc.item({
                 type: "radio",
                 value: label.toLowerCase(), 
                 onclick : function(e) {
@@ -121,7 +121,7 @@ module.exports = ext.register("ext/vim/vim", {
 
     getCommandLine: function() {
         if (!this.cmdLine) {
-            this.cmdLine = new apf.codebox();
+            this.cmdLine = new ppc.codebox();
             this.cmdLine.setHeight(19);
             colMiddle.appendChild(this.cmdLine);
             this.cmdLine.$ext.className = "searchbox tb_console";

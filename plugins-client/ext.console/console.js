@@ -133,7 +133,7 @@ module.exports = ext.register("ext/console/console", {
             var containerEl = document.getElementById("console_section" + command_id);
             if (containerEl) {
                 containerEl.setAttribute("rel", command_id);
-                apf.setStyleClass(containerEl, "has_pid");
+                ppc.setStyleClass(containerEl, "has_pid");
             }
 
             if (!proc.extra)
@@ -204,7 +204,7 @@ module.exports = ext.register("ext/console/console", {
     },
 
     switchconsole : function() {
-        if (apf.activeElement === self.txtConsoleInput) {
+        if (ppc.activeElement === self.txtConsoleInput) {
             var page = tabEditors.getPage();
             if (page) {
                 if (page.$editor.focus)
@@ -254,7 +254,7 @@ module.exports = ext.register("ext/console/console", {
             useOutput, outputId);
 
         var outputEl = document.getElementById(outputId);
-        apf.setStyleClass(outputEl, "loading");
+        ppc.setStyleClass(outputEl, "loading");
 
         return command_id_tracer;
     },
@@ -386,12 +386,12 @@ module.exports = ext.register("ext/console/console", {
             logger.killBufferInterval(id);
             var pNode = spinnerElement.parentNode;
 
-            var page = apf.findHost(pNode.parentNode.parentNode);
+            var page = ppc.findHost(pNode.parentNode.parentNode);
             if (page && page.id !== "pgOutput")
                 page.setCaption("Console");
 
             if (pNode.className.indexOf("quitting") !== -1)
-                apf.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
+                ppc.setStyleClass(pNode, "quit_proc", ["quitting_proc"]);
 
             setTimeout(function() {
                 spinnerElement = document.getElementById("spinner" + id);
@@ -399,7 +399,7 @@ module.exports = ext.register("ext/console/console", {
                 setTimeout(function() {
                     spinnerElement = document.getElementById("spinner" + id);
                     pNode = spinnerElement.parentNode;
-                    apf.setStyleClass(pNode, "loaded", ["loading"]);
+                    ppc.setStyleClass(pNode, "loaded", ["loading"]);
                 spinnerElement.setAttribute("style", "");
                     spinnerElement.style.opacity = "1";
                 }, 300);
@@ -417,7 +417,7 @@ module.exports = ext.register("ext/console/console", {
 
         var containerEl = this.getLogStreamOutObject(command_id).$ext;
         containerEl.setAttribute("rel", command_id);
-        apf.setStyleClass(containerEl, "has_pid");
+        ppc.setStyleClass(containerEl, "has_pid");
 
         this.command_id_tracer++;
         return command_id;
@@ -448,13 +448,13 @@ module.exports = ext.register("ext/console/console", {
         // Skip internal processes
         if ((lang = /^(\w+)-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             var clearOnRun = settings.model.queryValue("auto/console/@clearonrun");
-            if (apf.isTrue(clearOnRun) && window["txtOutput"])
+            if (ppc.isTrue(clearOnRun) && window["txtOutput"])
                 txtOutput.clear();
 
             this.createProcessLog(message.pid, lang[1]);
             return;
         } else if ((lang = /^([\w-]+)-web-start$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
-            if (apf.isTrue(settings.model.queryValue("preview/@running_app")) || preview.isVisible())
+            if (ppc.isTrue(settings.model.queryValue("preview/@running_app")) || preview.isVisible())
                 preview.preview(message.url);
         } else if ((lang = /^(\w+)-data$/.exec(message.type)) && runners.indexOf(lang[1]) >= 0) {
             if (message.extra && message.extra.tip) {
@@ -471,7 +471,7 @@ module.exports = ext.register("ext/console/console", {
 
                     if (project !== ide.projectName) {
                         // concurrency bug, project does not match
-                        apf.ajax("/api/debug", {
+                        ppc.ajax("/api/debug", {
                             method: "POST",
                             contentType: "application/json",
                             data: JSON.stringify({
@@ -484,7 +484,7 @@ module.exports = ext.register("ext/console/console", {
                     }
                     else if (urlPath.length && user !== urlPath[0]) {
                         // concurrency bug, user does not match
-                        apf.ajax("/api/debug", {
+                        ppc.ajax("/api/debug", {
                             method: "POST",
                             contentType: "application/json",
                             data: JSON.stringify({
@@ -561,7 +561,7 @@ module.exports = ext.register("ext/console/console", {
 
             var containerEl = this.getLogStreamOutObject(command_id, null, extra.original_line).$ext;
             containerEl.setAttribute("rel", command_id);
-            apf.setStyleClass(containerEl, "has_pid");
+            ppc.setStyleClass(containerEl, "has_pid");
             return;
         }
 
@@ -679,23 +679,23 @@ module.exports = ext.register("ext/console/console", {
         });
 
         this.nodes.push(
-            menus.addItemByPath("Goto/Switch to Command Line", new apf.item({
+            menus.addItemByPath("Goto/Switch to Command Line", new ppc.item({
                 command : "switchconsole"
             }), 350),
 
-            this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new apf.item({
+            this.mnuItemConsoleExpanded = menus.addItemByPath("View/Console", new ppc.item({
                 type    : "check",
                 command : "toggleconsole",
                 checked : "[{require('ext/settings/settings').model}::auto/console/@expanded]"
             }), 700),
-            this.mnuItemInput = menus.addItemByPath("View/Command Line", new apf.item({
+            this.mnuItemInput = menus.addItemByPath("View/Command Line", new ppc.item({
                 type    : "check",
                 command : "toggleinputbar",
                 checked : "[{require('ext/settings/settings').model}::auto/console/@showinput]"
             }), 800)
         );
 
-        menus.addItemByPath("Tools/~", new apf.divider(), 30000);
+        menus.addItemByPath("Tools/~", new ppc.divider(), 30000);
 
         var cmd = {
             "Git" : [
@@ -728,7 +728,7 @@ module.exports = ext.register("ext/console/console", {
             var idx2 = 0;
             list.forEach(function(def) {
                 menus.addItemByPath("Tools/" + c + "/" + def[0],
-                    new apf.item({
+                    new ppc.item({
                         onclick : function(){
                             _self.showInput();
                             txtConsoleInput.setValue(def[1]);
@@ -750,23 +750,23 @@ module.exports = ext.register("ext/console/console", {
 
             _self.height = e.model.queryValue("auto/console/@height") || _self.height;
 
-            if (apf.isTrue(e.model.queryValue("auto/console/@maximized"))) {
+            if (ppc.isTrue(e.model.queryValue("auto/console/@maximized"))) {
                 _self.show(true);
                 _self.maximizeConsoleHeight();
             }
-            else if (apf.isTrue(e.model.queryValue("auto/console/@expanded")))
+            else if (ppc.isTrue(e.model.queryValue("auto/console/@expanded")))
                 _self.show(true);
 
             var showInput = e.model.queryValue("auto/console/@showinput");
             if (showInput === "")
                 _self.showInput(false, true);
-            else if (apf.isTrue(showInput))
+            else if (ppc.isTrue(showInput))
                 _self.showInput(null, true);
         });
 
         stProcessRunning.addEventListener("activate", function() {
             var autoshow = settings.model.queryValue("auto/console/@autoshow");
-            if (_self.autoOpen && apf.isTrue(autoshow)) {
+            if (_self.autoOpen && ppc.isTrue(autoshow)) {
                 setTimeout(function(){
                     _self.show();
                     _self.showOutput();
@@ -784,9 +784,9 @@ module.exports = ext.register("ext/console/console", {
 
         this.$cwd  = "/workspace"; // code smell
 
-        apf.importCssString(this.css);
+        ppc.importCssString(this.css);
 
-//        this.splitter = consoleRow.insertBefore(new apf.splitter({
+//        this.splitter = consoleRow.insertBefore(new ppc.splitter({
 //            scale : "bottom",
 //            visible : false
 //        }), winDbgConsole);
@@ -807,7 +807,7 @@ module.exports = ext.register("ext/console/console", {
 
         function kdHandler(e){
             if (!e.ctrlKey && !e.metaKey && !e.altKey
-              && !e.shiftKey && apf.isCharacter(e.keyCode))
+              && !e.shiftKey && ppc.isCharacter(e.keyCode))
                 txtConsoleInput.focus();
         }
 
@@ -874,7 +874,7 @@ module.exports = ext.register("ext/console/console", {
             name: "escapeconsole",
             bindKey: {mac: "Esc", win: "Esc"},
             isAvailable : function(){
-                return apf.activeElement == txtConsoleInput;
+                return ppc.activeElement == txtConsoleInput;
             },
             exec: function () {
                 _self.switchconsole();
@@ -887,7 +887,7 @@ module.exports = ext.register("ext/console/console", {
             isAvailable : function(){
                 // Determines if any input is selected, in which case we do
                 // not want to cancel
-                if (apf.activeElement === txtConsoleInput) {
+                if (ppc.activeElement === txtConsoleInput) {
                     var selection = window.getSelection();
                     var range = selection.getRangeAt(0);
                     if (range.endOffset - range.startOffset === 0)
@@ -910,7 +910,7 @@ module.exports = ext.register("ext/console/console", {
         var c9shell = tabConsole.add("Console");
         c9shell.setAttribute("class", "pgConsole");
         c9shell.setAttribute("closebtn", true);
-        var c9shellText = c9shell.appendChild(new apf.text({
+        var c9shellText = c9shell.appendChild(new ppc.text({
             margin     : "3 0 0 0",
             anchors    : "0 17 0 0",
             flex       : "1",
@@ -919,7 +919,7 @@ module.exports = ext.register("ext/console/console", {
             textselect : "true",
             "class"    : "console_text"
         }));
-        c9shell.appendChild(new apf.scrollbar({
+        c9shell.appendChild(new ppc.scrollbar({
             "for"     : c9shellText,
             right     : "0",
             top       : "0",
@@ -980,7 +980,7 @@ module.exports = ext.register("ext/console/console", {
         if (!pid)
             return;
 
-        apf.setStyleClass(pNode, "quitting_proc");
+        ppc.setStyleClass(pNode, "quitting_proc");
         logger.logNodeStream("Process terminated", null,
         this.getLogStreamOutObject(command_id), ide);
         this.markProcessAsCompleted(pid, true);
@@ -1005,13 +1005,13 @@ module.exports = ext.register("ext/console/console", {
         if (typeof e !== "undefined" && e.target.className.indexOf("prompt_spinner") !== -1)
             return;
 
-        var txt = apf.findHost(pNode);
+        var txt = ppc.findHost(pNode);
         txt.$scrolldown = false;
 
-        apf.setStyleClass(pNode, null, ["collapsed"]);
+        ppc.setStyleClass(pNode, null, ["collapsed"]);
         pNode.style.height = (pNode.scrollHeight-20) + "px";
         setTimeout(function() {
-            apf.layout.forceResize(tabConsole.$ext);
+            ppc.layout.forceResize(tabConsole.$ext);
         }, 200);
     },
 
@@ -1019,14 +1019,14 @@ module.exports = ext.register("ext/console/console", {
      * @param DOMElement pNode The container block to be collapsed
      */
     collapseOutputBlock : function(pNode) {
-        apf.setStyleClass(pNode, "collapsed");
+        ppc.setStyleClass(pNode, "collapsed");
         pNode.style.height = "14px";
         setTimeout(function() {
-            apf.layout.forceResize(tabConsole.$ext);
-            var txt = apf.findHost(pNode);
+            ppc.layout.forceResize(tabConsole.$ext);
+            var txt = ppc.findHost(pNode);
             var scroll = txt.$scrollArea;
             txt.$scrolldown = scroll.scrollTop >= scroll.scrollHeight
-                - scroll.offsetHeight + apf.getVerBorders(scroll);
+                - scroll.offsetHeight + ppc.getVerBorders(scroll);
         }, 200);
 
         pNode.setAttribute("onclick", 'require("ext/console/console").expandOutputBlock(this, event)');
@@ -1045,7 +1045,7 @@ module.exports = ext.register("ext/console/console", {
             return;
         this.maximized = true;
 
-        apf.document.documentElement.appendChild(winDbgConsole);
+        ppc.document.documentElement.appendChild(winDbgConsole);
         winDbgConsole.setAttribute('anchors', '0 0 0 0');
         this.lastZIndex = winDbgConsole.$ext.style.zIndex;
         winDbgConsole.removeAttribute('height');
@@ -1102,7 +1102,7 @@ module.exports = ext.register("ext/console/console", {
         var timing = "cubic-bezier(.10, .10, .25, .90)";
         var cliExt = cliBox.$ext;
         if (_self.hidden) {
-            cliExt.style.minHeight = (_self.collapsedHeight - apf.getHeightDiff(cliExt)) + "px";
+            cliExt.style.minHeight = (_self.collapsedHeight - ppc.getHeightDiff(cliExt)) + "px";
             cliExt.style.bottom = "";
 
             document.body.scrollTop = 0;
@@ -1115,7 +1115,7 @@ module.exports = ext.register("ext/console/console", {
             }, function(){
                 cliExt.style.minHeight = "";
                 cliExt.style.bottom = 0;
-                apf.layout.forceResize();
+                ppc.layout.forceResize();
             });
         }
         else {
@@ -1140,7 +1140,7 @@ module.exports = ext.register("ext/console/console", {
             }, function(){
                 cliBox.parentNode.$ext.style.overflow = "";
                 cliBox.setHeight(_self.collapsedHeight);
-                apf.layout.forceResize();
+                ppc.layout.forceResize();
             });
         }
     },
@@ -1156,7 +1156,7 @@ module.exports = ext.register("ext/console/console", {
         var timing = "cubic-bezier(.10, .10, .25, .90)";
         var cliExt = cliBox.$ext;
         if (_self.hidden) {
-            cliExt.style.minHeight = (_self.collapsedHeight - apf.getHeightDiff(cliExt)) + "px";
+            cliExt.style.minHeight = (_self.collapsedHeight - ppc.getHeightDiff(cliExt)) + "px";
             cliExt.style.bottom = "";
 
             document.body.scrollTop = 0;
@@ -1170,7 +1170,7 @@ module.exports = ext.register("ext/console/console", {
                 cliExt.style.minHeight = "";
                 cliExt.style.bottom = 0;
                 cliBox.hide();
-                apf.layout.forceResize();
+                ppc.layout.forceResize();
             });
         }
         else {
@@ -1194,7 +1194,7 @@ module.exports = ext.register("ext/console/console", {
                 cliBox.parentNode.$ext.style.overflow = "";
                 cliBox.setHeight(0);
                 cliBox.hide();
-                apf.layout.forceResize();
+                ppc.layout.forceResize();
             });
         }
 
@@ -1238,18 +1238,18 @@ module.exports = ext.register("ext/console/console", {
                 winDbgConsole.height = height + 1;
                 winDbgConsole.setAttribute("height", height);
                 //_self.splitter[shouldShow ? "show" : "hide"]();
-                winDbgConsole.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                winDbgConsole.$ext.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
 
                 _self.animating = false;
 
                 settings.model.setQueryValue("auto/console/@expanded", shouldShow);
 
-                apf.layout.forceResize();
+                ppc.layout.forceResize();
             }, 100);
         };
 
         var height;
-        var animOn = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        var animOn = ppc.isTrue(settings.model.queryValue("general/@animateui"));
         if (shouldShow) {
             height = Math.max(this.minHeight, Math.min(this.maxHeight, this.height));
 
@@ -1258,7 +1258,7 @@ module.exports = ext.register("ext/console/console", {
             winDbgConsole.$ext.style.height = this.$collapsedHeight + "px";
             cliBox.$ext.style.height = "28px";
 
-            // apf.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
+            // ppc.setStyleClass(btnCollapseConsole.$ext, "btn_console_openOpen");
 
             if (!immediate && animOn) {
                 if (searchPage) {
@@ -1280,12 +1280,12 @@ module.exports = ext.register("ext/console/console", {
             if (winDbgConsole.parentNode != consoleRow)
                 this.restoreConsoleHeight();
 
-            // apf.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
+            // ppc.setStyleClass(btnCollapseConsole.$ext, "", ["btn_console_openOpen"]);
             winDbgConsole.$ext.style.minHeight = 0;
             winDbgConsole.$ext.style.maxHeight = "10000px";
 
             if (!immediate && animOn) {
-                //var timer = setInterval(function(){apf.layout.forceResize()}, 10);
+                //var timer = setInterval(function(){ppc.layout.forceResize()}, 10);
                 //clearInterval(timer);
 
                 anims.animateSplitBoxNode(winDbgConsole, {

@@ -95,12 +95,12 @@ module.exports = ext.register("ext/quickstart/quickstart", {
         ide.addEventListener("settings.load", function(e) {
             var showQS = require("ext/settings/settings").model.queryValue("auto/help/@show");
             if(showQS === "" || showQS == "true") {
-                if(apf.getcookie("show-quick-start") == "false") {
+                if(ppc.getcookie("show-quick-start") == "false") {
                     require("ext/settings/settings").model.setQueryValue("auto/help/@show", "false");
                 }
                 else {
                     require("ext/settings/settings").model.setQueryValue("auto/help/@show", "true");
-                    apf.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
+                    ppc.xmldb.setAttribute(require("ext/settings/settings").model.queryNode("auto/help"), "show", "true");
                     //_self.launchQS();
                 }
              }
@@ -122,7 +122,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
     },
 
     setState: function(state){
-        apf.setcookie("show-quick-start", state, new Date().getTime() + 1000*3600*24*365*2);
+        ppc.setcookie("show-quick-start", state, new Date().getTime() + 1000*3600*24*365*2);
     },
 
     hideMenus: function(){
@@ -149,7 +149,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
 
             divToId = require("ext/guidedtour/guidedtour").getElementPosition(jsonQuickStart.identifiers[i].el);
             position = jsonQuickStart.identifiers[i].pos;
-            imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
+            imgDiv = ppc.document.getElementById(jsonQuickStart.identifiers[i].name);
 
             imgDiv.setAttribute("bottom", "");
             imgDiv.setAttribute("top", "");
@@ -191,7 +191,7 @@ module.exports = ext.register("ext/quickstart/quickstart", {
 
         var imgDiv;
         for (var i = 0; i < jsonQuickStart.identifiers.length; i++) {
-            imgDiv = apf.document.getElementById(jsonQuickStart.identifiers[i].name);
+            imgDiv = ppc.document.getElementById(jsonQuickStart.identifiers[i].name);
             imgDiv.hide();
         }
         settings.model.setQueryValue('general/@animateui', this.animateui);

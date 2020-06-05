@@ -112,13 +112,13 @@ var Offline = module.exports = function(namespace, detectUrl){
         var _self = this;
         
         if (!this.http) {
-            this.http = new apf.http();
+            this.http = new ppc.http();
             this.http.timeout = this.interval;
         }
         
-        this.http.get(apf.getNoCacheUrl(this.detectUrl), {
+        this.http.get(ppc.getNoCacheUrl(this.detectUrl), {
             callback: function(data, state, extra){
-                if (state != apf.SUCCESS){ // || !window.navigator.onLine
+                if (state != ppc.SUCCESS){ // || !window.navigator.onLine
                     _self.goOffline(callback); //retry here??
                 }
                 else {
@@ -138,9 +138,9 @@ var Offline = module.exports = function(namespace, detectUrl){
         
         var _self = this;
         
-        apf.addEventListener("error", this.detectErrorHandler = function(e){
+        ppc.addEventListener("error", this.detectErrorHandler = function(e){
             //Timeout detected.. Network is probably gone
-            if (e.state == apf.TIMEOUT) {
+            if (e.state == ppc.TIMEOUT) {
                 //Let's try to go offline and return false to cancel the error
                 return !_self.goOffline();//callback //@todo callback???
             }
@@ -150,7 +150,7 @@ var Offline = module.exports = function(namespace, detectUrl){
         this.isSiteAvailable();
         
         //#ifdef __DEBUG
-        apf.console.info("Started automatic detection of network state");
+        ppc.console.info("Started automatic detection of network state");
         //#endif
         
         this.detectTimer = setInterval(function(){
@@ -163,10 +163,10 @@ var Offline = module.exports = function(namespace, detectUrl){
 // NOTE: We now call [this].goOffline() and [this].goOnline() externally triggered by socket.io state.
 /*        
 //        clearInterval(this.detectTimer);
-        apf.removeEventListener("error", this.detectErrorHandler);
+        ppc.removeEventListener("error", this.detectErrorHandler);
         
         //#ifdef __DEBUG
-        apf.console.info("Stopped automatic detection of network state");
+        ppc.console.info("Stopped automatic detection of network state");
         //#endif
 */
     }
@@ -227,6 +227,6 @@ var Offline = module.exports = function(namespace, detectUrl){
 
         return true;//success
     }
-}).call(Offline.prototype = new apf.Class().$init());
+}).call(Offline.prototype = new ppc.Class().$init());
 
 });

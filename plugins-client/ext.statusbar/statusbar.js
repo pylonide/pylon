@@ -49,11 +49,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             if (!e.model.queryNode("auto/statusbar/@show"))
                 e.model.setQueryValue("auto/statusbar/@show", "true");
             
-            if (apf.isTrue(e.model.queryValue("auto/statusbar/@show")))
+            if (ppc.isTrue(e.model.queryValue("auto/statusbar/@show")))
                 _self.preinit();
         });
         
-        this.viewStatusBarMenuItem = new apf.item({
+        this.viewStatusBarMenuItem = new ppc.item({
             test : "1",
             type : "check",
             checked : "[{require('ext/settings/settings').model}::auto/statusbar/@show]",
@@ -67,7 +67,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
                 // if weve already been loaded, then update the status here
                 // otherwise it'll be done in init
                 if (window.mdlStatusBar) {
-                    apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "showStatusbar", ev.value);
+                    ppc.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "showStatusbar", ev.value);
                 }
             }
         });
@@ -103,8 +103,8 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         ide.addEventListener("theme.init", function(e){
             var cssClass = e.theme.cssClass;
             
-            var bg = apf.getStyleRule("." + cssClass + " .ace_scroller", "background-color");
-            apf.importStylesheet([
+            var bg = ppc.getStyleRule("." + cssClass + " .ace_scroller", "background-color");
+            ppc.importStylesheet([
                 ["." + cssClass + " .bar-status", "background-color", bg + ", 0.0)"],
                 ["." + cssClass + " .bar-status:hover", "background-color", bg + ", 0.95)"]
             ]);
@@ -143,12 +143,12 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         
         // load model with initial values
         var state = mdlStatusBar.data.selectSingleNode("//state");
-        apf.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.path == "ext/code/code"));
-        apf.xmldb.setAttribute(state, "showStatusbar", apf.isTrue(settings.model.queryValue("auto/statusbar/@show")));
+        ppc.xmldb.setAttribute(state, "isCodeEditor", !!(editors.currentEditor && editors.currentEditor.path == "ext/code/code"));
+        ppc.xmldb.setAttribute(state, "showStatusbar", ppc.isTrue(settings.model.queryValue("auto/statusbar/@show")));
         
         // if we assign this before the plugin has been init'ed it will create some empty model
         // itself because we reference a non existing model
-        _self.viewStatusBarMenuItem.setAttribute("disabled", '{apf.isFalse([mdlStatusBar::state/@isCodeEditor])}');
+        _self.viewStatusBarMenuItem.setAttribute("disabled", '{ppc.isFalse([mdlStatusBar::state/@isCodeEditor])}');
         
         // if we have an editor, make sure to update the UI
         if (editors.currentEditor) {
@@ -163,7 +163,7 @@ module.exports = ext.register("ext/statusbar/statusbar", {
             return;
         
         // update the model so we can use this info in the XML
-        apf.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", editor.path === "ext/code/code");
+        ppc.xmldb.setAttribute(mdlStatusBar.data.selectSingleNode("//state"), "isCodeEditor", editor.path === "ext/code/code");
         
         // if we dont have a code editor then continue
         if (editor.path != "ext/code/code")
@@ -232,11 +232,11 @@ module.exports = ext.register("ext/statusbar/statusbar", {
     toggleStatusBar: function(){
         if(this.expanded) {
             this.expanded = false;
-            apf.setStyleClass(barIdeStatus.$ext, '', ["expanded"]);
-            apf.tween.single(hboxStatusBarSettings.$ext, {
+            ppc.setStyleClass(barIdeStatus.$ext, '', ["expanded"]);
+            ppc.tween.single(hboxStatusBarSettings.$ext, {
                 type  : "width",
-                anim  : apf.tween.easeOutQuint,
-                from  : apf.isWebkit ? 50 : 52,
+                anim  : ppc.tween.easeOutQuint,
+                from  : ppc.isWebkit ? 50 : 52,
                 to    : 1,
                 steps : 8,
                 interval : 5,
@@ -247,13 +247,13 @@ module.exports = ext.register("ext/statusbar/statusbar", {
         }
         else {
             this.expanded = true;
-            apf.setStyleClass(barIdeStatus.$ext, "expanded");
+            ppc.setStyleClass(barIdeStatus.$ext, "expanded");
             hboxStatusBarSettings.show();
-            apf.tween.single(hboxStatusBarSettings.$ext, {
+            ppc.tween.single(hboxStatusBarSettings.$ext, {
                 type  : "width",
-                anim  : apf.tween.easeOutQuint,
+                anim  : ppc.tween.easeOutQuint,
                 from  : 1,
-                to    : apf.isWebkit ? 50 : 52,
+                to    : ppc.isWebkit ? 50 : 52,
                 steps : 8,
                 interval : 5
             });

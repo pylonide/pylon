@@ -61,7 +61,7 @@ module.exports = ext.register($name, {
         settings.addSettings("General", markupSettings);
 
         this.nodes.push(
-            menus.$insertByIndex(barTools, new apf.button({
+            menus.$insertByIndex(barTools, new ppc.button({
                 skin : "c9-toolbarbutton-glossy",
                 //icon : "preview.png",
                 "class" : "preview",
@@ -221,7 +221,7 @@ module.exports = ext.register($name, {
     },
 
     init: function() {
-        apf.importCssString(this.css || "");
+        ppc.importCssString(this.css || "");
     },
 
     getIframe: function() {

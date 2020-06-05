@@ -12,7 +12,7 @@ module.exports = function setup(options, imports, register) {
 
     register(null, {
         "client.pylon": {},
-        "client.apf": {},
+        "client.ppc": {},
         "client.ace": {},
         "client.treehugger": {},
         "client.v8debug": {}

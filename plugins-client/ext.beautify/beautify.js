@@ -46,11 +46,11 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         // Load up current settings data
         var options = {};
-        options.space_before_conditional = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@space_before_conditional"));
-        options.keep_array_indentation = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@keeparrayindentation"));
-        options.preserve_newlines = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@preserveempty"));
-        options.unescape_strings = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@unescape_strings"));
-        options.jslint_happy = apf.isTrue(settings.model.queryValue("beautify/jsbeautify/@jslinthappy"));
+        options.space_before_conditional = ppc.isTrue(settings.model.queryValue("beautify/jsbeautify/@space_before_conditional"));
+        options.keep_array_indentation = ppc.isTrue(settings.model.queryValue("beautify/jsbeautify/@keeparrayindentation"));
+        options.preserve_newlines = ppc.isTrue(settings.model.queryValue("beautify/jsbeautify/@preserveempty"));
+        options.unescape_strings = ppc.isTrue(settings.model.queryValue("beautify/jsbeautify/@unescape_strings"));
+        options.jslint_happy = ppc.isTrue(settings.model.queryValue("beautify/jsbeautify/@jslinthappy"));
         options.brace_style = settings.model.queryValue("beautify/jsbeautify/@braces");
 
         if (session.getUseSoftTabs()) {
@@ -115,7 +115,7 @@ module.exports = ext.register("ext/beautify/beautify", {
 
         this.nodes.push(
             menus.addItemByPath("Tools/Beautify Selection",
-              this.mnuItem = new apf.item({
+              this.mnuItem = new ppc.item({
                   disabled : "true",
                   command  : "beautify"
               }), 100)

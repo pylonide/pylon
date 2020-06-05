@@ -24,7 +24,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         var _self  = this;
 
         var dropbox = document.createElement("div");
-        apf.setStyleClass(dropbox, "draganddrop");
+        ppc.setStyleClass(dropbox, "draganddrop");
 
         var label = document.createElement("span");
         label.textContent = "Drop files here to upload";
@@ -83,20 +83,20 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
         var lastScrollTo;
 
         function dragToTreeLeave(e) {
-            apf.stopEvent(e);
-            apf.setStyleClass(lastHtmlTreeDropNode, null, ["dragAppendUpload"]);
+            ppc.stopEvent(e);
+            ppc.setStyleClass(lastHtmlTreeDropNode, null, ["dragAppendUpload"]);
             if(hoverTimer)
                 clearTimeout(hoverTimer);
             hoverTarget = null;
         }
 
         function dragToTreeEnter(e) {
-            apf.stopEvent(e);
-            //apf.setStyleClass(trFiles.$ext, "dragAppend");
+            ppc.stopEvent(e);
+            //ppc.setStyleClass(trFiles.$ext, "dragAppend");
         }
 
         function dragToTreeOver(e) {
-            apf.stopEvent(e);
+            ppc.stopEvent(e);
 
             var targetHtmlNode = e.target;
             var targetNode;
@@ -105,7 +105,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             while(!targetHtmlNode.id && targetHtmlNode.tagName != 'div')
                 targetHtmlNode = targetHtmlNode.parentNode;
 
-            targetNode = apf.xmldb.findXmlNode(targetHtmlNode);
+            targetNode = ppc.xmldb.findXmlNode(targetHtmlNode);
 
             if(!targetNode)
                 targetNode = trFiles.xmlRoot.selectSingleNode("folder");
@@ -115,12 +115,12 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             if (targetNode.getAttribute("type") != "folder"
                 && targetNode.tagName != "folder") {
                 targetNode = targetNode.parentNode;
-                targetHtmlNode = apf.xmldb.findHtmlNode(targetNode, trFiles);
+                targetHtmlNode = ppc.xmldb.findHtmlNode(targetNode, trFiles);
             }
 
             lastHtmlTreeDropNode = targetHtmlNode;
             lastTreeDropNode = targetNode;
-            apf.setStyleClass(targetHtmlNode, "dragAppendUpload");
+            ppc.setStyleClass(targetHtmlNode, "dragAppendUpload");
 
             //this will expand the folder if you hover over it
             if (hoverTarget != actualTargetNode
@@ -137,9 +137,9 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
 
             //this will scroll down or up the tree
             var scrollNode;
-            var selHtml = apf.xmldb.getHtmlNode(actualTargetNode, trFiles);
+            var selHtml = ppc.xmldb.getHtmlNode(actualTargetNode, trFiles);
             if(selHtml) {
-                var hoverElTopPos = apf.getAbsolutePosition(selHtml, trFiles.$container)[1];
+                var hoverElTopPos = ppc.getAbsolutePosition(selHtml, trFiles.$container)[1];
                 //go down
                 if (hoverElTopPos + 25 > trFiles.$container.scrollTop + trFiles.$container.offsetHeight) {
                     scrollNode = findSiblingToScrollTo(actualTargetNode, "next");
@@ -186,16 +186,16 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             if (this.disableDropbox)
                 return;
 
-            apf.stopEvent(e);
-            apf.setStyleClass(this, null, ["over"]);
+            ppc.stopEvent(e);
+            ppc.setStyleClass(this, null, ["over"]);
         }
 
         function dragEnter(e) {
             if (this.disableDropbox)
                 return;
 
-            apf.stopEvent(e);
-            apf.setStyleClass(this.dropbox || this, "over");
+            ppc.stopEvent(e);
+            ppc.setStyleClass(this.dropbox || this, "over");
         }
 
         function dragDrop(e) {
@@ -210,7 +210,7 @@ module.exports = ext.register("ext/dragdrop/dragdrop", {
             if (this.disableDropbox)
                 return;
 
-            apf.stopEvent(e);
+            ppc.stopEvent(e);
         }
     },
 

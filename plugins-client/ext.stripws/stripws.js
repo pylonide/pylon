@@ -66,7 +66,7 @@ module.exports = ext.register("ext/stripws/stripws", {
         });
 
         this.nodes.push(
-            menus.addItemByPath("Tools/Strip Whitespace", new apf.item({
+            menus.addItemByPath("Tools/Strip Whitespace", new ppc.item({
                 command : "stripws"
             }), 200)
         );

@@ -51,14 +51,14 @@ var DebugHandler = module.exports = function() {
 
     /**
      * Loads a specific source from the active sources in the debugee instance
-     * @param source APF node to extract request attributes from
+     * @param source PPC node to extract request attributes from
      */
     this.loadSource = function(source, callback) {
     };
 
     /**
      * Loads an object with its properties using its handle
-     * @param item APF node for the object to load to extract the handle from
+     * @param item PPC node for the object to load to extract the handle from
      */
     this.loadObject = function(item, callback) {
     };

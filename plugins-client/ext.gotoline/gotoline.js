@@ -35,7 +35,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         var _self = this;
 
         this.nodes.push(
-            menus.addItemByPath("Goto/Goto Line...", new apf.item({
+            menus.addItemByPath("Goto/Goto Line...", new ppc.item({
                 caption : "Goto Line...",
                 hint: "enter a linenumber and jump to it in the active document",
                 command : "gotoline"
@@ -127,7 +127,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             else if ((e.keyCode > 57 || e.keyCode == 32) && (e.keyCode < 96 || e.keyCode > 105))
                 return false;
 
-            if (!e.ctrlKey && !e.metaKey && apf.isCharacter(e.keyCode)) {
+            if (!e.ctrlKey && !e.metaKey && ppc.isCharacter(e.keyCode)) {
                 setTimeout(function(){
                     _self.execGotoLine(null, null, true);
                 });
@@ -135,12 +135,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         });
 
         winGotoLine.addEventListener("blur", function(e){
-            if (!apf.isChildOf(winGotoLine, e.toElement))
+            if (!ppc.isChildOf(winGotoLine, e.toElement))
                 _self.hide();
         });
 
         text.addEventListener("blur", function(e){
-            if (!apf.isChildOf(winGotoLine, e.toElement))
+            if (!ppc.isChildOf(winGotoLine, e.toElement))
                 _self.hide();
         });
     },
@@ -159,7 +159,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
 
         //Determine the position of the window
         var pos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
-        var epos = apf.getAbsolutePosition(aceHtml);
+        var epos = ppc.getAbsolutePosition(aceHtml);
         var maxTop = aceHtml.offsetHeight - 100;
         var top = Math.max(0, Math.min(maxTop, pos.pageY - epos[1] - 5));
         var left = 0;
@@ -179,7 +179,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         txtLineNr.focus();
 
         //Animate
-        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+        if (ppc.isTrue(settings.model.queryValue('general/@animateui'))) {
             winGotoLine.setWidth(0);
             anims.animate(winGotoLine, {
                 width: "60px",
@@ -195,7 +195,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
     },
 
     hide : function() {
-        if (apf.isTrue(settings.model.queryValue('general/@animateui'))) {
+        if (ppc.isTrue(settings.model.queryValue('general/@animateui'))) {
             anims.animate(winGotoLine, {
                 width: "0px",
                 timingFunction: "cubic-bezier(.10, .10, .25, .90)",
@@ -249,7 +249,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
         }
 
         if (typeof preview != "undefined") {
-            var animate = apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
+            var animate = ppc.isTrue(settings.model.queryValue("editors/code/@animatedscroll"));
             if (!animate)
                 return;
 
@@ -276,7 +276,7 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             //Already visible
             else if (ace.isRowFullyVisible(cursor.row)) {
                 //Determine the position of the window
-                var epos = apf.getAbsolutePosition(aceHtml);
+                var epos = ppc.getAbsolutePosition(aceHtml);
                 top = Math.min(maxTop, pos.pageY - epos[1] - 5);
             }
             //General case (centered)
@@ -311,12 +311,12 @@ module.exports = ext.register("ext/gotoline/gotoline", {
             if (lineEl)
                 gotoline = lineEl.parentNode;
             else {
-                gotoline = apf.createNodeFromXpath(history.data, "gotoline");
-                lineEl   = apf.getXml("<line nr='" + line + "' />");
+                gotoline = ppc.createNodeFromXpath(history.data, "gotoline");
+                lineEl   = ppc.getXml("<line nr='" + line + "' />");
             }
 
             if (lineEl != gotoline.firstChild)
-                apf.xmldb.appendChild(gotoline, lineEl, gotoline.firstChild);
+                ppc.xmldb.appendChild(gotoline, lineEl, gotoline.firstChild);
 
             amlEditor.focus();
         }

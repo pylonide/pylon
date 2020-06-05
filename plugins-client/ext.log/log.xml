@@ -31,7 +31,7 @@
                 <h3>Request</h3>
                 <pre style='word-wrap: break-word;'>{
                     try {
-                        apf.escapeXML(JSON.stringify(JSON.parse([text()]), null, 4))
+                        ppc.escapeXML(JSON.stringify(JSON.parse([text()]), null, 4))
                     }
                     catch (e) {
                         [text()]
@@ -41,7 +41,7 @@
                 <h3>Response</h3>
                 <pre style='word-wrap: break-word;'>{
                     try {
-                        apf.escapeXML(JSON.stringify(JSON.parse([@response]), null, 4))
+                        ppc.escapeXML(JSON.stringify(JSON.parse([@response]), null, 4))
                     }
                     catch (e) {
                         [@response]

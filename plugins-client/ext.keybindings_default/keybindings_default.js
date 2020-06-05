@@ -28,7 +28,7 @@ function generatePanelHtml(commands, platform) {
             return;
         
         if (platform == "mac")
-            key = apf.hotkeys.toMacNotation(key);
+            key = ppc.hotkeys.toMacNotation(key);
             
         div = count % 3;
         html.push('<div class="keybindings_default_block',
@@ -69,19 +69,19 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
 
     hook : function(){
         css = util.replaceStaticPrefix(css);
-        apf.importCssString(css || "");
+        ppc.importCssString(css || "");
         
         this.hotitems.keybindings = [this.nodes[0]];
     },
 
     init : function(amlNode){
-        apf.document.documentElement.insertMarkup(markup);
+        ppc.document.documentElement.insertMarkup(markup);
         
         var as = Array.prototype.slice.call(winKeyBindings.$ext.getElementsByTagName("a"));
         var _self = this;
         as.forEach(function(a) {
             var which = a.innerHTML.indexOf("Mac") > -1 ? "mac" : "win";
-            apf.addListener(a, "mousedown", function(e) {
+            ppc.addListener(a, "mousedown", function(e) {
                 _self.togglePanels(which);
             });
         });
@@ -134,7 +134,7 @@ module.exports = ext.register("ext/keybindings_default/keybindings_default", {
             if (!key || !mackey)
                 return;
             
-            mackey = apf.hotkeys.toMacNotation(mackey);
+            mackey = ppc.hotkeys.toMacNotation(mackey);
             
             var cmd = command.short ? command.short : command.name.uCaseFirst();
             

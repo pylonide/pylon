@@ -21,7 +21,7 @@ var commands = require("ext/commands/commands");
 var winHints, hintsContent, selectedHint, animControl, hintsTimer;
 var RE_lastWord = /(\w+)$/;
 
-/*global apf txtConsolePrompt txtConsoleInput
+/*global ppc txtConsolePrompt txtConsoleInput
 */
 
 var filterCommands = function(commands, word) {
@@ -84,9 +84,9 @@ var mouseHandler = function(e) {
 };
 
 var hintLink = function(data) {
-    var dataAttr = apf.escapeXML([data.base, data.cmdName, data.cursorPos, !!data.cmd].join(","));
+    var dataAttr = ppc.escapeXML([data.base, data.cmdName, data.cursorPos, !!data.cmd].join(","));
     if (!data.cmd)
-        return '<a href="#" data-hint="'+ dataAttr + '">' + apf.escapeXML(data.cmdName) + '</a>';
+        return '<a href="#" data-hint="'+ dataAttr + '">' + ppc.escapeXML(data.cmdName) + '</a>';
 
     var spanHotkey = "";
     var key = data.cmd.hotkey;
@@ -97,15 +97,15 @@ var hintLink = function(data) {
             key = data.cmd.bindKey[commands.platform];
     }
     if (key) {
-        var notation = apf.isMac ? apf.hotkeys.toMacNotation(key) : key;
+        var notation = ppc.isMac ? ppc.hotkeys.toMacNotation(key) : key;
         spanHotkey = '<span class="hints_hotkey">' + notation + '</span>';
     }
 
     var cmdText = "";
     if (data.showHelperText)
-        cmdText = '<span>' + apf.escapeXML(data.cmd.hint || '') + '</span>';
+        cmdText = '<span>' + ppc.escapeXML(data.cmd.hint || '') + '</span>';
     cmdText += spanHotkey;
-    return '<a href="#" data-hint="'+ dataAttr + '">' + apf.escapeXML(data.cmdName) + cmdText + '</a>';
+    return '<a href="#" data-hint="'+ dataAttr + '">' + ppc.escapeXML(data.cmdName) + cmdText + '</a>';
 };
 
 module.exports = ext.register("ext/consolehints/consolehints", {
@@ -138,11 +138,11 @@ module.exports = ext.register("ext/consolehints/consolehints", {
     init: function() {
         var _self = this;
         var initConsoleDeps = function() {
-            apf.importCssString(_self.css);
+            ppc.importCssString(_self.css);
             winHints = document.getElementById("barConsoleHints");
             hintsContent = document.getElementById("consoleHintsContent");
-            apf.addListener(winHints, "mousemove", mouseHandler.bind(_self));
-            apf.addListener(winHints, "click", _self.click.bind(_self));
+            ppc.addListener(winHints, "mousemove", mouseHandler.bind(_self));
+            ppc.addListener(winHints, "click", _self.click.bind(_self));
 
             c9console.onMessageMethods.commandhints = function(message) {
                 var cmds = message.body;
@@ -249,7 +249,7 @@ module.exports = ext.register("ext/consolehints/consolehints", {
         hintsContent.innerHTML = content;
         selectedHint = -1;
 
-        if (apf.getStyle(winHints, "display") === "none") {
+        if (ppc.getStyle(winHints, "display") === "none") {
             winHints.style.display = "block";
             winHints.visible = true;
         }

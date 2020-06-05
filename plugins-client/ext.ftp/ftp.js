@@ -40,7 +40,7 @@ module.exports = ext.register("ext/ftp/ftp", {
     init: function(amlNode) {
         var _self = this;
 
-        apf.importCssString(this.css || "");
+        ppc.importCssString(this.css || "");
 
         if (!this.$panel) {
             ide.addEventListener("init.ext/console/console", function() {
@@ -70,7 +70,7 @@ module.exports = ext.register("ext/ftp/ftp", {
             ideConsole.enable();
 
         // Converts HTML special characters to their entity equivalents.
-        msg = apf.escapeXML("" + msg);
+        msg = ppc.escapeXML("" + msg);
 
         if (type === "response")
             msg = msg.replace(/\n/gm, "<br>").replace(/\s/gm, "&nbsp;");

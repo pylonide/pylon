@@ -35,7 +35,7 @@ module.exports = ext = {
         1 : "General"
     },
 
-    model : new apf.model(),
+    model : new ppc.model(),
 
     currentLayoutMode : null,
 
@@ -58,7 +58,7 @@ module.exports = ext = {
             this.model.load("<plugins />");
 
         if (!this.model.queryNode("plugin[@path=" + util.escapeXpathString(path) + "]"))
-            this.model.appendXml(apf.n("<plugin/>")
+            this.model.appendXml(ppc.n("<plugin/>")
                 .attr("type", this.typeLut[oExtension.type])
                 .attr("name", oExtension.name || "")
                 .attr("path", path)
@@ -180,15 +180,15 @@ module.exports = ext = {
         var skin = oExtension.skin;
         if (skin && typeof skin == "object") {
             var data = oExtension.skin.data;
-            oExtension.skinNode = new apf.skin(apf.extend({}, oExtension.skin, {data: null}));
+            oExtension.skinNode = new ppc.skin(ppc.extend({}, oExtension.skin, {data: null}));
             oExtension.skinNode.setProperty("src", data);
-            apf.document.documentElement.appendChild(oExtension.skinNode);
+            ppc.document.documentElement.appendChild(oExtension.skinNode);
         }
 
         //Load markup
         var markup = oExtension.markup;
         if (markup)
-            (oExtension.markupInsertionPoint || amlParent || apf.document.documentElement).insertMarkup(markup);
+            (oExtension.markupInsertionPoint || amlParent || ppc.document.documentElement).insertMarkup(markup);
 
         var deps = oExtension.deps;
         if (deps) {

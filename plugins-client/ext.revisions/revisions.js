@@ -16,7 +16,7 @@ var ide = require("core/ide");
 var ext = require("core/ext");
 var CoreUtil = require("core/util");
 
-// APF dependencies
+// PPC dependencies
 var editors = require("ext/editors/editors");
 var menus = require("ext/menus/menus");
 var commands = require("ext/commands/commands");
@@ -111,32 +111,32 @@ module.exports = ext.register("ext/revisions/revisions", {
         });
 
         this.nodes.push(
-            this.mnuSave = new apf.menu({ id: "mnuSave" }),
-            menus.addItemByPath("File/~", new apf.divider(), 800),
-            menus.addItemByPath("File/File Revision History...", new apf.item({
+            this.mnuSave = new ppc.menu({ id: "mnuSave" }),
+            menus.addItemByPath("File/~", new ppc.divider(), 800),
+            menus.addItemByPath("File/File Revision History...", new ppc.item({
                 type: "check",
                 checked: "[{require('ext/settings/settings').model}::general/@revisionsvisible]",
                 disabled: "{!tabEditors.length}",
                 command: "revisionpanel"
             }), 900),
-            menus.addItemByPath("File/~", new apf.divider(), 910)
+            menus.addItemByPath("File/~", new ppc.divider(), 910)
         );
 
         ide.addEventListener("init.ext/tabbehaviors/tabbehaviors", function() {
-            menus.addItemByPath("~", new apf.divider(), 2000, mnuContextTabs);
-            menus.addItemByPath("File Revision History...", new apf.item({
+            menus.addItemByPath("~", new ppc.divider(), 2000, mnuContextTabs);
+            menus.addItemByPath("File Revision History...", new ppc.item({
                 command : "revisionpanel"
             }), 2100, mnuContextTabs);
         });
 
         ide.addEventListener("init.ext/code/code", function() {
             self.nodes.push(
-                mnuCtxEditor.insertBefore(new apf.item({
+                mnuCtxEditor.insertBefore(new ppc.item({
                     id : "mnuCtxEditorRevisions",
                     caption : "File Revision History...",
                     command: "revisionpanel"
                 }), mnuCtxEditorCut),
-                mnuCtxEditor.insertBefore(new apf.divider({
+                mnuCtxEditor.insertBefore(new ppc.divider({
                     visible : "{mnuCtxEditorRevisions.visible}"
                 }), mnuCtxEditorCut)
             );
@@ -168,7 +168,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         // in OSS Cloud9.
         if (window.cloud9config.hosted || !this.isCollab()) {
             if (ide.loggedIn) {
-                apf.ajax("/api/context/getemail", {
+                ppc.ajax("/api/context/getemail", {
                     method: "get",
                     callback: function(data, state, extra) {
                         if (state === 200 && data) {
@@ -215,9 +215,9 @@ module.exports = ext.register("ext/revisions/revisions", {
             this.$switchToPageModel(page);
         }
 
-        apf.importCssString(cssString);
+        ppc.importCssString(cssString);
 
-        this.nodes.push(this.panel = new apf.bar({
+        this.nodes.push(this.panel = new ppc.bar({
                 id: "revisionsPanel",
                 visible: false,
                 top: 6,
@@ -234,7 +234,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             revisionsPanel.appendChild(pgRevisions);
         });
 
-        apf.addEventListener("exit", function() {
+        ppc.addEventListener("exit", function() {
             localStorage.offlineQueue = JSON.stringify(self.offlineQueue);
         });
 
@@ -253,7 +253,7 @@ module.exports = ext.register("ext/revisions/revisions", {
             return;
         }
         if (!page.$mdlRevisions) {
-            page.$mdlRevisions = new apf.model();
+            page.$mdlRevisions = new ppc.model();
         }
 
         // Commented the line below out because it would try to select
@@ -294,12 +294,12 @@ module.exports = ext.register("ext/revisions/revisions", {
 
         setTimeout(function(e) {
             if (!isInfoActive) {
-                apf.tween.single(revisionsInfo, {
+                ppc.tween.single(revisionsInfo, {
                     from:1,
                     to:0,
                     steps: 10,
                     type: "opacity",
-                    anim: apf.tween.easeInOutCubic,
+                    anim: ppc.tween.easeInOutCubic,
                     interval: 30
                 });
             }
@@ -569,7 +569,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         var revObj = this.$getRevisionObject(message.path);
 
         // guided tour magic conflicts with revisions--skip it
-        if (page && apf.isTrue(page.$model.data.getAttribute("guidedtour")))
+        if (page && ppc.isTrue(page.$model.data.getAttribute("guidedtour")))
             return;
 
         switch (message.subtype) {
@@ -615,8 +615,8 @@ module.exports = ext.register("ext/revisions/revisions", {
                     if (page) {
                         var model = page.$mdlRevisions;
                         if (model && model.data && model.data.childNodes.length) {
-                            var revisionNode = apf.getXml(revisionString);
-                            apf.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
+                            var revisionNode = ppc.getXml(revisionString);
+                            ppc.xmldb.appendChild(model.data, revisionNode, model.data.firstChild);
                         }
                     }
                 }
@@ -745,7 +745,7 @@ module.exports = ext.register("ext/revisions/revisions", {
         if (!revision) { return; }
 
         var contributorToXml = function(c) {
-            return apf.n("<contributor />").attr("email", c).node().xml;
+            return ppc.n("<contributor />").attr("email", c).node().xml;
         };
 
         var friendlyDate = (new Date(revision.ts)).toString("MMM d, h:mm tt");
@@ -1083,12 +1083,12 @@ module.exports = ext.register("ext/revisions/revisions", {
     /**
      * Revisions#$setRevisionNodeAttribute()
      *
-     * Sets an attribute on a revision apf node object in the model.
+     * Sets an attribute on a revision ppc node object in the model.
      **/
     $setRevisionNodeAttribute: function(id, attr, value) {
         var node = this.model.queryNode("revision[@id='" + id + "']");
         if (node) {
-            apf.xmldb.setAttribute(node, attr, value);
+            ppc.xmldb.setAttribute(node, attr, value);
         }
     },
 
@@ -1114,10 +1114,10 @@ module.exports = ext.register("ext/revisions/revisions", {
         }
 
         if (revObj.useCompactList === true) {
-            apf.setStyleClass(lstRevisions.$ext, "compactView");
+            ppc.setStyleClass(lstRevisions.$ext, "compactView");
         }
         else {
-            apf.setStyleClass(lstRevisions.$ext, null, ["compactView"]);
+            ppc.setStyleClass(lstRevisions.$ext, null, ["compactView"]);
         }
 
         this.populateModel(revObj, this.model);

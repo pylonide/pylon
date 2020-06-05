@@ -30,7 +30,7 @@ module.exports = ext.register("ext/menus/menus", {
         var _self = this;
 
         this.nodes.push(
-            this.menubar = logobar.insertBefore(new apf.bar({
+            this.menubar = logobar.insertBefore(new ppc.bar({
                 "class" : "fakehbox aligncenter",
                 style : "padding : 0 5px 0 5px;position:static",
             }), logobar.firstChild),
@@ -46,7 +46,7 @@ module.exports = ext.register("ext/menus/menus", {
         );
 
         var timer;
-        this.menubar.insertBefore(new apf.button({
+        this.menubar.insertBefore(new ppc.button({
             "class" : "c9-mbar-minimize",
             "skin" : "c9-simple-btn",
             "onclick" : function(e){
@@ -65,8 +65,8 @@ module.exports = ext.register("ext/menus/menus", {
 
         logobar.$ext.addEventListener("mouseover",function(e){
             if (!_self.minimized || !ide.inited
-              || apf.isChildOf(logobar.$ext, e.fromElement, true)
-              || apf.isChildOf(logoCorner, e.toElement, true))
+              || ppc.isChildOf(logobar.$ext, e.fromElement, true)
+              || ppc.isChildOf(logoCorner, e.toElement, true))
                 return;
 
             clearTimeout(timer);
@@ -76,13 +76,13 @@ module.exports = ext.register("ext/menus/menus", {
         });
         logobar.$ext.addEventListener("mouseout",function(e){
             if (!_self.minimized || !ide.inited
-              || apf.isChildOf(logobar.$ext, e.toElement, true))
+              || ppc.isChildOf(logobar.$ext, e.toElement, true))
                 return;
 
             clearTimeout(timer);
-            if (apf.popup.isShowing(apf.popup.last)) {
+            if (ppc.popup.isShowing(ppc.popup.last)) {
                 timer = setTimeout(function(){
-                    if (apf.popup.isShowing(apf.popup.last))
+                    if (ppc.popup.isShowing(ppc.popup.last))
                         timer = setTimeout(arguments.callee, 500);
                     else
                         _self.minimize(true);
@@ -98,47 +98,47 @@ module.exports = ext.register("ext/menus/menus", {
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("auto/menus", [["minimized", "false"]]);
 
-            if (apf.isTrue(e.model.queryValue("auto/menus/@minimized"))) {
+            if (ppc.isTrue(e.model.queryValue("auto/menus/@minimized"))) {
                 _self.minimize(true, true);
                 _self.minimized = true;
             }
         });
 
-        this.addItemByPath("File/~", new apf.divider(), 1000000);
-        this.addItemByPath("File/Quit Pylon IDE", new apf.item({
+        this.addItemByPath("File/~", new ppc.divider(), 1000000);
+        this.addItemByPath("File/Quit Pylon IDE", new ppc.item({
             onclick : function(){
                 location.href = "https://github.com/pylonide/pylon";
             }
         }), 2000000);
 
-        this.addItemByPath("View/~", new apf.divider(), 9999);
+        this.addItemByPath("View/~", new ppc.divider(), 9999);
 
-        apf.button.prototype.$propHandlers["hotkey"] = function(value){
+        ppc.button.prototype.$propHandlers["hotkey"] = function(value){
             if (this.$hotkey)
-                apf.setNodeValue(this.$hotkey, apf.isMac
-                      ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey);
+                ppc.setNodeValue(this.$hotkey, ppc.isMac
+                      ? ppc.hotkeys.toMacNotation(this.hotkey) : this.hotkey);
 
             if (this.tooltip)
-                apf.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
+                ppc.GuiElement.propHandlers.tooltip.call(this, this.tooltip);
         }
 
-        apf.item.prototype.$propHandlers["hotkey"] = function(value){
+        ppc.item.prototype.$propHandlers["hotkey"] = function(value){
             if (!this.$amlLoaded) {
                 var _self = this;
                 this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
                     if (_self.$hotkey && _self.hotkey)
-                        apf.setNodeValue(this.$hotkey, apf.isMac
-                          ? apf.hotkeys.toMacNotation(this.hotkey) : this.hotkey);
+                        ppc.setNodeValue(this.$hotkey, ppc.isMac
+                          ? ppc.hotkeys.toMacNotation(this.hotkey) : this.hotkey);
                 });
             }
             else if (this.$hotkey)
-                apf.setNodeValue(this.$hotkey,
-                    apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
+                ppc.setNodeValue(this.$hotkey,
+                    ppc.isMac ? ppc.hotkeys.toMacNotation(value) : value);
         }
 
-        apf.splitbutton.prototype.$propHandlers["command"] =
-        apf.button.prototype.$propHandlers["command"] =
-        apf.item.prototype.$propHandlers["command"] = function(value){
+        ppc.splitbutton.prototype.$propHandlers["command"] =
+        ppc.button.prototype.$propHandlers["command"] =
+        ppc.item.prototype.$propHandlers["command"] = function(value){
             if (!value) {
                 this.removeAttribute("hotkey");
                 this.onclick = null;
@@ -207,7 +207,7 @@ module.exports = ext.register("ext/menus/menus", {
         else {
             menu = menus[name];
             if (!menu) {
-                menu = menus[name] = new apf.menu({
+                menu = menus[name] = new ppc.menu({
                     id : "mnuMenus" + ++this.count,
                     "onprop.visible" : this.$checkItems
                 });
@@ -221,7 +221,7 @@ module.exports = ext.register("ext/menus/menus", {
         else {
             item = items[name];
             if (!item) {
-                item = items[name] = new apf.button({
+                item = items[name] = new ppc.button({
                     skin    : "c9-menu-btn",
                     submenu : menu.id,
                     margin  : "0 0 0 0",
@@ -257,7 +257,7 @@ module.exports = ext.register("ext/menus/menus", {
         else {
             menu = menus[name];
             if (!menu) {
-                menu = menus[name] = new apf.menu({
+                menu = menus[name] = new ppc.menu({
                     id : "mnuMenus" + ++this.count,
                     "onprop.visible" : this.$checkItems
                 });
@@ -267,13 +267,13 @@ module.exports = ext.register("ext/menus/menus", {
         if (item) {
             item.setAttribute("submenu", menu.id);
             item.setAttribute("caption",
-                apf.escapeXML((this.debug ? "[" + index + "]" : "") + name.split("/").pop()));
+                ppc.escapeXML((this.debug ? "[" + index + "]" : "") + name.split("/").pop()));
             items[name] = item;
         }
         else {
             item = items[name];
             if (!item) {
-                item = items[name] = new apf.item({
+                item = items[name] = new ppc.item({
                     submenu : menu.id,
                     caption : (this.debug ? "\\[" + index + "\\] " : "") +
                         name.split("/").pop()
@@ -302,7 +302,7 @@ module.exports = ext.register("ext/menus/menus", {
 
             if (itemName != "~")
                 item.setAttribute("caption",
-                    apf.escapeXML((this.debug ? "\\[" + index + "\\] " : "") + itemName));
+                    ppc.escapeXML((this.debug ? "\\[" + index + "\\] " : "") + itemName));
         }
 
         //index...
@@ -373,7 +373,7 @@ module.exports = ext.register("ext/menus/menus", {
     },
 
     restore : function(preview){
-        apf.setStyleClass(logobar.$ext, "", ["minimized"]);
+        ppc.setStyleClass(logobar.$ext, "", ["minimized"]);
 
         logobar.$ext.style.overflow = "hidden";
 
@@ -382,7 +382,7 @@ module.exports = ext.register("ext/menus/menus", {
             timingFunction: "cubic-bezier(.10, .10, .25, .90)",
             duration: 0.2
         }, function(){
-            apf.layout.forceResize(tabEditors.$ext);
+            ppc.layout.forceResize(tabEditors.$ext);
             logobar.$ext.style.overflow = "";
         });
 
@@ -403,8 +403,8 @@ module.exports = ext.register("ext/menus/menus", {
             duration: 0.2,
             immediate: noAnim
         }, function(){
-            apf.setStyleClass(logobar.$ext, "minimized");
-            apf.layout.forceResize();
+            ppc.setStyleClass(logobar.$ext, "minimized");
+            ppc.layout.forceResize();
             logobar.$ext.style.overflow = "";
         });
 

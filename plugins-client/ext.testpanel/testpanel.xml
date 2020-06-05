@@ -111,7 +111,7 @@
                     <a:remove match="[file]" set="{require('ext/filesystem/filesystem').remove([@path])}"/>
                     
                     <a:expanded match="[test|file[test]]" id="expTestRule" />
-                    <a:expanded match="{apf.getChildNumber(%[repo]) == 1}" />
+                    <a:expanded match="{ppc.getChildNumber(%[repo]) == 1}" />
                 </a:datagrid>
             </a:bar>
             

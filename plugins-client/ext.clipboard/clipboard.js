@@ -31,7 +31,7 @@ module.exports = ext.register("ext/clipboard/clipboard", {
         var _self = this;
         
         var isAvailable = function(editor, event){
-            if (apf.activeElement && apf.activeElement.localName == "codeeditor") {
+            if (ppc.activeElement && ppc.activeElement.localName == "codeeditor") {
                 var type = event && event.type;
                 return type != "keypress" && type != "keydown" && !ide.readonly;
             }
@@ -63,43 +63,43 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             name: "clearcut",
             bindKey: {mac: "ESC", win: "ESC"},
             isAvailable : function(){
-                return self.trFiles && apf.activeElement == trFiles
-                  && apf.clipboard.store && !apf.clipboard.copied;
+                return self.trFiles && ppc.activeElement == trFiles
+                  && ppc.clipboard.store && !ppc.clipboard.copied;
             },
             exec: function(){ 
-                var nodes = apf.clipboard.store;
+                var nodes = ppc.clipboard.store;
                 if (!nodes) return false;
                 
-                apf.clipboard.$highlightSelection(trFiles, nodes, true);
-                apf.clipboard.clear();
+                ppc.clipboard.$highlightSelection(trFiles, nodes, true);
+                ppc.clipboard.clear();
                 
                 return false;
             }
         });
         
         this.nodes.push(
-            menus.addItemByPath("Edit/~", new apf.divider(), 300),
-            menus.addItemByPath("Edit/Cut", new apf.item({
+            menus.addItemByPath("Edit/~", new ppc.divider(), 300),
+            menus.addItemByPath("Edit/Cut", new ppc.item({
                 command : "cut"
             }), 400),
-            menus.addItemByPath("Edit/Copy", new apf.item({
+            menus.addItemByPath("Edit/Copy", new ppc.item({
                 command : "copy"
             }), 500),
-            menus.addItemByPath("Edit/Paste", new apf.item({
+            menus.addItemByPath("Edit/Paste", new ppc.item({
                 command : "paste"
             }), 600)
         );
     },
 
     cut: function() {
-        if (self.trFiles && apf.document.activeElement == trFiles) {
-            apf.clipboard.cutSelection(trFiles);
+        if (self.trFiles && ppc.document.activeElement == trFiles) {
+            ppc.clipboard.cutSelection(trFiles);
         }
         else {
             var ace = this.$getAce();
             ace.focus();
             aceClipboardText = ace.getCopyText() || aceClipboardText;
-            apf.clipboard.put(aceClipboardText);
+            ppc.clipboard.put(aceClipboardText);
             var cutCommand = ace.$nativeCommands.commands.cut;
             ace.blur();
             
@@ -114,17 +114,17 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     copy: function() {
-        if (self.trFiles && apf.document.activeElement == trFiles) {
-            apf.clipboard.put(trFiles.getSelection().map(function (node) {
-                return apf.xmldb.cleanNode(node.cloneNode(false))
+        if (self.trFiles && ppc.document.activeElement == trFiles) {
+            ppc.clipboard.put(trFiles.getSelection().map(function (node) {
+                return ppc.xmldb.cleanNode(node.cloneNode(false))
             }));
-            apf.clipboard.copied = true;
+            ppc.clipboard.copied = true;
         }
         else {
             var ace = this.$getAce();
             ace.focus();
             aceClipboardText = ace.getCopyText() || aceClipboardText;
-            apf.clipboard.put(aceClipboardText);
+            ppc.clipboard.put(aceClipboardText);
             ace.blur();
             try {
                 if (document.execCommand("copy")) return;
@@ -133,8 +133,8 @@ module.exports = ext.register("ext/clipboard/clipboard", {
     },
 
     paste: function(editor, args) {
-        if (self.trFiles && apf.document.activeElement == trFiles) {
-            apf.clipboard.pasteSelection(trFiles);
+        if (self.trFiles && ppc.document.activeElement == trFiles) {
+            ppc.clipboard.pasteSelection(trFiles);
         }
         else {
             var ace = this.$getAce();
@@ -142,13 +142,13 @@ module.exports = ext.register("ext/clipboard/clipboard", {
             if(args.text) {
                 // The paste event came in via keyboard shortcut, we have access
                 // to the system clipboard content
-                apf.clipboard.put(args.text);
+                ppc.clipboard.put(args.text);
                 ace.$handlePaste(args);
             }
-            else if(!apf.clipboard.empty && typeof apf.clipboard.store === 'string') {
+            else if(!ppc.clipboard.empty && typeof ppc.clipboard.store === 'string') {
                 // The paste event was triggered via menus or cli, we have a string
-                // in apf.clipboard
-                ace.$handlePaste(apf.clipboard.store);
+                // in ppc.clipboard
+                ace.$handlePaste(ppc.clipboard.store);
             }
             else {
                 // The paste event was triggered via menus or cli, we only have

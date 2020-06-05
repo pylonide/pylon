@@ -40,12 +40,12 @@ module.exports = {
         // right click context item in ace
         ide.addEventListener("init.ext/code/code", function() {
             _self.nodes.push(
-                mnuCtxEditor.insertBefore(new apf.item({
+                mnuCtxEditor.insertBefore(new ppc.item({
                     id : "mnuCtxEditorJumpToDef",
                     caption : "Jump to Definition",
                     command: "jumptodef"
                 }), mnuCtxEditor.firstChild),
-                menus.addItemByPath("Goto/Jump to Definition", new apf.item({
+                menus.addItemByPath("Goto/Jump to Definition", new ppc.item({
                     caption : "Jump to Definition",
                     command: "jumptodef"
                 }), 899)
@@ -53,7 +53,7 @@ module.exports = {
 
             // when the context menu pops up we'll ask the worker whether we've
             // jumptodef available here
-            apf.addListener(mnuCtxEditor, "prop.visible", function(ev) {
+            ppc.addListener(mnuCtxEditor, "prop.visible", function(ev) {
                 // only fire when visibility is set to true
                 if (ev.value) {
                     // because of delays we'll enable by default
@@ -188,7 +188,7 @@ module.exports = {
     activateSpinner : function() {
         try {
             var node = ide.getActivePage().$doc.getNode();
-            apf.xmldb.setAttribute(node, "lookup", "1");
+            ppc.xmldb.setAttribute(node, "lookup", "1");
             this.removeSpinnerNodes.push(node);
             var _self = this;
             setTimeout(function() {
@@ -202,7 +202,7 @@ module.exports = {
 
     clearSpinners : function() {
         this.removeSpinnerNodes.forEach(function(node) {
-            apf.xmldb.removeAttribute(node, "lookup");
+            ppc.xmldb.removeAttribute(node, "lookup");
         });
         this.removeSpinnerNodes = [];
     }

@@ -93,54 +93,54 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         this.nodes.push(
             this.mnuTabs = menus.addItemByPath("View/Tabs/", null, 175),
 
-            menus.addItemByPath("File/~", new apf.divider(), 100000),
-            menus.addItemByPath("File/Close File", new apf.item({
+            menus.addItemByPath("File/~", new ppc.divider(), 100000),
+            menus.addItemByPath("File/Close File", new ppc.item({
                 command: "closetab"
             }), 110000),
-            menus.addItemByPath("File/Close All Files", new apf.item({
+            menus.addItemByPath("File/Close All Files", new ppc.item({
                 command : "closealltabs"
             }), 120000),
 
-            menus.addItemByPath("View/Tabs/Close Tab", new apf.item({
+            menus.addItemByPath("View/Tabs/Close Tab", new ppc.item({
                 command : "closetab"
             }), 100),
-            menus.addItemByPath("View/Tabs/Close All Tabs", new apf.item({
+            menus.addItemByPath("View/Tabs/Close All Tabs", new ppc.item({
                 command : "closealltabs"
             }), 200),
-            menus.addItemByPath("View/Tabs/Close All But Current Tab", new apf.item({
+            menus.addItemByPath("View/Tabs/Close All But Current Tab", new ppc.item({
                 command : "closeallbutme"
             }), 300),
 
-            menus.addItemByPath("Goto/~", new apf.divider(), 300),
+            menus.addItemByPath("Goto/~", new ppc.divider(), 300),
 
             menus.addItemByPath("Goto/Switch File/", null, 301),
 
-            menus.addItemByPath("Goto/Switch File/Next File", new apf.item({
+            menus.addItemByPath("Goto/Switch File/Next File", new ppc.item({
                 command : "gototabright"
             }), 100),
 
-            menus.addItemByPath("Goto/Switch File/Previous File", new apf.item({
+            menus.addItemByPath("Goto/Switch File/Previous File", new ppc.item({
                 command : "gototableft"
             }), 200),
 
-            menus.addItemByPath("Goto/Switch File/~", new apf.divider(), 300),
+            menus.addItemByPath("Goto/Switch File/~", new ppc.divider(), 300),
 
-            menus.addItemByPath("Goto/Switch File/Next File in Stack", new apf.item({
+            menus.addItemByPath("Goto/Switch File/Next File in Stack", new ppc.item({
                 command : "nexttab"
             }), 400),
 
-            menus.addItemByPath("Goto/Switch File/Previous File in Stack", new apf.item({
+            menus.addItemByPath("Goto/Switch File/Previous File in Stack", new ppc.item({
                 command : "previoustab"
             }), 500),
 
-            mnuContext = this.menu = new apf.menu({id : "mnuContextTabs", "onprop.visible" : menus.$checkItems})
+            mnuContext = this.menu = new ppc.menu({id : "mnuContextTabs", "onprop.visible" : menus.$checkItems})
         );
 
         this.mnuTabs.addEventListener("prop.visible", function(e) {
             if (btnEditorTabsBehavior.value)
-                apf.setStyleClass(_self.mnuTabs.$ext, "tabsContextMenu");
+                ppc.setStyleClass(_self.mnuTabs.$ext, "tabsContextMenu");
             else
-                apf.setStyleClass(_self.mnuTabs.$ext, "", ["tabsContextMenu"]);
+                ppc.setStyleClass(_self.mnuTabs.$ext, "", ["tabsContextMenu"]);
         });
 
         tabEditors.addEventListener("contextmenu", function(e) {
@@ -149,29 +149,29 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
 
         mnuContext.addEventListener("prop.visible", function(e) {
-            // use setTimeout because apf closes menu before menuitem onclick event
+            // use setTimeout because ppc closes menu before menuitem onclick event
             if (!e.value)
                 setTimeout(function(){this.$page = null;})
         }, false);
 
-        menus.addItemByPath("Reveal in File Tree", new apf.item({
+        menus.addItemByPath("Reveal in File Tree", new ppc.item({
             command : "revealtab"
         }), 100, mnuContext);
-        menus.addItemByPath("~", new apf.divider(), 200, mnuContext);
-        menus.addItemByPath("Close Tab", new apf.item({
+        menus.addItemByPath("~", new ppc.divider(), 200, mnuContext);
+        menus.addItemByPath("Close Tab", new ppc.item({
             command : "closetab"
         }), 300, mnuContext);
-        menus.addItemByPath("Close All Tabs", new apf.item({
+        menus.addItemByPath("Close All Tabs", new ppc.item({
             command : "closealltabs"
         }), 400, mnuContext);
-        menus.addItemByPath("Close Other Tabs", new apf.item({
+        menus.addItemByPath("Close Other Tabs", new ppc.item({
             command : "closeallbutme"
         }), 500, mnuContext);
-        menus.addItemByPath("~", new apf.divider(), 600, mnuContext);
-        menus.addItemByPath("Close Tabs to the Right", new apf.item({
+        menus.addItemByPath("~", new ppc.divider(), 600, mnuContext);
+        menus.addItemByPath("Close Tabs to the Right", new ppc.item({
             command : "closealltotheright"
         }), 600, mnuContext);
-        menus.addItemByPath("Close Tabs to the Left", new apf.item({
+        menus.addItemByPath("Close Tabs to the Left", new ppc.item({
             command : "closealltotheleft"
         }), 700, mnuContext);
 
@@ -229,7 +229,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             _self.accessList.remove(page);
         });
 
-        var cycleKey = apf.isMac ? 18 : 17;
+        var cycleKey = ppc.isMac ? 18 : 17;
         ide.addEventListener("tab.afterswitch", function(e) {
             var page = e.nextPage;
 
@@ -241,7 +241,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 settings.save();
             }
 
-            if (settings.model.queryValue("auto/panels/@active") == "ext/tree/tree" && apf.isTrue(settings.model.queryValue('general/@revealfile'))) {
+            if (settings.model.queryValue("auto/panels/@active") == "ext/tree/tree" && ppc.isTrue(settings.model.queryValue('general/@revealfile'))) {
                 _self.revealtab(page, true);
             }
         });
@@ -251,13 +251,13 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
                 this.nextTabInLine = _self.accessList[1];
         });
 
-        apf.addEventListener("keydown", function(eInfo) {
+        ppc.addEventListener("keydown", function(eInfo) {
             if (eInfo.keyCode == cycleKey) {
                 _self.cycleKeyPressed = true;
             }
         });
 
-        apf.addEventListener("keyup", function(eInfo) {
+        ppc.addEventListener("keyup", function(eInfo) {
             if (eInfo.keyCode == cycleKey && _self.cycleKeyPressed) {
                 _self.cycleKeyPressed = false;
 
@@ -360,7 +360,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
 
     closeallbutme: function(ignore, callback) {
         // if ignore isn't a page instance, then fallback to current page, unless it's an object from closealltotheright/left
-        if (!(ignore instanceof apf.page)) {
+        if (!(ignore instanceof ppc.page)) {
             if (typeof ignore === "undefined" || typeof ignore.closeall === "undefined") {
                 ignore = ide.getActivePage();
             }
@@ -692,7 +692,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         xpath = pathList[pathList.length - 1];
         //var docNode = page.$doc.getNode();
         // Show spinner in active tab the file is being looked up
-        apf.xmldb.setAttribute(docNode, "lookup", "1");
+        ppc.xmldb.setAttribute(docNode, "lookup", "1");
 
         trFiles.expandList(pathList, function() {
             trFiles.select(trFiles.queryNode(xpath + '/' + type + '[@name="' + file + '"]'));
@@ -701,16 +701,16 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             scrollToFile();
 
             // Hide spinner in active tab
-            apf.xmldb.removeAttribute(docNode, "lookup");
+            ppc.xmldb.removeAttribute(docNode, "lookup");
         });
 
         function scrollToFile() {
             var tree = trFiles;
-            var htmlNode = apf.xmldb.getHtmlNode(tree.selected, tree);
+            var htmlNode = ppc.xmldb.getHtmlNode(tree.selected, tree);
             if (!htmlNode)
                 return;
 
-            var itemPos = apf.getAbsolutePosition(htmlNode, tree.$container);
+            var itemPos = ppc.getAbsolutePosition(htmlNode, tree.$container);
             var top = tree.$container.scrollTop;
             var bottom = top + tree.$container.offsetHeight;
 
@@ -722,7 +722,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             var center = (tree.$container.offsetHeight / 2) | 0;
             var newTop = itemPos[1] - center;
 
-            apf.tween.single(trFiles, {
+            ppc.tween.single(trFiles, {
                 type    : "scrollTop",
                 from    : trFiles.$ext.scrollTop,
                 to      : newTop,
@@ -735,7 +735,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         if (this.more)
             return; // no more items allowed...
 
-        var mnu = this.mnuTabs.appendChild(new apf.item({
+        var mnu = this.mnuTabs.appendChild(new ppc.item({
             caption : page.getAttribute("caption"),
             model   : page.$model,
             relPage : page.id,
@@ -778,7 +778,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             this.sep = null;
         }
         else if (!this.sep && (len || force)) {
-            this.sep = this.mnuTabs.insertBefore(new apf.divider(),
+            this.sep = this.mnuTabs.insertBefore(new ppc.divider(),
                 this.mnuTabs.childNodes[this.menuOffset]);
         }
 
@@ -789,7 +789,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             }
         }
         else if (!this.more) {
-            this.more = this.mnuTabs.appendChild(new apf.item({
+            this.more = this.mnuTabs.appendChild(new ppc.item({
                 caption : "More...",
                 onclick : function() {
                     panels.activate(openfiles);

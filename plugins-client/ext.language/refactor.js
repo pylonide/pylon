@@ -71,13 +71,13 @@ module.exports = {
             _self.$cleanup();
         });
 
-        this.mnuItem = new apf.item({
+        this.mnuItem = new ppc.item({
             disabled: true,
             command : "renameVar"
         });
 
         ext.nodes.push(
-            menus.addItemByPath("Tools/~", new apf.divider(), 10000),
+            menus.addItemByPath("Tools/~", new ppc.divider(), 10000),
             menus.addItemByPath("Tools/Rename Variable", this.mnuItem, 20000)
         );
         
@@ -97,7 +97,7 @@ module.exports = {
         // right click context item in ace
         ide.addEventListener("init.ext/code/code", function() {
             ext.nodes.push(
-                mnuCtxEditor.insertBefore(new apf.item({
+                mnuCtxEditor.insertBefore(new ppc.item({
                     id : "mnuCtxEditorRename",
                     caption : "Rename",
                     command: "renameVar"

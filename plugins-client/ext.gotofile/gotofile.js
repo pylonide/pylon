@@ -39,7 +39,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
     hook : function(){
         var _self = this;
 
-        var mnuItem = new apf.item({
+        var mnuItem = new ppc.item({
             command : "gotofile"
         });
 
@@ -63,7 +63,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             menus.addItemByPath("File/Open...", mnuItem, 500),
             menus.addItemByPath("Goto/Goto File...", mnuItem.cloneNode(false), 100),
 
-            this.model = new apf.model()
+            this.model = new ppc.model()
         );
 
         ide.addEventListener("init.ext/editors/editors", this.$initEditorExt = function(){
@@ -163,7 +163,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
                 _self.openFile(true);
                 return false;
             }
-            else if (apf.isCharacter(e.keyCode)) {
+            else if (ppc.isCharacter(e.keyCode)) {
                 txtGoToFile.focus();
                 return;
             }
@@ -171,12 +171,12 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             e.preventDefault();
         }, true);
 
-        apf.addListener(dgGoToFile.$ext, "mouseup", function(e) {
+        ppc.addListener(dgGoToFile.$ext, "mouseup", function(e) {
             _self.openFile();
         });
 
         winGoToFile.addEventListener("blur", function(e){
-            if (winGoToFile.visible && !apf.isChildOf(winGoToFile, e.toElement))
+            if (winGoToFile.visible && !ppc.isChildOf(winGoToFile, e.toElement))
                 _self.toggleDialog(-1);
         });
 
@@ -188,7 +188,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
 
         txtGoToFile.addEventListener("blur", function(e){
             if (self.winGoToFile && winGoToFile.visible
-              && !apf.isChildOf(winGoToFile, e.toElement))
+              && !ppc.isChildOf(winGoToFile, e.toElement))
                 _self.toggleDialog(-1);
         });
 
@@ -267,7 +267,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
         var _self = this;
 
         filelist.getFileList(isDirty, function(data, state){
-            if (state != apf.SUCCESS)
+            if (state != ppc.SUCCESS)
                 return;
 
             var array = data.replace(/^\./gm, "").split("\n");
@@ -282,7 +282,7 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             var arrN = [];
             while(i < c) { arrN.push(i++); }
 
-            data = apf.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
+            data = ppc.getXml("<d:multistatus  xmlns:d='DAV:'><d:response>"
                 + start + arrN.join(glue) + end + "</d:response></d:multistatus>");
 
             _self.arrayCache = array;
@@ -492,10 +492,10 @@ module.exports = ext.register("ext/gotofile/gotofile", {
             //Hide window until the list is loaded, unless we don't have data yet
             if (!dgGoToFile.xmlRoot) {
                 dgGoToFile.$setClearMessage(dgGoToFile["loading-message"], "loading");
-                apf.setOpacity(winGoToFile.$ext, 1);
+                ppc.setOpacity(winGoToFile.$ext, 1);
             }
             else {
-                apf.setOpacity(winGoToFile.$ext, 1);
+                ppc.setOpacity(winGoToFile.$ext, 1);
             }
 
             if (!txtGoToFile.inited) {

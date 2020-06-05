@@ -61,19 +61,19 @@ module.exports = ext.register("ext/newresource/newresource", {
         });
 
         this.nodes.push(
-            menus.addItemByPath("File/New File", new apf.item({
+            menus.addItemByPath("File/New File", new ppc.item({
                 disabled: readonly,
                 command : "newfile",
             }), 100),
-            menus.addItemByPath("File/New From Template...", new apf.item({
+            menus.addItemByPath("File/New From Template...", new ppc.item({
                 disabled: readonly,
                 command : "newfiletemplate"
             }), 200),
-            menus.addItemByPath("File/New Folder", new apf.item({
+            menus.addItemByPath("File/New Folder", new ppc.item({
                 disabled: readonly,
                 command : "newfolder"
             }), 300),
-            menus.addItemByPath("File/~", new apf.divider(), 400)
+            menus.addItemByPath("File/~", new ppc.divider(), 400)
         );
     },
 
@@ -86,7 +86,7 @@ module.exports = ext.register("ext/newresource/newresource", {
             return;
         if (!type) type = "";
 
-        var node = apf.getXml("<file />");
+        var node = ppc.getXml("<file />");
 
         if (!path && self.trFiles) {
             var sel = trFiles.selected;

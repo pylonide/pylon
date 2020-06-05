@@ -20,10 +20,10 @@ module.exports = ext.register("ext/undo/undo", {
     type   : ext.GENERAL,
 
     init : function(amlNode){
-        menus.addItemByPath("Edit/Undo", new apf.item({
+        menus.addItemByPath("Edit/Undo", new ppc.item({
             command : "undo",
         }), 100);
-        menus.addItemByPath("Edit/Redo", new apf.item({
+        menus.addItemByPath("Edit/Redo", new ppc.item({
             command : "redo"
         }), 200);
     },
@@ -32,12 +32,12 @@ module.exports = ext.register("ext/undo/undo", {
         if (document.activeElement && ta[document.activeElement.tagName])
             return false;
 
-        if (apf.isChildOf(tabEditors, apf.activeElement, true)) {
+        if (ppc.isChildOf(tabEditors, ppc.activeElement, true)) {
             var _tabPage;
             if(_tabPage = ide.getActivePage())
                 _tabPage.$at.undo();
         }
-        else if (apf.activeElement == self.trFiles) {
+        else if (ppc.activeElement == self.trFiles) {
             //@todo the way undo is implemented doesn't work right now
             //trFiles.getActionTracker().undo();
         }
@@ -47,12 +47,12 @@ module.exports = ext.register("ext/undo/undo", {
         if (document.activeElement && ta[document.activeElement.tagName])
             return false;
 
-        if (apf.isChildOf(tabEditors, apf.activeElement, true)) {
+        if (ppc.isChildOf(tabEditors, ppc.activeElement, true)) {
             var _tabPage;
             if(_tabPage = ide.getActivePage())
                 _tabPage.$at.redo();
         }
-        else if (apf.activeElement == self.trFiles) {
+        else if (ppc.activeElement == self.trFiles) {
             //@todo the way undo is implemented doesn't work right now
             //trFiles.getActionTracker().redo();
         }

@@ -15,7 +15,7 @@
         <a:bar id="barKeyBindingsMac"
           skin="basic"
           class="keybindings_default_bar"
-          visible="{apf.isMac}"/>
+          visible="{ppc.isMac}"/>
         <a:scrollbar
           for      = "barKeyBindingsMac"
           id       = "sbKeyBindingsMac"
@@ -29,7 +29,7 @@
         <a:bar id="barKeyBindingsWin"
           skin="basic"
           class="keybindings_default_bar"
-          visible="{!apf.isMac}"/>
+          visible="{!ppc.isMac}"/>
         <a:scrollbar
           for      = "barKeyBindingsWin"
           id       = "sbKeyBindingsWin"

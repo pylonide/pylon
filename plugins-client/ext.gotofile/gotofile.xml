@@ -25,7 +25,7 @@
                     var gotofile = require('ext/gotofile/gotofile');
                     var value = gotofile.arraySearchResults[[text()]] || "";
                     <span>{
-                        gotofile.replaceStrong(apf.getFilename(value), txtGoToFile.value);
+                        gotofile.replaceStrong(ppc.getFilename(value), txtGoToFile.value);
                     }</span>
                     <span class="path">{gotofile.replaceStrong(value, txtGoToFile.value);}</span>
                 ?></a:caption>
