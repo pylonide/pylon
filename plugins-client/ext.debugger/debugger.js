@@ -17,7 +17,7 @@ var fs = require("ext/filesystem/filesystem");
 var markup = require("text!ext/debugger/debugger.xml");
 var breakpoints = require("./breakpoints");
 var sources = require("./sources");
-var ppchook = require("./apfhook");
+var ppchook = require("./ppchook");
 
 require("ext/debugger/inspector");
 
