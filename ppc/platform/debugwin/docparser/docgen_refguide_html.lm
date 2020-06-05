@@ -27,8 +27,8 @@
         return str.replace(/<code>([\s\S]*?)<\/code>/g, function(m, m1){
             return '<pre class="code">' + 
                 (m1.trim().charAt(0) == "<" 
-                    ? apf.highlightXml(m1)
-                    : apf.highlightJs(m1)) + '</pre>';
+                    ? ppc.highlightXml(m1)
+                    : ppc.highlightJs(m1)) + '</pre>';
         });
     }
     
@@ -641,7 +641,7 @@
         <h2>Syntax</h2>
         <table class="syntax" cellpadding="0" cellspacing="0">
             <tr><th>AML</th><td>&lt;a:<strong>[@name]</strong> id="jObj" /&gt;</td></tr>
-            <tr><th>Scripting</th><td>\[ jObj = \] <i>apf.document</i>.createElement("<strong>[@name]</strong>");</td></tr>
+            <tr><th>Scripting</th><td>\[ jObj = \] <i>ppc.document</i>.createElement("<strong>[@name]</strong>");</td></tr>
         </table>
         
         var types = [['attribute', 'Attributes'], ['event', 'Events'], ['binding', 'Bindings'], ['action', 'Actions'], ['method', 'Methods'], ['property|object', 'Properties'], ['skinitem', 'Skin Items']];

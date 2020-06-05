@@ -14,13 +14,13 @@ function parse_xsd(docTree, outputFolderObj) {
     var output = '<?xml version="1.0" encoding="UTF-8"?>';
     
     // create file for xml schema
-    var xmlSchemaFile = apf.getXml('<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ajax.org/2005/aml" xmlns:a="http://ajax.org/2005/aml" elementFormDefault="qualified" attributeFormDefault="unqualified" />');
+    var xmlSchemaFile = ppc.getXml('<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ajax.org/2005/aml" xmlns:a="http://ajax.org/2005/aml" elementFormDefault="qualified" attributeFormDefault="unqualified" />');
     
     // create file for aptana
-    var aptanaFile = apf.getXml('<javascript />');
+    var aptanaFile = ppc.getXml('<javascript />');
 
     // create file for property editor
-    var propeditFile = apf.getXml('<props />');
+    var propeditFile = ppc.getXml('<props />');
     
     // add startNode
     var startNode = getTemplate("startElement");
@@ -44,7 +44,7 @@ function parse_xsd(docTree, outputFolderObj) {
         list = docTree[type];
 
         for (var name in list) {
-            var obj = new xsdNode(list[name], name.replace("apf.", ""), type, xmlSchemaFile, aptanaFile, propeditFile, docTree, groups);
+            var obj = new xsdNode(list[name], name.replace("ppc.", ""), type, xmlSchemaFile, aptanaFile, propeditFile, docTree, groups);
         } 
     }
     
@@ -56,23 +56,23 @@ function parse_xsd(docTree, outputFolderObj) {
     if (docparser.outputXmlSchema) {
         // save xmlschema file
         if (outputPathObj) {
-            outputPathObj.get("xmlschema/apf_xmlschema.xsd").data = output + xmlSchemaFile.xml;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "xmlschema\\apf_xmlschema.xsd"});
+            outputPathObj.get("xmlschema/ppc_xmlschema.xsd").data = output + xmlSchemaFile.xml;
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "xmlschema\\ppc_xmlschema.xsd"});
         }
         else {
-            $o3.fs.get("refguide/xmlschema/apf_xmlschema.xsd").data = output + xmlSchemaFile.xml;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xmlschema\\apf_xmlschema.xsd"});
+            $o3.fs.get("refguide/xmlschema/ppc_xmlschema.xsd").data = output + xmlSchemaFile.xml;
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xmlschema\\ppc_xmlschema.xsd"});
         }
-        apf.dispatchEvent("docgen_complete", {type: "xmlschema"});
+        ppc.dispatchEvent("docgen_complete", {type: "xmlschema"});
     }
 
     
     // save aptana file
     /*
     if (outputPathObj)
-        outputPathObj.get("aptana/apf_aptana.xml").data = output + aptanaFile.xml;
+        outputPathObj.get("aptana/ppc_aptana.xml").data = output + aptanaFile.xml;
     else
-        $o3.fs.get((outputPath || "documentation/") + "aptana/apf_aptana.xml").data = output + aptanaFile.xml;
+        $o3.fs.get((outputPath || "documentation/") + "aptana/ppc_aptana.xml").data = output + aptanaFile.xml;
     */
     
     if (docparser.outputPropedit) {
@@ -86,7 +86,7 @@ function parse_xsd(docTree, outputFolderObj) {
 
             // start at one to prevent starting element to be added again
             for (var inherit, cloneNodes = [], cloneNode, ii = 1, il = inherits.length; ii < il; ii++) {
-                inherit = (inherits[ii].indexOf("apf.") == 0) ? inherits[ii].substr(4) : inherits[ii];
+                inherit = (inherits[ii].indexOf("ppc.") == 0) ? inherits[ii].substr(4) : inherits[ii];
                 
                 if (propeditFile.selectSingleNode(inherit)) {
                     var nodeToClone = propeditFile.selectSingleNode(inherit + "/group[@caption='General']");
@@ -136,11 +136,11 @@ function parse_xsd(docTree, outputFolderObj) {
 
             if (outputPathObj) {
                 outputPathObj.get("propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + "</props>";
-                apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "propedit\\" + element + ".xml"});
+                ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "propedit\\" + element + ".xml"});
             }
             else {
                 $o3.fs.get("refguide/propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + "</props>";
-                apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\propedit\\" + element + ".xml"});   
+                ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\propedit\\" + element + ".xml"});   
             }
             
     //        $o3.fs.get((outputPath || "refguide/") + "propedit/" + element + ".xml").data = "<props>" + propeditFile.childNodes[ei].xml + cloneNodes.join("") + "</props>";
@@ -149,15 +149,15 @@ function parse_xsd(docTree, outputFolderObj) {
         // save property editor file
         if (outputPathObj) {
             outputPathObj.get("propedit/propedit.xml").data = output + propeditFile.xml;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "propedit\\propedit.xml"});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "propedit\\propedit.xml"});
         }
         else {
             $o3.fs.get("refguide/propedit/propedit.xml").data = output + propeditFile.xml;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\propedit\\propedit.xml"});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\propedit\\propedit.xml"});
         }
         
         // files created!
-        apf.dispatchEvent("docgen_complete", {type: "propedit files"});
+        ppc.dispatchEvent("docgen_complete", {type: "propedit files"});
 
     }
 }
@@ -307,7 +307,7 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
 
                 //ignore readonly attributes
                 if (attribute.readonly) {
-                    apf.console.info("attribute " + attribute.name + " ignored: readonly");
+                    ppc.console.info("attribute " + attribute.name + " ignored: readonly");
                     continue;
                 }
 
@@ -643,7 +643,7 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
                 if (attribute.dataType) {
                     if (attribute.dataType.toLowerCase().indexOf(",") > -1) {
                         type = dataTypes["string"]
-                        //apf.console.warn("attribute " + attribute.name + " van " + this.obj.name + "heeft meerdere dataTypes");
+                        //ppc.console.warn("attribute " + attribute.name + " van " + this.obj.name + "heeft meerdere dataTypes");
                     } else {
                         type = dataTypes[attribute.dataType.toLowerCase()]
                         // if no type set or found, set to string
@@ -710,7 +710,7 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
     // check if prototype is set and exists
     this.prototype = (this.obj.prototype && docTree.baseclass[this.obj.prototype]) ? true : false;
     if (this.obj.prototype && !docTree.baseclass[this.obj.prototype])
-        apf.console.warn(this.obj.fullname + " has non existing prototype " + this.obj.prototype);
+        ppc.console.warn(this.obj.fullname + " has non existing prototype " + this.obj.prototype);
     
 	// create element
     if (type == "element") {
@@ -735,7 +735,7 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
                 
                 // if inherits item not defined in docTree.baseclass
                 if (!docTree.baseclass[this.obj.inherits[i]]) {
-                    apf.console.warn(this.obj.fullname + " inherits from non existing baseclass " + this.obj.inherits[i]);
+                    ppc.console.warn(this.obj.fullname + " inherits from non existing baseclass " + this.obj.inherits[i]);
                     continue;
                 }
                 
@@ -769,8 +769,8 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
         addToGroup(this.obj, groups, docTree);
         
         // set element group reference
-        var dataBinding = inheritFrom(this.obj, "apf.DataBinding", docTree);
-        var allowChild = memberOfGroup(name, this.groups, "nonguielements") || ["apf.actions", "apf.bindings", "apf.smartbinding"].indexOf(name.toLowerCase()) > -1;
+        var dataBinding = inheritFrom(this.obj, "ppc.DataBinding", docTree);
+        var allowChild = memberOfGroup(name, this.groups, "nonguielements") || ["ppc.actions", "ppc.bindings", "ppc.smartbinding"].indexOf(name.toLowerCase()) > -1;
         
         if (dataBinding) {
             var elGroups = ["nonguielements", "actionbinding"];
@@ -855,7 +855,7 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
     aptClassXml.setAttribute("type", name.toLowerCase());
     
     // add superclass
-    if (this.prototype) aptClassXml.setAttribute("superclass", this.obj.prototype.replace("apf.", "").toLowerCase());
+    if (this.prototype) aptClassXml.setAttribute("superclass", this.obj.prototype.replace("ppc.", "").toLowerCase());
 
     // add description
     if (this.obj.description && this.obj.description.length) {
@@ -933,9 +933,9 @@ function xsdNode(obj, name, type, xmlSchemaFile, aptanaFile, propeditFile, docTr
 
 // get xml template for given element type
 function getTemplate(type) {
-    var docEl = new apf.http().getXml("template.xsd", null, {async: false}) || new apf.http().getXml("docparser/template.xsd", null, {async: false});
+    var docEl = new ppc.http().getXml("template.xsd", null, {async: false}) || new ppc.http().getXml("docparser/template.xsd", null, {async: false});
 
-    if (apf.isIE)
+    if (ppc.isIE)
         docEl.ownerDocument.setProperty("SelectionNamespaces", "xmlns:xs='http://www.w3.org/2001/XMLSchema'");
     
     if (type == "startElement") {
@@ -1024,9 +1024,9 @@ function addToGroup(obj, groups, docTree) {
     var group = "nonguielements";
 
     // check up the tree for prototype guielement, actionrule of bindingrule
-    if (inheritFrom(obj, "apf.GuiElement", docTree))
+    if (inheritFrom(obj, "ppc.GuiElement", docTree))
         group = "guielements";
-    else if (["apf.actions", "apf.bindings", "apf.smartbinding"].indexOf(obj.fullname.toLowerCase()) > -1 || inheritFrom(obj, "apf.ActionRule", docTree) || (inheritFrom(obj, "apf.BindingRule", docTree)))
+    else if (["ppc.actions", "ppc.bindings", "ppc.smartbinding"].indexOf(obj.fullname.toLowerCase()) > -1 || inheritFrom(obj, "ppc.ActionRule", docTree) || (inheritFrom(obj, "ppc.BindingRule", docTree)))
         group = "actionbinding";
 
     // create xml node for element when not already added
@@ -1042,7 +1042,7 @@ function addToGroup(obj, groups, docTree) {
 
 // get array of all baseclasses the given obj inherits from
 function getTreeList(obj, tree) {
-    var tree = (tree) ? tree : ["apf." + obj.name];
+    var tree = (tree) ? tree : ["ppc." + obj.name];
     
     if (obj.inherits && obj.inherits.length) {
         for (var i = 0, l = obj.inherits.length; i < l; i++) {
@@ -1137,7 +1137,7 @@ function inheritFromSame(obj1, obj2, docTree) {
 // check if element exist in specific group
 function memberOfGroup(name, groups, groupName) {
     var seq = groups[groupName].selectSingleNode(".//xs:sequence");
-    if (seq.selectSingleNode(".//xs:element[@ref='" + name.replace("apf.", "") + "']")) {
+    if (seq.selectSingleNode(".//xs:element[@ref='" + name.replace("ppc.", "") + "']")) {
         return true;
     }
     return false;

@@ -114,7 +114,7 @@
     outline : none;
 }
 
-.apf_btn #txt_rename.editable{
+.ppc_btn #txt_rename.editable{
     width : 100%;
     padding : 0;
     margin : 0;
@@ -146,7 +146,7 @@
     filter:progid:DXImageTransform.Microsoft.Alpha(opacity=50);
 }
 
-html.has_apf .drag#apf_outline{
+html.has_ppc .drag#ppc_outline{
     border : 2px solid gray;
     background : transparent;
     filter:;

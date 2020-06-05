@@ -31,9 +31,9 @@ function parse_refguide_xml(docTree, outputFolderObj) {
         {name: "object", list: docTree.object}
 //        {name: "method", list: docTree.method}, 
     ];
-    // add methods to apf.object
-    if (docTree.object.apf)
-	   docTree.object.apf.method = docTree.method;
+    // add methods to ppc.object
+    if (docTree.object.ppc)
+	   docTree.object.ppc.method = docTree.method;
 
     var output = [], created = [], createdTerms = [];
     for (var i = 0, l = list.length; i<l; i++) {
@@ -55,7 +55,7 @@ function parse_refguide_xml(docTree, outputFolderObj) {
                 
                 // add to navList
                 if (type == "baseclass")
-                    navList.baseclass.push({n: name.replace("apf.", "")});
+                    navList.baseclass.push({n: name.replace("ppc.", "")});
 
                 // o3 object, loop through child objects
                 if (list[i].name == "object" && name == "o3") {
@@ -88,10 +88,10 @@ function parse_refguide_xml(docTree, outputFolderObj) {
             }
         }
     }
-    //apf.dispatchEvent("docgen_complete", {type: "xml files"});
+    //ppc.dispatchEvent("docgen_complete", {type: "xml files"});
 
     if (docparser.outputHtml) {
-        var http = new apf.http();
+        var http = new ppc.http();
         var lmFile = "file:///C:/development/javeline/docparser/docgen_refguide_html.lm";
         if (outputPathObj) {
             lmFile = "docparser/docgen_refguide_html.lm";
@@ -99,7 +99,7 @@ function parse_refguide_xml(docTree, outputFolderObj) {
         
         http.get(lmFile, {
             callback: function(str) {
-                lm = apf.lm.compile(str);
+                lm = ppc.lm.compile(str);
                 
                 // all but terms
                 for (var i = 0, l = created.length; i<l; i++) {
@@ -115,7 +115,7 @@ function parse_refguide_xml(docTree, outputFolderObj) {
                 }
                 
                 // finished generating html and xml files!!
-                //apf.dispatchEvent("docgen_complete", {type: "html files"});
+                //ppc.dispatchEvent("docgen_complete", {type: "html files"});
             }
         });
         
@@ -123,7 +123,7 @@ function parse_refguide_xml(docTree, outputFolderObj) {
 
     // nav.xml
     if (docparser.outputNav) {
-        var navXml = apf.getXml("<sections />");
+        var navXml = ppc.getXml("<sections />");
         var doc     = navXml.ownerDocument;
         
         var navListHeader = {
@@ -182,22 +182,22 @@ function parse_refguide_xml(docTree, outputFolderObj) {
         var fileContent = '<?xml version="1.0"?>' + "\n" + navXml.xml;
         if (outputPathObj) {
             outputPathObj.get("nav/nav.xml").data = fileContent;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "nav\\nav.xml"});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "nav\\nav.xml"});
         }
         else {
             $o3.fs.get("refguide/nav/nav.xml").data = fileContent;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\nav.xml"});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\nav.xml"});
         }
-        apf.dispatchEvent("docgen_complete", {type: "Nav"});
+        ppc.dispatchEvent("docgen_complete", {type: "Nav"});
     }
     
 	//var win = window.open();
-    //win.document.write(apf.formatXml(output.join("\n")));
+    //win.document.write(ppc.formatXml(output.join("\n")));
 }
 
 function refguideTerm(obj){
     this.obj = obj;
-    this.xml    = apf.getXml("<term />");
+    this.xml    = ppc.getXml("<term />");
     var doc     = this.xml.ownerDocument;
     this.xml.setAttribute("name", obj.name);
     
@@ -231,11 +231,11 @@ function refguideTerm(obj){
         var fileContent = '<?xml version="1.0"?>' + "\n" + content;
         if (outputPathObj) {
             outputPathObj.get("xml/" + name).data = fileContent;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
         }
         else {
             $o3.fs.get("refguide/xml/" + name).data = fileContent;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xml\\" + name});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xml\\" + name});
         }
         
     }
@@ -244,7 +244,7 @@ function refguideTerm(obj){
         var xml = this.xml;
 
         var filename = this.xmlFilename;
-        apf.console.info("Processing " + filename + ".xml");
+        ppc.console.info("Processing " + filename + ".xml");
         
         var file = (outputPathObj) ? outputPathObj.get("html/" + filename + ".html") : $o3.fs.get(output + "html\\" + filename + ".html");
         
@@ -252,9 +252,9 @@ function refguideTerm(obj){
         file.data = fParsed(xml);
         
         if (outputPathObj)
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
         else
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + "html\\" + filename  + ".html"});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + "html\\" + filename  + ".html"});
     }
 }
 
@@ -270,7 +270,7 @@ function refguideDoc(obj, docTree){
     } 
     */
     this.type = type;
-    this.xml = apf.getXml("<" + type + " />");
+    this.xml = ppc.getXml("<" + type + " />");
     
     // set xml node attributes
     if (this.obj.filename) this.xml.setAttribute("file", this.obj.filename);
@@ -356,7 +356,7 @@ function refguideDoc(obj, docTree){
                         if (type != "param") {
                             var pType = (this.obj.type == "class") ? "element" : this.obj.type;
                             
-                            if (this.obj.fullname.substr(0, 4) == "apf.")
+                            if (this.obj.fullname.substr(0, 4) == "ppc.")
                                 navList[type].push({n: n[i].name, p: pType + "." + this.obj.fullname.substr(4)}); 
                             else
                                 navList[type].push({n: n[i].name, p: pType + "." + this.obj.fullname});
@@ -379,7 +379,7 @@ function refguideDoc(obj, docTree){
                             }
 
                                 //if (docTree.baseclass[n[i]] && n[i] != this.obj.prototype && !inheritFrom(docTree.baseclass[n[i]], this.obj.prototype, docTree)) {
-                            var value = (n[i].toLowerCase().substr(0, 4) == "apf.") ? n[i].substr(4) : n[i];
+                            var value = (n[i].toLowerCase().substr(0, 4) == "ppc.") ? n[i].substr(4) : n[i];
                             this.xml.appendChild(doc.createElement(name))
                             .setAttribute("name", value);
                                 //}
@@ -424,7 +424,7 @@ function refguideDoc(obj, docTree){
                         //if (type == "method") {
                             if (this.obj.context.name != "o3" && this.obj.name != "o3"){
                                 var pType = (this.obj.type == "class") ? "element" : this.obj.type;
-                                if (this.obj.fullname.substr(0, 4) == "apf.")
+                                if (this.obj.fullname.substr(0, 4) == "ppc.")
                                     navList[type].push({n: n[j].name, p: pType + "." + this.obj.fullname.substr(4)});
                                 else
                                     navList[type].push({n: n[j].name, p: pType + "." + this.obj.fullname});
@@ -447,8 +447,8 @@ function refguideDoc(obj, docTree){
                     var inheritList = this.xml.selectNodes("//inherit");
                     var addPrototype = true;
                     for (var tree, ini = 0, inl = inheritList.length; ini < inl; ini++) {
-                        if (!docTree.baseclass["apf." + inheritList[ini].getAttribute("name")]) continue;
-                        tree = getTreeList(docTree.baseclass["apf." + inheritList[ini].getAttribute("name")]);
+                        if (!docTree.baseclass["ppc." + inheritList[ini].getAttribute("name")]) continue;
+                        tree = getTreeList(docTree.baseclass["ppc." + inheritList[ini].getAttribute("name")]);
                         if (tree.indexOf(n) > -1) { 
                             addPrototype = false;
                             break;
@@ -457,7 +457,7 @@ function refguideDoc(obj, docTree){
                     }
 
                     if (addPrototype) {
-                        var value = (n.toLowerCase().substr(0, 4) == "apf.") ? n.substr(4) : n;
+                        var value = (n.toLowerCase().substr(0, 4) == "ppc.") ? n.substr(4) : n;
                         this.xml.appendChild(doc.createElement("inherit"))
                         .setAttribute("name", value);
                     }
@@ -490,10 +490,10 @@ function refguideDoc(obj, docTree){
                 var el;
                 var types = ["baseclass", "class", "element", "method"];
                 for (var i = 0; i < types.length; i++) {
-                    el = docTree[types[i]]["apf." + uName] || docTree[types[i]][uName];
+                    el = docTree[types[i]]["ppc." + uName] || docTree[types[i]][uName];
                     if (el) break;
                 }
-                //el = docTree[uType]["apf." + uName] || docTree[uType][uName];
+                //el = docTree[uType]["ppc." + uName] || docTree[uType][uName];
                 
                 var type = ((el && el.elementNames) || docTree.element[uName]) ? "element" : types[i];
                 
@@ -546,7 +546,7 @@ function refguideDoc(obj, docTree){
             this.createXMLFile(this.type + "." + name.toLowerCase() + ".xml", this.xml.xml);
         //}
 
-        //document.getElementById("divlog").innerHTML += "<pre>" + apf.htmlentities(apf.formatXml(this.xml.xml)) + "</pre>";
+        //document.getElementById("divlog").innerHTML += "<pre>" + ppc.htmlentities(ppc.formatXml(this.xml.xml)) + "</pre>";
         //debugger;
     }
     
@@ -554,11 +554,11 @@ function refguideDoc(obj, docTree){
         var fileContent = '<?xml version="1.0"?>' + "\n" + content;
         if (outputPathObj) {
             outputPathObj.get("xml/" + name).data = fileContent;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + name});
         }
         else {
             $o3.fs.get("refguide/xml/" + name).data = fileContent;
-            apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xml\\" + name});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "refguide\\xml\\" + name});
         }
         
         
@@ -590,10 +590,10 @@ function refguideDoc(obj, docTree){
             }
 
             if (!file.exists || !file.data) {
-                apf.console.warn("Missing file: " + filename + ".xml");
-                return apf.getXml("<empty />");
+                ppc.console.warn("Missing file: " + filename + ".xml");
+                return ppc.getXml("<empty />");
             }
-            var data = apf.getXml(file.data, null, true);
+            var data = ppc.getXml(file.data, null, true);
             self.cache[filename] = data;
 
             return data;
@@ -618,18 +618,18 @@ function refguideDoc(obj, docTree){
             xml.setAttribute("name", fileList[fi].name);
             
             if (this.type != fileList[fi].type)
-                xml = apf.getXml(xml.xml.replace("<" + this.type, "<" + fileList[fi].type).replace("</" + this.type + ">", "</" + fileList[fi].type + ">"));
+                xml = ppc.getXml(xml.xml.replace("<" + this.type, "<" + fileList[fi].type).replace("</" + this.type + ">", "</" + fileList[fi].type + ">"));
 
-            //apf.console.info("Processing " + filename + ".xml");
+            //ppc.console.info("Processing " + filename + ".xml");
             
             var file = (outputPathObj) ? outputPathObj.get("html/" + filename + ".html") : $o3.fs.get(output + "html/" + filename + ".html");
             
             //if (file.exists) return;
             file.data = fParsed(xml);
             if (outputPathObj)
-                apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "html\\" + filename + ".html"});
+                ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + "html\\" + filename + ".html"});
             else
-                apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + "html\\" + filename + ".html"});
+                ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + "html\\" + filename + ".html"});
             
             var nodes = xml.selectNodes("attribute|event|binding|action|method|property|object|skinitem");
             for (var i = 0; i < nodes.length; i++) {
@@ -644,9 +644,9 @@ function refguideDoc(obj, docTree){
                 file.data = fParsed(nodes[i]);
                 
                 if (outputPathObj)
-                    apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + fname + ".html"});
+                    ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + fname + ".html"});
                 else
-                    apf.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + fname + ".html"});
+                    ppc.dispatchEvent("docgen_message", {message: "Generated: " + outputFolder + output + fname + ".html"});
                 
                 var subnodes = nodes[i].selectNodes("attribute|event");
                 for (var j = 0; j < subnodes.length; j++) {
@@ -655,7 +655,7 @@ function refguideDoc(obj, docTree){
                         : $o3.fs.get(fname + "." + subnodes[j].tagName + "." + subnodes[j].getAttribute("name").toLowerCase() + ".html");
 
                     file.data = fParsed(subnodes[j]);
-                    apf.dispatchEvent("docgen_message", {message: "Generated: " + fname + "." + subnodes[j].tagName + "." + subnodes[j].getAttribute("name").toLowerCase() + ".html"});
+                    ppc.dispatchEvent("docgen_message", {message: "Generated: " + fname + "." + subnodes[j].tagName + "." + subnodes[j].getAttribute("name").toLowerCase() + ".html"});
                 }
             }
         }
@@ -665,11 +665,11 @@ function refguideDoc(obj, docTree){
                 continue;
             
             file = $o3.fs.get(output + "xml/" + filename.replace(/\.([\w-]+)$/, "." + this.alias[i] + ".xml"));
-            xml = apf.getXml(file.data);
+            xml = ppc.getXml(file.data);
 
             file = $o3.fs.get(output + "html/" + file.name.replace(/\.xml$/, "") + ".html");
             file.data = fParsed(xml);
-            apf.dispatchEvent("docgen_message", {message: "Generated: html\\" + file.name.replace(/\.xml$/, "") + ".html"});
+            ppc.dispatchEvent("docgen_message", {message: "Generated: html\\" + file.name.replace(/\.xml$/, "") + ".html"});
         }
 */
     }
