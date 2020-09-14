@@ -18,7 +18,7 @@ module.exports = function startup(options, imports, register) {
     if (options.registerClientRoutes !== false) {
 
         imports["static"].addStatics([{
-            path: PATH.dirname(require.resolve("engine.io-client/engine.io.js")),
+            path: PATH.dirname(require.resolve("engine.io-client/dist/engine.io.min.js")),
             mount: "/engine.io",
             rjs: [
                 {
@@ -223,7 +223,7 @@ function attachEngineIo(server, options) {
     }
   });
 
-  if(~engine.transports.indexOf('websocket')) {
+  if(~engine.opts.transports.indexOf('websocket')) {
     server.on('upgrade', function (req, socket, head) {
       if (options.check(req.url)) {
         engine.handleUpgrade(req, socket, head);
@@ -242,7 +242,7 @@ function attachEngineIo(server, options) {
   }
 
   // flash policy file
-  var trns = engine.transports;
+  var trns = engine.opts.transports;
   var policy = options.policyFile;
   if (~trns.indexOf('flashsocket') && false !== policy) {
     server.on('connection', function (socket) {
