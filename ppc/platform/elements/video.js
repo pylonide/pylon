@@ -331,7 +331,7 @@ ppc.video = function(struct, tagName){
     };
 
     /**
-     * Checks if a specified playerType is supported by APF or not...
+     * Checks if a specified playerType is supported by PPC or not...
      *
      * @type {Boolean}
      */

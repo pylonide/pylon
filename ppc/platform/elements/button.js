@@ -29,7 +29,7 @@
  * #### Example: Working with Events
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <a:table columns="100, 100" cellheight="24">
  *      <a:label>Onclick event</a:label>
  *      <a:button
@@ -57,7 +57,7 @@
  * #### Example: Interactions and Colors
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <a:table columns="250" cellheight="24">
  *  <!-- startcontent -->
  *  <a:button

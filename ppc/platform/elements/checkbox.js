@@ -28,7 +28,7 @@
  * #### Example: Setting and Retrieving Values
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:checkbox 
  *   id      = "ch1" 
@@ -42,7 +42,7 @@
  * #### Example: Disabled Values
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:checkbox checked="true">Option 1</a:checkbox>
  *   <a:checkbox>Option 2</a:checkbox>

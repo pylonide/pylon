@@ -30,7 +30,7 @@
  * #### Example
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  * <!-- startcontent -->
  *  <a:tab id="tab" width="300" height="100">
  *      <a:page caption="General">

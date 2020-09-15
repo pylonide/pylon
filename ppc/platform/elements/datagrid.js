@@ -28,12 +28,12 @@
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="mdl">
  *         <data>
  *             <news name="Ajax" icon="note.png" count="54"></news>
- *             <news name="Ajax.org Platform" icon="note_b.png" count="3237">
+ *             <news name="Pylon Platform Code" icon="note_b.png" count="3237">
  *             </news>
  *             <news name="Android" icon="note.png" count="2"></news>
  *             <news name="Apple" icon="note.png" count="11"></news>

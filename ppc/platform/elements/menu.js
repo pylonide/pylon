@@ -29,7 +29,7 @@
  * #### Example
  * 
  * ```xml, demo
- *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:menu id="menu1">
  *       <a:item>Tutorials</a:item>

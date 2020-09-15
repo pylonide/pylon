@@ -39,7 +39,7 @@ ppc.setNamespace("", ppc.html5);
 /**
  * @define input
  * Remarks:
- * Ajax.org Platform supports the input types specified by the WHATWG html5 spec.
+ * Pylon Platform Code supports the input types specified by the WHATWG html5 spec.
  * @attribute {String} type the type of input element.
  *   Possible values:
  *   email      provides a way to enter an email address.

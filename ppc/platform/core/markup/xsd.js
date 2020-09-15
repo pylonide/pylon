@@ -269,8 +269,8 @@ ppc.xsd.typeHandlers = {
     },
     //#endif
     
-    "http://ajax.org/2005/aml" : {
-        //Ajax.org Platform datatypes
+    "https://github.com/pylonide/pylon" : {
+        //Pylon Platform Code datatypes
         "url": function(value){
             //@todo please make this better
             return /\b(https?|ftp):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i.test(value.trim());

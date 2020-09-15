@@ -22,14 +22,14 @@
 //#ifdef __SUPPORT_O3
 
 /**
- * Ajax.org Platform for O3
+ * Pylon Platform Code for O3
  *
  * @author    Ruben Daniels ruben@javeline.com
  * @version   3.0
  * @url       http://www.ajax.org
  */
 
-//Start of the Ajax.org Platform namespace
+//Start of the Pylon Platform Code namespace
 ppc = {
     SUCCESS : 1,
     TIMEOUT : 2,
@@ -107,7 +107,7 @@ ppc = {
     * @method
     */
     toString : function(){
-        return "[Ajax.org Platform (ppc)]";
+        return "[Pylon Platform Code (ppc)]";
     },
 
     all : [],

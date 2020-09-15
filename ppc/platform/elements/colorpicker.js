@@ -235,7 +235,7 @@ ppc.colorpicker = function(struct, tagName){
             _self.$change(isRGB ? "red" : "hue");
         }
 
-        //append APF widgets for additional controls
+        //append PPC widgets for additional controls
         var skin = ppc.getInheritedAttribute(this.parentNode, "skinset");
         new ppc.hbox({
             htmlNode: this.oInputs,

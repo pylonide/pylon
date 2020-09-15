@@ -3,7 +3,7 @@
 [A lock](http://en.wikipedia.org/wiki/Lock_(computer_science))
 is a mechanism for enforcing limits on access to a resource in a
 multi-user environment. Locks are one way of enforcing concurrency
-control policies. Ajax.org Platform (APF) has support for locking in
+control policies. Pylon Platform Code (PPC) has support for locking in
 combination with [action rules](./actionrules.md). There are two
 types of locks; pessimistic and optimistic locks. Descriptions below are
 from [wikipedia](http://en.wikipedia.org/wiki/Lock_(computer_science)).
@@ -26,10 +26,10 @@ locked out. However, some updates may fail. The downside is constant
 update failures due to high volumes of update requests from multiple
 concurrent users - it can be frustrating for users.
  
-For optimistic locking APF can run as if there would be no locking.
+For optimistic locking PPC can run as if there would be no locking.
 Changed data is sent to the server and is either successfully saved or
 not. When the action isn't changed and the server returns an error code
-the `apf.actiontracker` **automatically
+the `ppc.actiontracker` **automatically
 reverts the change**.
      
 ## Pessimistic
@@ -56,7 +56,7 @@ when the user presses escape while renaming.
 
 In multi-user environments it can be handy
 to be signalled of changes by others within the application. For more
-information on this please look at `apf.remote`.
+information on this please look at `ppc.remote`.
      
 ### Remarks
 
@@ -64,4 +64,4 @@ During offline works pessimistic locks will always fail. If the application
 does not use remote smart bindings the developer
 should reload the part of the content for which the lock failed. See `databinding@lockfailed`.
 
-Note: APF understands the status codes specified in [RFC4918](http://tools.ietf.org/html/rfc4918#section-9.10.6) for the locking implementation
+Note: PPC understands the status codes specified in [RFC4918](http://tools.ietf.org/html/rfc4918#section-9.10.6) for the locking implementation

@@ -1083,11 +1083,11 @@ ppc.$debugwin = {
         }*/
     },
     
-    $startResize : function(offset, oApf){
+    $startResize : function(offset, oPpc){
         var $ext = this.$ext;
         ppc.plane.show(null, null, null, true);
         ppc.dragMode = true;
-        oApf.dragMode = true;
+        oPpc.dragMode = true;
 
         document.body.style.cursor = "s-resize";
         
@@ -1126,7 +1126,7 @@ ppc.$debugwin = {
             document.onmouseup   = null;
             
             ppc.dragMode = false;
-            oApf.dragMode = false;
+            oPpc.dragMode = false;
             
             ppc.plane.hide();
         }

@@ -31,7 +31,7 @@
  * #### Example: A Simple Progressbar
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:progressbar 
  *     min   = "0" 
@@ -45,7 +45,7 @@
  * #### Example: Progressbars with Varying Speeds
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:progressbar 
  *     id    = "pb1"
@@ -72,7 +72,7 @@
  * #### Example: Dynmically Controlling the Progressbar
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:progressbar
  *     id    = "pb3"

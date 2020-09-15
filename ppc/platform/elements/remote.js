@@ -24,7 +24,7 @@
 /**
  * Element allowing data synchronization between multiple clients using the same
  * application or application part. This element is designed as thecore of
- * collaborative application logic for Ajax.org Platform. The children of this
+ * collaborative application logic for Pylon Platform Code. The children of this
  * element specify how the uniqueness of {@link term.datanode data nodes} is determined. By pointing
  * models to this element, all changes to their data will be streamed through
  * this element to all listening client over a choosen protocol.
@@ -68,7 +68,7 @@
  * to remote databindings. When multiple people are working within the same
  * application it's important to have a system that prevents corruption of data
  * and data loss by either user overwriting records edited during the same period.
- * Ajax.org Platform has built in support for optimistic and pessimistic locking
+ * Pylon Platform Code has built in support for optimistic and pessimistic locking
  * in smartbindings. For more information please see {@link term.locking}.
  *
  * Advanced:

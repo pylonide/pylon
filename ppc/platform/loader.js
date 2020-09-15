@@ -20,7 +20,7 @@
  */
 
 /*
- * Bootloader for Ajax.org Platform
+ * Bootloader for Pylon Platform Code
  *
  * Include ppc.js, then just go about it as you would with the
  * packaged version. Adapt this file to include your preferred modules

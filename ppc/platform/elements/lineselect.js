@@ -77,7 +77,7 @@ ppc.lineselect = function(struct, tagName){
             ar[i] = "<div style='color:" + clr + "' onmousedown='" + 'ppc.lookup(' + this.$uniqueId + ').select(this)' + "' ondblclick=\"" + 'ppc.lookup(' + this.$uniqueId + ').dispatchEvent(\'onchoose\', this.innerHTML)' + "\" class='" + this.skin.clsItem + "'>" + ar[i] + "</div>";
         }
                 
-        this.$ext.innerHTML = "<div style='color:white' class='" + this.skin.clsItem + "'>APF Packager</div><div nowrap style='color:white' class='" + this.skin.clsItem + "'>(c) 2001-2003 All Rights Reserved.</div><br>" + ar.join("");
+        this.$ext.innerHTML = "<div style='color:white' class='" + this.skin.clsItem + "'>PPC Packager</div><div nowrap style='color:white' class='" + this.skin.clsItem + "'>(c) 2001-2003 All Rights Reserved.</div><br>" + ar.join("");
         //this.parentNode.style.width = "100%";
     }
     

@@ -228,7 +228,7 @@ ppc.UndoData = function(settings, at){
         //#ifdef __WITH_LOCKING
         if (this.timestamp) {
             options.actionstart = this.timestamp;
-            options.headers     = {"X-APF-ActionStart": this.timestamp};
+            options.headers     = {"X-PPC-ActionStart": this.timestamp};
         }
         //#endif
 

@@ -1,4 +1,4 @@
-<a:application xmlns:a="http://ajax.org/2005/aml">
+<a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:bar skin="menu" id="winUiRecorder" draggable="true" zindex="199999" right="20" bottom="20" width="390" height="29" resizable="false">
         <a:vbox anchors="0 0 0 0" padding="3">
             <a:bar id="barUiRecorder" skin="basic" style="background-color:#333;padding:2px;">

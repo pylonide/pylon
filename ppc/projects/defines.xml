@@ -52,7 +52,7 @@
         <p:define name="__WITH_UNITTESTER"
           match=""
           short="Unit Testing framework"
-          desc="Provides a test runner that can run all unit tests, written for and by apf developers" />
+          desc="Provides a test runner that can run all unit tests, written for and by ppc developers" />
          <p:define name="__PROFILER"
           match=""
           short="ECMAScript profiler"
@@ -117,7 +117,7 @@
                   descr="" />
             </p:define>
             <p:define name="__WITH_LAYOUT" 
-              match="a:script[contains(text(), 'apf.layout')]"
+              match="a:script[contains(text(), 'ppc.layout')]"
               short=""
               desc="" />
             <p:define name="__WITH_XMLDATABASE"
@@ -308,7 +308,7 @@
         <p:define name="__WITH_CDN"
           match=""
           short="Resources from CDN"
-          desc="Use our Content Delivery Network to get additional apf resources from" />
+          desc="Use our Content Delivery Network to get additional ppc resources from" />
         <p:define name="__AMLSERVICES"
           match=""
           short=""
@@ -317,7 +317,7 @@
           match=""
           short="Enable toString methods" />
         <p:define name="__WITH_HISTORY"
-          match="a:script[contains(text(), 'apf.history')]"
+          match="a:script[contains(text(), 'ppc.history')]"
           short="Back-button support"
           desc="Allows developers to re-claim the Back button of the browser inside a Javeline Web Application." />
         <p:define name="__WITH_COOKIE"
@@ -412,10 +412,10 @@
         <p:define name="__WITH_REGISTRY"
           match=""
           desc="A way to store name/value pairs. This object is useful for storing information that is needed in an offline application."
-          short="APF Registry"
+          short="PPC Registry"
           requires="__WITH_NAMESERVER"/>
         <p:define name="__WITH_TWEEN"
-          match="a:script[contains(text(), 'apf.tween')]"
+          match="a:script[contains(text(), 'ppc.tween')]"
           short="CSS Animations"
           desc="Enables support for tweening between CSS states."
           requires="__WITH_CSS|__WITH_COLORS"/>
@@ -592,7 +592,7 @@
 
     <p:group short="Parsers" requires="__WITH_CLASS|__WITH_UTILITIES|__WITH_ECMAEXT">
         <p:define name="__PARSE_GET_VARS"
-          match="a:script[contains(text(), 'apf._GET')]"
+          match="a:script[contains(text(), 'ppc._GET')]"
           short="GET vars helper"
           desc="Provides an accessible object for reading GET variables from the application URL" />
         <p:define name="__DOMPARSER"
@@ -720,7 +720,7 @@
         <p:define name="__PARSER_LM"
           match=""
           short="LM Parser"
-          desc="Live Markup is an extension to Javascript, and it allows PPC to have a simple consistent syntax for all attribute values and templates. Live markup is used for templating, rpc, data binding, property binding, formatting and even events. Live Markup generates text-output via the default-output of statements, and APF maintains knowledge of all properties and data used to create this output allowing for a Live update when any of this information changes. Nearly all attributes in APF are processed as a live markup ' ' string Some attributes (like events) and &lt;?lm ?&gt; blocks are processed as code." />
+          desc="Live Markup is an extension to Javascript, and it allows PPC to have a simple consistent syntax for all attribute values and templates. Live markup is used for templating, rpc, data binding, property binding, formatting and even events. Live Markup generates text-output via the default-output of statements, and PPC maintains knowledge of all properties and data used to create this output allowing for a Live update when any of this information changes. Nearly all attributes in PPC are processed as a live markup ' ' string Some attributes (like events) and &lt;?lm ?&gt; blocks are processed as code." />
         <!--p:define name="__PARSER_JSLT"
           match=""
           short="JSLT Parser"
@@ -1762,7 +1762,7 @@
                   short="Application-wide default settings"
                   desc="Enables support for setting defaults for any AML element inside the &lt;a:appsettings&gt; element" />
                 <p:define name="__WITH_PRINTER"
-                  match="@*[contains(., 'apf.print')]|a:script[contains(text(), 'apf.print')]|a:appsettings/a:printer"
+                  match="@*[contains(., 'ppc.print')]|a:script[contains(text(), 'ppc.print')]|a:appsettings/a:printer"
                   short="Printer/ print-preview support"
                   desc="Sents html to a printer in formatted form." />
                 <p:define name="__WITH_QUERYAPPEND"
@@ -1830,17 +1830,17 @@
             <p:define name="__TP_XMPP_ROSTER"
               match=""
               short="XMPP Roster (Jabber)"
-              desc="Element implementing a Roster service for the apf.xmpp object. The Roster is a centralised registry for Jabber ID's (JID) to which the user subscribed. Whenever the presence info of a JID changes, the roster will get updated accordingly."
+              desc="Element implementing a Roster service for the ppc.xmpp object. The Roster is a centralised registry for Jabber ID's (JID) to which the user subscribed. Whenever the presence info of a JID changes, the roster will get updated accordingly."
               requires="__TP_XMPP"/>
             <p:define name="__TP_XMPP_MUC"
               match=""
               short="XMPP Multi User Chat (Jabber)"
-              desc="Interface implementing a Multi User Chat service for the apf.xmpp object. The Multi User Chat class is a class that contains all the functions needed to start, end, join, leave any XMPP/ Jabber chat room, and more."
+              desc="Interface implementing a Multi User Chat service for the ppc.xmpp object. The Multi User Chat class is a class that contains all the functions needed to start, end, join, leave any XMPP/ Jabber chat room, and more."
               requires="__TP_XMPP"/>
             <p:define name="__TP_XMPP_RDB"
               match=""
               short="XMPP Multi User Chat (Jabber)"
-              desc="Interface implementing a Multi User Chat service for the apf.xmpp object. The Multi User Chat class is a class that contains all the functions needed to start, end, join, leave any XMPP/ Jabber chat room, and more."
+              desc="Interface implementing a Multi User Chat service for the ppc.xmpp object. The Multi User Chat class is a class that contains all the functions needed to start, end, join, leave any XMPP/ Jabber chat room, and more."
               requires="__TP_XMPP"/>
             <p:define name="__TP_PERSIST"
               match=""
@@ -1848,7 +1848,7 @@
               desc=""/>
 
             <p:define name="__TP_HTTP"
-              match="a:script[contains(text(), 'apf.http')]"
+              match="a:script[contains(text(), 'ppc.http')]"
               short="HTTP"
               desc="">
                 <p:define name="__WITH_HTTP_CACHE"
@@ -1865,7 +1865,7 @@
                 <p:define name="__TP_RPC_CGI"
                   match="a:rpc[@protocol='cgi']"
                   short="CGI"
-                  desc="Implementation of the Common Gateway Interface (CGI) as a module for the RPC plugin of apf.teleport." />
+                  desc="Implementation of the Common Gateway Interface (CGI) as a module for the RPC plugin of ppc.teleport." />
                 <p:define name="__TP_RPC_HEADER"
                   match="a:rpc[@protocol='header']"
                   short="Header"
@@ -1877,7 +1877,7 @@
                 <p:define name="__TP_RPC_JSON"
                   match="a:rpc[@protocol='jsonrpc']"
                   short="JSON-RPC"
-                  desc="Implementation of the JSON-RPC protocol as a module for the RPC plugin of apf.teleport." />
+                  desc="Implementation of the JSON-RPC protocol as a module for the RPC plugin of ppc.teleport." />
                 <p:define name="__TP_RPC_REST"
                   match="a:rpc[@protocol='rest']"
                   short="REST"
@@ -1889,7 +1889,7 @@
                 <p:define name="__TP_RPC_XMLRPC"
                   match="a:rpc[@protocol='xmlrpc']"
                   short="XML-RPC"                
-                  desc="Implementation of the XML-RPC protocol as a module for the RPC plugin of apf.teleport." />
+                  desc="Implementation of the XML-RPC protocol as a module for the RPC plugin of ppc.teleport." />
                 <p:define name="__TP_RPC_YQL"
                   match="a:rpc[@protocol='yql']"
                   short="YQL-RPC"
@@ -1897,7 +1897,7 @@
                 <p:define name="__TP_RPC_RDB"
                   match="a:rpc[@protocol='rdb']"
                   short="XML-RPC"                
-                  desc="Implementation of the Remote DataBinding RPC protocol as a module for the RPC plugin of apf.teleport." />
+                  desc="Implementation of the Remote DataBinding RPC protocol as a module for the RPC plugin of ppc.teleport." />
             </p:define>
         </p:define>
     </p:group>

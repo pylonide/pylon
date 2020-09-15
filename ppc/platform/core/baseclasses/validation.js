@@ -120,7 +120,7 @@ ppc.validator.validityState = function(){
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:bar validgroup="vgExample">
  *        <a:label>Number</a:label>

@@ -28,7 +28,7 @@
  * #### Example: Simple Dropdown
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:dropdown initial-message="Choose a country" skin="black_dropdown">
  *       <a:item>America</a:item>
@@ -42,7 +42,7 @@
  * #### Example: Loading Items From XML
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:dropdown model="../resources/xml/friends.xml" each="[friend]" caption="[@name]" skin="black_dropdown" />
  *   <!-- endcontent -->
@@ -54,7 +54,7 @@
  * A databound dropdown using the bindings element
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <a:table columns="100, 100, 100, 100" cellheight="19" padding="5">
  *   <!-- startcontent -->
  *       <a:model id="mdlDD5">
@@ -85,7 +85,7 @@
  * #### Example: Dynamically Adding Entries
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="friendMdl">
  *       <data>

@@ -27,7 +27,7 @@ function SeleniumPlayer(browser){
         if (!contexts[serialized]) {
             elName = contexts[serialized] = "elId" + contexts.length++; 
             stack.push("", 
-                'var ' + elName + ' = browser.findApfElement('
+                'var ' + elName + ' = browser.findPpcElement('
                 + serialized
                 + ');');
         }

@@ -78,7 +78,7 @@
  * #### Example
  *
  * Here, we create a vertical accordion component with two bars. Only one bar can be expanded
- * at a time. Both bars conatins APF components.
+ * at a time. Both bars conatins PPC components.
  * 
  * ```xml
  *  <a:accordion
