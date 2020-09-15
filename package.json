@@ -1,7 +1,7 @@
 {
     "name": "pln",
     "description": "Pylon IDE",
-    "version": "2.6.0",
+    "version": "2.7.0",
     "homepage": "http://github.com/pylonide/pylon",
     "engines": {
         "node": ">= 10.20.1"
