@@ -20,8 +20,8 @@ With property binding you can define the way a
 
  ### Expressions
  
- The use of `{` and `}` tell APF that the visible property will
- be bound. By specifying `myCheckbox.value`, APF knows that the value of
+ The use of `{` and `}` tell PPC that the visible property will
+ be bound. By specifying `myCheckbox.value`, PPC knows that the value of
  `myCheckbox` should be retrieved for this property. Whenever the checkbox
  changes, the slider will show or hide.
 
@@ -49,7 +49,7 @@ With property binding you can define the way a
 
 ## Internals
  
-Property binding in APF is a flavor of a [publish/subscribe](http://en.wikipedia.org/wiki/Publish/subscribe)
+Property binding in PPC is a flavor of a [publish/subscribe](http://en.wikipedia.org/wiki/Publish/subscribe)
  system. 
  
  When a binding is established, the element that receives the value sets

@@ -34,7 +34,7 @@ ppc.__AMLNODE__ = 1 << 14;
  *
  * Well known methods
  * from this specification are: `appendChild`, `removeChild`, `setAttribute`, and
- * `insertBefore`--to name a few. The Ajax.org Platform aims to implement DOM1
+ * `insertBefore`--to name a few. The Pylon Platform Code aims to implement DOM1
  * completely and parts of DOM2. For more information see {@link http://www.w3.org/DOM/} 
  * or {@link http://www.w3schools.com/dom/default.asp}.
  * 

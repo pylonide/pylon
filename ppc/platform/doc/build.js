@@ -19,16 +19,16 @@ var buildOptions = {
                         // TOC forms
                         "container", "form", "layout", "selection", "logic", "media", "parser", "additional",
                         // just ignorable rubbish
-                        "inheritsElsewhere",  "apfclass"],
+                        "inheritsElsewhere",  "ppcclass"],
   linkFormat     : function (linkHtml, obj) {
                   if (linkHtml.classes && linkHtml.classes[0] == "isXML" && linkHtml.href !== undefined) {
                         linkHtml.href = linkHtml.href.replace(".html", "-element.html");
                         linkHtml.title = linkHtml.title.replace("class", "element");
-                        linkHtml.text = "&lt;a:" + linkHtml.text.replace("apf.", "") + ">";
+                        linkHtml.text = "&lt;a:" + linkHtml.text.replace("ppc.", "") + ">";
                   }
 
-                  // fixes problem where tab links for apf global object are defined across files; keep them just in apf.html
-                  if (obj && obj.name_prefix === "apf." && obj.file !== "../apf.js" 
+                  // fixes problem where tab links for ppc global object are defined across files; keep them just in ppc.html
+                  if (obj && obj.name_prefix === "ppc." && obj.file !== "../ppc.js" 
                           && linkHtml.classes[0] && (linkHtml.classes[0] == "tabLink" || linkHtml.classes[0] == "relatedToLink")) {
                         linkHtml.href = linkHtml.href.substring(linkHtml.href.indexOf("#"));
                   }
@@ -37,7 +37,7 @@ var buildOptions = {
                   }
 };
 
-panino.parse(["./apf_release.js"], buildOptions, function (err, ast) {
+panino.parse(["./ppc_release.js"], buildOptions, function (err, ast) {
   if (err) {
     console.error(err);
     process.exit(1);

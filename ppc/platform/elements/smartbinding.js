@@ -39,7 +39,7 @@
  * slider changes. A tree element has several actions - among others: 'add',
  * 'remove', 'move', 'copy' and 'rename'. 
  * 
- * Smartbindings enable many other features in a Ajax.org Platform
+ * Smartbindings enable many other features in a Pylon Platform Code
  * application. Actions done by the user can be undone by calling 
  * {@link ppc.actiontracker.undo} of the element. The 
  * Remote Databinding element can send changes on data to other clients.

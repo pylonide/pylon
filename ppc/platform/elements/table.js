@@ -34,7 +34,7 @@
  * how many columns there are.
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  * <a:window visible="true" width="500" height="260" title="Form">
  *  <!-- startcontent -->
  *      <a:table id="tableTest" 

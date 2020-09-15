@@ -93,7 +93,7 @@ ppc.StateServer = {
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:state 
  *     group   = "stRole" 

@@ -23,7 +23,7 @@
 
 /**
  * @class ppc
- * The Ajax.org Platform.
+ * The Pylon Platform Code.
  *
  * @author    Ruben Daniels (ruben AT ajax DOT org)
  * @version   3.0
@@ -212,7 +212,7 @@
      */
     started       : false,
     /**
-     * The namespace for all crypto libraries included with Ajax.org Platform.
+     * The namespace for all crypto libraries included with Pylon Platform Code.
      * @type {Object}
      */
     crypto        : {}, //namespace
@@ -676,7 +676,7 @@
         this.hostPath = sHref.replace(/\/[^\/]*$/, "") + "/";
 
         //#ifdef __DEBUG
-        ppc.console.info("Starting Ajax.org Platform Application...");
+        ppc.console.info("Starting Pylon Platform Code Application...");
         ppc.console.warn("Debug build of Pylon Platform " + (ppc.VERSION ? "version " + ppc.VERSION : ""));
         //#endif
 
@@ -1276,7 +1276,7 @@
     htmlentities : function(s){return s},
 
     /**
-     * Formats an Ajax.org Platform error message.
+     * Formats an Pylon Platform Code error message.
      * @param {Number}      number      The number of the error. This can be used to look up more information about the error.
      * @param {ppc.AmlElement}  control     The aml element that will throw the error.
      * @param {String}      process     The action that was being executed.
@@ -2008,7 +2008,7 @@
         
         //#ifdef __WITH_DEFAULT_SKIN
         ppc.skins.defaultSkin = '<?xml version="1.0" encoding="utf-8"?>'
-            + '<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">'
+            + '<a:skin xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">'
             + '<a:checkbox name="checkbox"><a:style><![CDATA[.cbcontainer{padding: 2px 2px 2px 18px;'
             + '_padding: 2px; /* IE6 fix */position: relative;min-height: 13px;'
             + 'color: #4b4b4b;background: url(images/spacer.gif);_clear: both; /* IE6 fix */}'

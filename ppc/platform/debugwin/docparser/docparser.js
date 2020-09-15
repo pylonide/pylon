@@ -263,7 +263,7 @@ var docparser = {
                         }
                         
                         // set namespace
-                        //ppc.setNamespace("http://ajax.org/2005/aml", ppc.aml);
+                        //ppc.setNamespace("https://github.com/pylonide/pylon", ppc.aml);
                         else if (t[i + 2].indexOf("setNamespace") > -1){
                             if (t[i + 5][11]) {
                                 if (t[i + 5][11].indexOf(".") > -1)

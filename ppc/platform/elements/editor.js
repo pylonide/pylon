@@ -269,7 +269,7 @@ ppc.editor = function(struct, tagName){
     // *** Focus Handling *** //
 
     /**
-     * Fix for focus handling to mix 'n match nicely with other APF elements
+     * Fix for focus handling to mix 'n match nicely with other PPC elements
      *
      * @param {Event} e
      * 
@@ -314,7 +314,7 @@ ppc.editor = function(struct, tagName){
     };
 
     /**
-     * Fix for focus/ blur handling to mix 'n match nicely with other APF
+     * Fix for focus/ blur handling to mix 'n match nicely with other PPC
      * elements
      *
      * @param {Event} e
@@ -513,7 +513,7 @@ ppc.editor = function(struct, tagName){
 
     /**
      * Takes care of setting the proper size of the editor after a resize event
-     * was fired through the APF layout manager
+     * was fired through the PPC layout manager
      * @see object.layout
      * 
      * @type {void}

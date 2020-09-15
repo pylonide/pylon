@@ -37,7 +37,7 @@ accessed using XPath statements in the data instruction using curly braces.
 <a:add set="[[@uid] = comm.addPerson('abc', {/bar})]" />
  set="[submit('abc', {/bar})]"
  set="[example=[@name]]"
- set="[apf.setcookie('something', [.])]"
+ set="[ppc.setcookie('something', [.])]"
  set="[o3.fs.get('/var/test.xml').data = [.]]"
 ```
  

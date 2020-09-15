@@ -30,7 +30,7 @@
  * #### Example: Some simple text
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:text width="300">
  *   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur congue, nunc sed convallis gravida, justo nunc egestas nisi, eu iaculis nunc ipsum vel orci. Morbi mauris urna, rutrum at imperdiet at, molestie eu risus. Curabitur eu tincidunt eros. Donec in massa ut dolor vulputate commodo. Cras pulvinar urna ut ipsum pulvinar mollis sit amet in dui. Nam lobortis ligula sed tortor dapibus eget tincidunt dui pretium. 
@@ -42,7 +42,7 @@
  * #### Example: Using Scrolldown
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:text id="txtExample"
  *     width      = "300"

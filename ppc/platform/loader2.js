@@ -20,7 +20,7 @@
  */
 
 /*
- * Bootloader for Ajax.org Platform
+ * Bootloader for Pylon Platform Code
  *
  * Include ppc.js, then just go about it as you would with the 
  * packaged version. Adapt this file to include your preferred modules
@@ -33,7 +33,7 @@ if (location.protocol != "file:") {
            + "load your files, because that will make your\napplication "
            + "load several times faster.\n"
            + "On a webserver, we recommend using a release or debug build "
-           + "of Ajax.org Platform.");
+           + "of Pylon Platform Code.");
 }
 ppc.$loader
     .setGlobalDefaults({

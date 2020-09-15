@@ -50,7 +50,7 @@
  * Remarks:
  * A docklet xml is a piece of aml that should be in the following form:
  * <code>
- *  <a:docklet xmlns:a="http://ajax.org/2005/aml" 
+ *  <a:docklet xmlns:a="https://github.com/pylonide/pylon" 
  *    caption="Billing History" icon="icoBilling.gif" name="BillHistory">
  *      <a:script><![CDATA[
  *          function BillHistory(){

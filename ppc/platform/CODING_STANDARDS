@@ -30,7 +30,7 @@ closing statement:
   1.3. Maximum Line Length
   ========================
 
-  The target line length is 80 characters. That is to say, apf developers should
+  The target line length is 80 characters. That is to say, ppc developers should
 strive keep each line of their code under 80 characters where possible and
 practical. However, longer lines are acceptable in some circumstances.
 The maximum length of any line of code is 120 characters.
@@ -51,9 +51,9 @@ Windows OS (0x0D, 0x0A).
 
   2.1 Classes
 
-  The root level directory of the apf standard library is the "core/" directory.
-The root level directory of the apf elements is the "elements/" directory.
-The root level directory of the apf Teleport library and its modules is the
+  The root level directory of the ppc standard library is the "core/" directory.
+The root level directory of the ppc elements is the "elements/" directory.
+The root level directory of the ppc Teleport library and its modules is the
 "elements/teleport/" directory.
 
   Class names may only contain alphanumeric characters. Numbers are permitted
@@ -118,7 +118,7 @@ pattern and implements it by using the dollar-sign convention.
 
   Functions in the global scope (a.k.a. "floating functions") are permitted but
 discouraged in most cases. Consider wrapping these functions in the globally
-defined 'apf' namespace.
+defined 'ppc' namespace.
 
   2.3. Variables
   ==============
@@ -161,9 +161,9 @@ EMBED_SUPPRESSEMBEDEXCEPTION is not.
 naming conflicts with other class contants. For example:
 
 #
-# apf.bar = apf.component(...);
+# ppc.bar = ppc.component(...);
 #
-# apf.bar.ALIGN_LEFT = 0; //constant attached to the apf.bar namespace
+# ppc.bar.ALIGN_LEFT = 0; //constant attached to the ppc.bar namespace
 #
 
   3. Coding Style
@@ -287,7 +287,7 @@ the keys and the values are aligned:
 
   Classes must be named according to Ajax.org Platform's naming conventions.
 
-  Every class must be declared inside the "apf" namespace.
+  Every class must be declared inside the "ppc" namespace.
 
   The brace should always be written on the line underneath the class name
 (the "one true brace" form).
@@ -309,7 +309,7 @@ code in the class file.
 # /**
 #  * Documentation Block Here
 #  */
-# apf.sampleClass = function() {
+# ppc.sampleClass = function() {
 #     // all contents of class
 #     // must be indented four spaces
 # }
@@ -348,7 +348,7 @@ the arguments is not permitted.
 # /**
 #  * Documentation Block Here
 #  */
-# apf.foo = function() {
+# ppc.foo = function() {
 #     /**
 #      * Documentation Block Here
 #      */

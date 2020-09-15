@@ -103,7 +103,7 @@ ppc.aml.setElement("skin", ppc.skin);
         if (!found) {
             throw new Error(ppc.formatErrorString(0, null,
                 "Checking for the aml namespace",
-                "The Ajax.org Platform xml namespace was not found in "
+                "The Pylon Platform Code xml namespace was not found in "
                 + (xmlNode.getAttribute("filename")
                     ? "in '" + xmlNode.getAttribute("filename") + "'"
                     : "")));

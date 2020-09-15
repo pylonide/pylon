@@ -22,7 +22,7 @@
 //#ifdef __WITH_APPSETTINGS
 
 /**
- * This element specifies the settings of the APF application.
+ * This element specifies the settings of the PPC application.
  * 
  * @class ppc.appsettings
  * @define appsettings

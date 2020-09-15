@@ -31,7 +31,7 @@
  * 
  * #### Example: Loading A Model 
  * 
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <!-- startcontent -->
  *  <a:model id="mdl1">
  *      <data>
@@ -69,7 +69,7 @@
  * A small form where the bound data is submitted to a server using a model:
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="mdlForm" submission="save_form.asp">
  *       <data name="Lukasz" address="Poland"></data>

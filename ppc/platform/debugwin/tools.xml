@@ -1,4 +1,4 @@
-<category name="Elements" xmlns:a="http://ajax.org/2005/aml" >
+<category name="Elements" xmlns:a="https://github.com/pylonide/pylon" >
     <!--subcat name="Default">
         <item name="Arrow" icon="Actions.png" />
         <item name="Selection" icon="selection.gif" />

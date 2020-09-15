@@ -34,7 +34,7 @@
  * #### Example: A Simple List
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:list>
  *      <a:item>The Netherlands</a:item>
@@ -48,7 +48,7 @@
  * #### Example: Loading from a Model
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:list 
  *     model   = "/api/resources/xml/friends.xml"
@@ -64,7 +64,7 @@
  * #### Example: Using XPaths
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:list model="/api/ppc/resources/xml/friends.xml" width="300">
  *       <a:each match="[friend]">
@@ -213,7 +213,7 @@ ppc.select1   = function(struct, tagName){
     
     /**
      * @attribute {String} appearance Sets or gets the type of select this element is. 
-     * This is an xforms property and only available if APF is compiled 
+     * This is an xforms property and only available if PPC is compiled 
      * with `__WITH_XFORMS` set to `1`.
      *   
      * Possible values include:

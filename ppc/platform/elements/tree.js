@@ -33,7 +33,7 @@
  * #### Example: A Simple Tree
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:tree id="tree" align="right">
  *       <a:item caption="root" icon="/api/ppc/resources/icons/icoUsers.gif">
@@ -56,7 +56,7 @@
  * A tree using a model:
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="filesystem">
  *       <data>
@@ -84,7 +84,7 @@
  * An inline tree that draws the same as the above example:
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="filesystem">
  *       <data>

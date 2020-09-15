@@ -41,7 +41,7 @@
  * #### Example: Simple Boxes
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <a:table columns="150">
  *   <!-- startcontent -->
  *   <a:textbox value="Text"></a:textbox>
@@ -54,7 +54,7 @@
  * #### Example: Validation
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:label for="lbl2">Please enter a minimum of three characters</a:label>
  *   <a:textbox 
@@ -96,7 +96,7 @@
  * #### Example: A Regular Box
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *     <!-- startcontent -->
  *     <a:bar id="winGoToFile"
  *       width     = "500" 

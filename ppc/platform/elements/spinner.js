@@ -31,7 +31,7 @@
  * #### Example: Setting Maximum and Minimum Ranges
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <!-- startcontent -->
  *    <a:spinner value="6" min="-6" max="12" width="200"></a:spinner>
  *  <!-- endcontent -->
@@ -41,7 +41,7 @@
  * #### Example: Loading Data
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="mdlSpinner">
  *       <data value="56"></data>
@@ -55,7 +55,7 @@
  *
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="mdlTest">
  *     <overview page="1" pages="10" />

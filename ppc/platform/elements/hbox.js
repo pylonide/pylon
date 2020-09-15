@@ -26,7 +26,7 @@
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:vbox width="100">
  *       <a:button height="28" edge="5">Button 1</a:button>
@@ -55,7 +55,7 @@
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:hbox height="29" width="300" lean="right" margin="5 0 0 0">
  *       <a:button width="100" edge="5">Button 1</a:button>

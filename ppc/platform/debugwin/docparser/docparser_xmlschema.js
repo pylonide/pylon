@@ -14,7 +14,7 @@ function parse_xsd(docTree, outputFolderObj) {
     var output = '<?xml version="1.0" encoding="UTF-8"?>';
     
     // create file for xml schema
-    var xmlSchemaFile = ppc.getXml('<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://ajax.org/2005/aml" xmlns:a="http://ajax.org/2005/aml" elementFormDefault="qualified" attributeFormDefault="unqualified" />');
+    var xmlSchemaFile = ppc.getXml('<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="https://github.com/pylonide/pylon" xmlns:a="https://github.com/pylonide/pylon" elementFormDefault="qualified" attributeFormDefault="unqualified" />');
     
     // create file for aptana
     var aptanaFile = ppc.getXml('<javascript />');

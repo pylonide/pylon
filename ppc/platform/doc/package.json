@@ -1,9 +1,9 @@
 {
-  "name": "apf-api",
+  "name": "ppc-api",
   "version": "3.0.0",
   "private": true,
   "engines": {
-    "node": "~0.6.0"
+    "node": "~12.0.0"
   },
   "dependencies": {
     "panino": "",

@@ -401,7 +401,7 @@ ppc.actiontracker = function(struct, tagName){
      * or rolled back. 
      *
      * Changes won't be executed until committed for XML data
-     * nodes. For APF based data nodes (_i.e._ AML nodes) changes are executed
+     * nodes. For PPC based data nodes (_i.e._ AML nodes) changes are executed
      * immediately and reverted on rollback.
      *
      *

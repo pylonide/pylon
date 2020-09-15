@@ -27,7 +27,7 @@
  * #### Example: Settings Groups
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <a:table columns="100, 150" cellheight="20">
  *   <!-- startcontent -->
  *     <a:label>Options</a:label> 

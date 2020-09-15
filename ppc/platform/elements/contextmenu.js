@@ -32,7 +32,7 @@
  * shown.
  *
  * ```xml, demo
- *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:menu id="ctxMenu">
  *       <a:item>Choice 1!</a:item>
