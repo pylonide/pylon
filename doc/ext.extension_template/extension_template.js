@@ -49,14 +49,14 @@ module.exports = ext.register("ext/extension_template/extension_template", {
         });
         
         this.nodes.push(
-            menus.addItemByPath("Edit/Extension Template", new apf.item({
+            menus.addItemByPath("Edit/Extension Template", new ppc.item({
                 command : "sayhello"
             }), 5400)
         ); 
 
        /* Just a plain menu...
         this.nodes.push(
-            menus.addItemByPath("Edit/Extension Template", new apf.item({
+            menus.addItemByPath("Edit/Extension Template", new ppc.item({
                 onclick : function(){
                     _self.winExtensionTemplate.show();
                 }

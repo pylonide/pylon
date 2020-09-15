@@ -8,7 +8,7 @@
 		"text" : "%b/text", // plugin for pulling in text! files
 		"core" : "empty:",
 		"ext/commands" : "%d/ext.commands",
-		"apf" : "empty:",
+		"ppc" : "empty:",
 		"treehugger" : "empty:",
 		"debug": "empty:",
 		"engine.io": "empty:",
@@ -17,13 +17,13 @@
 		"events-amd": "empty:",
 		"msgpack-js": "empty:",
 		"v8debug": "empty:",
-		"apf/elements": "%d/lib.apf/www/apf/elements",
+		"ppc/elements": "%d/lib.ppc/www/ppc/elements",
 		"ace": "%a",
 		"%m"
 	},
     
 	include: ["%b/src/core.packed",
-	"apf/elements/codeeditor",
+	"ppc/elements/codeeditor",
 	"ext/commands/commands",
 	"ext/uploadfiles/uploadfiles",
 	"%s"], 

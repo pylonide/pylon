@@ -1,26 +1,8 @@
-.PHONY:    apf ext worker mode theme package test
+.PHONY:    ext worker mode theme package test
 
-default: apf worker
+default: worker
 
 update: worker
-
-# packages apf
-apf:
-	cd node_modules/apf-packager && ln -sf ../../apf node_modules/apf && npm run build
-	cp node_modules/apf-packager/build/apf_release_cleaned.js ./plugins-client/lib.apf/www/apf-packaged/apf_release.js
-
-# package debug version of apf
-apfdebug:
-	cd node_modules/packager/projects; cat apf_cloud9.apr | sed 's/<p:define name=\"__DEBUG\" value=\"0\" \/>/<p:define name=\"__DEBUG\" value=\"1\" \/>/g' > apf_cloud9_debug2.apr
-	cd node_modules/packager/projects; cat apf_cloud9_debug2.apr | sed 's/apf_release/apf_debug/g' > apf_cloud9_debug.apr; rm apf_cloud9_debug2.apr
-	cd node_modules/packager; node package.js projects/apf_cloud9_debug.apr
-	cd node_modules/packager; cat build/apf_debug.js | sed 's/\(\/\*FILEHEAD(\).*\/apf\/\(.*\)/\1\2/g' > ../../plugins-client/lib.apf/www/apf-packaged/apf_debug.js
-
-# package_apf--temporary fix for non-workering infra
-pack_apf:
-	mkdir -p build/src
-	mv plugins-client/lib.apf/www/apf-packaged/apf_release.js build/src/apf_release.js
-	node build/r.js -o name=./build/src/apf_release.js out=./plugins-client/lib.apf/www/apf-packaged/apf_release.js baseUrl=.
 
 # makes ace; at the moment, requires dryice@0.4.2
 ace:
@@ -101,7 +83,7 @@ gzip:
 		gzip -9 -v -q -f $$i ; \
 	done
 
-core: apf ace core worker mode theme
+core: ace core worker mode theme
     
 package_clean: helper_clean core ext
 
