@@ -1,6 +1,6 @@
-apf.process.handler.html = function(oParser){
-    apf.makeClass(this);
-    this.inherit(apf.ProjectBase);
+ppc.process.handler.html = function(oParser){
+    ppc.makeClass(this);
+    this.inherit(ppc.ProjectBase);
     
     this.generate = function(data, str, level){
         str.push(getHeader(level, data.name));
@@ -47,13 +47,13 @@ apf.process.handler.html = function(oParser){
     
     var fOutput;
     this.$loadPml = function(x){
-        apf.console.info("Printing html documentation art...");
+        ppc.console.info("Printing html documentation art...");
 
         var str = [];
         this.generate(oParser.data.global, str, 1);
 
         fOutput = fs.get(this.output);
-        apf.console.info("Saved html art at " + fOutput.path);
+        ppc.console.info("Saved html art at " + fOutput.path);
         fOutput.data = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xmlns:j="javeline.dtd" xmlns:xsl="http://www.w3.org/1999/XSL/Transform"><head><style type="text/css">@import url(docs.css);</style></head><body>' 
             + str.join("\n") + '</body></html>';
     }

@@ -45,66 +45,66 @@
  * @default_private
  * @todo optimize by not getting the default values from the aml
  */
-apf.offline.state = {
+ppc.offline.state = {
     enabled   : false,
     states    : {},
     realtime  : true,
     lookup    : {},
 
     init : function(aml){
-        this.namespace = apf.config.name + ".apf.offline.state";
+        this.namespace = ppc.config.name + ".ppc.offline.state";
         
         if (aml.nodeType) {
             if (aml.getAttribute("realtime"))
-                this.realtime = !apf.isFalse(aml.getAttribute("realtime"));
+                this.realtime = !ppc.isFalse(aml.getAttribute("realtime"));
             
             if (aml.getAttribute("set"))
                 this.setInstruction = aml.getAttribute("set");
         }
         
-        apf.addEventListener("exit", function(){
-            if (!apf.offline.state.realtime) {
-                //apf.offline.state.search();
-                var lookup  = apf.offline.state.lookup;
-                var storage = apf.offline.storage;
-                var ns      = apf.offline.state.namespace;
+        ppc.addEventListener("exit", function(){
+            if (!ppc.offline.state.realtime) {
+                //ppc.offline.state.search();
+                var lookup  = ppc.offline.state.lookup;
+                var storage = ppc.offline.storage;
+                var ns      = ppc.offline.state.namespace;
                 
                 for (var key in lookup) {
-                    var ns = apf.offline.state.namespace;
+                    var ns = ppc.offline.state.namespace;
                     storage.put(key, lookup[key], ns);
                 }
             }
             
-            if (apf.offline.state.setInstruction)
-                apf.offline.state.send();
+            if (ppc.offline.state.setInstruction)
+                ppc.offline.state.send();
         });
         
         //#ifdef __WITH_REGISTRY
-        var registry       = apf.extend({}, apf.offline.storage || apf.storage);
-        registry.namespace = apf.config.name + ".apf.registry";
-        apf.registry.$export(registry);
-        apf.registry       = registry;
+        var registry       = ppc.extend({}, ppc.offline.storage || ppc.storage);
+        registry.namespace = ppc.config.name + ".ppc.registry";
+        ppc.registry.$export(registry);
+        ppc.registry       = registry;
         //#endif
 
         //@todo This could be optimized if needed
-        if (apf.offline.storage.getAllPairs(this.namespace, this.lookup)) {
+        if (ppc.offline.storage.getAllPairs(this.namespace, this.lookup)) {
             /*
                 This is the moment the developer should do something like:
                 return confirm("Would you like to continue your previous session?");
             */
-            if (apf.offline.dispatchEvent("restore") === false) {
+            if (ppc.offline.dispatchEvent("restore") === false) {
                 this.clear();
                 this.lookup = {};
                 
                 //#ifdef __WITH_OFFLINE_TRANSACTIONS
-                apf.offline.transactions.clear("undo|redo");
+                ppc.offline.transactions.clear("undo|redo");
                 //#endif
             }
         }
         
         //#ifdef __WITH_OFFLINE_TRANSACTIONS
 
-        apf.offline.transactions.doStateSync = true;
+        ppc.offline.transactions.doStateSync = true;
         //#endif
         
         this.enabled = true;
@@ -116,7 +116,7 @@ apf.offline.state = {
         //#ifdef __DEBUG
         if (!obj.name && !this.warned) {
             this.warned = true;
-            apf.console.warn("Components found without name. This means that \
+            ppc.console.warn("Components found without name. This means that \
                               when the application changes the state \
                               serialization can break.");
         }
@@ -126,7 +126,7 @@ apf.offline.state = {
             return;
         
         var name    = obj.name || obj.$uniqueId + "_" + obj.tagName;
-        var storage = apf.offline.storage;
+        var storage = ppc.offline.storage;
         
         //#ifdef __DEBUG
         if (!name || !storage.isValidKey(name)) { //@todo
@@ -158,7 +158,7 @@ apf.offline.state = {
     get : function(obj, key, value){
         return this.lookup[(obj.name || obj.$uniqueId + "_" + obj.tagName) + "." + key];
         
-        /*return apf.offline.storage.get(
+        /*return ppc.offline.storage.get(
             (obj.name || obj.$uniqueId + "." + obj.tagName) + "." + key, 
             this.namespace);*/
     },
@@ -177,23 +177,23 @@ apf.offline.state = {
     },
     
     clear : function(){
-        apf.offline.storage.clear(this.namespace);
+        ppc.offline.storage.clear(this.namespace);
         
-        var ns = apf.registry.getNamespaces();
+        var ns = ppc.registry.getNamespaces();
         for (var i = 0; i < ns.length; i++) {
-            apf.registry.clear(ns[i]);
+            ppc.registry.clear(ns[i]);
         }
         
         //#ifdef __WITH_OFFLINE_TRANSACTIONS
-        apf.offline.transactions.clear("undo|redo");
+        ppc.offline.transactions.clear("undo|redo");
         //#endif
     },
 
     search : function(){
-        var storage = apf.offline.storage;
+        var storage = ppc.offline.storage;
         
         //Search for dynamic properties
-        var props, i, j, nodes = apf.all;
+        var props, i, j, nodes = ppc.all;
         for (i = 0; i < nodes.length; i++) {
             if (nodes[i].name && nodes[i].getAvailableProperties) {
                 props = nodes[i].getAvailableProperties();
@@ -210,7 +210,7 @@ apf.offline.state = {
     },
     
     send : function(){
-        var storage = apf.offline.storage;
+        var storage = ppc.offline.storage;
         
         var data = {};
         var keys = storage.getKeys(this.namespace);
@@ -219,11 +219,11 @@ apf.offline.state = {
             data[keys[i]] = storage.get(keys[i], this.namespace);
         }
         
-        apf.saveData(this.setInstruction, {
+        ppc.saveData(this.setInstruction, {
             ignoreOffline : true,
             data          : JSON.stringify(data),
             callback      : function(data, state, extra){
-                if (extra.tpModule.retryTimeout(extra, state, apf.offline) === true)
+                if (extra.tpModule.retryTimeout(extra, state, ppc.offline) === true)
                     return true;
             }
         });

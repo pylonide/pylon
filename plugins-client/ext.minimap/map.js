@@ -115,7 +115,7 @@ var Map = (function() {
             _self.inVisor = true;
             _self.visorDiff = e.offsetY || e.layerY;
             _self.mousedown = _self.visorDiff + _self.visorTop;
-            _self.containerTop = apf.getAbsolutePosition(_self.c)[1];
+            _self.containerTop = ppc.getAbsolutePosition(_self.c)[1];
         }, false);
 
         document.addEventListener("mousemove", this.$docMouseMove = function(e) {

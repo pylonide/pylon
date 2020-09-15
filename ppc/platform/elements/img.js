@@ -30,7 +30,7 @@
  * in the `<a:img>` element:
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <!-- startcontent -->
  *  <a:model id="mdlPictures"> 
  *       <data> 
@@ -53,13 +53,13 @@
  * </a:application>
  * ```
  *
- * @class apf.img
+ * @class ppc.img
  * @define img
  * @media
  * @allowchild {smartbinding}
  *
  *
- * @inherits apf.BaseSimple
+ * @inherits ppc.BaseSimple
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -89,12 +89,12 @@
  *    height = "300" />
  * ```
  */
-apf.img = function(struct, tagName){
-    this.$init(tagName || "img", apf.NODE_VISIBLE, struct);
+ppc.img = function(struct, tagName){
+    this.$init(tagName || "img", ppc.NODE_VISIBLE, struct);
 };
 
-apf.preview = function(struct, tagName){
-    this.$init(tagName || "preview", apf.NODE_VISIBLE, struct);
+ppc.preview = function(struct, tagName){
+    this.$init(tagName || "preview", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -135,14 +135,14 @@ apf.preview = function(struct, tagName){
             if (this.oImg) {
                 //#ifdef __WITH_LAYOUT
                 //@todo add this to $destroy
-                var pNode = apf.hasSingleRszEvent ? this.$pHtmlNode : this.$ext;
-                apf.layout.setRules(pNode, this.$uniqueId + "_image",
-                    "var o = apf.all[" + this.$uniqueId + "];\
+                var pNode = ppc.hasSingleRszEvent ? this.$pHtmlNode : this.$ext;
+                ppc.layout.setRules(pNode, this.$uniqueId + "_image",
+                    "var o = ppc.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()");
-                apf.layout.queue(pNode);
+                ppc.layout.queue(pNode);
                 
                 this.oImg.onload = function(){
-                    apf.layout.forceResize(pNode);
+                    ppc.layout.forceResize(pNode);
                 }
                 //#endif
             }
@@ -192,12 +192,12 @@ apf.preview = function(struct, tagName){
         }
         
         var _self = this;
-        apf.addListener(this.$ext, "mouseover", function(e) {
+        ppc.addListener(this.$ext, "mouseover", function(e) {
             if (!_self.disabled)
                 _self.dispatchEvent("mouseover", {htmlEvent: e});
         });
         
-        apf.addListener(this.$ext, "mouseout", function(e) {
+        ppc.addListener(this.$ext, "mouseout", function(e) {
             if (!_self.disabled)
                 _self.dispatchEvent("mouseout", {htmlEvent: e});
         });
@@ -220,7 +220,7 @@ apf.preview = function(struct, tagName){
     });
     
     this.$resize = function(){
-        var diff = apf.getDiff(this.$ext);
+        var diff = ppc.getDiff(this.$ext);
         var wratio = 1, hratio = 1;
 
         this.oImg.style.width = "";
@@ -236,16 +236,16 @@ apf.preview = function(struct, tagName){
         else if (hratio > wratio && hratio > 1)
             this.oImg.style.height = "100%";
         
-        this.oImg.style.top = ((this.$ext.offsetHeight - apf.getHeightDiff(this.$ext) 
+        this.oImg.style.top = ((this.$ext.offsetHeight - ppc.getHeightDiff(this.$ext) 
             - this.oImg.offsetHeight) / 2) + "px";
     }
-}).call(apf.img.prototype = new apf.BaseSimple());
+}).call(ppc.img.prototype = new ppc.BaseSimple());
 
-apf.preview.prototype = apf.img.prototype;
+ppc.preview.prototype = ppc.img.prototype;
 
-apf.aml.setElement("img", apf.img);
-apf.aml.setElement("preview", apf.preview);
+ppc.aml.setElement("img", ppc.img);
+ppc.aml.setElement("preview", ppc.preview);
 
-apf.aml.setElement("name", apf.BindingRule);
-apf.aml.setElement("image", apf.BindingRule);
+ppc.aml.setElement("name", ppc.BindingRule);
+ppc.aml.setElement("image", ppc.BindingRule);
 // #endif

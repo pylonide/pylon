@@ -81,12 +81,12 @@
                 width: 45px;
             }
         ]]></a:style>
-        <a:style condition="{apf.isWebkit}"><![CDATA[
+        <a:style condition="{ppc.isWebkit}"><![CDATA[
             .code_complete_bar > div > div {
                 margin-right: -11px;
             }
         ]]></a:style>
-        <a:style condition="{apf.isGecko}"><![CDATA[
+        <a:style condition="{ppc.isGecko}"><![CDATA[
             .code_complete_bar > div > div > div {
                 margin-right: -11px;
             }

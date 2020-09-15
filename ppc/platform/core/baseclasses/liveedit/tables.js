@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_TABLES || __INC_ALL
 
-apf.LiveEdit.plugin("table", function() {
+ppc.LiveEdit.plugin("table", function() {
     this.name       = "table",
     this.icon       = "table",
-    this.type       = apf.TOOLBARITEM,
-    this.subType    = apf.TOOLBARPANEL,
+    this.type       = ppc.TOOLBARITEM,
+    this.subType    = ppc.TOOLBARPANEL,
     this.hook       = "ontoolbar",
     this.keyBinding = "ctrl+alt+shift+t",
-    this.state      = apf.OFF;
+    this.state      = ppc.OFF;
 
     var panelBody, oTableCont, oTableSel, oTable, oStatus, oTablePos,
         iCurrentX   = 0,
@@ -50,7 +50,7 @@ apf.LiveEdit.plugin("table", function() {
         if (!panelBody) {
             this.editor = editor;
             oDoc = editor.useIframe ? document : editor.$activeDocument;
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
         else
             resetTableMorph();
@@ -63,7 +63,7 @@ apf.LiveEdit.plugin("table", function() {
         window.setTimeout(function() {
             panelBody.style.width  = (oTableCont.offsetWidth + (GUTTER_SIZE * 2)) + "px",
             panelBody.style.height = (oTableCont.offsetWidth + BUTTON_SIZE) + "px",
-            oTablePos = apf.getAbsolutePosition(oTable);
+            oTablePos = ppc.getAbsolutePosition(oTable);
         });
     };
 
@@ -72,7 +72,7 @@ apf.LiveEdit.plugin("table", function() {
     };
 
     this.submit = function(oSize) {
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
 
         if (oSize[0] < 0 || oSize[1] < 0) return;
 
@@ -84,7 +84,7 @@ apf.LiveEdit.plugin("table", function() {
         for (; i < j; i++) {
             aOut.push("<tr>");
             for (k = 0, l = oSize[1]; k < l; k++)
-                aOut.push("<td>", (apf.isIE ? "" : '&nbsp;<br _apf_placeholder="1" />'),"</td>");
+                aOut.push("<td>", (ppc.isIE ? "" : '&nbsp;<br _ppc_placeholder="1" />'),"</td>");
             aOut.push("</tr>")
         }
         aOut.push("</table>")
@@ -98,10 +98,10 @@ apf.LiveEdit.plugin("table", function() {
         bMorphing     = true;
         oMorphCurrent = e.client;
         iMorphXCount  = iMorphYCount = 0;
-        //apf.plane.show(panelBody, true);
+        //ppc.plane.show(panelBody, true);
         document.onmousemove = function(e) {
             if (!bMorphing) return;
-            e = new apf.AbstractEvent(e || window.event);
+            e = new ppc.AbstractEvent(e || window.event);
             // only morph the table when the mouse reaches beyond the table
             if (e.client.x  > oTablePos[0] + oTable.offsetWidth
               || e.client.y > oTablePos[1] + oTable.offsetHeight)
@@ -110,7 +110,7 @@ apf.LiveEdit.plugin("table", function() {
             return false;
         }
         document.onmouseup = function(e) {
-            e = new apf.AbstractEvent(e || window.event);
+            e = new ppc.AbstractEvent(e || window.event);
             mouseUp.call(_self, e);
             e.stop();
             return false;
@@ -124,7 +124,7 @@ apf.LiveEdit.plugin("table", function() {
             bMorphing     = false,
             oMorphCurrent = document.onmousemove = document.onmouseup = null,
             iMorphXCount  = iMorphYCount = 0;
-            //apf.plane.hide();
+            //ppc.plane.hide();
         }
         mouseOver.call(this, e);
         if (iCurrentX > 0 && iCurrentY > 0)
@@ -184,7 +184,7 @@ apf.LiveEdit.plugin("table", function() {
 
     function statusClick(e) {
         mouseOut.call(this, e);
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
     }
 
     this.createPanelBody = function() {
@@ -233,12 +233,12 @@ apf.LiveEdit.plugin("table", function() {
     };
 });
 
-apf.LiveEdit.plugin("tablewizard", function() {
+ppc.LiveEdit.plugin("tablewizard", function() {
     this.name        = "tablewizard";
     this.icon        = "tablewizard";
-    this.type        = apf.CONTEXTPANEL;
+    this.type        = ppc.CONTEXTPANEL;
     this.hook        = "context";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
     this.oTable      = null;
     this.oRow        = null;
     this.oCell       = null;
@@ -246,7 +246,7 @@ apf.LiveEdit.plugin("tablewizard", function() {
     var activeNode, oDoc, _self = this;
 
     this.execute = function(editor, e) {
-        if (this.queryState(editor) != apf.ON)
+        if (this.queryState(editor) != ppc.ON)
             return;
         // get the active table, row and cell nodes:
         this.oTable = this.oRow = this.oCell = null;
@@ -261,16 +261,16 @@ apf.LiveEdit.plugin("tablewizard", function() {
 
         if (!this.editor)
             this.editor = editor;
-        if (!apf.editor.oMenu)
+        if (!ppc.editor.oMenu)
             this.createContextMenu();
         if (!oDoc)
             oDoc = editor.useIframe ? document : editor.$activeDocument;
-        apf.editor.oMenu.tablePlugin = this;
+        ppc.editor.oMenu.tablePlugin = this;
 
-        var pos = apf.getAbsolutePosition(editor.iframe);
+        var pos = ppc.getAbsolutePosition(editor.iframe);
         if (!e.client)
-            e = new apf.AbstractEvent(e);
-        apf.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1], true);
+            e = new ppc.AbstractEvent(e);
+        ppc.editor.oMenu.display(e.client.x + pos[0], e.client.y + pos[1], true);
 
         e.stop();
 
@@ -285,12 +285,12 @@ apf.LiveEdit.plugin("tablewizard", function() {
             if (oNode.tagName == "TABLE" || oNode.tagName == "TBODY"
               || oNode.tagName == "TR" || oNode.tagName == "TD") {
                 activeNode = oNode;
-                return apf.ON;
+                return ppc.ON;
             }
             oNode = oNode.parentNode;
         }
 
-        return apf.OFF;
+        return ppc.OFF;
     };
 
     function addRows(td_elm, tr_elm, rowspan) {
@@ -299,9 +299,9 @@ apf.LiveEdit.plugin("tablewizard", function() {
         var trNext = nextElm(tr_elm, ["TR"]);
         for (var i = 1; i < rowspan && trNext; i++) {
             var newTD = oDoc.createElement("td");
-            if (!apf.isIE)
+            if (!ppc.isIE)
                 newTD.innerHTML = '<br mce_bogus="1"/>';
-            if (apf.isIE)
+            if (ppc.isIE)
                 trNext.insertBefore(newTD, trNext.cells(td_elm.cellIndex));
             else
                 trNext.insertBefore(newTD, trNext.cells[td_elm.cellIndex]);
@@ -374,7 +374,7 @@ apf.LiveEdit.plugin("tablewizard", function() {
     this.createContextMenu = function(){
         var idMenu = "editor_" + this.$uniqueId + "_menu";
         this.appendAmlNode('\
-            <a:menu xmlns:a="' + apf.ns.aml + '" id="' + idMenu + '">\
+            <a:menu xmlns:a="' + ppc.ns.aml + '" id="' + idMenu + '">\
                 <a:item value="rowbefore">Insert row before</a:item>\
                 <a:item value="rowbefore">Insert row after</a:item>\
                 <a:item value="deleterow">Delete row</a:item>\
@@ -390,7 +390,7 @@ apf.LiveEdit.plugin("tablewizard", function() {
         // <a:divider />\
         // <a:item value="rowprops">Table row properties</a:item>\
         // <a:item value="colprops">Table column properties</a:item>\
-        var oMenu = apf.editor.oMenu = self[idMenu];
+        var oMenu = ppc.editor.oMenu = self[idMenu];
         oMenu.addEventListener("onitemclick", function(e){
             if (this.tablePlugin != _self)
                 return;
@@ -459,8 +459,8 @@ apf.LiveEdit.plugin("tablewizard", function() {
                         _self.oCol.colSpan = 1;
                         for (i = 1; i < colspan; i++) {
                             var newTD = oDoc.createElement("td");
-                            if (!apf.isIE)
-                                newTD.innerHTML = '<br _apf_placeholder="1"/>';
+                            if (!ppc.isIE)
+                                newTD.innerHTML = '<br _ppc_placeholder="1"/>';
 
                             _self.oRow.insertBefore(newTD, nextElm(_self.oCell, ["TD","TH"]));
 
@@ -477,7 +477,7 @@ apf.LiveEdit.plugin("tablewizard", function() {
                         grid = getTableGrid(_self.oTable),
                         oCellPos, aRows, aRowCells, aBrs, oTd, k;
 
-                    if (apf.isIE || oSel.rangeCount == 1) {
+                    if (ppc.isIE || oSel.rangeCount == 1) {
                         var numRows = 1;
                         var numCols = 1;
                         oCellPos = getCellPos(grid, _self.oCell);
@@ -505,7 +505,7 @@ apf.LiveEdit.plugin("tablewizard", function() {
                             aBrs = oTd.getElementsByTagName("br");
                             if (aBrs.length > 1) {
                                 for (j = aBrs.length; j >= 1; j--) {
-                                    if (aBrs[j].getAttribute("_apf_placeholder"))
+                                    if (aBrs[j].getAttribute("_ppc_placeholder"))
                                         aBrs[j].parentNode.removeChild(aBrs[j]);
                                 }
                             }
@@ -622,7 +622,7 @@ apf.LiveEdit.plugin("tablewizard", function() {
                         for (j = 0; j < rows[i].length; j++) {
                             var html = rows[i][j].innerHTML;
                             var chk = html.replace(/[ \t\r\n]/g, "");
-                            if (chk != "<br/>" && chk != '<br _apf_placeholder="1"/>'
+                            if (chk != "<br/>" && chk != '<br _ppc_placeholder="1"/>'
                               && (j + i > 0))
                                 _self.oCell.innerHTML += html;
 
@@ -654,7 +654,7 @@ apf.LiveEdit.plugin("tablewizard", function() {
                     aBrs = _self.oCell.getElementsByTagName("br");
                     if (aBrs.length > 1) {
                         for (i = aBrs.length; i >= 1; i--) {
-                            if (aBrs[i] && aBrs[i].getAttribute("_apf_placeholder"))
+                            if (aBrs[i] && aBrs[i].getAttribute("_ppc_placeholder"))
                                 aBrs[i].parentNode.removeChild(aBrs[i]);
                         }
                     }

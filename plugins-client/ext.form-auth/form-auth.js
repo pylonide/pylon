@@ -11,10 +11,10 @@ define(function(require, exports, module) {
     nodes: [],
 
     init: function() {
-      this.nodes.push(menus.addItemByPath("File/~", new apf.divider(), 900000));
+      this.nodes.push(menus.addItemByPath("File/~", new ppc.divider(), 900000));
       this.nodes.push(
         menus.addItemByPath("File/Sign Out",
-        this.mnuItem = new apf.item({
+        this.mnuItem = new ppc.item({
           onclick : function(){
                 location.href = "/logout";
           }

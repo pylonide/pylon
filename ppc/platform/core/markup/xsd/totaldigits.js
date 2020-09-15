@@ -23,8 +23,8 @@
 /**
  * Specifies the exact number of digits allowed. Must be greater than zero
  */
-apf.XsdTotalDigits = function(struct, tagName){
-    this.$init(tagName || "totaldigits", apf.NODE_HIDDEN, struct);
+ppc.XsdTotalDigits = function(struct, tagName){
+    this.$init(tagName || "totaldigits", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -36,7 +36,7 @@ apf.XsdTotalDigits = function(struct, tagName){
         stack.push("if (new String(parseFloat(value)).length == "
             + this.value + ") return false;");
     };
-}).call(apf.XsdTotalDigits.prototype = new apf.XsdElement());
+}).call(ppc.XsdTotalDigits.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("totaldigits", apf.XsdTotalDigits);
+ppc.xsd.setElement("totaldigits", ppc.XsdTotalDigits);
 //#endif

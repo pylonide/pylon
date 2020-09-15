@@ -24,8 +24,8 @@
 /**
  * Specifies the upper bounds for numeric values (the value must be less than or equal to this value)
  */
-apf.XsdMaxInclusive = function(struct, tagName){
-    this.$init(tagName || "maxinclusive", apf.NODE_HIDDEN, struct);
+ppc.XsdMaxInclusive = function(struct, tagName){
+    this.$init(tagName || "maxinclusive", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -36,8 +36,8 @@ apf.XsdMaxInclusive = function(struct, tagName){
     this.$compile = function(stack){
         stack.push("if (parseFloat(value) > " + this.value + ") return false;");
     };
-}).call(apf.XsdMaxInclusive.prototype = new apf.XsdElement());
+}).call(ppc.XsdMaxInclusive.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("maxinclusive", apf.XsdMaxInclusive);
+ppc.xsd.setElement("maxinclusive", ppc.XsdMaxInclusive);
 
 //#endif

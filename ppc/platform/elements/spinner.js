@@ -31,7 +31,7 @@
  * #### Example: Setting Maximum and Minimum Ranges
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <!-- startcontent -->
  *    <a:spinner value="6" min="-6" max="12" width="200"></a:spinner>
  *  <!-- endcontent -->
@@ -41,7 +41,7 @@
  * #### Example: Loading Data
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="mdlSpinner">
  *       <data value="56"></data>
@@ -55,7 +55,7 @@
  *
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="mdlTest">
  *     <overview page="1" pages="10" />
@@ -73,14 +73,14 @@
  * </a:application>
  * ```
  *
- * @class apf.spinner
+ * @class ppc.spinner
  * @define spinner
  * @form
  * @version     %I%, %G%
  * 
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
- * @inheritsElsewhere apf.XForms
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
+ * @inheritsElsewhere ppc.XForms
  *
  */
 /**
@@ -97,8 +97,8 @@
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  */
-apf.spinner = function(struct, tagName){
-    this.$init(tagName || "spinner", apf.NODE_VISIBLE, struct);
+ppc.spinner = function(struct, tagName){
+    this.$init(tagName || "spinner", ppc.NODE_VISIBLE, struct);
     
     this.max     = 64000;
     this.min     = -64000;
@@ -111,10 +111,10 @@ apf.spinner = function(struct, tagName){
 (function() {
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         //#ifdef __WITH_XFORMS
-        //,apf.XForms
+        //,ppc.XForms
         //#endif
     );
 
@@ -201,8 +201,8 @@ apf.spinner = function(struct, tagName){
             return;
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug)
-            apf.sanitizeTextbox(this.oInput);
+        if (ppc.hasFocusBug)
+            ppc.sanitizeTextbox(this.oInput);
         //#endif
 
         this.focused = true;
@@ -300,7 +300,7 @@ apf.spinner = function(struct, tagName){
         this.oLeft = this.$getLayoutNode("main", "left", this.$ext);
 
         //#ifdef __WITH_WINDOW_FOCUS
-        apf.sanitizeTextbox(this.oInput);
+        ppc.sanitizeTextbox(this.oInput);
         //#endif
 
         var timer,
@@ -402,7 +402,7 @@ apf.spinner = function(struct, tagName){
                        _self.change(value <= _self.max ? value : _self.max);
                 };
 
-            apf.setStyleClass(this, "plusDown", ["plusHover"]);
+            ppc.setStyleClass(this, "plusDown", ["plusHover"]);
 
             func();
         };
@@ -430,7 +430,7 @@ apf.spinner = function(struct, tagName){
                        _self.change(value >= _self.min ? value : _self.min);
                 };
 
-            apf.setStyleClass(this, "minusDown", ["minusHover"]);
+            ppc.setStyleClass(this, "minusDown", ["minusHover"]);
 
             func();
         };
@@ -447,7 +447,7 @@ apf.spinner = function(struct, tagName){
             if (value != _self.value)
                 _self.change(value);
 
-            apf.setStyleClass(this, "", ["minusHover"]);
+            ppc.setStyleClass(this, "", ["minusHover"]);
 
             if (!_self.focused)
                _self.$blur(e);
@@ -465,7 +465,7 @@ apf.spinner = function(struct, tagName){
             if (value != _self.value)
                 _self.change(value);
 
-            apf.setStyleClass(this, "", ["plusHover"]);
+            ppc.setStyleClass(this, "", ["plusHover"]);
 
             if (!_self.focused)
                _self.$blur(e);
@@ -475,14 +475,14 @@ apf.spinner = function(struct, tagName){
             if (_self.disabled)
                 return;
                 
-            apf.setStyleClass(this, "minusHover");
+            ppc.setStyleClass(this, "minusHover");
         };
 
         this.$buttonPlus.onmouseover  = function(e) {
             if (_self.disabled)
                 return;
                 
-            apf.setStyleClass(this, "plusHover");
+            ppc.setStyleClass(this, "plusHover");
         };
 
         this.$buttonPlus.onmouseup = function(e) {
@@ -491,9 +491,9 @@ apf.spinner = function(struct, tagName){
             
             e = e || event;
             //e.cancelBubble = true;
-            apf.cancelBubble(e, this);
+            ppc.cancelBubble(e, this);
 
-            apf.setStyleClass(this, "plusHover", ["plusDown"]);
+            ppc.setStyleClass(this, "plusHover", ["plusDown"]);
 
             clearTimeout(timer);
             z = 0;
@@ -518,9 +518,9 @@ apf.spinner = function(struct, tagName){
             
             e = e || event;
             //e.cancelBubble = true;
-            apf.cancelBubble(e, this);
+            ppc.cancelBubble(e, this);
 
-            apf.setStyleClass(this, "minusHover", ["minusDown"]);
+            ppc.setStyleClass(this, "minusHover", ["minusDown"]);
 
             clearTimeout(timer);
             z = 0;
@@ -580,10 +580,10 @@ apf.spinner = function(struct, tagName){
     //#endif
 
 // #ifdef __WITH_DATABINDING
-}).call(apf.spinner.prototype = new apf.StandardBinding());
+}).call(ppc.spinner.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.spinner.prototype = new apf.Presentation());
+}).call(ppc.spinner.prototype = new ppc.Presentation());
 #endif */
 
-apf.aml.setElement("spinner", apf.spinner);
+ppc.aml.setElement("spinner", ppc.spinner);
 // #endif

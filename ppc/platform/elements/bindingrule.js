@@ -47,7 +47,7 @@
  *    bindings = "bndFolders" />
  * ```
  * 
- * @see apf.smartbinding
+ * @see ppc.smartbinding
  * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -56,26 +56,26 @@
  *
  * @default_private
  */
-apf.BindingRule = function(struct, tagName){
-    this.$init(tagName || true, apf.NODE_HIDDEN, struct);
+ppc.BindingRule = function(struct, tagName){
+    this.$init(tagName || true, ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
     this.$bindingRule = true;
     
     this.compile = function(prop){
-        return (this["c" + prop] = apf.lm.compile(this[prop], {
+        return (this["c" + prop] = ppc.lm.compile(this[prop], {
             xpathmode  : 3,
             injectself : true
         }));
     };
     
     this.$compile = function(prop, options){
-        return (this["c" + prop + "2"] = apf.lm.compile(this[prop], options));
+        return (this["c" + prop + "2"] = ppc.lm.compile(this[prop], options));
     };
 
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         value : 1,
         match : 1
     }, this.$attrExcludePropBind);
@@ -95,7 +95,7 @@ apf.BindingRule = function(struct, tagName){
             if (!node) return;
             
             //Reload parent to propagate change
-            apf.queue.add("reload" + node.$uniqueId, function(){
+            ppc.queue.add("reload" + node.$uniqueId, function(){
                 node.reload();
             });
             
@@ -121,7 +121,7 @@ apf.BindingRule = function(struct, tagName){
         //Reload parent to propagate change
         //@todo trigger should be maintained on node itself to prevent dual reload
         if ("expanded|collapsed".indexOf(this.localName) == -1)
-            apf.queue.add("reload" + node.$uniqueId, function(){
+            ppc.queue.add("reload" + node.$uniqueId, function(){
                 node.reload();
             });
 
@@ -130,10 +130,10 @@ apf.BindingRule = function(struct, tagName){
             (node.$bindings[this.localName] 
                 || (node.$bindings[this.localName] = [])).pushUnique(this);
         }
-        //@todo apf3.0 test if proc instr and cdata needs to be serialized
+        //@todo ppc3.0 test if proc instr and cdata needs to be serialized
         //Else just update the binding value
         else  if (!this.attributes.getNamedItem("value"))
-            this.value = apf.serializeChildren(this);
+            this.value = ppc.serializeChildren(this);
         //Or do nothing
         else return;
 
@@ -162,7 +162,7 @@ apf.BindingRule = function(struct, tagName){
             else
                 return;
         }
-        //@todo apf3.0 test if proc instr and cdata needs to be serialized
+        //@todo ppc3.0 test if proc instr and cdata needs to be serialized
         //Else just update the binding value
         else  if (!this.attributes.getNamedItem("value") && (first = this.firstChild)) {
             if (first.nodeType == this.NODE_PROCESSING_INSTRUCTION) {
@@ -172,14 +172,14 @@ apf.BindingRule = function(struct, tagName){
                     this.value = first.nodeValue;
             }
             else
-                this.value = apf.serializeChildren(this).trim();
+                this.value = ppc.serializeChildren(this).trim();
         }
         //Or do nothing
         else return;
 
         //Reload parent to propagate change
         if ("expanded|collapsed".indexOf(this.localName) == -1)
-            apf.queue.add("reload" + node.$uniqueId, function(){
+            ppc.queue.add("reload" + node.$uniqueId, function(){
                 if(!node.$amlDestroyed)
                     node.reload();
             });
@@ -194,8 +194,8 @@ apf.BindingRule = function(struct, tagName){
         //#ifdef __DEBUG
         if (!this.match && (!this.value && !this.childNodes.length && !this.get
           || this.localName == "each") || this.select) {
-            throw new Error(apf.formatErrorString(0, this, "Bindingrule",
-                "Missing attribute 'match'")); //@todo apf3.0 turn this into a good error
+            throw new Error(ppc.formatErrorString(0, this, "Bindingrule",
+                "Missing attribute 'match'")); //@todo ppc3.0 turn this into a good error
         }
         //#endif
 
@@ -209,7 +209,7 @@ apf.BindingRule = function(struct, tagName){
                     this.value = first.nodeValue;
             }
             else
-                this.value = apf.serializeChildren(this.$aml).trim();
+                this.value = ppc.serializeChildren(this.$aml).trim();
         }
         
         //Find the parent this rule works on
@@ -218,7 +218,7 @@ apf.BindingRule = function(struct, tagName){
             pNode = pNode.parentNode;
 
         //Add the rule to the set
-        var bindings = pNode.$bindings || (pNode.$bindings = new apf.ruleList());
+        var bindings = pNode.$bindings || (pNode.$bindings = new ppc.ruleList());
         (bindings[this.localName] || (bindings[this.localName] = [])).push(this);
         
         //Compile if necessary
@@ -238,18 +238,18 @@ apf.BindingRule = function(struct, tagName){
             }
         }
     });
-}).call(apf.BindingRule.prototype = new apf.AmlElement());
+}).call(ppc.BindingRule.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("icon",       apf.BindingRule);
-apf.aml.setElement("image",      apf.BindingRule);
-apf.aml.setElement("caption",    apf.BindingRule);
-apf.aml.setElement("tooltip",    apf.BindingRule);
-apf.aml.setElement("css",        apf.BindingRule);
-apf.aml.setElement("selectable", apf.BindingRule);
-apf.aml.setElement("value",      apf.BindingRule);
-apf.aml.setElement("src",        apf.BindingRule);
-apf.aml.setElement("collapsed",  apf.BindingRule);
-apf.aml.setElement("expanded",  apf.BindingRule);
-apf.aml.setElement("empty",      apf.BindingRule);
+ppc.aml.setElement("icon",       ppc.BindingRule);
+ppc.aml.setElement("image",      ppc.BindingRule);
+ppc.aml.setElement("caption",    ppc.BindingRule);
+ppc.aml.setElement("tooltip",    ppc.BindingRule);
+ppc.aml.setElement("css",        ppc.BindingRule);
+ppc.aml.setElement("selectable", ppc.BindingRule);
+ppc.aml.setElement("value",      ppc.BindingRule);
+ppc.aml.setElement("src",        ppc.BindingRule);
+ppc.aml.setElement("collapsed",  ppc.BindingRule);
+ppc.aml.setElement("expanded",  ppc.BindingRule);
+ppc.aml.setElement("empty",      ppc.BindingRule);
 // #endif
 

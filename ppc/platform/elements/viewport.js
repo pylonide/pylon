@@ -28,8 +28,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.viewport = function(struct, tagName){
-    this.$init(tagName || "viewport", apf.NODE_VISIBLE, struct);
+ppc.viewport = function(struct, tagName){
+    this.$init(tagName || "viewport", ppc.NODE_VISIBLE, struct);
     
     if (document.documentElement)
         this.$ext = this.$int = document.documentElement.appendChild(document.createElement("div"));
@@ -47,9 +47,9 @@ apf.viewport = function(struct, tagName){
         
     };
     
-}).call(apf.viewport.prototype = new apf.AmlElement());
+}).call(ppc.viewport.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("viewport", apf.viewport);
+ppc.aml.setElement("viewport", ppc.viewport);
 
 
 // #endif

@@ -23,12 +23,12 @@
 /**
  * @private
  */
-apf.runIphone = function() {
-    if (!apf.isIphone) return;
+ppc.runIphone = function() {
+    if (!ppc.isIphone) return;
 
     $setTimeout(function() {
         // #ifdef __WITH_STYLE
-        apf.importCssString(
+        ppc.importCssString(
            'html, body {\
                 margin: 0;\
                 font-family: Helvetica;\
@@ -51,11 +51,11 @@ apf.runIphone = function() {
         // #endif
 
         var head = document.getElementsByTagName("head")[0];
-        if (apf.config.iphoneIcon) {
+        if (ppc.config.iphoneIcon) {
             var link = document.createElement("link");
             link.setAttribute("rel", "apple-touch-icon"
-                + (apf.config.iphoneIconIsGlossy ? "" : "-precomposed"));
-            link.setAttribute("href", "apf.config.iphoneIcon");
+                + (ppc.config.iphoneIconIsGlossy ? "" : "-precomposed"));
+            link.setAttribute("href", "ppc.config.iphoneIcon");
             head.appendChild(link);
         }
 
@@ -66,17 +66,17 @@ apf.runIphone = function() {
             head.appendChild(meta);
         }
 
-        if (apf.config.iphoneFixedViewport) {
+        if (ppc.config.iphoneFixedViewport) {
             appendMeta("viewport",
                 "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0;");
         }
 
-        if (apf.config.iphoneFullScreen) {
+        if (ppc.config.iphoneFullScreen) {
             appendMeta("apple-mobile-web-app-capable", "yes");
 
-            if (apf.config.iphoneStatusBar)
+            if (ppc.config.iphoneStatusBar)
                 appendMeta("apple-mobile-web-app-status-bar-style",
-                    "apf.config.iphoneStatusBar");
+                    "ppc.config.iphoneStatusBar");
         }
     });
 
@@ -86,7 +86,7 @@ apf.runIphone = function() {
         landscapeVal        = "landscape",
         checkTimer          = null;
 
-    apf.addDomLoadEvent(function() {
+    ppc.addDomLoadEvent(function() {
         $setTimeout(checkOrientAndLocation, 0);
         checkTimer = setInterval(checkOrientAndLocation, 300);
     });
@@ -142,12 +142,12 @@ apf.runIphone = function() {
     ["gesturestart", "gesturechange", "gestureend",
      "orientationchange"].forEach(function(type) {
         document["on" + type] = function(evt) {
-            if (apf.dispatchEvent)
-                apf.dispatchEvent(type, evt);
+            if (ppc.dispatchEvent)
+                ppc.dispatchEvent(type, evt);
         };
     });
 
-    apf.iphone = {
+    ppc.iphone = {
         titleNode : null,
 
         linkEvents: function(el, bClick) {
@@ -203,17 +203,17 @@ apf.runIphone = function() {
             levelTwoChar : "-",
 
             go: function(where, noanim) {
-                var i, p, _self = apf.iphone.nav;
+                var i, p, _self = ppc.iphone.nav;
                 _self.update();
 
                 if (!(p = _self.sections[where.page])) return;
 
                 scrollTo(0, 1);
-                apf.dispatchEvent("pagechange", where);
+                ppc.dispatchEvent("pagechange", where);
 
                 var sTitle = p.getAttribute("title");
-                if (apf.iphone.titleNode && sTitle)
-                    apf.iphone.titleNode.innerHTML = sTitle;
+                if (ppc.iphone.titleNode && sTitle)
+                    ppc.iphone.titleNode.innerHTML = sTitle;
 
                 if (noanim) {
                     for (i in _self.sections)
@@ -226,13 +226,13 @@ apf.runIphone = function() {
                             continue;
                         var section = _self.sections[i];
                         section.setProperty("zindex", 0);
-                        apf.tween.single(section.$ext, {
+                        ppc.tween.single(section.$ext, {
                             steps   : 5,
                             interval: 10,
                             from    : section.$ext.offsetLeft,
                             to      : (where.index < 0) ? 1000 : -1000,
                             type    : "left",
-                            anim    : apf.tween.EASEOUT,
+                            anim    : ppc.tween.EASEOUT,
                             onfinish: function() {
                                 section.setProperty("visible", false);
                             }
@@ -245,15 +245,15 @@ apf.runIphone = function() {
                             ? -(el.offsetWidth) - pad
                             : window.innerWidth + el.offsetLeft + pad;
                     p.setProperty("visible", true);
-                    p.setProperty("zindex",  apf.all.length + 1);
+                    p.setProperty("zindex",  ppc.all.length + 1);
                     //#ifdef __WITH_TWEEN
-                    apf.tween.single(el, {
+                    ppc.tween.single(el, {
                         steps   : 5,
                         interval: 10,
                         from    : iFrom,
                         to      : 0,
                         type    : "left",
-                        anim    : apf.tween.EASEIN
+                        anim    : ppc.tween.EASEIN
                     });
                     //#endif
                 }
@@ -272,25 +272,25 @@ apf.runIphone = function() {
     };
 
     $setTimeout(function() {
-        apf.addEventListener("hashchange", apf.iphone.nav.go);
+        ppc.addEventListener("hashchange", ppc.iphone.nav.go);
         if (location.href.match(/#(.*)$/))
-    		apf.history.init(decodeURI(RegExp.$1));
-        else if (apf._GET.page)
-            apf.history.init(apf._GET.page);
+    		ppc.history.init(decodeURI(RegExp.$1));
+        else if (ppc._GET.page)
+            ppc.history.init(ppc._GET.page);
         else
-            apf.history.init();
+            ppc.history.init();
     });
 
     // make sure that document event link to mouse events already. Since the
     // document object on top of the event bubble chain, it will probably also
-    // be hooked by other APF elements.
-    //apf.iphone.linkEvents(document);
+    // be hooked by other PPC elements.
+    //ppc.iphone.linkEvents(document);
     document.ontouchstart = function(evt) {
         if (!evt.touches || evt.touches.length != 1) return;
 
         var e       = evt.touches[0],
             el      = e.target,
-            amlNode = apf.findHost(e.target);
+            amlNode = ppc.findHost(e.target);
         if (!amlNode) return;
 
         while (typeof el["onmousedown"] != "function" && el != document.body)
@@ -310,7 +310,7 @@ apf.runIphone = function() {
 
         var e       = evt.touches[0],
             el      = e.target,
-            amlNode = apf.findHost(e.target);
+            amlNode = ppc.findHost(e.target);
         if (!amlNode) return;
 
         while (typeof el["onmousemove"] != "function" && el != document.body)
@@ -330,7 +330,7 @@ apf.runIphone = function() {
             : evt.changedTouches[0];
         if (!e) return;
         var el      = e.target,
-            amlNode = apf.findHost(e.target);
+            amlNode = ppc.findHost(e.target);
         if (!amlNode) return;
 
         while (typeof el["onmouseup"] != "function" && el != document.body)

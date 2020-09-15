@@ -29,7 +29,7 @@
  * #### Example
  * 
  * ```xml, demo
- *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:menu id="menu1">
  *       <a:item>Tutorials</a:item>
@@ -62,7 +62,7 @@
  *  </a:application>
  * ```
  *
- * @class apf.menu
+ * @class ppc.menu
  * @define menu
  * @selection
  * @allowchild item, divider, check, radio
@@ -71,7 +71,7 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  */
 /**
  * @event display   Fires when the contextmenu is shown.
@@ -82,14 +82,14 @@
  *   - `value` ([[String]]): the value of the clicked element.
  *
  */
-apf.menu = function(struct, tagName){
-    this.$init(tagName || "menu", apf.NODE_VISIBLE, struct);
+ppc.menu = function(struct, tagName){
+    this.$init(tagName || "menu", ppc.NODE_VISIBLE, struct);
     
-    this.animate = apf.enableAnim;
+    this.animate = ppc.enableAnim;
 };
 
 (function(){
-    this.$focussable  = apf.MENU;
+    this.$focussable  = ppc.MENU;
     this.$positioning = "basic"
     //var _self         = this;
     //var blurring      = false;
@@ -117,7 +117,7 @@ apf.menu = function(struct, tagName){
         else {
             this.$ext.style.display = "none";
 
-            var lastFocus = apf.menu.lastFocus;
+            var lastFocus = ppc.menu.lastFocus;
             var opener    = this.opener;
             //@todo test this with a list being the opener of the menu
             if (lastFocus != this.opener && this.opener && this.opener.$blur)
@@ -132,26 +132,26 @@ apf.menu = function(struct, tagName){
             //#ifdef __WITH_FOCUS
             else if (lastFocus) {
                 //We're being hidden because some other object gets focus
-                if (apf.window.$settingFocus) {
-                    if (apf.window.$settingFocus != lastFocus && lastFocus.$blur)
+                if (ppc.window.$settingFocus) {
+                    if (ppc.window.$settingFocus != lastFocus && lastFocus.$blur)
                         lastFocus.$blur();
                     this.$blur();
 
-                    if (apf.window.$settingFocus.localName != "menu") //not menu walking
-                        apf.menu.lastFocus = null;
+                    if (ppc.window.$settingFocus.localName != "menu") //not menu walking
+                        ppc.menu.lastFocus = null;
                 }
                 //We're being hidden because window looses focus
                 //#ifdef __WITH_WINDOW_FOCUS
-                /*else if (!apf.window.hasFocus()) {
+                /*else if (!ppc.window.hasFocus()) {
                     if (lastFocus.$blur)
                         lastFocus.$blur();
                     this.$blur();
 
-                    apf.document.activeElement = lastFocus;
+                    ppc.document.activeElement = lastFocus;
                     if (lastFocus.$focusParent)
                         lastFocus.$focusParent.$lastFocussed = lastFocus;
 
-                    apf.menu.lastFocus = null;
+                    ppc.menu.lastFocus = null;
                 }*/
                 //#endif
                 //We're just being hidden
@@ -160,22 +160,22 @@ apf.menu = function(struct, tagName){
                         this.$hideTree = -1
 
                     var visTest = (lastFocus.disabled || !lastFocus.visible)
-                        && lastFocus != apf.document.documentElement;
+                        && lastFocus != ppc.document.documentElement;
 
                     if (nofocus || visTest) {
                         if (lastFocus.$blur)
                             lastFocus.$blur();
                         this.$blur();
-                        apf.document.activeElement = null;
+                        ppc.document.activeElement = null;
 
-                        if (visTest && apf.window.moveNext() === false)
-                            apf.window.$focusRoot();
+                        if (visTest && ppc.window.moveNext() === false)
+                            ppc.window.$focusRoot();
                     }
                     else {
                         lastFocus.focus(null, null, true);
                     }
 
-                    apf.menu.lastFocus = null;
+                    ppc.menu.lastFocus = null;
                 }
             }
             //#endif
@@ -202,7 +202,7 @@ apf.menu = function(struct, tagName){
             this.$hideTree = null;
 
             if (this.$selected) {
-                apf.setStyleClass(this.$selected.$ext, "", ["hover"]);
+                ppc.setStyleClass(this.$selected.$ext, "", ["hover"]);
                 this.$selected = null;
             }
             
@@ -219,9 +219,9 @@ apf.menu = function(struct, tagName){
      * @param {Number}     x        The left position of the menu.
      * @param {Number}     y        The top position of the menu.
      * @param {Boolean}    noanim   Whether to animate the showing of this menu.
-     * @param {apf.AmlElement} opener   The element that is the context of this menu.
+     * @param {ppc.AmlElement} opener   The element that is the context of this menu.
      * @param {XMLElement} xmlNode  The {@link term.datanode data node} that provides data context to the menu child nodes.
-     * @see apf.GuiElement@contextmenu
+     * @see ppc.GuiElement@contextmenu
      */
     this.display = function(x, y, noanim, opener, xmlNode, openMenuId, btnWidth){
         this.opener = opener;
@@ -237,7 +237,7 @@ apf.menu = function(struct, tagName){
                 if (node.nodeType != 1 || node.localName != "item")
                     continue;
     
-                result = !xmlNode || !node.match || (node.cmatch || (node.cmatch = apf.lm.compile(node.match, {
+                result = !xmlNode || !node.match || (node.cmatch || (node.cmatch = ppc.lm.compile(node.match, {
                     xpathmode  : 3,
                     injectself : true
                 })))(xmlNode)
@@ -279,7 +279,7 @@ apf.menu = function(struct, tagName){
 
         function afterRender(){
             if (x === null) {
-                apf.popup.show(this.$uniqueId, {
+                ppc.popup.show(this.$uniqueId, {
                     x            : 0, 
                     y            : this.ref ? 0 : opener.$ext.offsetHeight, 
                     animate      : noanim || !this.animate ? false : "fade",
@@ -293,10 +293,10 @@ apf.menu = function(struct, tagName){
                 });
             }
             else {
-                var bodyPos = apf.getAbsolutePosition(document.body);
-                apf.popup.show(this.$uniqueId, {
+                var bodyPos = ppc.getAbsolutePosition(document.body);
+                ppc.popup.show(this.$uniqueId, {
                     x            : x - bodyPos[0], 
-                    y            : y - bodyPos[1] - (apf.isIE && apf.isIE < 8 ? 1 : 0), 
+                    y            : y - bodyPos[1] - (ppc.isIE && ppc.isIE < 8 ? 1 : 0), 
                     animate      : noanim || !this.animate ? false : "fade",
                     steps        : 10,
                     //ref          : this.$ext.offsetParent,
@@ -308,13 +308,13 @@ apf.menu = function(struct, tagName){
             }
             
             var lastFocus      =
-            apf.menu.lastFocus = opener && opener.$focussable === true
+            ppc.menu.lastFocus = opener && opener.$focussable === true
                 ? opener
-                : apf.menu.lastFocus || apf.document.activeElement;
+                : ppc.menu.lastFocus || ppc.document.activeElement;
             
-            apf.popup.last = null;
+            ppc.popup.last = null;
             
-            //if (!apf.isGecko) //This disables keyboard support for gecko - very strange behaviour
+            //if (!ppc.isGecko) //This disables keyboard support for gecko - very strange behaviour
                 this.focus();
     
             //Make the component that provides context appear to have focus
@@ -331,7 +331,7 @@ apf.menu = function(struct, tagName){
         this.visible = false;
         
         if (!this.parentNode)
-            apf.document.documentElement.appendChild(this);
+            ppc.document.documentElement.appendChild(this);
         
         if (this.$rendered !== false) {
             this.show();
@@ -354,7 +354,7 @@ apf.menu = function(struct, tagName){
     /**
      * Retrieves the selected element from a group of radio elements.
      * @param {String} group The name of the group.
-     * @return {apf.radiobutton} The selected radio element.
+     * @return {ppc.radiobutton} The selected radio element.
      */
     this.getSelected = function(group){
         var nodes = this.childNodes;
@@ -424,9 +424,9 @@ apf.menu = function(struct, tagName){
                     return;
 
                 if (this.$selected)
-                    apf.setStyleClass(this.$selected.$ext, "", ["hover"]);
+                    ppc.setStyleClass(this.$selected.$ext, "", ["hover"]);
 
-                apf.setStyleClass(node.$ext, "hover");
+                ppc.setStyleClass(node.$ext, "hover");
                 this.$selected = node;
                 break;
             case 40:
@@ -441,9 +441,9 @@ apf.menu = function(struct, tagName){
                     return;
 
                 if (this.$selected)
-                    apf.setStyleClass(this.$selected.$ext, "", ["hover"]);
+                    ppc.setStyleClass(this.$selected.$ext, "", ["hover"]);
 
-                apf.setStyleClass(node.$ext, "hover");
+                ppc.setStyleClass(node.$ext, "hover");
                 this.$selected = node;
                 break;
             case 37:
@@ -474,7 +474,7 @@ apf.menu = function(struct, tagName){
                     //@todo Ahum bad abstraction boundary
                     var op = this.opener;
                     this.hide();
-                    apf.setStyleClass(op.$ext, "hover");
+                    ppc.setStyleClass(op.$ext, "hover");
                     op.parentNode.$showingSubMenu = null;
                 }
 
@@ -533,9 +533,9 @@ apf.menu = function(struct, tagName){
     //Hide menu when it looses focus or when the popup hides itself
     function forceHide(e){
         if (this.$showingSubMenu || this.pinned
-                || apf.isChildOf(e.fromElement, e.toElement)
-                || apf.isChildOf(e.toElement, e.fromElement)
-                || apf.isChildOf(this, e.toElement) || (e.name !== "popuphide" && !e.toElement))
+                || ppc.isChildOf(e.fromElement, e.toElement)
+                || ppc.isChildOf(e.toElement, e.fromElement)
+                || ppc.isChildOf(this, e.toElement) || (e.name !== "popuphide" && !e.toElement))
             return;
 
         if (this.$hideTree != -1) {
@@ -547,7 +547,7 @@ apf.menu = function(struct, tagName){
     }
 
     this.addEventListener("focus", function(){
-        apf.popup.last = this.$uniqueId;
+        ppc.popup.last = this.$uniqueId;
     });
 
     this.addEventListener("blur", forceHide);
@@ -562,7 +562,7 @@ apf.menu = function(struct, tagName){
         this.$ext = this.$getExternal();
         this.oOverlay = this.$getLayoutNode("main", "overlay", this.$ext);
 
-        apf.popup.setContent(this.$uniqueId, this.$ext, "", null, null);
+        ppc.popup.setContent(this.$uniqueId, this.$ext, "", null, null);
     };
 
     this.$loadAml = function(x){
@@ -570,9 +570,9 @@ apf.menu = function(struct, tagName){
     };
 
     this.$destroy = function(){
-        apf.popup.removeContent(this.$uniqueId);
+        ppc.popup.removeContent(this.$uniqueId);
     };
-}).call(apf.menu.prototype = new apf.Presentation());
+}).call(ppc.menu.prototype = new ppc.Presentation());
 
-apf.aml.setElement("menu", apf.menu);
+ppc.aml.setElement("menu", ppc.menu);
 // #endif

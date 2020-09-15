@@ -48,12 +48,12 @@
  *    bindings = "bndFolders" />
  * ```
  *
- * @see apf.smartbinding
+ * @see ppc.smartbinding
  *
- * @class apf.bindings
+ * @class ppc.bindings
  * @define bindings 
- * @inherits apf.AmlElement
- * @apfclass
+ * @inherits ppc.AmlElement
+ * @ppcclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -61,10 +61,10 @@
  *
  * @default_private
  */
-apf.bindings = function(struct, tagName){
-    this.$init(tagName || "bindings", apf.NODE_HIDDEN, struct);
+ppc.bindings = function(struct, tagName){
+    this.$init(tagName || "bindings", ppc.NODE_HIDDEN, struct);
     
-    this.$bindings = new apf.ruleList();
+    this.$bindings = new ppc.ruleList();
     this.$amlNodes = {};
 };
 
@@ -78,7 +78,7 @@ apf.bindings = function(struct, tagName){
             return;
         }
         
-        if (!amlNode.hasFeature(apf.__DATABINDING__))
+        if (!amlNode.hasFeature(ppc.__DATABINDING__))
             return;
 
         this.$amlNodes[amlNode.$uniqueId] = amlNode;
@@ -93,7 +93,7 @@ apf.bindings = function(struct, tagName){
         amlNode.$cbindings = this.$cbindings;
         amlNode.$bindingsElement = this;
         
-        //@todo apf3.0 should be deprecated
+        //@todo ppc3.0 should be deprecated
         amlNode.dispatchEvent("bindingsload", {
             bindings: this.$bindings, 
             compiled: this.$cbindings
@@ -139,12 +139,12 @@ apf.bindings = function(struct, tagName){
         for (var id in this.$amlNodes)
             this.register(this.$amlNodes[id]);
     });
-}).call(apf.bindings.prototype = new apf.AmlElement());
+}).call(ppc.bindings.prototype = new ppc.AmlElement());
 
-apf.ruleList = function(){
+ppc.ruleList = function(){
     this.$compiled = {};
 }
-apf.ruleList.prototype = {
+ppc.ruleList.prototype = {
     $isCompiled : false,
     
     getRule : function(name, xmlNode){
@@ -181,7 +181,7 @@ apf.ruleList.prototype = {
             }
             
             //always give a function, no async calls (could also just error on execution)
-            c[name] = apf.lm.compileMatch(s); 
+            c[name] = ppc.lm.compileMatch(s); 
             
             //#ifdef __WITH_AML_BINDINGS
             c[name].hasAml = hasAml;
@@ -195,7 +195,7 @@ apf.ruleList.prototype = {
                 continue;
             
             rules  = this[name];
-            if (rules.dataType != apf.ARRAY)
+            if (rules.dataType != ppc.ARRAY)
                 continue;
             
             s = [], hasAml = false;
@@ -211,7 +211,7 @@ apf.ruleList.prototype = {
             }
             
             //always give a function, no async calls (could also just error on execution)
-            c[name] = apf.lm.compileMatch(s); 
+            c[name] = ppc.lm.compileMatch(s); 
             
             //#ifdef __WITH_AML_BINDINGS
             c[name].hasAml = hasAml;
@@ -246,7 +246,7 @@ apf.ruleList.prototype = {
             rule = rules[i];
             
             func = rule.cvaluematch;
-            if (!func) { //@todo apf3.0 cleanup
+            if (!func) { //@todo ppc3.0 cleanup
                 if (rule.match && rule.value && rule.value.match(/^\[.*\]$/))
                     rule.valuematch = "{_n = " + rule.match + "; %[child::" 
                         + rule.value.substr(1, rule.value.length - 2)
@@ -272,6 +272,6 @@ apf.ruleList.prototype = {
     }
 }
 
-apf.aml.setElement("bindings", apf.bindings);
+ppc.aml.setElement("bindings", ppc.bindings);
 // #endif
 

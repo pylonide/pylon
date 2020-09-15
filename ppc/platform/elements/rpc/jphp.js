@@ -52,9 +52,9 @@
  *
  * @addenum rpc[@protocol]:jphp
  *
- * @inherits apf.Teleport
- * @inherits apf.http
- * @inherits apf.rpc
+ * @inherits ppc.Teleport
+ * @inherits ppc.http
+ * @inherits ppc.rpc
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -62,7 +62,7 @@
  *
  * @default_private
  */
-apf.jphp = function(){
+ppc.jphp = function(){
     this.supportMulticall = true;
     this.multicall        = false;
     this.mcallname        = "multicall";
@@ -142,7 +142,7 @@ apf.jphp = function(){
             throw new Error("Cannot Parse functions");
         }
         else {
-            if (apf.isNot(args)) 
+            if (ppc.isNot(args)) 
                 return createMessage["boolean"](false);
         }
         

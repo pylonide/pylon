@@ -177,7 +177,7 @@ var GLOBALS = {
     dojo                     : true,
     dojox                    : true,
     dijit                    : true,
-    apf                      : true,
+    ppc                      : true,
     Document                 : true,
     Element                  : true,
     Event                    : true,

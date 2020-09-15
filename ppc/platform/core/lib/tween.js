@@ -24,11 +24,11 @@
 /**
  * The library that is used for the animations inside elements.
  *
- * @class apf.tween
+ * @class ppc.tween
  *
  * @default_private
  */
-apf.tween = (function(apf) {
+ppc.tween = (function(ppc) {
 
 var modules = {
         //Animation Modules
@@ -63,19 +63,19 @@ var modules = {
     },
     "height-rsz": function(oHtml, value, center){
         oHtml.style.height = value + PX;
-        if (apf.hasSingleResizeEvent && apf.layout.$onresize)
-            apf.layout.$onresize();
+        if (ppc.hasSingleResizeEvent && ppc.layout.$onresize)
+            ppc.layout.$onresize();
     },
     mwidth: function(oHtml, value, info) {
-        var diff = apf.getDiff(oHtml);
+        var diff = ppc.getDiff(oHtml);
         oHtml.style.width = value + PX;
-        oHtml.style.marginLeft = -1 * (value / 2 + (parseInt(apf.getStyle(oHtml,
+        oHtml.style.marginLeft = -1 * (value / 2 + (parseInt(ppc.getStyle(oHtml,
             "borderLeftWidth")) || diff[0]/2) + (info.margin || 0)) + PX;
     },
     mheight: function(oHtml, value, info) {
-        var diff = apf.getDiff(oHtml);
+        var diff = ppc.getDiff(oHtml);
         oHtml.style.height = value + PX;
-        oHtml.style.marginTop = (-1 * value / 2 - (parseInt(apf.getStyle(oHtml,
+        oHtml.style.marginTop = (-1 * value / 2 - (parseInt(ppc.getStyle(oHtml,
             "borderTopWidth")) || diff[1]/2) + (info.margin || 0)) + PX;
     },
     scrollwidth: function(oHtml, value){
@@ -92,12 +92,12 @@ var modules = {
         }
     },
     scrollheight: function(oHtml, value, info){
-        var diff = apf.getHeightDiff(oHtml),
+        var diff = ppc.getHeightDiff(oHtml),
             oInt = info.$int || oHtml;
 
         oHtml.style.height = Math.max((value + (info.diff || 0)), 0) + PX;
         oInt.scrollTop     = oInt.scrollHeight - oInt.offsetHeight - diff 
-            + (info.diff || 0) - (apf.isGecko ? 16 : 0); //@todo where does this 16 come from??
+            + (info.diff || 0) - (ppc.isGecko ? 16 : 0); //@todo where does this 16 come from??
     },
     scrolltop: function(oHtml, value){
         oHtml.style.height = value + PX;
@@ -109,7 +109,7 @@ var modules = {
         oHtml.style.marginLeft = (-1 * value) + PX;
     },
     fade: function(oHtml, value){
-        if (!apf.supportOpacity && apf.hasStyleFilters)
+        if (!ppc.supportOpacity && ppc.hasStyleFilters)
             oHtml.style.filter  = value == 1 ? "" : "alpha(opacity=" + parseInt(value * 100) + ")";
         else
             oHtml.style.opacity = value;
@@ -121,7 +121,7 @@ var modules = {
         oHtml.style.color = value;
     },
     htmlcss : function(oHtml, value, obj){
-        if (apf.hasStyleFilters && obj.type == "filter")
+        if (ppc.hasStyleFilters && obj.type == "filter")
             oHtml.style.filter = value == 1 ? "" : "progid:DXImageTransform.Microsoft.Alpha(opacity=" + value + ")";
         else
             oHtml.style[obj.type] = value + (obj.needsPx ? PX : "");
@@ -180,7 +180,7 @@ var ID        = "id",
     setQueue = function(oHtml, stepFunction){
         var id = oHtml.getAttribute(ID);
         if (!id) {
-            apf.setUniqueHtmlId(oHtml);
+            ppc.setUniqueHtmlId(oHtml);
             id = oHtml.getAttribute(ID);
         }
 
@@ -214,7 +214,7 @@ var ID        = "id",
     purgeQueue = function(oHtml) {
         var id = oHtml.getAttribute(ID);
         if (!id) {
-            apf.setUniqueHtmlId(oHtml);
+            ppc.setUniqueHtmlId(oHtml);
             id = oHtml.getAttribute(ID);
         }
 
@@ -243,11 +243,11 @@ var ID        = "id",
         // backward compatibility...
         if (typeof func == NUM) {
             if (!func)
-                func = apf.tween.linear;
+                func = ppc.tween.linear;
             else if (func == 1)
-                func = apf.tween.easeInCubic;
+                func = ppc.tween.easeInCubic;
             else if (func == 2)
-                func = apf.tween.easeOutCubic;
+                func = ppc.tween.easeOutCubic;
         }
 
         /*
@@ -279,7 +279,7 @@ var ID        = "id",
      */
     calcColorSteps = function(animtype, fromValue, toValue, nrOfSteps){
         var d2, d1,
-            c   = apf.color.colorshex,
+            c   = ppc.color.colorshex,
             a   = parseInt((c[fromValue] || fromValue).slice(1), 16),
             b   = parseInt((c[toValue] || toValue).slice(1), 16),
             i   = 0,
@@ -304,11 +304,11 @@ var ID        = "id",
      * #### Example
      * 
      * ```javascript
-     *  apf.tween.single(myDiv, {
+     *  ppc.tween.single(myDiv, {
      *      type : "left",
      *      from : 10,
      *      to   : 100,
-     *      anim : apf.tween.EASEIN
+     *      anim : ppc.tween.EASEIN
      *  });
      * ```
      *
@@ -318,7 +318,7 @@ var ID        = "id",
      * by calling this function multiple times.
      * 
      * ```javascript
-     *  apf.tween.single(myDiv, options).single(myDiv2, options2);
+     *  ppc.tween.single(myDiv, options).single(myDiv2, options2);
      * ```
      *
      * @method single
@@ -326,7 +326,7 @@ var ID        = "id",
      * @param {Object}   info  The animation settings. The following properties are available:
      *   - type ([[String]]): The property to be animated. These are predefined
      *                          property handlers and can be added by adding a
-     *                          method to `apf.tween` with the name of the property
+     *                          method to `ppc.tween` with the name of the property
      *                          modifier. There are several handlers available.
      *      - `"left"`:            Sets the left position
      *      - `"right"`:           Sets the right position
@@ -357,20 +357,20 @@ var ID        = "id",
      *     stop                 set on the object passed .
      */
     single = function(oHtml, info){
-        info = apf.extend({steps: 10, interval: 5, anim: apf.tween.linear, control: {}}, info);
-        info.steps    = Math.ceil(info.steps * apf.animSteps);
-        info.interval = Math.ceil(info.interval * apf.animInterval);
+        info = ppc.extend({steps: 10, interval: 5, anim: ppc.tween.linear, control: {}}, info);
+        info.steps    = Math.ceil(info.steps * ppc.animSteps);
+        info.interval = Math.ceil(info.interval * ppc.animInterval);
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;
             oHtml     = oHtml.$ext;
         }
         try { //@TODO hack where currentStyle is still undefined
-            if ("fixed|absolute|relative".indexOf(apf.getStyle(oHtml, "position")) == -1)
+            if ("fixed|absolute|relative".indexOf(ppc.getStyle(oHtml, "position")) == -1)
                 oHtml.style.position = "relative";
         } catch(e){}
         
-        var useCSSAnim  = (false && apf.supportCSSAnim && apf.supportCSSTransition && CSSPROPS[info.type]),
+        var useCSSAnim  = (false && ppc.supportCSSAnim && ppc.supportCSSTransition && CSSPROPS[info.type]),
             isTransform = (info.type == TRANSFORM);
 
         info.method = useCSSAnim ? info.type : isTransform
@@ -383,7 +383,7 @@ var ID        = "id",
 
         //#ifdef __DEBUG
         if (!info.method)
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Single Value Tween",
                 "Could not find method for tweening operation '"
                 + info.type + "'"));
@@ -392,12 +392,12 @@ var ID        = "id",
         if (useCSSAnim) {
             var type = CSSPROPS[info.type];
             if (type === false)
-                return apf.tween;
+                return ppc.tween;
             info.type = type || info.type;
             if (isTransform) {
                 if (!info.subType)
                     info.subType = SCALE;
-                info.type = apf.supportCSSAnim;
+                info.type = ppc.supportCSSAnim;
             }
 
             var transform = (isTransform)
@@ -412,24 +412,24 @@ var ID        = "id",
                     ? transform(info.to)
                     : info.to + (needsPix[info.type] ? PX : "");
                 oHtml.offsetTop; //force style recalc
-                oHtml.style[apf.cssPrefix + "Transition"] = info.type + " " + ((info.steps
+                oHtml.style[ppc.cssPrefix + "Transition"] = info.type + " " + ((info.steps
                     * info.interval) / 1000) + "s "
                     + CSSTIMING[info.anim || 0];
                 var f = function() {
                     if (info.onfinish)
                         info.onfinish(oHtml, info.userdata);
-                    oHtml.style[apf.cssPrefix + "Transition"] = "";
-                    oHtml.removeEventListener(apf.cssAnimEvent, f);
+                    oHtml.style[ppc.cssPrefix + "Transition"] = "";
+                    oHtml.removeEventListener(ppc.cssAnimEvent, f);
                 };
-                oHtml.addEventListener(apf.cssAnimEvent, f);
+                oHtml.addEventListener(ppc.cssAnimEvent, f);
             });
-            return apf.tween;
+            return ppc.tween;
         }
 
         if (info.control) {
-            info.control.state = apf.tween.RUNNING;
+            info.control.state = ppc.tween.RUNNING;
             info.control.stop = function(){
-                info.control.state = apf.tween.STOPPING;
+                info.control.state = ppc.tween.STOPPING;
                 clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);
@@ -441,7 +441,7 @@ var ID        = "id",
                 : calcSteps(info.anim, parseFloat(info.from), parseFloat(info.to), info.steps),
             stepFunction = function(step){
                 if (info.control && info.control.state) {
-                    info.control.state = apf.tween.STOPPED;
+                    info.control.state = ppc.tween.STOPPED;
                     return;
                 }
                 
@@ -464,7 +464,7 @@ var ID        = "id",
 
                 current = null;
                 if (info.control)
-                    info.control.state = apf.tween.STOPPED;
+                    info.control.state = ppc.tween.STOPPED;
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
@@ -475,7 +475,7 @@ var ID        = "id",
             purgeQueue(oHtml);
         setQueue(oHtml, stepFunction);
 
-        return apf.tween;
+        return ppc.tween;
     },
 
      // @TODO Doc wtf is stop
@@ -488,8 +488,8 @@ var ID        = "id",
      * Here we are, animating both the left and width at the same time:
      *
      * ```javascript
-     *  apf.tween.multi(myDiv, {
-     *      anim   : apf.tween.EASEIN
+     *  ppc.tween.multi(myDiv, {
+     *      anim   : ppc.tween.EASEIN
      *      tweens : [{
      *          type : "left",
      *          from : 10,
@@ -509,7 +509,7 @@ var ID        = "id",
      * by calling this function multiple times.
      *
      * ```javascript
-     *  apf.tween.multi(myDiv, options).multi(myDiv2, options2);
+     *  ppc.tween.multi(myDiv, options).multi(myDiv2, options2);
      * ```
      *
      * @method multi
@@ -527,12 +527,12 @@ var ID        = "id",
      *   - [tweens] ([[Array]]): A collection of simple objects specifying the single
      *                          value animations that are to be executed simultaneously.
      *                          (for the properties of these single tweens see the
-     *                          [[apf.tween.single]] method).
+     *                          [[ppc.tween.single]] method).
      */
     multi = function(oHtml, info){ 
-        info = apf.extend({steps: 10, interval: 5, anim: apf.tween.linear, control: {}}, info);
-        info.steps    = Math.ceil(info.steps * apf.animSteps);
-        info.interval = Math.ceil(info.interval * apf.animInterval);
+        info = ppc.extend({steps: 10, interval: 5, anim: ppc.tween.linear, control: {}}, info);
+        info.steps    = Math.ceil(info.steps * ppc.animSteps);
+        info.interval = Math.ceil(info.interval * ppc.animInterval);
 
         if (oHtml.nodeFunc > 100) {
             info.$int = oHtml.$int;
@@ -540,7 +540,7 @@ var ID        = "id",
         }
 
         var animCSS, isTransform,
-            useCSSAnim  = false && apf.supportCSSAnim && apf.supportCSSTransition,
+            useCSSAnim  = false && ppc.supportCSSAnim && ppc.supportCSSTransition,
             hasCSSAnims = false,
             cssDuration = ((info.steps * info.interval) / 1000),
             cssAnim     = CSSTIMING[info.anim || 0],
@@ -562,7 +562,7 @@ var ID        = "id",
             if (isTransform) {
                 if (!data.subType)
                     data.subType = SCALE;
-                data.type = apf.supportCSSAnim;
+                data.type = ppc.supportCSSAnim;
             }
 
             data.method = animCSS
@@ -578,7 +578,7 @@ var ID        = "id",
 
             //#ifdef __DEBUG
             if (!data.method)
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Multi Value Tween",
                     "Could not find method for tweening operation '"
                     + data.type + "'"));
@@ -607,7 +607,7 @@ var ID        = "id",
         }
 
         if (hasCSSAnims) {
-            oHtml.style[apf.cssPrefix + "Transition"] = steps.join(",");
+            oHtml.style[ppc.cssPrefix + "Transition"] = steps.join(",");
             oHtml.offsetTop; //force style recalc
             var count = 0,
                 func  = function() {
@@ -615,23 +615,23 @@ var ID        = "id",
                     if (count == stepsTo.length) {
                         if (info.onfinish)
                             info.onfinish(oHtml, info.userdata);
-                        oHtml.style[apf.cssPrefix + "Transition"] = "";
-                        oHtml.removeEventListener(apf.cssAnimEvent, func);
+                        oHtml.style[ppc.cssPrefix + "Transition"] = "";
+                        oHtml.removeEventListener(ppc.cssAnimEvent, func);
                     }
                 };
-            oHtml.addEventListener(apf.cssAnimEvent, func, false);
+            oHtml.addEventListener(ppc.cssAnimEvent, func, false);
             for (var k = 0, j = stepsTo.length; k < j; k++)
                 oHtml.style[stepsTo[k][0]] = stepsTo[k][1];
-            return apf.tween;
+            return ppc.tween;
         }
         
         if (info.control) {
-            info.control.state = apf.tween.RUNNING;
+            info.control.state = ppc.tween.RUNNING;
             info.control.stop = function(){
-                if (info.control.state == apf.tween.STOPPED)
+                if (info.control.state == ppc.tween.STOPPED)
                     return;
                 
-                info.control.state = apf.tween.STOPPING;
+                info.control.state = ppc.tween.STOPPING;
                 clearQueue(oHtml);
                 if (info.onstop)
                     info.onstop(oHtml, info.userdata);
@@ -641,7 +641,7 @@ var ID        = "id",
         var tweens       = info.tweens,
             stepFunction = function(step){
                 if (info.control && info.control.state) {
-                    info.control.state = apf.tween.STOPPED;
+                    info.control.state = ppc.tween.STOPPED;
                     return;
                 }
                 
@@ -662,7 +662,7 @@ var ID        = "id",
 
                 current = null;
                 if (info.control)
-                    info.control.state = apf.tween.STOPPED;
+                    info.control.state = ppc.tween.STOPPED;
                 if (info.onfinish)
                     info.onfinish(oHtml, info.userdata);
 
@@ -671,7 +671,7 @@ var ID        = "id",
 
         setQueue(oHtml, stepFunction);
 
-        return apf.tween;
+        return ppc.tween;
     },
 
     /**
@@ -683,10 +683,10 @@ var ID        = "id",
      * multiple times.
      * 
      * ```javascript
-     *  apf.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
+     *  ppc.tween.css(myDiv, 'class1').multi(myDiv2, 'class2');
      * ```
      *
-     * @method apf.tween.css
+     * @method ppc.tween.css
      * @param {DOMNode}  oHtml The object to animate.
      * @param {String} className The class name that defines the CSS properties to be set or removed.
      * @param {Object} info The settings of the animation. The following properties are available:
@@ -707,13 +707,13 @@ var ID        = "id",
             oHtml = oHtml.$ext;
 
         if (remove)
-            apf.setStyleClass(oHtml, "", [className]);
+            ppc.setStyleClass(oHtml, "", [className]);
 
         var resetAnim = function(remove, callback){
             if (remove)
-                apf.setStyleClass(oHtml, "", [className]);
+                ppc.setStyleClass(oHtml, "", [className]);
             else
-                apf.setStyleClass(oHtml, className);
+                ppc.setStyleClass(oHtml, className);
 
             //Reset CSS values
             for (var i = 0; i < info.tweens.length; i++){
@@ -735,7 +735,7 @@ var ID        = "id",
         var result, newvalue, curvalue, j, isColor, style, rules, i,
             tweens = {};
         for (i = 0; i < document.styleSheets.length; i++) {
-            rules = document.styleSheets[i][apf.styleSheetRules];
+            rules = document.styleSheets[i][ppc.styleSheetRules];
             if (!rules || !rules.length)
                 continue;
             for (j = rules.length - 1; j >= 0; j--) {
@@ -753,7 +753,7 @@ var ID        = "id",
                             continue;
                         newvalue = RegExp.$1;
 
-                        result   = (apf.getStyleRecur(oHtml, style) || "")
+                        result   = (ppc.getStyleRecur(oHtml, style) || "")
                             .match(/opacity\=([\d\.]+)/);
                         curvalue = result ? RegExp.$1 : 100;
                         isColor  = false;
@@ -766,7 +766,7 @@ var ID        = "id",
                     else {
                         newvalue = remove && oHtml.style[style] || rule.style[style];
                         if (remove) oHtml.style[style] = "";
-                        curvalue = apf.getStyleRecur(oHtml, style);
+                        curvalue = ppc.getStyleRecur(oHtml, style);
                         isColor = style.match(/color/i) ? true : false;
                     }
 
@@ -789,7 +789,7 @@ var ID        = "id",
             info.tweens.push(tweens[prop]);
 
         if (remove)
-            apf.setStyleClass(oHtml, className);
+            ppc.setStyleClass(oHtml, className);
 
         return multi(oHtml, info);
     },
@@ -1000,7 +1000,7 @@ return {
         return dx / 2 * ((t -= 2) * t * (((s *= (1.525)) + 1) * t + s) + 2) + x_min;
     },
     easeInBounce: function(t, x_min, dx) {
-        return dx - apf.tween.easeOutBounce(1 - t, 0, dx) + x_min;
+        return dx - ppc.tween.easeOutBounce(1 - t, 0, dx) + x_min;
     },
     easeOutBounce: function(t, x_min, dx) {
         if (t < (1 / 2.75))
@@ -1014,11 +1014,11 @@ return {
     },
     easeInOutBounce: function(t, x_min, dx) {
         if (t < 1 / 2)
-            return apf.tween.easeInBounce(t * 2, 0, dx) * .5 + x_min;
-        return apf.tween.easeOutBounce(t * 2 - 1, 0, dx) * .5 + dx * .5 + x_min;
+            return ppc.tween.easeInBounce(t * 2, 0, dx) * .5 + x_min;
+        return ppc.tween.easeOutBounce(t * 2 - 1, 0, dx) * .5 + dx * .5 + x_min;
     }
 };
 
-})(apf);
+})(ppc);
 
 // #endif

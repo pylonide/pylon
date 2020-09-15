@@ -20,7 +20,7 @@
  */
 
 // #ifdef __WITH_AMLSELECTION
-apf.AmlSelection = function(doc){
+ppc.AmlSelection = function(doc){
     this.$init();
     
     this.$ownerDocument = doc;
@@ -28,7 +28,7 @@ apf.AmlSelection = function(doc){
     var _self = this;
     var monitor = false;
     this.$monitorRange = function(){
-        apf.queue.add("selrange" + this.$uniqueId, function(){
+        ppc.queue.add("selrange" + this.$uniqueId, function(){
             var range = _self.$ranges[0];
             _self.anchorNode   = range.startContainer;
             _self.anchorOffset = range.startOffset;
@@ -44,7 +44,7 @@ apf.AmlSelection = function(doc){
     var update = false;
     this.$update = function(){
         if (!update) {
-            apf.queue.add("selupdate" + this.$uniqueId, function(){
+            ppc.queue.add("selupdate" + this.$uniqueId, function(){
                 _self.dispatchEvent("update");
                 update = false;
             });
@@ -84,7 +84,7 @@ apf.AmlSelection = function(doc){
     this.$ranges      = [];
     
     this.toString = function(){
-        return "[apf.AmlSelection]";// this.$ranges.join("");
+        return "[ppc.AmlSelection]";// this.$ranges.join("");
     }
     
     /**
@@ -104,7 +104,7 @@ apf.AmlSelection = function(doc){
         }
         
         var range;
-        this.$ranges = [range = new apf.AmlRange(this.ownerDocument)];
+        this.$ranges = [range = new ppc.AmlRange(this.ownerDocument)];
         range.addEventListener("update", this.$monitorRange);
         range.setStart(parentNode, offset);
         range.setEnd(parentNode, offset);
@@ -266,7 +266,7 @@ apf.AmlSelection = function(doc){
     this.$selectList = function(list){
         this.removeAllRanges();
         for (var i = 0; i < list.length; i++) {
-            this.addRange(new apf.AmlRange(this)).selectNode(list[i]);
+            this.addRange(new ppc.AmlRange(this)).selectNode(list[i]);
         }
     }
     
@@ -274,5 +274,5 @@ apf.AmlSelection = function(doc){
         var r;
         return (r = this.$ranges[0]).startContainer.childNodes[r.startOffset];
     }
-}).call(apf.AmlSelection.prototype = new apf.Class());
+}).call(ppc.AmlSelection.prototype = new ppc.Class());
 // #endif

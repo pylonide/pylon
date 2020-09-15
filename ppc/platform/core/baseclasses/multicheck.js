@@ -19,14 +19,14 @@
  *
  */
 
-apf.__MULTICHECK__ = 1 << 22;
+ppc.__MULTICHECK__ = 1 << 22;
 
 // #ifdef __WITH_MULTICHECK
 
 /**
  * All elements inheriting from this {@link term.baseclass baseclass} have checkable items.
  *
- * @class apf.MultiCheck
+ * @class ppc.MultiCheck
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -35,8 +35,8 @@ apf.__MULTICHECK__ = 1 << 22;
  *
  */
 // @todo type detection, errors (see functions in multiselect)
-apf.MultiCheck = function(){
-    this.$regbase    = this.$regbase | apf.__MULTICHECK__;
+ppc.MultiCheck = function(){
+    this.$regbase    = this.$regbase | ppc.__MULTICHECK__;
 
     // *** Properties *** //
 
@@ -104,7 +104,7 @@ apf.MultiCheck = function(){
                     }
                 }
                 
-                apf.setStyleClass(apf.xmldb.getHtmlNode(pNode, this), 
+                ppc.setStyleClass(ppc.xmldb.getHtmlNode(pNode, this), 
                     all ? "checked"
                         : "partial", ["partial", "checked"]);
                 
@@ -116,7 +116,7 @@ apf.MultiCheck = function(){
         }
         //#endif
 
-        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this),
+        this.$setStyleClass(ppc.xmldb.getHtmlNode(xmlNode, this),
             "checked", ["partial"]);
         
         this.dispatchEvent("aftercheck", {
@@ -163,7 +163,7 @@ apf.MultiCheck = function(){
             return false;
 
         this.$checkedList.remove(xmlNode);
-        this.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, this), 
+        this.$setStyleClass(ppc.xmldb.getHtmlNode(xmlNode, this), 
             "", ["checked", "partial"]);
         
         this.dispatchEvent("afteruncheck", {
@@ -184,11 +184,11 @@ apf.MultiCheck = function(){
         
         if (xmlNode.style) {
             var htmlNode = xmlNode,
-                id       = htmlNode.getAttribute(apf.xmldb.htmlIdTag);
+                id       = htmlNode.getAttribute(ppc.xmldb.htmlIdTag);
             while (!id && htmlNode.parentNode)
                 id = (htmlNode = htmlNode.parentNode)
-                    .getAttribute(apf.xmldb.htmlIdTag);
-            xmlNode = apf.xmldb.getNode(htmlNode)
+                    .getAttribute(ppc.xmldb.htmlIdTag);
+            xmlNode = ppc.xmldb.getNode(htmlNode)
         }
 
         if (this.$checkedList.indexOf(xmlNode) > -1)
@@ -212,9 +212,9 @@ apf.MultiCheck = function(){
      *   {XMLElement} xmlNode   the {@link term.datanode data node} that is deselected.
      */
     this.checkList = function(xmlNodeList, uncheck, noClear, noEvent, userAction){
-        //if (apf.isIE < 8)
+        //if (ppc.isIE < 8)
         if (!xmlNodeList.indexOf)
-            xmlNodeList = apf.getArrayFromNodelist(xmlNodeList);
+            xmlNodeList = ppc.getArrayFromNodelist(xmlNodeList);
             //@todo is this need for ie8 and/or other browsers
 
         if (userAction){
@@ -253,14 +253,14 @@ apf.MultiCheck = function(){
             for (i = xmlNodeList.length - 1; i >= 0; i--) {
                 this.$checkedList.remove(xmlNodeList[i]);
                 this.$setStyleClass(
-                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
+                    ppc.xmldb.getHtmlNode(xmlNodeList[i], this), "", ["checked"]);
             }
         }
         else {
             for (i = xmlNodeList.length - 1; i >= 0; i--) {
                 this.$checkedList.push(xmlNodeList[i]);
                 this.$setStyleClass(
-                    apf.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
+                    ppc.xmldb.getHtmlNode(xmlNodeList[i], this), "checked");
             }
         }
 
@@ -273,7 +273,7 @@ apf.MultiCheck = function(){
                     if (forceChange) {
                         if (uncheck) {
                             _self.$checkedList.remove(xmlNode);
-                            _self.$setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                            _self.$setStyleClass(ppc.xmldb.getHtmlNode(xmlNode, _self), 
                                 "", ["checked"]);
                             return 0;
                         }
@@ -281,7 +281,7 @@ apf.MultiCheck = function(){
                             if (_self.$checkedList.indexOf(xmlNode) == -1) {
                                 _self.$checkedList.push(xmlNode);
                                 _self.$setStyleClass(
-                                    apf.xmldb.getHtmlNode(xmlNode, _self), "checked");
+                                    ppc.xmldb.getHtmlNode(xmlNode, _self), "checked");
                             }
                             return 1;
                         }
@@ -321,7 +321,7 @@ apf.MultiCheck = function(){
                 if (all) {
                     if (!isInList) {
                         _self.$checkedList.push(xmlNode);
-                        apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                        ppc.setStyleClass(ppc.xmldb.getHtmlNode(xmlNode, _self), 
                             "checked", ["partial"]);
                     }
                 }
@@ -329,7 +329,7 @@ apf.MultiCheck = function(){
                     if (isInList)
                         _self.$checkedList.remove(xmlNode);
 
-                    apf.setStyleClass(apf.xmldb.getHtmlNode(xmlNode, _self), 
+                    ppc.setStyleClass(ppc.xmldb.getHtmlNode(xmlNode, _self), 
                         partial ? "partial" : "", ["partial", "checked"]);
                 }
                 
@@ -359,7 +359,7 @@ apf.MultiCheck = function(){
         
         for (var i = this.$checkedList.length - 1; i >= 0; i--) {
             this.$setStyleClass(
-                apf.xmldb.getHtmlNode(this.$checkedList[i], this), "", ["checked"]);
+                ppc.xmldb.getHtmlNode(this.$checkedList[i], this), "", ["checked"]);
         }
         
         this.$checkedList.length = 0;
@@ -393,9 +393,9 @@ apf.MultiCheck = function(){
         if (xmldoc) {
             r = this.xmlRoot
                 ? this.xmlRoot.ownerDocument.createDocumentFragment()
-                : apf.getXmlDom().createDocumentFragment();
+                : ppc.getXmlDom().createDocumentFragment();
             for (i = 0; i < this.$checkedList.length; i++)
-                apf.xmldb.cleanNode(r.appendChild(
+                ppc.xmldb.cleanNode(r.appendChild(
                     this.$checkedList[i].cloneNode(true)));
         }
         else {
@@ -436,7 +436,7 @@ apf.MultiCheck = function(){
         if (e.action == "attribute" || e.action == "text"
           || e.action == "synchronize" || e.action == "update") {
             //@todo list support!
-            var c1 = apf.isTrue(this.$applyBindRule("checked", e.xmlNode));
+            var c1 = ppc.isTrue(this.$applyBindRule("checked", e.xmlNode));
             var c2 = this.isChecked(e.xmlNode);
             if (c1 != c2) {
                 if (c1) {

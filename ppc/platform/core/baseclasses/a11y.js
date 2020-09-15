@@ -19,7 +19,7 @@
  *
  */
 
-apf.__ALIGNMENT__ = 1 << 29;
+ppc.__ALIGNMENT__ = 1 << 29;
 
 // #ifdef __WITH_A11Y
 
@@ -35,36 +35,36 @@ apf.__ALIGNMENT__ = 1 << 29;
  *
  * @default_private
  */
-apf.A11y = function(){
+ppc.A11y = function(){
     this.setRole = function(oNode, sRole) {
         if (!oNode)
             throw new Error();
-        if (!apf.A11y.ROLES[sRole])
+        if (!ppc.A11y.ROLES[sRole])
             throw new Error();
 
         oNode.setAttribute("role", sRole);
     };
 
     this.setWidgetAttr = function(oNode, sAttr, mValue) {
-        var rel = apf.A11y.ATTR_WIDGETS[sAttr];
+        var rel = ppc.A11y.ATTR_WIDGETS[sAttr];
 
         if (!rel)
             throw new Error("attr does not exist");
         if ((typeof rel == "boolean" && typeof mValue != "boolean")
           || (typeof rel == "number" && typeof mValue != "number")
-          || ((typeof rel == "string" || apf.isArray(rel)) && typeof mValue != "string"))
+          || ((typeof rel == "string" || ppc.isArray(rel)) && typeof mValue != "string"))
             throw new Error("invalid type");
 
         oNode.setAttribute("aria-" + sAttr, mValue);
     };
 
     this.updateLiveRegion = function(oNode, sAttr, mValue) {
-        var rel = apf.A11y.ATTR_LIVEREGION[sAttr];
+        var rel = ppc.A11y.ATTR_LIVEREGION[sAttr];
 
         if (!rel)
             throw new Error("attr does not exist");
         if ((typeof rel == "boolean" && typeof mValue != "boolean")
-          || (apf.isArray(rel) && typeof mValue != "string"))
+          || (ppc.isArray(rel) && typeof mValue != "string"))
             throw new Error("invalid type");
 
         if (oNode) {
@@ -77,12 +77,12 @@ apf.A11y = function(){
     };
 
     this.setDragDropAttr = function(oNode, sAttr, mValue) {
-        var rel = apf.A11y.ATTR_LIVEREGION[sAttr];
+        var rel = ppc.A11y.ATTR_LIVEREGION[sAttr];
 
         if (!rel)
             throw new Error("attr does not exist");
         if ((typeof rel == "boolean" && typeof mValue != "boolean")
-          || (apf.isArray(rel) && typeof mValue != "string"))
+          || (ppc.isArray(rel) && typeof mValue != "string"))
             throw new Error("invalid type");
 
         oNode.setAttribute("aria-" + sAttr, mValue);
@@ -94,14 +94,14 @@ apf.A11y = function(){
             sAttr = args.shift(),
             sVal  = args.join(" "); // space delimited list of values (for example IDs)
 
-        if (!apf.A11y.ATTR_RELATIONS[sAttr])
+        if (!ppc.A11y.ATTR_RELATIONS[sAttr])
             throw new Error();
 
         oNode.setAttribute("aria-" + sAttr, sVal);
     };
 };
 
-apf.A11y.ROLES = {
+ppc.A11y.ROLES = {
     "alert":1, "alertdialog":1, "application":1, "article":1, "banner":1, "button":1,
     "checkbox":1, "columnheader":1, "combobox":1, "complementary":1, "contentinfo":1,
     "definition":1, "dialog":1, "directory":1, "grid":1, "gridcell":1, "group:":1,
@@ -114,7 +114,7 @@ apf.A11y.ROLES = {
     "toolbar":1, "tooltip":1, "tree":1, "treegrid":1, "treeitem":1
 };
 
-apf.A11y.ATTR_WIDGETS = {
+ppc.A11y.ATTR_WIDGETS = {
     "autocomplete":true, "checked":true, "disabled":true, "expanded":true,
     "haspopup":true, "hidden":true, "invalid":["grammar", "false", "spelling", 
     "true"], "level":1, "multiline":true, "multiselectable":true, "pressed":
@@ -123,17 +123,17 @@ apf.A11y.ATTR_WIDGETS = {
     "valuemax":1, "valuemin":1, "valuenow":1, "valuetext":"string"
 };
 
-apf.A11y.ATTR_LIVEREGION = {
+ppc.A11y.ATTR_LIVEREGION = {
     "atomic":true, "busy":true, "live":["off", "polite", "assertive"],
     "relevant":["additions", "removals", "text", "all", "additions text"]
 };
 
-apf.A11y.ATTR_DRAGDROP = {
+ppc.A11y.ATTR_DRAGDROP = {
     "dropeffect":["copy", "move", "reference", "execute", "popup", "none"],
     "grabbed":true
 };
 
-apf.A11y.ATTR_RELATIONS = {
+ppc.A11y.ATTR_RELATIONS = {
     "activedescendant":{}, "controls":{}, "describedby":{}, "flowto":{},
     "label":"1", "labelledby":{}, "owns":{}, "posinset":1, "setsize":1
 };

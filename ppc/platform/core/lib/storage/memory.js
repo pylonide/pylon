@@ -28,7 +28,7 @@
  * features that depend on a storage mechanism to be available.
  * @default_private
  */
-apf.storage.modules.memory = {
+ppc.storage.modules.memory = {
     initialized: true,
     store      : {},
     
@@ -45,7 +45,7 @@ apf.storage.modules.memory = {
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -55,7 +55,7 @@ apf.storage.modules.memory = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -79,7 +79,7 @@ apf.storage.modules.memory = {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key given: " + key));
         //#endif
@@ -89,7 +89,7 @@ apf.storage.modules.memory = {
 		
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -97,7 +97,7 @@ apf.storage.modules.memory = {
         if (!this.store[namespace] || !this.store[namespace][key])
             return null;
           
-        return apf.unserialize(this.store[namespace][key]);
+        return ppc.unserialize(this.store[namespace][key]);
     },
     
     /**
@@ -124,7 +124,7 @@ apf.storage.modules.memory = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -145,7 +145,7 @@ apf.storage.modules.memory = {
 	    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Clearing storage", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -164,7 +164,7 @@ apf.storage.modules.memory = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing key", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -184,7 +184,7 @@ apf.storage.modules.memory = {
         if (this.isValidKeyArray(keys) === false
           || ! values instanceof Array
           || keys.length != values.length) {
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting multiple name/value pairs",
                 "Invalid arguments: keys = [" + keys + "], \
                                     values = [" + values + "]"));
@@ -196,7 +196,7 @@ apf.storage.modules.memory = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Setting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -222,7 +222,7 @@ apf.storage.modules.memory = {
     getMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -232,7 +232,7 @@ apf.storage.modules.memory = {
 
 		//#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Getting multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif
@@ -243,7 +243,7 @@ apf.storage.modules.memory = {
         var results = [];
         for (var i = 0; i < keys.length; i++){
             if (this.store[namespace][keys[i]])
-                results.push(apf.unserialize(this.store[namespace][keys[i]]));
+                results.push(ppc.unserialize(this.store[namespace][keys[i]]));
         }
         
         return results;
@@ -257,7 +257,7 @@ apf.storage.modules.memory = {
     removeMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing name/value pair", 
                 "Invalid key array given: " + keys));
         //#endif
@@ -267,7 +267,7 @@ apf.storage.modules.memory = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, 
+            throw new Error(ppc.formatErrorString(0, null, 
                 "Removing multiple name/value pairs", 
                 "Invalid namespace given: " + namespace));
         //#endif

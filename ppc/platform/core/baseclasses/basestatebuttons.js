@@ -23,14 +23,14 @@
 /**
  * The base class for state buttons.
  *
- * @class apf.BaseStateButtons
+ * @class ppc.BaseStateButtons
  * @baseclass
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.BaseStateButtons = function(){
+ppc.BaseStateButtons = function(){
     this.state   = "normal";
     this.edit    = false;
     
@@ -48,7 +48,7 @@ apf.BaseStateButtons = function(){
     this.$supportedProperties.push("buttons", "animate", "state");
     
     /**
-     * Close the window. It can be reopened by using {@link apf.GuiElement.show}
+     * Close the window. It can be reopened by using {@link ppc.GuiElement.show}
      * @chainable
      */
     this.close = function(){ // @todo show should unset closed
@@ -146,7 +146,7 @@ apf.BaseStateButtons = function(){
     this.$propHandlers["state"] = function(value, prop, force, reenter, noanim){
         var _self = this;
         if (!this.$amlLoaded) { //@todo I still think this is weird and should not be needed
-            apf.queue.add("state" + this.$uniqueId, function(){
+            ppc.queue.add("state" + this.$uniqueId, function(){
                 _self.$propHandlers["state"].call(_self, value, prop, force, reenter, noanim);
             });
             return;
@@ -187,21 +187,21 @@ apf.BaseStateButtons = function(){
             || o.maximized != lastState.maximized)) {
 
             if (this.$lastheight) // this.aData && this.aData.hidden == 3 ??
-                this.$ext.style.height = this.$lastheight;//(this.$lastheight - apf.getHeightDiff(this.$ext)) + "px";
+                this.$ext.style.height = this.$lastheight;//(this.$lastheight - ppc.getHeightDiff(this.$ext)) + "px";
 
             if (this.$lastpos) {
-                apf.plane.hide(this.$uniqueId);
+                ppc.plane.hide(this.$uniqueId);
                 
                 if (this.animate && !noanim) {
                     //Pre remove paused event because of not having onresize
-                    //if (apf.hasSingleRszEvent)
-                        //delete apf.layout.onresize[apf.layout.getHtmlId(this.$pHtmlNode)];
+                    //if (ppc.hasSingleRszEvent)
+                        //delete ppc.layout.onresize[ppc.layout.getHtmlId(this.$pHtmlNode)];
 
                     var htmlNode = this.$ext;
-                    position = apf.getStyle(htmlNode, "position");
+                    position = ppc.getStyle(htmlNode, "position");
                     if (position != "absolute") {
-                        l = parseInt(apf.getStyle(htmlNode, "left")) || 0;
-                        t = parseInt(apf.getStyle(htmlNode, "top")) || 0;
+                        l = parseInt(ppc.getStyle(htmlNode, "left")) || 0;
+                        t = parseInt(ppc.getStyle(htmlNode, "top")) || 0;
                     }
                     else {
                         l = htmlNode.offsetLeft;
@@ -209,9 +209,9 @@ apf.BaseStateButtons = function(){
                     }
 
                     this.animstate = 1;
-                    apf.tween.multi(htmlNode, {
+                    ppc.tween.multi(htmlNode, {
                         steps    : 15,
-                        anim     : apf.tween.easeInOutCubic,
+                        anim     : ppc.tween.easeInOutCubic,
                         interval : 10,
                         tweens   : [
                             {type: "left",   from: l,    to: this.$lastpos.px[0]},
@@ -223,8 +223,8 @@ apf.BaseStateButtons = function(){
                         ],
                         oneach   : function(){
                             //#ifdef __WITH_LAYOUT
-                            if (apf.hasSingleRszEvent)
-                                apf.layout.forceResize(_self.$int);
+                            if (ppc.hasSingleRszEvent)
+                                ppc.layout.forceResize(_self.$int);
                             //#endif
                         },
                         onfinish : function(){
@@ -241,7 +241,7 @@ apf.BaseStateButtons = function(){
                     return;
                 }
                 else if (!this.animate) {
-                    apf.plane.hide(this.$uniqueId, true);
+                    ppc.plane.hide(this.$uniqueId, true);
                     
                     _self.$lastpos.parentNode.insertBefore(_self.$ext, _self.$lastpos.beforeNode);
                             
@@ -267,8 +267,8 @@ apf.BaseStateButtons = function(){
             //#endif
 
             //#ifdef __WITH_LAYOUT
-            if (apf.layout)
-                apf.layout.play(this.$pHtmlNode);
+            if (ppc.layout)
+                ppc.layout.play(this.$pHtmlNode);
             //#endif
 
             this.$lastheight = this.$lastpos = null;
@@ -292,22 +292,22 @@ apf.BaseStateButtons = function(){
                 //#endif
 
                 if (!this.aData || !this.aData.minimize) {
-                    this.$lastheight = apf.getStyle(this.$ext, "height");//this.$ext.offsetHeight;
+                    this.$lastheight = ppc.getStyle(this.$ext, "height");//this.$ext.offsetHeight;
 
                     this.$ext.style.height = Math.max(0, this.collapsedHeight
-                        - apf.getHeightDiff(this.$ext)) + "px";
+                        - ppc.getHeightDiff(this.$ext)) + "px";
                 }
 
                 if (this.hasFocus())
-                    apf.window.moveNext(null, this, true);
-                //else if(apf.document.activeElement)
-                    //apf.document.activeElement.$focus({mouse: true});
+                    ppc.window.moveNext(null, this, true);
+                //else if(ppc.document.activeElement)
+                    //ppc.document.activeElement.$focus({mouse: true});
             }
             else {
                 styleClass.push(this.$baseCSSname + "Min");
 
                 $setTimeout(function(){
-                    apf.window.$focusLast(_self);
+                    ppc.window.$focusLast(_self);
                 });
             }
         }
@@ -328,16 +328,16 @@ apf.BaseStateButtons = function(){
                 this.animstate = 0;
                 var hasAnimated = false, htmlNode = this.$ext;
                 
-                var position = apf.getStyle(htmlNode, "position");
+                var position = ppc.getStyle(htmlNode, "position");
                 if (position == "absolute") {
                     pNode.style.overflow = "hidden";
                     l = htmlNode.offsetLeft;
                     t = htmlNode.offsetTop;
                 }
                 else {
-                    var pos = apf.getAbsolutePosition(htmlNode); //pNode
-                    l = pos[0];//parseInt(apf.getStyle(htmlNode, "left")) || 0;
-                    t = pos[1];//parseInt(apf.getStyle(htmlNode, "top")) || 0;
+                    var pos = ppc.getAbsolutePosition(htmlNode); //pNode
+                    l = pos[0];//parseInt(ppc.getStyle(htmlNode, "left")) || 0;
+                    t = pos[1];//parseInt(ppc.getStyle(htmlNode, "top")) || 0;
                 }
                 
                 this.$lastpos = {
@@ -383,46 +383,46 @@ apf.BaseStateButtons = function(){
                         h = _self.$maxconf[1];
                         
                         pos = [_self.$maxconf[2] == "center" 
-                            ? (apf.getWindowWidth() - w)/2
+                            ? (ppc.getWindowWidth() - w)/2
                             : _self.$maxconf[2], 
                                _self.$maxconf[3] == "center" 
-                            ? (apf.getWindowHeight() - h)/3
+                            ? (ppc.getWindowHeight() - h)/3
                             : _self.$maxconf[3]];
                     }
                     else {
-                        w = !apf.isIE && pNode == document.documentElement
+                        w = !ppc.isIE && pNode == document.documentElement
                             ? window.innerWidth
                             : pNode.offsetWidth,
-                        h = !apf.isIE && pNode == document.documentElement
+                        h = !ppc.isIE && pNode == document.documentElement
                             ? window.innerHeight
                             : pNode.offsetHeight;
                     }
                     
                     if (!pos) {
                         pos = pNode != htmlNode.offsetParent
-                            ? apf.getAbsolutePosition(pNode, htmlNode.offsetParent)
+                            ? ppc.getAbsolutePosition(pNode, htmlNode.offsetParent)
                             : [0, 0];
                     }
 
                     if (position != "absolute") {
-                        var diff = apf.getDiff(pNode);
-                        w -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
-                        h -= diff[0] + (!_self.$refParent && apf.isIE8 ? 4 : 0);//@todo dirty hack!
+                        var diff = ppc.getDiff(pNode);
+                        w -= diff[0] + (!_self.$refParent && ppc.isIE8 ? 4 : 0);//@todo dirty hack!
+                        h -= diff[0] + (!_self.$refParent && ppc.isIE8 ? 4 : 0);//@todo dirty hack!
                     }
                     //@todo dirty hack!
-                    else if (!_self.$refParent && apf.isIE8) {
+                    else if (!_self.$refParent && ppc.isIE8) {
                         w -= 4;
                         h -= 4;
                     }
                     
                     box = _self.$refParent ? [0,0,0,0] : marginBox;
-                    pDiff = apf.getDiff(pNode);
+                    pDiff = ppc.getDiff(pNode);
 
                     pNode.style.width  = (pNode.offsetWidth - pDiff[0]) + "px";
                     pNode.style.height = (pNode.offsetHeight - pDiff[1]) + "px";
                     
                     if (!hasAnimated && _self.$maxconf && _self.$maxconf[4])
-                        apf.plane.show(htmlNode, false, null, null, {
+                        ppc.plane.show(htmlNode, false, null, null, {
                             color   : _self.$maxconf[4], 
                             opacity : _self.$maxconf[5],
                             animate : _self.animate,
@@ -432,22 +432,22 @@ apf.BaseStateButtons = function(){
                     if (_self.animate && !hasAnimated) {
                         _self.animstate = 1;
                         hasAnimated     = true;
-                        apf.tween.multi(htmlNode, {
+                        ppc.tween.multi(htmlNode, {
                             steps    : 15,
-                            anim     : apf.tween.easeInOutCubic,
+                            anim     : ppc.tween.easeInOutCubic,
                             interval : 10,
                             tweens   : [
                                 {type: "left",   from: l, to: pos[0] - box[3]},
                                 {type: "top",    from: t, to: pos[1] - box[0]},
                                 {type: "width",  from: _self.$lastpos.px[2],
-                                    to: (w + box[1] + box[3] - apf.getWidthDiff(_self.$ext))},
+                                    to: (w + box[1] + box[3] - ppc.getWidthDiff(_self.$ext))},
                                 {type: "height", from: _self.$lastpos.px[3],
-                                    to: (h + box[0] + box[2] - apf.getHeightDiff(_self.$ext))}
+                                    to: (h + box[0] + box[2] - ppc.getHeightDiff(_self.$ext))}
                             ],
                             oneach   : function(){
                                 //#ifdef __WITH_LAYOUT
-                                if (apf.hasSingleRszEvent)
-                                    apf.layout.forceResize(_self.$int);
+                                if (ppc.hasSingleRszEvent)
+                                    ppc.layout.forceResize(_self.$int);
                                 //#endif
                             },
                             onfinish : function(){
@@ -459,8 +459,8 @@ apf.BaseStateButtons = function(){
                                 });
                                 
                                 //#ifdef __WITH_LAYOUT
-                                if (apf.hasSingleRszEvent)
-                                    apf.layout.forceResize(_self.$int);
+                                if (ppc.hasSingleRszEvent)
+                                    ppc.layout.forceResize(_self.$int);
                                 //#endif
                             }
                         });
@@ -469,7 +469,7 @@ apf.BaseStateButtons = function(){
                         htmlNode.style.left = (pos[0] - box[3]) + "px";
                         htmlNode.style.top  = (pos[1] - box[0]) + "px";
 
-                        var diff = apf.getDiff(_self.$ext);
+                        var diff = ppc.getDiff(_self.$ext);
                         htmlNode.style.width  = (w
                             - diff[0] + box[1] + box[3]) + "px";
                         htmlNode.style.height = (h
@@ -478,8 +478,8 @@ apf.BaseStateButtons = function(){
                 }
 
                 //#ifdef __WITH_LAYOUT
-                if (apf.layout)
-                    apf.layout.pause(this.$pHtmlNode, setMax);
+                if (ppc.layout)
+                    ppc.layout.pause(this.$pHtmlNode, setMax);
                 //#endif
             }
             else {
@@ -516,11 +516,11 @@ apf.BaseStateButtons = function(){
             if (styleClass.length)
                 this.$setStyleClass(this.$ext, styleClass.shift(), styleClass);
                 
-            if (o.edit) { //@todo apf3.0
+            if (o.edit) { //@todo ppc3.0
                 this.dispatchEvent("prop.visible", {value:true});
                 //#ifdef __WITH_LAYOUT
                 if (_self.oSettings)
-                    apf.layout.forceResize(_self.oSettings);
+                    ppc.layout.forceResize(_self.oSettings);
                 //#endif
             }
 
@@ -540,8 +540,8 @@ apf.BaseStateButtons = function(){
             //#endif
 
             //#ifdef __WITH_LAYOUT
-            if (!this.animate && apf.hasSingleRszEvent && apf.layout)
-                apf.layout.forceResize(_self.$int);
+            if (!this.animate && ppc.hasSingleRszEvent && ppc.layout)
+                ppc.layout.forceResize(_self.$int);
             //#endif
         }
     };
@@ -560,7 +560,7 @@ apf.BaseStateButtons = function(){
      */
     this.$propHandlers["buttons"] = function(value){
         //#ifdef __SUPPORT_IPHONE
-        if (apf.isIphone) return;
+        if (ppc.isIphone) return;
         //#endif
         if (!this.$hasLayoutNode("button"))
             return;
@@ -603,50 +603,50 @@ apf.BaseStateButtons = function(){
                 btn = this.$getLayoutNode("button");
                 btn.setAttribute("button", "button");
                 setButtonEvents.call(this, btn);
-                btn = apf.insertHtmlNode(btn, this.$buttons);
+                btn = ppc.insertHtmlNode(btn, this.$buttons);
             }
 
             this.$setStyleClass(btn, buttons[i], ["min", "max", "close", "edit"]);
-            btn.onclick = new Function("apf.lookup(" + this.$uniqueId + ").$toggle('"
+            btn.onclick = new Function("ppc.lookup(" + this.$uniqueId + ").$toggle('"
                                        + buttons[i] + "')");
             btn.style.display = "block";
             oButtons[buttons[i]] = btn;
             this.$buttons.insertBefore(btn, this.$buttons.firstChild);
         }
         
-        marginBox = apf.getBox(apf.getStyle(this.$ext, "borderWidth"));
+        marginBox = ppc.getBox(ppc.getStyle(this.$ext, "borderWidth"));
     };
     
     function setButtonEvents(btn){
         //@todo can this cancelBubble just go?
         //event.cancelBubble = true; \
         btn.setAttribute("onmousedown",
-            "var o = apf.all[" + this.$uniqueId + "];\
+            "var o = ppc.all[" + this.$uniqueId + "];\
              o.$setStyleClass(this, 'down', null, true);\
-             apf.cancelBubble(event, o); \
-             var o = apf.findHost(this).$ext;\
+             ppc.cancelBubble(event, o); \
+             var o = ppc.findHost(this).$ext;\
              if (o.onmousedown) o.onmousedown(event);\
-             apf.cancelBubble(event, o);\
-             apf.window.$mousedown(event);");
+             ppc.cancelBubble(event, o);\
+             ppc.window.$mousedown(event);");
         btn.setAttribute("onmouseup",
-            "var o = apf.all[" + this.$uniqueId + "];\
+            "var o = ppc.all[" + this.$uniqueId + "];\
              o.$setStyleClass(this, '', ['down'], true);");
         btn.setAttribute("onmouseover",
-            "var o = apf.all[" + this.$uniqueId + "];\
+            "var o = ppc.all[" + this.$uniqueId + "];\
              o.$setStyleClass(this, 'hover', null, true);");
         btn.setAttribute("onmouseout",
-            "var o = apf.all[" + this.$uniqueId + "];\
+            "var o = ppc.all[" + this.$uniqueId + "];\
              o.$setStyleClass(this, '', ['hover', 'down'], true);");
-        btn.setAttribute("ondblclick", "apf.stopPropagation(event);");
+        btn.setAttribute("ondblclick", "ppc.stopPropagation(event);");
     }
     
     this.$initButtons = function(oExt){
-        this.animate = apf.enableAnim;
+        this.animate = ppc.enableAnim;
         
         this.collapsedHeight = this.$getOption("Main", "collapsed-height");
 
         var oButtons = this.$getLayoutNode("main", "buttons", oExt);
-        if (!oButtons || apf.isIphone || !this.getAttribute("buttons") 
+        if (!oButtons || ppc.isIphone || !this.getAttribute("buttons") 
           || !this.$hasLayoutNode("button"))
             return;
 

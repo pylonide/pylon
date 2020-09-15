@@ -43,7 +43,7 @@ define (require, exports, module) ->
       # TODO: This needs to do fallback to local storage if available
       if not window.requestFileSystem or @forceLocalStorage is true
         if not window.localStorage
-          apf.console.error 'Unable to request local file system'
+          ppc.console.error 'Unable to request local file system'
           callback 'Unable to request local file system'
         else
           @fs = localStorage['pylon']

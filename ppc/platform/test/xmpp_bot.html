@@ -1,8 +1,8 @@
 <!doctype html>
-<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>BOT</title>
-        <script src="../apf.js"></script>
+        <script src="../ppc.js"></script>
         <style type="text/css">
             #message_log {
                 border: 1px solid silver;
@@ -70,26 +70,26 @@
             var test = {
                 "inserting nodes" : function() {
                     //drive[1]/folder[3]
-                    apf.xmldb.appendChild(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), apf.getXml('<file filename="NewFile1.png"/>'));
+                    ppc.xmldb.appendChild(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), ppc.getXml('<file filename="NewFile1.png"/>'));
                 },
                 "updating node attributes" : function() {
-                    apf.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]"), "new_attr", "test");
-                    apf.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), "new_attr", "test");
-                    apf.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[2]"), "new_attr", "test");
-                    apf.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"), "new_attr", "test");
+                    ppc.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]"), "new_attr", "test");
+                    ppc.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), "new_attr", "test");
+                    ppc.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[2]"), "new_attr", "test");
+                    ppc.xmldb.setAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"), "new_attr", "test");
 
-                    apf.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]"), "new_attr");
-                    apf.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), "new_attr");
-                    apf.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[2]"), "new_attr");
-                    apf.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"), "new_attr");
+                    ppc.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]"), "new_attr");
+                    ppc.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"), "new_attr");
+                    ppc.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[2]"), "new_attr");
+                    ppc.xmldb.removeAttribute(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"), "new_attr");
                 },
                 "removing nodes" : function() {
-                    apf.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"));
-                    apf.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"));
-                    apf.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[2]"));
-                    apf.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]"));
+                    ppc.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]/file[2]"));
+                    ppc.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[1]/folder[3]"));
+                    ppc.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]/folder[2]"));
+                    ppc.xmldb.removeNode(mdlFs.data.selectSingleNode("drive[1]"));
 
-                    apf.window.getActionTracker().undo(4);
+                    ppc.window.getActionTracker().undo(4);
                 },
                 "large change" : function() {
                     //
@@ -125,13 +125,13 @@
             model-contents    = "roster|typing|chat"
             rdb-bot           = "true"
             type              = "binding"
-            resource          = "{'apf_'.appendRandomNumber(5)}"
+            resource          = "{'ppc_'.appendRandomNumber(5)}"
             onpriority        = "getPrio()"
-            onconnected       = "apf.console.log('yay')"
-            onconnectionerror = "apf.console.log('boohoo:' + event.message)"
-            onauthfailure     = "apf.console.log('AUTHFAILURE:' + event.message)"
-            onconnectionlost  = "apf.console.log('connection lost!:' + event.message)"
-            onreconnect       = "apf.console.log('attempting to restore connection')" />
+            onconnected       = "ppc.console.log('yay')"
+            onconnectionerror = "ppc.console.log('boohoo:' + event.message)"
+            onauthfailure     = "ppc.console.log('AUTHFAILURE:' + event.message)"
+            onconnectionlost  = "ppc.console.log('connection lost!:' + event.message)"
+            onreconnect       = "ppc.console.log('attempting to restore connection')" />
 
         <a:remote transport="myXMPP" id="rmtFs" />
 
@@ -163,7 +163,7 @@
 
         <a:button onclick="lstPersons.rename(lstPersons.selected, 'test' + Math.round(Math.random()*100));">Rename</a:button>
 
-        <a:button onclick="apf.xmldb.setAttribute(lstPersons.selected, 'id', 'test' + Math.round(Math.random()*100));">Change Attr</a:button-->
+        <a:button onclick="ppc.xmldb.setAttribute(lstPersons.selected, 'id', 'test' + Math.round(Math.random()*100));">Change Attr</a:button-->
         <!--a:button onclick="lstPersons.add('&lt;person&gt;new person&lt;/person&gt;')">Add</a:button>
 
         <a:slider value="[folder[1]/@test]" realtime="false" model="mdlFs" /-->
@@ -193,7 +193,7 @@
             rmtFs.addEventListener("rdbinit", function(e) {
             	var resource = e.resource,
                     model    = e.model;
-                (new apf.http()).get("filesystem.xml", {
+                (new ppc.http()).get("filesystem.xml", {
                     callback: function(data) {
                         model.load(data);
                     }

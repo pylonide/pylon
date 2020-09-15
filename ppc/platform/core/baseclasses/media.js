@@ -19,7 +19,7 @@
  *
  */
 
-apf.__MEDIA__ = 1 << 20;
+ppc.__MEDIA__ = 1 << 20;
 
 // #ifdef __WITH_MEDIA
 
@@ -34,18 +34,18 @@ apf.__MEDIA__ = 1 << 20;
  * @attribute {Number}  bufferedBytes
  * @attribute {Number}  totalBytes
  *
- * @class apf.Media
+ * @class ppc.Media
  * @baseclass
  * @author      Mike de Boer
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.Media = function(){
+ppc.Media = function(){
     this.$init(true);
 };
 
 (function() {
-    this.$regbase = this.$regbase | apf.__MEDIA__;
+    this.$regbase = this.$regbase | ppc.__MEDIA__;
 
     this.muted = false;
 
@@ -74,9 +74,9 @@ apf.Media = function(){
     this.$propHandlers["readyState"] = function(value){ //in seconds
         if (this.readyState !== value)
             this.readyState = value;
-        if (value == apf.Media.HAVE_NOTHING) {
+        if (value == ppc.Media.HAVE_NOTHING) {
             // #ifdef __DEBUG
-            apf.console.error("Unable to open medium with URL '" + this.src
+            ppc.console.error("Unable to open medium with URL '" + this.src
                 + "'. Please check if the URL you entered as src is pointing to \
                    a valid resource.");
             // #endif
@@ -90,11 +90,11 @@ apf.Media = function(){
               }) === false)
                 throw oError;
         }
-        else if (value == apf.Media.HAVE_CURRENT_DATA)
+        else if (value == ppc.Media.HAVE_CURRENT_DATA)
             this.dispatchEvent("havecurrentdata");
-        else if (value == apf.Media.HAVE_FUTURE_DATA)
+        else if (value == ppc.Media.HAVE_FUTURE_DATA)
             this.dispatchEvent("havefuturedata");
-        else if (value == apf.Media.HAVE_ENOUGH_DATA) {
+        else if (value == ppc.Media.HAVE_ENOUGH_DATA) {
             this.dispatchEvent("haveenoughdata");
             this.setProperty("ready", true);
         }
@@ -191,7 +191,7 @@ apf.Media = function(){
     this.$propHandlers["paused"] = function(value){
         if (!this.player) return;
 
-        this.paused = apf.isTrue(value);
+        this.paused = ppc.isTrue(value);
         if (this.paused)
             this.player.pause();
         else
@@ -217,21 +217,21 @@ apf.Media = function(){
         //@todo for mike: please check if this is the best behaviour for setting an empty value
         if (this.$loadTimer || !value) return;
 
-        var oUrl = new apf.url(value);
+        var oUrl = new ppc.url(value);
         this.src = oUrl.uri;
 
         // #ifdef __DEBUG
         if (oUrl.protocol == "file")
-            apf.console.warn("Media player: the medium with URL '" + this.src + "'\n"
+            ppc.console.warn("Media player: the medium with URL '" + this.src + "'\n"
                 + "will be loaded through the 'file://' protocol.\nThis can "
                 + "cause the medium to not load and/ or play.", "media");
         else if (!oUrl.isSameLocation())
-            apf.console.warn("Media player: the medium with URL '" + this.src + "'\n"
+            ppc.console.warn("Media player: the medium with URL '" + this.src + "'\n"
                 + "does not have the same origin as your web application.\nThis can "
                 + "cause the medium to not load and/ or play.", "media");
         // #endif
 
-        if (this.src != this.currentSrc && this.networkState !== apf.Media.LOADING) {
+        if (this.src != this.currentSrc && this.networkState !== ppc.Media.LOADING) {
             var type = this.$guessType(this.src);
             if (type == this.type) {
                 reset.call(this);
@@ -261,7 +261,7 @@ apf.Media = function(){
 
     this.addEventListener("AMLRemove", function(doOnlyAdmin){
         // #ifdef __DEBUG
-        apf.console.log("Media: removing node...");
+        ppc.console.log("Media: removing node...");
         // #endif
         reset.call(this);
     });
@@ -271,7 +271,7 @@ apf.Media = function(){
             return;
 
         // #ifdef __DEBUG
-        apf.console.log("Media: reparenting - " + beforeNode + ", " + pNode);
+        ppc.console.log("Media: reparenting - " + beforeNode + ", " + pNode);
         // #endif
 
         this.$draw();
@@ -279,8 +279,8 @@ apf.Media = function(){
     });
 
     function reset() {
-        this.setProperty("networkState",  apf.Media.NETWORK_EMPTY);
-        //this.setProperty("readyState",   apf.Media.HAVE_NOTHING);
+        this.setProperty("networkState",  ppc.Media.NETWORK_EMPTY);
+        //this.setProperty("readyState",   ppc.Media.HAVE_NOTHING);
         this.setProperty("ready",         false);
         //this.setProperty("buffered",      {start: 0, end: 0, length: 0});
         //this.setProperty("bufferedBytes", {start: 0, end: 0, length: 0});
@@ -304,7 +304,7 @@ apf.Media = function(){
 
     function reload(bNoReset) {
         // #ifdef __DEBUG
-        apf.console.log("Media: reloading medium with mimetype '" + this.type + "'");
+        ppc.console.log("Media: reloading medium with mimetype '" + this.type + "'");
         // #endif
 
         window.clearTimeout(this.$loadTimer);
@@ -331,12 +331,12 @@ apf.Media = function(){
      *
      */
     this.MediaError = function(sMsg) {
-        return new Error(apf.formatErrorString(0, this, "Media", sMsg));
+        return new Error(ppc.formatErrorString(0, this, "Media", sMsg));
     };
 
     // network state
     this.src = this.currentSrc = null;
-    this.networkState       = apf.Media.NETWORK_EMPTY; //default state
+    this.networkState       = ppc.Media.NETWORK_EMPTY; //default state
     this.bufferingRate      = 0;
     this.bufferingThrottled = false;
     //TimeRanges container {start: Function(idx):Float, end: Function(idx):Float, length: n}
@@ -351,7 +351,7 @@ apf.Media = function(){
     };
 
     // ready state
-    this.readyState = apf.Media.HAVE_NOTHING;
+    this.readyState = ppc.Media.HAVE_NOTHING;
     this.seeking    = false;
 
     // playback state
@@ -425,7 +425,7 @@ apf.Media = function(){
      * @type  {String}
      */
     this.getCounter = function(iMillis, sFormat, bReverse) {
-        // for String.pad, 'apf.PAD_LEFT' is implicit
+        // for String.pad, 'ppc.PAD_LEFT' is implicit
         if (bReverse)
             iMillis = iMillis - this.duration;
         var iSeconds = Math.round(Math.abs(iMillis / 1000)),
@@ -498,7 +498,7 @@ apf.Media = function(){
 
         if (amlNode.localName != "source"){
             // #ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Parsing Media node",
                 "Found element which is not a source element", this));
             // #endif
@@ -535,36 +535,36 @@ apf.Media = function(){
     });
 
 // #ifdef __WITH_DATABINDING
-}).call(apf.Media.prototype = new apf.StandardBinding());
+}).call(ppc.Media.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.Media.prototype = new apf.Presentation());
+}).call(ppc.Media.prototype = new ppc.Presentation());
 #endif*/
 
-apf.nomedia = function(struct, tagName) {
-    this.$init(tagName || "nomedia", apf.NODE_HIDDEN, struct);
+ppc.nomedia = function(struct, tagName) {
+    this.$init(tagName || "nomedia", ppc.NODE_HIDDEN, struct);
 };
 
 (function() {
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         this.parentNode.notSupported =
-            apf.getXmlString(this.$aml).replace(/<\/?a:nomedia[^>]*>/g, "");
+            ppc.getXmlString(this.$aml).replace(/<\/?a:nomedia[^>]*>/g, "");
     });
-}).call(apf.nomedia.prototype = new apf.AmlElement());
+}).call(ppc.nomedia.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("nomedia", apf.nomedia);
+ppc.aml.setElement("nomedia", ppc.nomedia);
 
 // network state (.networkState)
-apf.Media.NETWORK_EMPTY   = 0;
-apf.Media.NETWORK_IDLE    = 1;
-apf.Media.NETWORK_LOADING = 2;
-apf.Media.NETWORK_LOADED  = 3;
+ppc.Media.NETWORK_EMPTY   = 0;
+ppc.Media.NETWORK_IDLE    = 1;
+ppc.Media.NETWORK_LOADING = 2;
+ppc.Media.NETWORK_LOADED  = 3;
 
 // ready state (.readyState)
-apf.Media.HAVE_NOTHING      = 0;
-apf.Media.HAVE_METADATA     = 1;
-apf.Media.HAVE_SOME_DATA    = 2; //wtf??
-apf.Media.HAVE_CURRENT_DATA = 3;
-apf.Media.HAVE_FUTURE_DATA  = 4;
-apf.Media.HAVE_ENOUGH_DATA  = 5;
+ppc.Media.HAVE_NOTHING      = 0;
+ppc.Media.HAVE_METADATA     = 1;
+ppc.Media.HAVE_SOME_DATA    = 2; //wtf??
+ppc.Media.HAVE_CURRENT_DATA = 3;
+ppc.Media.HAVE_FUTURE_DATA  = 4;
+ppc.Media.HAVE_ENOUGH_DATA  = 5;
 
 // #endif

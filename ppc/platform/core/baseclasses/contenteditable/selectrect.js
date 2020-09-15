@@ -23,7 +23,7 @@
 /**
  * @private
  */
-apf.selectrect = function (){
+ppc.selectrect = function (){
     var active;
     var p1    = document.body.appendChild(document.createElement("div")),
         p2    = document.body.appendChild(document.createElement("div")),
@@ -69,16 +69,16 @@ apf.selectrect = function (){
                     : "";
                 q.style.top    = ht < 0 ? "" : (startY) + "px";
                 
-                apf.config.setProperty("x", apf.getHtmlLeft(q));
-                apf.config.setProperty("y", apf.getHtmlTop(q));
-                apf.config.setProperty("w", q.offsetWidth);
-                apf.config.setProperty("h", q.offsetHeight);
+                ppc.config.setProperty("x", ppc.getHtmlLeft(q));
+                ppc.config.setProperty("y", ppc.getHtmlTop(q));
+                ppc.config.setProperty("w", q.offsetWidth);
+                ppc.config.setProperty("h", q.offsetHeight);
             }
             else {
-                apf.config.setProperty("x", e.clientX);
-                apf.config.setProperty("y", e.clientY);
-                apf.config.setProperty("w", "");
-                apf.config.setProperty("h", "");
+                ppc.config.setProperty("x", e.clientX);
+                ppc.config.setProperty("y", e.clientY);
+                ppc.config.setProperty("w", "");
+                ppc.config.setProperty("h", "");
             }
         }
 
@@ -90,7 +90,7 @@ apf.selectrect = function (){
             p1.style.top = "-2000px";
             p2.style.top = "-2000px";
             var el = document.elementFromPoint(e.clientX, e.clientY);
-            var amlNode = apf.findHost(el);
+            var amlNode = ppc.findHost(el);
             
             p1.style.top = "";
             p2.style.top = "";
@@ -100,28 +100,28 @@ apf.selectrect = function (){
                     amlNode = amlNode.parentNode;
             }
             if (!amlNode)
-                amlNode = apf.document.documentElement;
+                amlNode = ppc.document.documentElement;
             
             if (!amlNode.editable)
                 return;
               
-            //apf.ContentEditable.resize.grab(amlNode);
+            //ppc.ContentEditable.resize.grab(amlNode);
 
             q.style.display = "block";
             q.style.left    = (startX = event.clientX) + "px";
             q.style.top     = (startY = event.clientY) + "px";
             q.style.width   = q.style.height = "1px";
             
-            apf.dragMode = true;
+            ppc.dragMode = true;
         };
 
         document.onmouseup = function(){
             if (q.offsetWidth > 10 && q.offsetHeight > 10) {
-                if (apf.document.queryCommandValue("mode") == "select") {
-                    apf.document.execCommand("select", false, {htmlNode: q});
+                if (ppc.document.queryCommandValue("mode") == "select") {
+                    ppc.document.execCommand("select", false, {htmlNode: q});
                 }
                 else {
-                    apf.document.execCommand("add", false, {htmlNode: q});
+                    ppc.document.execCommand("add", false, {htmlNode: q});
                 }
                 _self.deactivate();
             }
@@ -130,7 +130,7 @@ apf.selectrect = function (){
             startX = false;
             startY = false;
             
-            apf.dragMode = false;
+            ppc.dragMode = false;
         };
 
         p1.style.display =

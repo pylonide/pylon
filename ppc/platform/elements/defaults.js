@@ -27,8 +27,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.defaults = function(struct, tagName){
-    this.$init(tagName || "services", apf.NODE_HIDDEN, struct);
+ppc.defaults = function(struct, tagName){
+    this.$init(tagName || "services", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -36,19 +36,19 @@ apf.defaults = function(struct, tagName){
     //#ifdef __WITH_NAMESERVER
     this.$propHandlers["for"] = function(value){
         if (this.$lastFor)
-            apf.nameserver.remove("defaults_" + this.$lastFor, this);
+            ppc.nameserver.remove("defaults_" + this.$lastFor, this);
 
-        apf.nameserver.add("defaults_" + value, this);
+        ppc.nameserver.add("defaults_" + value, this);
         this.$lastFor = value;
     }
     
-    //@todo apf3.x how should this work?
+    //@todo ppc3.x how should this work?
     this.addEventListener("DOMNodeRemovedFromDocument", function(e){
-        apf.nameserver.remove("defaults_" + this.$lastFor, this);
+        ppc.nameserver.remove("defaults_" + this.$lastFor, this);
     });
     //#endif
-}).call(apf.defaults.prototype = new apf.AmlElement());
+}).call(ppc.defaults.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("defaults", apf.defaults);
+ppc.aml.setElement("defaults", ppc.defaults);
 
 // #endif

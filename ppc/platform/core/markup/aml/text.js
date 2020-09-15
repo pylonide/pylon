@@ -20,7 +20,7 @@
  */
 
 // #ifdef __WITH_AMLTEXT
-apf.AmlText = function(isPrototype){
+ppc.AmlText = function(isPrototype){
     this.$init(isPrototype);
 };
 
@@ -29,7 +29,7 @@ apf.AmlText = function(isPrototype){
     this.nodeName = "#text";
     
     this.serialize = function(){
-        return apf.escapeXML(this.nodeValue);
+        return ppc.escapeXML(this.nodeValue);
     };
     
     //#ifdef __ENABLE_LIVETEXT
@@ -71,7 +71,7 @@ apf.AmlText = function(isPrototype){
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         var pHtmlNode;
-        if (!(pHtmlNode = this.parentNode.$int) || this.parentNode.hasFeature(apf.__CHILDVALUE__)) 
+        if (!(pHtmlNode = this.parentNode.$int) || this.parentNode.hasFeature(ppc.__CHILDVALUE__)) 
             return;
 
         this.$amlLoaded = true;
@@ -79,7 +79,7 @@ apf.AmlText = function(isPrototype){
         var nodeValue = this.nodeValue;
 
         //@todo optimize for inside elements?
-        if (apf.config.liveText && !this.parentNode.hasFeature(apf.__CHILDVALUE__) 
+        if (ppc.config.liveText && !this.parentNode.hasFeature(ppc.__CHILDVALUE__) 
           && (nodeValue.indexOf("{") > -1 || nodeValue.indexOf("[") > -1)) {
             
             //Convert to live markup pi
@@ -88,11 +88,11 @@ apf.AmlText = function(isPrototype){
             this.$booleanProperties   = {};
             this.$inheritProperties   = {};
             
-            this.$propHandlers["calcdata"] = apf.LiveMarkupPi.prototype.$propHandlers["calcdata"];
+            this.$propHandlers["calcdata"] = ppc.LiveMarkupPi.prototype.$propHandlers["calcdata"];
             
-            this.$setInheritedAttribute = apf.AmlElement.prototype.$setInheritedAttribute;
+            this.$setInheritedAttribute = ppc.AmlElement.prototype.$setInheritedAttribute;
             //#ifdef __WITH_DATABINDING
-            this.implement(apf.StandardBinding);
+            this.implement(ppc.StandardBinding);
             //#endif
             
             pHtmlNode.appendChild(this.$ext = document.createElement("span"));
@@ -101,7 +101,7 @@ apf.AmlText = function(isPrototype){
             return;
         }
 
-        if (apf.hasTextNodeWhiteSpaceBug) {
+        if (ppc.hasTextNodeWhiteSpaceBug) {
             var nodeValue = nodeValue.replace(/[\t\n\r ]+/g, " ");
 
             if (nodeValue && nodeValue != " ")
@@ -112,5 +112,5 @@ apf.AmlText = function(isPrototype){
             this.$ext = pHtmlNode.appendChild(
               pHtmlNode.ownerDocument.createTextNode(nodeValue));
     }, true);
-}).call(apf.AmlText.prototype = new apf.AmlCharacterData());
+}).call(ppc.AmlText.prototype = new ppc.AmlCharacterData());
 // #endif

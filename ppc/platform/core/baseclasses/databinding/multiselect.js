@@ -26,8 +26,8 @@
  *
  *
  *
- * @class apf.MultiselectBinding
- * @inherits apf.DataBinding
+ * @class ppc.MultiselectBinding
+ * @inherits ppc.DataBinding
  * @baseclass
  * @default_private
  * @allowchild  item, choices
@@ -51,11 +51,11 @@
  * ```
  * @allowchild  item
  */
-apf.MultiselectBinding = function(){
+ppc.MultiselectBinding = function(){
     if (!this.setQueryValue)
-        this.implement(apf.DataBinding);
+        this.implement(ppc.DataBinding);
 
-    this.$regbase    = this.$regbase|apf.__MULTISELECT__; //We're pretending to have multiselect even though we might not.
+    this.$regbase    = this.$regbase|ppc.__MULTISELECT__; //We're pretending to have multiselect even though we might not.
 
     this.$init(function(){
         this.$selectTimer = {};
@@ -66,7 +66,7 @@ apf.MultiselectBinding = function(){
     this.length = 0;
 
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         caption   : 2,
         icon      : 2,
         eachvalue : 2,
@@ -104,7 +104,7 @@ apf.MultiselectBinding = function(){
      */
     this.resort = function(options, clear, noReload){
         if (!this.$sort)
-            this.$sort = new apf.Sort();
+            this.$sort = new ppc.Sort();
 
         this.$sort.set(options, clear);
 
@@ -115,7 +115,7 @@ apf.MultiselectBinding = function(){
             return;
 
         //#ifdef __WITH_VIRTUALVIEWPORT
-        /*if(this.hasFeature(apf.__VIRTUALVIEWPORT__)){
+        /*if(this.hasFeature(ppc.__VIRTUALVIEWPORT__)){
             this.$clearVirtualDataset(this.xmlRoot);
             this.reload();
 
@@ -128,15 +128,15 @@ apf.MultiselectBinding = function(){
             if(!xmlNode)
                 return;
             var sNodes = _self.$sort.apply(
-                apf.getArrayFromNodelist(xmlNode.selectNodes(_self.each)));
+                ppc.getArrayFromNodelist(xmlNode.selectNodes(_self.each)));
 
             for (var i = 0; i < sNodes.length; i++) {
                 if (_self.$isTreeArch || _self.$withContainer){
-                    var htmlNode = apf.xmldb.findHtmlNode(sNodes[i], _self);
+                    var htmlNode = ppc.xmldb.findHtmlNode(sNodes[i], _self);
 
                     //#ifdef __DEBUG
                     if (!_self.$findContainer){
-                        throw new Error(apf.formatErrorString(_self,
+                        throw new Error(ppc.formatErrorString(_self,
                             "Sorting Nodes",
                             "This component does not \
                              implement _self.$findContainer"));
@@ -146,13 +146,13 @@ apf.MultiselectBinding = function(){
                     var container = _self.$findContainer(htmlNode);
 
                     htmlParent.appendChild(htmlNode);
-                    if (!apf.isChildOf(htmlNode, container, true))
+                    if (!ppc.isChildOf(htmlNode, container, true))
                         htmlParent.appendChild(container);
 
                     sortNodes(sNodes[i], container);
                 }
                 else
-                    htmlParent.appendChild(apf.xmldb.findHtmlNode(sNodes[i], _self));
+                    htmlParent.appendChild(ppc.xmldb.findHtmlNode(sNodes[i], _self));
             }
         })(this.xmlRoot, this.$container);
 
@@ -194,7 +194,7 @@ apf.MultiselectBinding = function(){
             this.getTraverseNodes = function(xmlNode){
                 //#ifdef __WITH_SORTING
                 if (this.$sort && !this.$isLoading) {
-                    var nodes = apf.getArrayFromNodelist((xmlNode || this.xmlRoot).childNodes);
+                    var nodes = ppc.getArrayFromNodelist((xmlNode || this.xmlRoot).childNodes);
                     return this.$sort.apply(nodes);
                 }
                 //#endif
@@ -237,13 +237,13 @@ apf.MultiselectBinding = function(){
         //#ifdef __DEBUG
         if (!this.each) {
             throw new Error("Could not render bound data. Missing 'each' rule for "
-                + this.localName + (this.id && "[" + this.id + "]" || "")); //@todo apf3.0 make into proper apf error
+                + this.localName + (this.id && "[" + this.id + "]" || "")); //@todo ppc3.0 make into proper ppc error
         }
         //#endif
 
         //#ifdef __WITH_SORTING
         if (this.$sort) {
-            var nodes = apf.getArrayFromNodelist((xmlNode || this.xmlRoot).selectNodes(this.each));
+            var nodes = ppc.getArrayFromNodelist((xmlNode || this.xmlRoot).selectNodes(this.each));
             return this.$sort.apply(nodes);
         }
         //#endif
@@ -256,7 +256,7 @@ apf.MultiselectBinding = function(){
      * in this element. 
      *
      * @param {XMLElement} [xmlNode] The parent element on which the each query is executed.
-     * @return {apf.AmlNode} The first represented {@link term.datanode data node}
+     * @return {ppc.AmlNode} The first represented {@link term.datanode data node}
      */
     this.getFirstTraverseNode = function(xmlNode){
         //#ifdef __WITH_SORTING
@@ -379,10 +379,10 @@ apf.MultiselectBinding = function(){
         if (xmlNode.$regbase)
             return xmlNode.parentNode;
 
-        var x, id = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+        var x, id = xmlNode.getAttribute(ppc.xmldb.xmlIdTag);
         if (!id) {
             //return false;
-            xmlNode.setAttribute(apf.xmldb.xmlIdTag, "temp");
+            xmlNode.setAttribute(ppc.xmldb.xmlIdTag, "temp");
             id = "temp";
         }
 
@@ -399,15 +399,15 @@ apf.MultiselectBinding = function(){
         //This is not 100% correct, but good enough for now
 
         x = xmlNode.selectSingleNode("ancestor::node()[(("
-            + this.each + ")/@" + apf.xmldb.xmlIdTag + ")='"
+            + this.each + ")/@" + ppc.xmldb.xmlIdTag + ")='"
             + id + "']");
 
         if (id == "temp")
-            xmlNode.removeAttribute(apf.xmldb.xmlIdTag);
+            xmlNode.removeAttribute(ppc.xmldb.xmlIdTag);
         return x;
     };
 
-    if (!this.$findHtmlNode) { //overwritten by apf.Cache
+    if (!this.$findHtmlNode) { //overwritten by ppc.Cache
         /**
          * Finds HTML presentation node in cache by ID.
          *
@@ -431,7 +431,7 @@ apf.MultiselectBinding = function(){
             var xmlEmpty = this.$getLayoutNode("empty");
             if (!xmlEmpty) return;
 
-            this.$empty = apf.insertHtmlNode(xmlEmpty, this.$container);
+            this.$empty = ppc.insertHtmlNode(xmlEmpty, this.$container);
         }
         else {
             this.$container.appendChild(this.$empty);
@@ -440,17 +440,17 @@ apf.MultiselectBinding = function(){
         var empty = this.$getLayoutNode("empty", "caption", this.$empty);
 
         if (empty)
-            apf.setNodeValue(empty, msg || "");
+            ppc.setNodeValue(empty, msg || "");
 
         this.$empty.setAttribute("id", "empty" + this.$uniqueId);
-        apf.setStyleClass(this.$empty, className, ["loading", "empty", "offline"]);
+        ppc.setStyleClass(this.$empty, className, ["loading", "empty", "offline"]);
 
-        //@todo apf3.0 cleanup?
-        var extH = apf.getStyle(this.$ext, "height");
+        //@todo ppc3.0 cleanup?
+        var extH = ppc.getStyle(this.$ext, "height");
         this.$empty.style.height = (lastHeight && (!extH || extH == "auto") && className != "empty")
             ? (Math.max(10, (lastHeight
-               - apf.getHeightDiff(this.$empty)
-               - apf.getHeightDiff(this.$ext))) + "px")
+               - ppc.getHeightDiff(this.$empty)
+               - ppc.getHeightDiff(this.$ext))) + "px")
             : "";
     };
 
@@ -461,7 +461,7 @@ apf.MultiselectBinding = function(){
 
         var empty = this.$getLayoutNode("empty", "caption", this.$empty);
         if (empty)
-            apf.setNodeValue(empty, msg || "");
+            ppc.setNodeValue(empty, msg || "");
     }
 
     this.$removeClearMessage = function(){
@@ -477,13 +477,13 @@ apf.MultiselectBinding = function(){
      */
     this.$load = function(XMLRoot){
         //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(XMLRoot, this);
+        ppc.xmldb.addNodeListener(XMLRoot, this);
 
         this.$isLoading = true;
 
         var length = this.getTraverseNodes(XMLRoot).length;
         if (!this.renderRoot && !length)
-            return this.clear(null, null, true); //@todo apf3.0 this should clear and set a listener
+            return this.clear(null, null, true); //@todo ppc3.0 this should clear and set a listener
 
 
         //Traverse through XMLTree
@@ -498,27 +498,27 @@ apf.MultiselectBinding = function(){
         if (this.selectable) {
             //#ifdef __WITH_OFFLINE_STATE
             //@todo move this to multiselect event handler inside multiselect.js
-            var sel, bHasOffline = (typeof apf.offline != "undefined");
-            if (!this.firstLoad && bHasOffline && apf.offline.state.enabled
-              && apf.offline.state.realtime) {
-                sel = apf.offline.state.get(this, "selection");
+            var sel, bHasOffline = (typeof ppc.offline != "undefined");
+            if (!this.firstLoad && bHasOffline && ppc.offline.state.enabled
+              && ppc.offline.state.realtime) {
+                sel = ppc.offline.state.get(this, "selection");
                 this.firstLoad = true;
             }
 
             if (sel) {
-                var selstate = apf.offline.state.get(this, "selstate");
+                var selstate = ppc.offline.state.get(this, "selstate");
 
                 if (sel.length == 0) {
                     this.clearSelection();
                 }
                 else {
                     for (var i = 0; i < sel.length; i++) {
-                        sel[i] = apf.xpathToXml(sel[i],
+                        sel[i] = ppc.xpathToXml(sel[i],
                             this.xmlRoot);
                     }
 
                     if (selstate[1]) {
-                        var selected = apf.remote
+                        var selected = ppc.remote
                             .xpathToXml(selstate[1], this.xmlRoot);
                     }
 
@@ -526,13 +526,13 @@ apf.MultiselectBinding = function(){
                 }
 
                 if (selstate[0]) {
-                    this.setCaret(apf.remote
+                    this.setCaret(ppc.remote
                         .xpathToXml(selstate[0], this.xmlRoot));
                 }
             }
             else
             //#endif
-            //@todo apf3.0 optimize to not set selection when .selection or .selected is set on initial load
+            //@todo ppc3.0 optimize to not set selection when .selection or .selected is set on initial load
             if (this["default"])
                 this.select(this["default"]);
             else if (this.autoselect) {
@@ -541,7 +541,7 @@ apf.MultiselectBinding = function(){
                         this.select(XMLRoot, null, null, null, true);
                     else if (nodes.length)
                         this.$selectDefault(XMLRoot);
-                    //else @todo apf3.0 this one doesnt seem needed
+                    //else @todo ppc3.0 this one doesnt seem needed
                         //this.clearSelection();
                 }
             }
@@ -562,7 +562,7 @@ apf.MultiselectBinding = function(){
         }
 
         if (this.focussable)
-            apf.document.activeElement == this ? this.$focus() : this.$blur();
+            ppc.document.activeElement == this ? this.$focus() : this.$blur();
 
         //#ifdef __WITH_PROPERTY_BINDING
         if (length != this.length)
@@ -598,7 +598,7 @@ apf.MultiselectBinding = function(){
      *                            - `move`        An XML node is moved (parent still set)
      *                      - xmlNode ([[XMLElement]]): The node that is subject to the update
      *                      - result (`Mixed`): The result
-     *                      - UndoObj ([[apf.UndoData]]): The undo information
+     *                      - UndoObj ([[ppc.UndoData]]): The undo information
      */
     /*
      * Loops through parents of a changed node to find the first
@@ -633,14 +633,14 @@ apf.MultiselectBinding = function(){
               && startNode == xmlNode)
                 break; //@todo Might want to comment this out for adding nodes under a eachd node
 
-            if (xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
+            if (xmlNode.getAttribute(ppc.xmldb.xmlIdTag)) {
                 htmlNode = this.$findHtmlNode(
-                    xmlNode.getAttribute(apf.xmldb.xmlIdTag)
+                    xmlNode.getAttribute(ppc.xmldb.xmlIdTag)
                     + "|" + this.$uniqueId);
 
                 if (xmlNode == listenNode && !this.renderRoot) {
                     if (xmlNode == this.xmlRoot && action != "insert" && action != "replacenode") {
-                        //@todo apf3.0 - fix this for binding on properties
+                        //@todo ppc3.0 - fix this for binding on properties
                         this.dispatchEvent("xmlupdate", {
                             action : action,
                             xmlNode: xmlNode,
@@ -688,13 +688,13 @@ apf.MultiselectBinding = function(){
         while (xmlNode && xmlNode.nodeType != 9);
 
         //#ifdef __WITH_LANG_SUPPORT
-        apf.$lm_has_lang = false;
+        ppc.$lm_has_lang = false;
         //#endif
 
         // #ifdef __WITH_VIRTUALVIEWPORT
         
         // @todo Think about not having this code here
-        if (this.hasFeature(apf.__VIRTUALVIEWPORT__)) {
+        if (this.hasFeature(ppc.__VIRTUALVIEWPORT__)) {
             if(!this.$isInViewport(xmlNode)) //xmlNode is a eachd node
                 return;
         }
@@ -716,10 +716,10 @@ apf.MultiselectBinding = function(){
             //Case for replacing a node between the xmlroot and the traverse nodes
             var nodes = this.getTraverseNodes();
             for (var i = 0, l = nodes.length; i < l; i++) {
-                if (apf.isChildOf(startNode, nodes[i]))
+                if (ppc.isChildOf(startNode, nodes[i]))
                     return this.load(this.xmlRoot, {force: true}); //This can be more optimized by using addNodes
             }
-            //if ((tmpNode = this.getFirstTraverseNode()) && apf.isChildOf(startNode, tmpNode))
+            //if ((tmpNode = this.getFirstTraverseNode()) && ppc.isChildOf(startNode, tmpNode))
         }
 
         //Action Tracker Support - && xmlNode correct here??? - UndoObj.xmlNode works but fishy....
@@ -729,8 +729,8 @@ apf.MultiselectBinding = function(){
         //Check Move -- if value node isn't the node that was moved then only perform a normal update
         if (action == "move" && foundNode == startNode) {
             //if(!htmlNode) alert(xmlNode.getAttribute("id")+"|"+this.$uniqueId);
-            var isInThis  = apf.isChildOf(this.xmlRoot, xmlNode.parentNode, true); //@todo this.getTraverseParent(xmlNode)
-            var wasInThis = apf.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
+            var isInThis  = ppc.isChildOf(this.xmlRoot, xmlNode.parentNode, true); //@todo this.getTraverseParent(xmlNode)
+            var wasInThis = ppc.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
 
             //Move if both previous and current position is within this object
             if (isInThis && wasInThis)
@@ -741,7 +741,7 @@ apf.MultiselectBinding = function(){
                 action = "remove";
         }
         else if (action == "move-away") {
-            var goesToThis = apf.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
+            var goesToThis = ppc.isChildOf(this.xmlRoot, UndoObj.extra.parent, true);
             if (!goesToThis)
                 action = "remove";
         }
@@ -762,7 +762,7 @@ apf.MultiselectBinding = function(){
             if (this.$hasLoadStatus(xmlNode) && this.$removeLoading)
                 this.$removeLoading(xmlNode);
 
-            if (this.$container.firstChild && !apf.xmldb.getNode(this.$container.firstChild)) {
+            if (this.$container.firstChild && !ppc.xmldb.getNode(this.$container.firstChild)) {
                 //Appearantly the content was cleared
                 this.$container.innerHTML = "";
 
@@ -783,7 +783,7 @@ apf.MultiselectBinding = function(){
 
             // #ifdef __DEBUG
             if (this.selectable && !this.xmlRoot.selectSingleNode(this.each))
-                apf.console.warn("No traversable nodes were found for "
+                ppc.console.warn("No traversable nodes were found for "
                                  + this.name + " [" + this.localName + "]\n\
                                   Traverse Rule : " + this.$getBindRule("each")[4].getAttribute("match"));
             // #endif
@@ -800,27 +800,27 @@ apf.MultiselectBinding = function(){
 
             if (!parentHTMLNode && this.$isTreeArch) {
                 parentHTMLNode = this.$findHtmlNode(
-                    pNode.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    pNode.getAttribute(ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
             }
 
             //This should be moved into a function (used in setCache as well)
             //#ifdef __WITH_CACHE
             if (!parentHTMLNode && this.getCacheItem)
-                parentHTMLNode = this.getCacheItem(pNode.getAttribute(apf.xmldb.xmlIdTag)
-                    || (pNode.getAttribute(apf.xmldb.xmlDocTag)
-                         ? "doc" + pNode.getAttribute(apf.xmldb.xmlDocTag)
+                parentHTMLNode = this.getCacheItem(pNode.getAttribute(ppc.xmldb.xmlIdTag)
+                    || (pNode.getAttribute(ppc.xmldb.xmlDocTag)
+                         ? "doc" + pNode.getAttribute(ppc.xmldb.xmlDocTag)
                          : false));
             //#endif
 
             //Only update if node is in current representation or in cache
             if (parentHTMLNode || this.$isTreeArch
-              && pNode == this.xmlRoot) { //apf.isChildOf(this.xmlRoot, xmlNode)
+              && pNode == this.xmlRoot) { //ppc.isChildOf(this.xmlRoot, xmlNode)
                 parentHTMLNode = (this.$findContainer && parentHTMLNode && parentHTMLNode.nodeType == 1
                     ? this.$findContainer(parentHTMLNode)
                     : parentHTMLNode) || this.$container;
 
                 result = this.$addNodes(xmlNode, parentHTMLNode, true, true,
-                    apf.xmldb.getHtmlNode(this.getNextTraverse(xmlNode), this));
+                    ppc.xmldb.getHtmlNode(this.getNextTraverse(xmlNode), this));
 
                 if (parentHTMLNode)
                     this.$fill(result);
@@ -852,9 +852,9 @@ apf.MultiselectBinding = function(){
             this.$updateNode(xmlNode, htmlNode);
 
             //Transaction 'niceties'
-            if (action == "replacenode" && this.hasFeature(apf.__MULTISELECT__)
-              && this.selected && xmlNode.getAttribute(apf.xmldb.xmlIdTag)
-              == this.selected.getAttribute(apf.xmldb.xmlIdTag)) {
+            if (action == "replacenode" && this.hasFeature(ppc.__MULTISELECT__)
+              && this.selected && xmlNode.getAttribute(ppc.xmldb.xmlIdTag)
+              == this.selected.getAttribute(ppc.xmldb.xmlIdTag)) {
                 this.selected = xmlNode;
             }
 
@@ -871,7 +871,7 @@ apf.MultiselectBinding = function(){
 
                 //#ifdef __DEBUG
                 if (!model)
-                    throw new Error(apf.formatErrorString(0, this,
+                    throw new Error(ppc.formatErrorString(0, this,
                         "Setting change notifier on component",
                         "Component without a model is listening for changes",
                         this.$aml));
@@ -882,9 +882,9 @@ apf.MultiselectBinding = function(){
         }
 
         //#ifdef __WITH_LANG_SUPPORT
-        //@todo apf3.0
-        if (apf.$lm_has_lang)
-            apf.language.addBinding(this); //@todo should auto remove
+        //@todo ppc3.0
+        if (ppc.$lm_has_lang)
+            ppc.language.addBinding(this); //@todo should auto remove
         //#endif
 
         //For tree based nodes, update all the nodes up
@@ -893,7 +893,7 @@ apf.MultiselectBinding = function(){
           && pNode && pNode.nodeType == 1) {
             do {
                 htmlNode = this.$findHtmlNode(pNode.getAttribute(
-                    apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
 
                 if (htmlNode)
                     this.$updateNode(pNode, htmlNode);
@@ -908,7 +908,7 @@ apf.MultiselectBinding = function(){
 
             clearTimeout(this.$selectTimer.timer);
             // Determine next selection
-            if (action == "remove" && apf.isChildOf(xmlNode, this.selected, true)
+            if (action == "remove" && ppc.isChildOf(xmlNode, this.selected, true)
               || xmlNode == this.$selectTimer.nextNode) {
                 this.$selectTimer.nextNode = this.getDefaultNext(xmlNode, this.$isTreeArch);
                 if (this.$selectTimer.nextNode == this.xmlRoot && !this.renderRoot)
@@ -941,7 +941,7 @@ apf.MultiselectBinding = function(){
             for (uniqueId in this.signalXmlUpdate) {
                 if (parseInt(uniqueId, 10) != uniqueId) continue; //safari_old stuff
 
-                var o = apf.lookup(uniqueId);
+                var o = ppc.lookup(uniqueId);
                 if (!this.selected) continue;
 
                 xmlNode = this.selected.selectSingleNode(o.dataParent.xpath);
@@ -968,7 +968,7 @@ apf.MultiselectBinding = function(){
     this.$addNodes = function(xmlNode, parent, checkChildren, isChild, insertBefore, depth, action){
         // #ifdef __DEBUG
         if (!this.each) {
-            throw new Error(apf.formatErrorString(1060, this,
+            throw new Error(ppc.formatErrorString(1060, this,
                 "adding Nodes for load",
                 "No each SmartBinding rule was specified. This rule is \
                  required for a " + this.localName + " component.", this.$aml));
@@ -987,7 +987,7 @@ apf.MultiselectBinding = function(){
         var cId, cItem;
         if (this.$isTreeArch && this.caching
           && (!this.$bindings || !this.$bindings.each || !this.$bindings.each.filter)
-          && (cItem = this.cache[(cId = xmlNode.getAttribute(apf.xmldb.xmlIdTag))])) {
+          && (cItem = this.cache[(cId = xmlNode.getAttribute(ppc.xmldb.xmlIdTag))])) {
             if (this.$subTreeCacheContext || this.$needsDepth) {
                 //@todo
                 //We destroy the current items, because currently we
@@ -1031,12 +1031,12 @@ apf.MultiselectBinding = function(){
 
             if (checkChildren) {
                 htmlNode = this.$findHtmlNode(nodes[i]
-                    .getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    .getAttribute(ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
             }
 
             if (!htmlNode) {
                 //Retrieve DataBind ID
-                var Lid = apf.xmldb.nodeConnect(this.documentId, nodes[i], null, this);
+                var Lid = ppc.xmldb.nodeConnect(this.documentId, nodes[i], null, this);
 
                 //Add Children
                 var beforeNode = isChild
@@ -1049,9 +1049,9 @@ apf.MultiselectBinding = function(){
                 //Exit if component tells us its done with rendering
                 if (parentNode === false) {
                     //Tag all needed xmlNodes for future reference
-                    // @todo apf3.0 code below looks harmful... hence commented out (Mike)
+                    // @todo ppc3.0 code below looks harmful... hence commented out (Mike)
                     /*for (var j = i; j < nodes.length; j++)
-                        apf.xmldb.nodeConnect(this.documentId, nodes[j],
+                        ppc.xmldb.nodeConnect(this.documentId, nodes[j],
                             null, this);*/
                     break;
                 }
@@ -1071,7 +1071,7 @@ apf.MultiselectBinding = function(){
         if (!value)
             this[prop] = null;
 
-        //@todo apf3.0 fix parsing
+        //@todo ppc3.0 fix parsing
         if (prop == "each") {
             value = value.charAt(0) == "[" && value.charAt(value.length - 1) == "]"
                 ? value.replace(/^\[|\]$/g, "")
@@ -1079,7 +1079,7 @@ apf.MultiselectBinding = function(){
 
             if (value.match(/^\w+::/)) {
                 var model = value.split("::"); //@todo this is all very bad
-                if (!apf.xPathAxis[model[0]]) {
+                if (!ppc.xPathAxis[model[0]]) {
                     this.setProperty("model", model[0]);
                     this.each = model[1];
                 }
@@ -1105,12 +1105,12 @@ apf.MultiselectBinding = function(){
                 return;
         }
 
-        //@todo apf3.0 find a better heuristic (portal demo)
+        //@todo ppc3.0 find a better heuristic (portal demo)
         if (this.xmlRoot && !this.$bindRuleTimer && this.$amlLoaded) {
             var _self = this;
-            apf.queue.add("reload" + this.$uniqueId, function(){
+            ppc.queue.add("reload" + this.$uniqueId, function(){
                 //#ifdef __DEBUG
-                apf.console.log("Reloading multiselect based on attribute '"
+                ppc.console.log("Reloading multiselect based on attribute '"
                                  + prop + "' bind change to value '"
                                  + value + "'\n\n" + _self.serialize(true));
                 //#endif
@@ -1260,9 +1260,9 @@ apf.MultiselectBinding = function(){
      */
     this.$propHandlers["sort"] = function(value){
         if (value) {
-            this.$sort = new apf.Sort()
+            this.$sort = new ppc.Sort()
             this.$sort.set({
-                getValue : apf.lm.compile(value)
+                getValue : ppc.lm.compile(value)
             });
         }
         else {
@@ -1284,5 +1284,5 @@ apf.MultiselectBinding = function(){
      */
     //this.$propHandlers["select"]   =
     //#endif
-}).call(apf.MultiselectBinding.prototype = new apf.DataBinding());
+}).call(ppc.MultiselectBinding.prototype = new ppc.DataBinding());
 // #endif

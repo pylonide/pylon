@@ -133,7 +133,7 @@ var GridLayouts = {
     }
 };
 
-var grids = module.exports = new apf.Class().$init();
+var grids = module.exports = new ppc.Class().$init();
 
 var GridNames = Object.keys(GridLayouts);
 
@@ -203,11 +203,11 @@ function createNodes(struct, splitters, parent) {
     if (struct.node)
         return;
 
-    parent = parent || apf.document.documentElement;
-    (apf.isArray(struct) ? struct : Object.keys(struct)).forEach(function(nodeName) {
+    parent = parent || ppc.document.documentElement;
+    (ppc.isArray(struct) ? struct : Object.keys(struct)).forEach(function(nodeName) {
         var options = {};
         if ("vbox|hbox".indexOf(nodeName) > -1) {
-            if (parent === apf.document.documentElement) {
+            if (parent === ppc.document.documentElement) {
                 options.visible = false;
                 options.anchors = "2 0 0 0";
             }
@@ -222,12 +222,12 @@ function createNodes(struct, splitters, parent) {
             options.zindex = 8;
         }
 
-        var node = parent.appendChild(new apf[nodeName](options));
+        var node = parent.appendChild(new ppc[nodeName](options));
         if (nodeName == "splitter")
             splitters.push(node);
         // if we just appended the main node to the document, set it as the grid's
         // main node
-        if (parent === apf.document.documentElement)
+        if (parent === ppc.document.documentElement)
             struct.node = node;
         // recurse down the structure's tree
         if (struct[nodeName] && struct[nodeName] !== 1)

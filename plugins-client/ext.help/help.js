@@ -35,7 +35,7 @@ define(function(require, exports, module) {
         hook : function(){
             var _self = this;
 
-            var mnuHelp = new apf.menu();
+            var mnuHelp = new ppc.menu();
 
             this.nodes.push(
                 menus.addItemByPath("Help/", mnuHelp, 100000)
@@ -43,44 +43,44 @@ define(function(require, exports, module) {
 
 
             var c = 0;
-            menus.addItemByPath("Help/About", new apf.item({ onclick : function(){ _self.showAbout(); }}), c += 100);
-            var mnuChangelog = menus.addItemByPath("Help/Changelog", new apf.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/releases'); }}), c += 100);
+            menus.addItemByPath("Help/About", new ppc.item({ onclick : function(){ _self.showAbout(); }}), c += 100);
+            var mnuChangelog = menus.addItemByPath("Help/Changelog", new ppc.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/releases'); }}), c += 100);
 
-            menus.addItemByPath("Help/~", new apf.divider(), c += 100);
+            menus.addItemByPath("Help/~", new ppc.divider(), c += 100);
             ide.addEventListener("hook.ext/keybindings_default/keybindings_default", function(c, e) {
-                menus.addItemByPath("Help/Keyboard Shortcuts", new apf.item({ onclick : function(){ e.ext.keybindings(); }}), c);
+                menus.addItemByPath("Help/Keyboard Shortcuts", new ppc.item({ onclick : function(){ e.ext.keybindings(); }}), c);
             }.bind(this, c += 100));
             ide.addEventListener("hook.ext/quickstart/quickstart", function(c, e) {
-                menus.addItemByPath("Help/Quick Start", new apf.item({ onclick : function(){ e.ext.launchQS(); }}), c);
+                menus.addItemByPath("Help/Quick Start", new ppc.item({ onclick : function(){ e.ext.launchQS(); }}), c);
             }.bind(this, c += 100));
             ide.addEventListener("hook.ext/guidedtour/guidedtour", function(c, e) {
-                menus.addItemByPath("Help/Take a Guided Tour", new apf.item({ onclick : function(){ e.ext.launchGT(); }}), c);
+                menus.addItemByPath("Help/Take a Guided Tour", new ppc.item({ onclick : function(){ e.ext.launchGT(); }}), c);
             }.bind(this, c += 100));
-            menus.addItemByPath("Help/~", new apf.divider(), c += 100);
+            menus.addItemByPath("Help/~", new ppc.divider(), c += 100);
 
             menus.addItemByPath("Help/Support/", null, c += 100);
-            menus.addItemByPath("Help/~", new apf.divider(), c += 100);
+            menus.addItemByPath("Help/~", new ppc.divider(), c += 100);
             menus.addItemByPath("Help/Learning/", null, c += 100);
-            menus.addItemByPath("Help/~", new apf.divider(), c += 100);
+            menus.addItemByPath("Help/~", new ppc.divider(), c += 100);
             menus.addItemByPath("Help/Get in Touch/", null, c += 100);
 
             c = 0;
-            menus.addItemByPath("Help/Support/GitHub Issues", new apf.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/issues'); }}), c += 100);
+            menus.addItemByPath("Help/Support/GitHub Issues", new ppc.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/issues'); }}), c += 100);
 
             c = 0;
-            menus.addItemByPath("Help/Learning/GitHub Wiki", new apf.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/wiki'); }}), c += 100);
+            menus.addItemByPath("Help/Learning/GitHub Wiki", new ppc.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/wiki'); }}), c += 100);
 
             c = 0;
-            menus.addItemByPath("Help/Get in Touch/GitHub Issues", new apf.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/issues'); }}), c += 100);
+            menus.addItemByPath("Help/Get in Touch/GitHub Issues", new ppc.item({ onclick : function(){ window.open('https://github.com/exsilium/cloud9/issues'); }}), c += 100);
 
             if (window.cloud9config.hosted || (ide.local && ide.onLine)) {
                 var blogURL = window.location.protocol + "//" + window.location.host + "/site/?json=get_tag_posts&tag_slug=changelog&count=1";
 
-                apf.ajax(blogURL, {
+                ppc.ajax(blogURL, {
                     method: "GET",
                     contentType: "application/json",
                     callback: function(data, state) {
-                        if (state == apf.SUCCESS) {
+                        if (state == ppc.SUCCESS) {
                             if (data !== undefined) {
                                 var latestDate = "";
 
@@ -103,14 +103,14 @@ define(function(require, exports, module) {
         },
 
         init: function(amlNode) {
-            apf.importCssString((this.css || ""));
+            ppc.importCssString((this.css || ""));
         },
 
         showAbout: function() {
             ext.initExtension(this);
 
             aboutDialog.show();
-            document.getElementById("c9Version").innerHTML = apf.escapeXML("Version " + window.cloud9config.version);
+            document.getElementById("c9Version").innerHTML = ppc.escapeXML("Version " + window.cloud9config.version);
         }
     });
 

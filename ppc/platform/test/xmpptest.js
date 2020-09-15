@@ -9,12 +9,12 @@ function createBot(user, pass, prio){
 	var cMyXmpp = myXMPPBot.cloneNode(true);
 	cMyXmpp.setAttribute("id", "cMyXmpp" + uniqueid);
 	cMyXmpp.setAttribute("priority", prio);
-	apf.document.body.appendChild(cMyXmpp);
+	ppc.document.body.appendChild(cMyXmpp);
 	
 	var cRmtFs = rmtFsBot.cloneNode(true);
 	cRmtFs.setAttribute("id", "cRmtFs" + uniqueid);
 	cRmtFs.setAttribute("transport", "cMyXmpp" + uniqueid);
-	apf.document.body.appendChild(cRmtFs);
+	ppc.document.body.appendChild(cRmtFs);
 
 	cMyXmpp.connect(user, pass);
 	
@@ -22,7 +22,7 @@ function createBot(user, pass, prio){
 	
 	hookErrors(cMyXmpp);
 	
-	apf.addEventListener("exit", function(){
+	ppc.addEventListener("exit", function(){
 		//mode.unshare();
 		cMyXmpp.disconnect();
 	})
@@ -37,21 +37,21 @@ function createBot(user, pass, prio){
 function createClient(user, pass, docId){
 	var cMyXmpp = myXMPPClient.cloneNode(true);
 	cMyXmpp.setAttribute("id", "cMyXmpp" + uniqueid);
-	apf.document.body.appendChild(cMyXmpp);
+	ppc.document.body.appendChild(cMyXmpp);
 
 	var cRmtFs = rmtFsClient.cloneNode(true);
 	cRmtFs.setAttribute("id", "cRmtFs" + uniqueid);
 	cRmtFs.setAttribute("transport", "cMyXmpp" + uniqueid);
-	apf.document.body.appendChild(cRmtFs);
+	ppc.document.body.appendChild(cRmtFs);
 	
 	//Model
-	var model = apf.document.body.appendChild(apf.document.createElementNS(apf.ns.aml, "model"));
+	var model = ppc.document.body.appendChild(ppc.document.createElementNS(ppc.ns.aml, "model"));
 	model.setAttribute("id", "mdlComputed" + uniqueid);
 	model.setAttribute("remote", "cRmtFs" + uniqueid);
 	model.setAttribute("src", "rdb://worknets.com/computed" + docId);
 	
 	//Label
-	var label = apf.document.body.appendChild(apf.document.createElementNS(apf.ns.aml, "label"));
+	var label = ppc.document.body.appendChild(ppc.document.createElementNS(ppc.ns.aml, "label"));
 	label.setAttribute("caption", "[{mdlComputed" + uniqueid + "}::caption]");
 
 	cMyXmpp.connect(user, pass);
@@ -60,7 +60,7 @@ function createClient(user, pass, docId){
 
 	uniqueid++;
 
-	apf.addEventListener("exit", function(){
+	ppc.addEventListener("exit", function(){
 		//mode.unshare();
 		cMyXmpp.disconnect();
 	})

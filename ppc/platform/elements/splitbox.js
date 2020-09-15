@@ -29,11 +29,11 @@
  * is more work required to construct AML that matches a regular `<a:vbox>`; however,
  * the performance improvements in using a `<a:vsplitbox>` are massive.
  *
- * @class apf.vsplitbox
+ * @class ppc.vsplitbox
  * @define vsplitbox
  * @layout
  *
- * @inheritDoc apf.hsplitbox
+ * @inheritDoc ppc.hsplitbox
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -44,26 +44,26 @@
  *
  * A container that stacks two children horizontally.
  * 
- * Programatically, this is identical to a regular [[apf.hbox]], except that it can
+ * Programatically, this is identical to a regular [[ppc.hbox]], except that it can
  * only accept two children, and uses absolute positioning. Because of this, there
  * is more work required to construct AML that matches a regular `<a:hbox>`; however,
  * the performance improvements in using a `<a:hsplitbox>` are massive.
  *
- * @class apf.hsplitbox
+ * @class ppc.hsplitbox
  * @define hsplitbox 
  * @layout
- * @inherits apf.GuiElement
+ * @inherits ppc.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       3.0\
  * @see element.vsplitbox
  */
-apf.hsplitbox = function(struct, tagName){
-    this.$init(tagName || "hsplitbox", apf.NODE_VISIBLE, struct);
+ppc.hsplitbox = function(struct, tagName){
+    this.$init(tagName || "hsplitbox", ppc.NODE_VISIBLE, struct);
 };
-apf.vsplitbox = function(struct, tagName){
-    this.$init(tagName || "vsplitbox", apf.NODE_VISIBLE, struct);
+ppc.vsplitbox = function(struct, tagName){
+    this.$init(tagName || "vsplitbox", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -108,13 +108,13 @@ apf.vsplitbox = function(struct, tagName){
                 if (firstChild.height) {
                     lastChild.$ext.style.marginTop = firstChild.visible
                         ? (this.$edge[0] + value 
-                            + apf.getHeightDiff(firstChild.$ext)) + "px"
+                            + ppc.getHeightDiff(firstChild.$ext)) + "px"
                         : 0;
                 }
                 else {
                     firstChild.$ext.style.marginBottom = lastChild.visible
                         ? (this.$edge[2] + value 
-                            + apf.getHeightDiff(lastChild.$ext)) + "px"
+                            + ppc.getHeightDiff(lastChild.$ext)) + "px"
                         : 0;
                 }
             }
@@ -140,12 +140,12 @@ apf.vsplitbox = function(struct, tagName){
                 if (firstChild.width) {
                     lastChild.$ext.style.marginLeft = 
                         (this.$edge[3] + value 
-                            + apf.getWidthDiff(firstChild.$ext)) + "px";
+                            + ppc.getWidthDiff(firstChild.$ext)) + "px";
                 }
                 else {
                     firstChild.$ext.style.marginRight = 
                         (this.$edge[1] + value 
-                            + apf.getWidthDiff(lastChild.$ext)) + "px";
+                            + ppc.getWidthDiff(lastChild.$ext)) + "px";
                 }
             }
             else if (this.fixedChild && this.fixedChild.visible) {
@@ -170,7 +170,7 @@ apf.vsplitbox = function(struct, tagName){
                 this.$handle.show();
             else {
                 this.$handle = this.insertBefore(
-                    this.ownerDocument.createElementNS(apf.ns.aml, "splitter"), 
+                    this.ownerDocument.createElementNS(ppc.ns.aml, "splitter"), 
                     this.lastChild);
             }
         }
@@ -180,7 +180,7 @@ apf.vsplitbox = function(struct, tagName){
     }
     
     this.$propHandlers["edge"]  = function(value, setSize){
-        this.$edge = apf.getBox(value);
+        this.$edge = ppc.getBox(value);
         
         if (!this.$amlLoaded)
             return;
@@ -355,7 +355,7 @@ apf.vsplitbox = function(struct, tagName){
         this.parentNode.$propHandlers.edge
             .call(this.parentNode, this.parentNode.edge, true);
         
-        apf.layout.forceResize(this.parentNode.$int);
+        ppc.layout.forceResize(this.parentNode.$int);
         
         //Change margin
         this.parentNode.$propHandlers.padding
@@ -370,9 +370,9 @@ apf.vsplitbox = function(struct, tagName){
             
             //@todo change fixedChild flexChild1 and flexChild2 based on this
 
-            this.$ext.style.width = !apf.isNot(value) 
+            this.$ext.style.width = !ppc.isNot(value) 
                 ? (parseFloat(value) == value 
-                    ? (value - apf.getWidthDiff(this.$ext)) + "px"
+                    ? (value - ppc.getWidthDiff(this.$ext)) + "px"
                     : value)
                 : "";
             
@@ -388,9 +388,9 @@ apf.vsplitbox = function(struct, tagName){
 
             //@todo change fixedChild flexChild1 and flexChild2 based on this
 
-            this.$ext.style.height = !apf.isNot(value) 
+            this.$ext.style.height = !ppc.isNot(value) 
                 ? (parseFloat(value) == value 
-                    ? (value - apf.getHeightDiff(this.$ext)) + "px"
+                    ? (value - ppc.getHeightDiff(this.$ext)) + "px"
                     : value)
                 : "";
             
@@ -400,7 +400,7 @@ apf.vsplitbox = function(struct, tagName){
         },
         
         "margin" : function(value){
-            this.$margin = apf.getBox(value);
+            this.$margin = ppc.getBox(value);
             
             //This can be optimized
             if (this.$amlLoaded)
@@ -409,7 +409,7 @@ apf.vsplitbox = function(struct, tagName){
     }
     
     this.register = function(amlNode, insert){
-        if (amlNode.$splitter || amlNode.nodeFunc != apf.NODE_VISIBLE)
+        if (amlNode.$splitter || amlNode.nodeFunc != ppc.NODE_VISIBLE)
             return;
 
         amlNode.$margin = [0, 0, 0, 0];
@@ -417,7 +417,7 @@ apf.vsplitbox = function(struct, tagName){
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
-        amlNode.$propHandlers["bottom"] = apf.K;
+        amlNode.$propHandlers["bottom"] = ppc.K;
 
         for (var prop in handlers) {
             amlNode.$propHandlers[prop] = handlers[prop];
@@ -458,7 +458,7 @@ apf.vsplitbox = function(struct, tagName){
     }
     
     this.unregister = function(amlNode){
-        if (!amlNode.$splitter || amlNode.nodeFunc != apf.NODE_VISIBLE)
+        if (!amlNode.$splitter || amlNode.nodeFunc != ppc.NODE_VISIBLE)
             return;
         
         delete amlNode.$margin;
@@ -512,12 +512,12 @@ apf.vsplitbox = function(struct, tagName){
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {
             if (this.visible)
-                this.$ext.style.display = apf.CSSPREFIX2 + "-box"; //Webkit issue
+                this.$ext.style.display = ppc.CSSPREFIX2 + "-box"; //Webkit issue
             return;
         }
         
         if (e.currentTarget.nodeType != 1 
-          || e.currentTarget.nodeFunc != apf.NODE_VISIBLE)
+          || e.currentTarget.nodeFunc != ppc.NODE_VISIBLE)
             return;
         
 //        if (this.$handle) {
@@ -550,16 +550,16 @@ apf.vsplitbox = function(struct, tagName){
         this.$ext.host = this;
         
         if (this.getAttribute("class")) 
-            apf.setStyleClass(this.$ext, this.getAttribute("class"));
+            ppc.setStyleClass(this.$ext, this.getAttribute("class"));
     };
     
     this.$loadAml = function(x){
     };
-}).call(apf.vsplitbox.prototype = new apf.GuiElement());
+}).call(ppc.vsplitbox.prototype = new ppc.GuiElement());
 
-apf.hsplitbox.prototype = apf.vsplitbox.prototype;
+ppc.hsplitbox.prototype = ppc.vsplitbox.prototype;
 
-apf.aml.setElement("hsplitbox", apf.hsplitbox);
-apf.aml.setElement("vsplitbox", apf.vsplitbox);
+ppc.aml.setElement("hsplitbox", ppc.hsplitbox);
+ppc.aml.setElement("vsplitbox", ppc.vsplitbox);
 
 // #endif

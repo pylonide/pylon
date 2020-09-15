@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<p:project name="Ajax.org PlatForm" xmlns:p="http://ajax.org/2008/project">
+<p:project name="Pylon PlatForm Code" xmlns:p="https://github.com/pylonide/pylon">
     <p:settings
       buildnr  = "0"
       verbose  = "2"
@@ -20,15 +20,15 @@
           filehead = "1" />
         <!--p:compress
           cmd      = "yuicompressor"
-          in       = "{cwd}/build/apf_release.js"
-          out      = "{cwd}/build/apf_release.js" />
+          in       = "{cwd}/build/ppc_release.js"
+          out      = "{cwd}/build/ppc_release.js" />
         -->
     </p:process>
 
     <p:files>
         <p:node path="{platform}" mask="*.js" group="ppc">
             <p:node path="jpack_begin.js" />
-            <p:node path="apf.js" />
+            <p:node path="ppc.js" />
             <p:node path="core">
                 <p:node path="class.js" />
                 <p:node path="lib">
@@ -92,7 +92,7 @@
     </p:files>
 
     <p:defines defaults="defines.xml">
-        <p:define name="__APFVERSION" value="{version}"/>
+        <p:define name="__PPCVERSION" value="{version}"/>
         <p:define name="__DEBUG" value="0" />
         <p:define name="__PACKAGED" value="1"/>
         <p:define name="__PROCESSED" value="1"/>

@@ -7,20 +7,20 @@ function compressWithYUI(file, output) {
 		"yuicompressor-2.4.8.jar","--preserve-semi","--nomunge","--charset","utf-8","--line-break","78",
 		file,"-o", output];
 	var yuic = Spawn("java", t, {cwd: Path.normalize(__dirname + "/../yuicompressor")});
-	apf.console.log("Executing YUIC");
+	ppc.console.log("Executing YUIC");
 	yuic.stdout.on("data", function(data){
-		apf.console.log("stdout: " + data);
+		ppc.console.log("stdout: " + data);
 	})
 	yuic.stderr.on("data", function(data){
-		apf.console.error("stderr: " + data);
+		ppc.console.error("stderr: " + data);
 	})
 }
 	
 /**
  * compress JS or CSS
  */
-apf.process.handler.compress = function(x){
-    var s      = apf.settings,
+ppc.process.handler.compress = function(x){
+    var s      = ppc.settings,
         cmd    = s.parseAttribute(x.getAttribute("cmd")),
         file   = Path.normalize(s.parseAttribute(x.getAttribute("in"))),
         output = Path.normalize(s.parseAttribute(x.getAttribute("out")));

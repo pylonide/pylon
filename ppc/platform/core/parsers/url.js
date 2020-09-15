@@ -29,13 +29,13 @@
  * #### Example
  *
  * ```javascript
- *   var url = new apf.url('http://usr:pwd@www.test.com:81/dir/dir.2/index.htm?q1=0&&test1&test2=value#top');
+ *   var url = new ppc.url('http://usr:pwd@www.test.com:81/dir/dir.2/index.htm?q1=0&&test1&test2=value#top');
  *   alert(url.port); //will show '81'
  *   alert(url.host); //will show 'www.test.com'
  *   alert(url.isSameLocation()) // will show 'true' when the browser is surfing on the www.test.com domain
  * ```
  *
- * @class apf.url
+ * @class ppc.url
  * @parser
  * @default_private
  *
@@ -43,18 +43,18 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.url = function(str) {
+ppc.url = function(str) {
     var base;
     var location = (window.location && window.location.toString()) || "";
     if (str.indexOf(":") == -1 && (base = location).indexOf(":") != -1) {
-        base = new apf.url(base);
-        str = apf.getAbsolutePath(base.protocol + "://" + base.host 
+        base = new ppc.url(base);
+        str = ppc.getAbsolutePath(base.protocol + "://" + base.host 
             + (base.directory.charAt(0) == "/" ? "" : "/")
             + (base.directory.charAt(base.directory.length - 1) == "/"
                  ? base.directory
                  : base.directory + '/'), str).replace(/\/\/\/\//, "///");
     }
-    var o    = apf.url.options,
+    var o    = ppc.url.options,
     m        = o.parser[o.strictMode ? "strict" : "loose"].exec(str),
     i        = 14;
     this.uri = str.toString(); //copy string
@@ -100,7 +100,7 @@ apf.url = function(str) {
     }
 };
 
-apf.url.options = {
+ppc.url.options = {
     strictMode: false,
     key: ["source", "protocol", "authority", "userInfo", "user", "password",
           "host", "port", "relative", "path", "directory", "file", "query",

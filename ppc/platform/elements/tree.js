@@ -33,18 +33,18 @@
  * #### Example: A Simple Tree
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:tree id="tree" align="right">
- *       <a:item caption="root" icon="/api/apf/resources/icons/icoUsers.gif">
- *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test">
- *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
- *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
- *               <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *       <a:item caption="root" icon="/api/ppc/resources/icons/icoUsers.gif">
+ *           <a:item icon="/api/ppc/resources/icons/icoUsers.gif" caption="test">
+ *               <a:item icon="/api/ppc/resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="/api/ppc/resources/icons/icoUsers.gif" caption="test" />
+ *               <a:item icon="/api/ppc/resources/icons/icoUsers.gif" caption="test" />
  *           </a:item>
- *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
- *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
- *           <a:item icon="/api/apf/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/ppc/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/ppc/resources/icons/icoUsers.gif" caption="test" />
+ *           <a:item icon="/api/ppc/resources/icons/icoUsers.gif" caption="test" />
  *       </a:item>
  *   </a:tree>
  *   <!-- endcontent -->
@@ -56,7 +56,7 @@
  * A tree using a model:
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="filesystem">
  *       <data>
@@ -84,7 +84,7 @@
  * An inline tree that draws the same as the above example:
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="filesystem">
  *       <data>
@@ -106,12 +106,12 @@
  * </a:application>
  * ```
  *
- * @class apf.tree
+ * @class ppc.tree
  * @define tree
  * @selection
  * @allowchild {smartbinding}
  *
- * @inherits apf.BaseTree
+ * @inherits ppc.BaseTree
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -191,8 +191,8 @@
  *  </a:tree>
  * ```
  */
-apf.tree = function(struct, tagName){
-    this.$init(tagName || "tree", apf.NODE_VISIBLE, struct);
+ppc.tree = function(struct, tagName){
+    this.$init(tagName || "tree", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -216,8 +216,8 @@ apf.tree = function(struct, tagName){
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
         if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
+            if (!this.hasFeature(ppc.__MULTICHECK__))
+                this.implement(ppc.MultiCheck);
             
             this.addEventListener("afterrename", $afterRenameMode); //what does this do?
             
@@ -232,7 +232,7 @@ apf.tree = function(struct, tagName){
         }
     };
     
-    //@todo apf3.0 retest this completely
+    //@todo ppc3.0 retest this completely
     function $afterRenameMode(){
         
     }
@@ -248,17 +248,17 @@ apf.tree = function(struct, tagName){
             oItem = this.$getLayoutNode("item");
         //@todo this should use dispatchEvent, and be moved to oExt
         oItem.setAttribute("onmouseover",
-            "var o = apf.lookup(" + this.$uniqueId + ");\
+            "var o = ppc.lookup(" + this.$uniqueId + ");\
             o.$setStyleClass(this, 'hover', null, true);");
         oItem.setAttribute("onmouseout",
-            "var o = apf.lookup(" + this.$uniqueId + ");\
+            "var o = ppc.lookup(" + this.$uniqueId + ");\
             o.$setStyleClass(this, '', ['hover'], true);");
         /*oItem.setAttribute("onmousedown",
-            "var o = apf.lookup(" + this.$uniqueId + ");\
+            "var o = ppc.lookup(" + this.$uniqueId + ");\
             if (o.onmousedown) o.onmousedown(event, this);");*/
         
         //Set open/close skin class & interaction
-        this.$setStyleClass(this.$getLayoutNode("item", "class"), treeState[state]).setAttribute(apf.xmldb.htmlIdTag, Lid);
+        this.$setStyleClass(this.$getLayoutNode("item", "class"), treeState[state]).setAttribute(ppc.xmldb.htmlIdTag, Lid);
         this.$setStyleClass(this.$getLayoutNode("item", "container"), treeState[state])
         //this.$setStyleClass(oItem, xmlNode.tagName)
         var elOpenClose = this.$getLayoutNode("item", "openclose");
@@ -266,9 +266,9 @@ apf.tree = function(struct, tagName){
             elOpenClose.setAttribute("children", hasChildren);
             elOpenClose.setAttribute("onmousedown",
                 "if (this.getAttribute('children') == false) return;\
-                var o = apf.lookup(" + this.$uniqueId + ");\
+                var o = ppc.lookup(" + this.$uniqueId + ");\
                 o.slideToggle(this, null, null, true);\
-                apf.cancelBubble(event, o);");
+                ppc.cancelBubble(event, o);");
             
             elOpenClose.setAttribute("ondblclick", "event.cancelBubble = true");
         }
@@ -278,10 +278,10 @@ apf.tree = function(struct, tagName){
             var elCheck = this.$getLayoutNode("item", "check");
             if (elCheck) {
                 elCheck.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    "var o = ppc.lookup(" + this.$uniqueId + ");\
                     o.checkToggle(this, true);\o.$skipSelect = true;");
 
-                if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                if (ppc.isTrue(this.$applyBindRule("checked", xmlNode))) {
                     this.$checkedList.push(xmlNode);
                     this.$setStyleClass(oItem, "checked");
                 }
@@ -290,7 +290,7 @@ apf.tree = function(struct, tagName){
             }
             else {
                 //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                         "Could not find check attribute",
                         'Maybe the attribute check is missing from your skin file:\
                             <a:item\
@@ -319,23 +319,23 @@ apf.tree = function(struct, tagName){
         if (elIcon && elIcon != elOpenClose) {
             if (ocAction != "ondblclick") {
                 elIcon.setAttribute(ocAction, 
-                  "var o = apf.lookup(" + this.$uniqueId + ");" +
-                   (ocAction == "onmousedown" ? "o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);" : "") +
+                  "var o = ppc.lookup(" + this.$uniqueId + ");" +
+                   (ocAction == "onmousedown" ? "o.select(this, ppc.getCtrlKey(event), event.shiftKey, event.button);" : "") +
                    (true ? "o.slideToggle(this, null, null, true);" : ""));
             }
             if (ocAction != "onmousedown") {
                 elIcon.setAttribute("onmousedown", 
-                  "apf.lookup(" + this.$uniqueId + ").select(this, apf.getCtrlKey(event), event.shiftKey, event.button);");
+                  "ppc.lookup(" + this.$uniqueId + ").select(this, ppc.getCtrlKey(event), event.shiftKey, event.button);");
             }
             
             elIcon.setAttribute("ondblclick", 
-              "var o = apf.lookup(" + this.$uniqueId + ");\
+              "var o = ppc.lookup(" + this.$uniqueId + ");\
               o.choose(null, true);" + 
               //#ifdef __WITH_RENAME
               "o.stopRename();" + 
               //#endif
               (true && !ocAction == "ondblclick" ? "o.slideToggle(this, null, null, true);" : "") +
-              "apf.cancelBubble(event,o);");
+              "ppc.cancelBubble(event,o);");
         }
 
         //Select interaction
@@ -343,10 +343,10 @@ apf.tree = function(struct, tagName){
             strMouseDown;
         
         //#ifdef __WITH_RENAME || __WITH_DRAGDROP || __WITH_IOS
-        if (this.hasFeature(apf.__RENAME__) || this.hasFeature(apf.__DRAGDROP__)) {
+        if (this.hasFeature(ppc.__RENAME__) || this.hasFeature(ppc.__DRAGDROP__)) {
             strMouseDown =
-                'var o = apf.lookup(' + this.$uniqueId + ');\
-                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                'var o = ppc.lookup(' + this.$uniqueId + ');\
+                 var xmlNode = ppc.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
                  if (event.button == 2) \
@@ -356,10 +356,10 @@ apf.tree = function(struct, tagName){
                     'this.dorename = true;' +
                     // #endif
                     // #ifdef __WITH_IOS
-                    'if(apf.isIphone) { \
+                    'if(ppc.isIphone) { \
                       if (xmlNode.nodeName === "folder") { \
                         o.slideToggle(this, null, null, true); \
-                        apf.cancelBubble(event, o); \
+                        ppc.cancelBubble(event, o); \
                       } \
                       else { \
                         o.choose(null, true); \
@@ -370,59 +370,59 @@ apf.tree = function(struct, tagName){
                     }' +
                     // #endif
                  '} \
-                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
-                     o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);\
-                 apf.cancelBubble(event, o);';
+                 if (!o.hasFeature(ppc.__DRAGDROP__) || !isSelected && !ppc.getCtrlKey(event))\
+                     o.select(this, ppc.getCtrlKey(event), event.shiftKey, event.button);\
+                 ppc.cancelBubble(event, o);';
             
             elSelect.setAttribute("onmouseout", 'this.hasPassedDown = false;' + (elSelect.getAttribute("onmouseout") || ""));
             elSelect.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
-                var o = apf.lookup(' + this.$uniqueId + ');' +
+                var o = ppc.lookup(' + this.$uniqueId + ');' +
                 // #ifdef __WITH_RENAME
                 'if (this.dorename && !o.mode)\
                     o.startDelayedRename(event, null, true);' +
                 // #endif
                 'this.dorename = false;\
-                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                 var xmlNode = ppc.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
-                 if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);');
+                 if (o.hasFeature(ppc.__DRAGDROP__))\
+                     o.select(this, ppc.getCtrlKey(event), event.shiftKey, event.button);');
         }
         else 
         //#endif 
         {
-            strMouseDown = "o.select(this, apf.getCtrlKey(event), event.shiftKey, event.button);\
-                            apf.cancelBubble(event, o);";
+            strMouseDown = "o.select(this, ppc.getCtrlKey(event), event.shiftKey, event.button);\
+                            ppc.cancelBubble(event, o);";
         }
         
         if (ocAction != "ondblclick") {
             elSelect.setAttribute(ocAction, 
-              "var o = apf.lookup(" + this.$uniqueId + ");" +
+              "var o = ppc.lookup(" + this.$uniqueId + ");" +
                (ocAction == "onmousedown" ? strMouseDown : "") +
                (true ? "o.slideToggle(this, null, null, true);" : ""));
         }
         if (ocAction != "onmousedown") {
             elSelect.setAttribute("onmousedown", 
-              "var o = apf.lookup(" + this.$uniqueId + ");" + strMouseDown);
+              "var o = ppc.lookup(" + this.$uniqueId + ");" + strMouseDown);
         }
 
         elSelect.setAttribute("ondblclick", 
-          "var o = apf.lookup(" + this.$uniqueId + ");\
+          "var o = ppc.lookup(" + this.$uniqueId + ");\
           o.choose(null, true);" + 
           //#ifdef __WITH_RENAME
           "o.stopRename();this.dorename=false;" + 
           //#endif
           (ocAction == "ondblclick" ? "o.slideToggle(this, null, null, true);" : "") +
-          "apf.cancelBubble(event, o);");
+          "ppc.cancelBubble(event, o);");
         
         //Setup Nodes Identity (Look)
         if (elIcon) {
             var iconURL = this.$applyBindRule("icon", xmlNode);
             if (iconURL) {
                 if (elIcon.tagName.match(/^img$/i))
-                    elIcon.setAttribute("src", apf.getAbsolutePath(this.iconPath, iconURL));
+                    elIcon.setAttribute("src", ppc.getAbsolutePath(this.iconPath, iconURL));
                 else
                     elIcon.setAttribute("style", "background-image:url(" 
-                        + apf.getAbsolutePath(this.iconPath, iconURL) + ")");
+                        + ppc.getAbsolutePath(this.iconPath, iconURL) + ")");
             }
         }
 
@@ -435,12 +435,12 @@ apf.tree = function(struct, tagName){
                 
                 elCaption.setAttribute("id", "placeholder_" + this.$uniqueId 
                     + "_" + ((q.caption || (q.caption = [])).push(xmlNode) - 1));
-                apf.setNodeValue(elCaption, "");
+                ppc.setNodeValue(elCaption, "");
             }
             else
             //#endif
             {
-                apf.setNodeValue(elCaption,
+                ppc.setNodeValue(elCaption,
                     this.$applyBindRule("caption", xmlNode));
             }
         }
@@ -467,10 +467,10 @@ apf.tree = function(struct, tagName){
             iconURL = this.$applyBindRule("icon", xmlNode);
         if (elIcon && iconURL) {
             if (elIcon.tagName && elIcon.tagName.match(/^img$/i))
-                elIcon.src = apf.getAbsolutePath(this.iconPath, iconURL);
+                elIcon.src = ppc.getAbsolutePath(this.iconPath, iconURL);
             else
                 elIcon.style.backgroundImage = "url(" 
-                    + apf.getAbsolutePath(this.iconPath, iconURL) + ")";
+                    + ppc.getAbsolutePath(this.iconPath, iconURL) + ")";
         }
         
         // #ifdef __WITH_MULTICHECK
@@ -511,9 +511,9 @@ apf.tree = function(struct, tagName){
     this.$draw = function(){
         this.$drawBase();
     };    
-}).call(apf.tree.prototype = new apf.BaseTree());
+}).call(ppc.tree.prototype = new ppc.BaseTree());
 
-apf.aml.setElement("tree", apf.tree);
+ppc.aml.setElement("tree", ppc.tree);
 
-apf.aml.setElement("checked", apf.BindingRule);
+ppc.aml.setElement("checked", ppc.BindingRule);
 // #endif

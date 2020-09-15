@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_LINKS || __INC_ALL
 
-apf.LiveEdit.plugin("link", function(){
+ppc.LiveEdit.plugin("link", function(){
     this.name        = "link";
     this.icon        = "link";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+shift+l";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     var panelBody;
 
@@ -42,7 +42,7 @@ apf.LiveEdit.plugin("link", function(){
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -64,23 +64,23 @@ apf.LiveEdit.plugin("link", function(){
 
     this.queryState = function(editor) {
         if (editor.$selection.isCollapsed() || editor.$selection.getSelectedNode().tagName == "A")
-            return apf.DISABLED;
+            return ppc.DISABLED;
         return this.state;
     };
 
     this.submit = function(e) {
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
 
         if (!this.oUrl.value.replace("http://", "")) return;
 
-        this.editor.$execCommand("CreateLink", "javascript:apftmp(0);");
+        this.editor.$execCommand("CreateLink", "javascript:ppctmp(0);");
         var oLink,
             oEditor = this.editor,
             aLinks  = oEditor.$activeDocument.getElementsByTagName("a"),
             i       = 0,
             l       = aLinks.length;
         for (; i < l && !oLink; i++)
-            if (aLinks[i].href == "javascript:apftmp(0);")
+            if (aLinks[i].href == "javascript:ppctmp(0);")
                 oLink = aLinks[i];
         if (oLink) {
             var val = this.oUrl.value;
@@ -95,7 +95,7 @@ apf.LiveEdit.plugin("link", function(){
         // propagate the change AFTER changing back the link to its proper format
         oEditor.change(oEditor.getValue());
 
-        apf.stopEvent(e);
+        ppc.stopEvent(e);
         return false;
     };
 
@@ -132,10 +132,10 @@ apf.LiveEdit.plugin("link", function(){
         this.oTitle  = document.getElementById(idTitle);
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug) {
-            apf.sanitizeTextbox(this.oUrl);
-            apf.sanitizeTextbox(this.oTarget);
-            apf.sanitizeTextbox(this.oTitle);
+        if (ppc.hasFocusBug) {
+            ppc.sanitizeTextbox(this.oUrl);
+            ppc.sanitizeTextbox(this.oTarget);
+            ppc.sanitizeTextbox(this.oTitle);
             this.oUrl.onselectstart   = this.oTarget.onselectstart =
             this.oTitle.onselectstart = function(e) {
                 e = e || window.event;
@@ -144,14 +144,14 @@ apf.LiveEdit.plugin("link", function(){
         }
         //#endif
 
-        new apf.toolbar({
+        new ppc.toolbar({
             htmlNode: document.getElementById(idBtns),
-            skinset: apf.getInheritedAttribute(this.editor.parentNode, "skinset"),
+            skinset: ppc.getInheritedAttribute(this.editor.parentNode, "skinset"),
             childNodes: [
-                new apf.bar({
-                    childNodes: [new apf.button({
+                new ppc.bar({
+                    childNodes: [new ppc.button({
                         caption: this.editor.$translate("insert"),
-                        onclick: "apf.lookup(" + this.$uniqueId + ").submit(event)"
+                        onclick: "ppc.lookup(" + this.$uniqueId + ").submit(event)"
                     })]
                 })
             ]
@@ -169,20 +169,20 @@ apf.LiveEdit.plugin("link", function(){
     };
 });
 
-apf.LiveEdit.plugin("unlink", function(){
+ppc.LiveEdit.plugin("unlink", function(){
     this.name        = "unlink";
     this.icon        = "unlink";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+shift+l";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
-        if (this.queryState(editor) == apf.DISABLED)
+        if (this.queryState(editor) == ppc.DISABLED)
             return;
 
-        if (apf.isIE) {
+        if (ppc.isIE) {
             editor.$execCommand("Unlink");
         }
         else {
@@ -203,9 +203,9 @@ apf.LiveEdit.plugin("unlink", function(){
         //if (!editor.$selection)
         //    console.dir(editor);
         if (editor.$selection.getSelectedNode().tagName == "A")
-            return apf.OFF;
+            return ppc.OFF;
 
-        return apf.DISABLED;
+        return ppc.DISABLED;
     };
 });
 

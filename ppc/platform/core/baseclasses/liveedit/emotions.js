@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_EMOTIONS || __INC_ALL
 
-apf.LiveEdit.plugin("emotions", function() {
+ppc.LiveEdit.plugin("emotions", function() {
     this.name        = "emotions";
     this.icon        = "emotions";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.buttonNode  = null;
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
     this.colspan     = 4;
     this.emotions    = [];
 
@@ -57,7 +57,7 @@ apf.LiveEdit.plugin("emotions", function() {
             }
             this.emotionsPath = oNode.getAttribute("path") || "";
 
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
@@ -82,7 +82,7 @@ apf.LiveEdit.plugin("emotions", function() {
         if (!icon || icon == null)
             icon = el.parentNode.getAttribute("rel");
         if (!icon) return;
-        apf.popup.forceHide();
+        ppc.popup.forceHide();
         this.editor.$insertHtml('<img src="' + this.emotionsPath
             + "/smiley-" + icon + ".gif" + '" alt="" border="0" />', true);
         //this.restoreSelection();
@@ -102,7 +102,7 @@ apf.LiveEdit.plugin("emotions", function() {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
             aHtml.push('<a class="editor_panelcell editor_largestcell" rel="',
-                emotions[i], '" href="javascript:;" onmousedown="apf.lookup(',
+                emotions[i], '" href="javascript:;" onmousedown="ppc.lookup(',
                 this.$uniqueId, ').submit(event);"><img border="0" src="', path,
                 "/smiley-", emotions[i], '.gif" /></a>');
             if (i % this.colspan == rowLen)

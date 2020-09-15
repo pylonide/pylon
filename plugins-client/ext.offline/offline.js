@@ -24,7 +24,7 @@ module.exports = ext.register("ext/offline/offline", {
      * Init method to create the offline logic
      */
     init : function(){
-        apf.importCssString(this.css || "");
+        ppc.importCssString(this.css || "");
 
         var _self   = this;
         var barCover = barOfflineCover;
@@ -49,7 +49,7 @@ module.exports = ext.register("ext/offline/offline", {
         ide.addEventListener("afteroffline", function(){
             stServerConnected.deactivate();
             ide.onLine = false;
-            apf.setStyleClass(logobar.$ext, "offline");
+            ppc.setStyleClass(logobar.$ext, "offline");
 
             if (ide.local)
                 offlineNotifyDialog.show();
@@ -73,7 +73,7 @@ module.exports = ext.register("ext/offline/offline", {
         });
 
         ide.addEventListener("afteronline", function(e){
-            apf.setStyleClass(logobar.$ext, "", ["offline"]);
+            ppc.setStyleClass(logobar.$ext, "", ["offline"]);
             _self.bringExtensionsOnline();
             if (ide.local)
                 offlineNotifyDialog.hide();
@@ -83,11 +83,11 @@ module.exports = ext.register("ext/offline/offline", {
         });
 
         ide.addEventListener("localOffline", function(e) {
-            apf.setStyleClass(logobar.$ext, "offline local");
+            ppc.setStyleClass(logobar.$ext, "offline local");
         });
 
         ide.addEventListener("localOnline", function(e) {
-            apf.setStyleClass(logobar.$ext, "", ["offline"]);
+            ppc.setStyleClass(logobar.$ext, "", ["offline"]);
         });
 
         ide.addEventListener("socketConnect", function() {

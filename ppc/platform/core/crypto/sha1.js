@@ -76,7 +76,7 @@ global.SHA1 = function(str) {
         H4 = 0xC3D2E1F0,
         A, B, C, D, E, temp;
 
-    str = apf.crypto.UTF8.encode(str);
+    str = ppc.crypto.UTF8.encode(str);
     var str_len = str.length,
         word_array = [];
 
@@ -174,6 +174,6 @@ global.SHA1 = function(str) {
     return temp.toLowerCase();
 };
 
-})(apf.crypto);
+})(ppc.crypto);
 
 // #endif

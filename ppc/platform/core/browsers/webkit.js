@@ -24,9 +24,9 @@
  * Compatibility layer for Webkit based browsers.
  * @private
  */
-apf.runWebkit = function(){
+ppc.runWebkit = function(){
     //#ifdef __SUPPORT_SAFARI2
-    if (!apf.isChrome) {
+    if (!ppc.isChrome) {
         var setTimeoutSafari = window.setTimeout;
         self.lookupSafariCall = [];
         $setTimeout = function(call, time){
@@ -36,10 +36,10 @@ apf.runWebkit = function(){
                 + (self.lookupSafariCall.push(call) - 1) + "]()", time);
         }
         
-        if (apf.isSafariOld) {
+        if (ppc.isSafariOld) {
             HTMLHtmlElement = document.createElement("html").constructor;
             Node            = HTMLElement = {};
-            HTMLElement.prototype = HTMLHtmlElement.apf.__proto__.apf.__proto__;
+            HTMLElement.prototype = HTMLHtmlElement.ppc.__proto__.ppc.__proto__;
             HTMLDocument    = Document = document.constructor;
             var x           = new DOMParser();
             XMLDocument     = x.constructor;
@@ -77,14 +77,14 @@ apf.runWebkit = function(){
     //#ifdef __PARSER_XPATH
     
     // #ifdef __DEPRECATED
-    if (false && apf.isWebkit) {
+    if (false && ppc.isWebkit) {
         //XMLDocument.selectNodes
         HTMLDocument.prototype.selectNodes =
         XMLDocument.prototype.selectNodes  = 
         Text.prototype.selectNodes         =
         Attr.prototype.selectNodes         =
         Element.prototype.selectNodes      = function(sExpr, contextNode){
-            return apf.XPath.selectNodes(sExpr, contextNode || this);
+            return ppc.XPath.selectNodes(sExpr, contextNode || this);
         };
         
         //XMLDocument.selectSingleNode
@@ -93,11 +93,11 @@ apf.runWebkit = function(){
         Text.prototype.selectSingleNode         =
         Attr.prototype.selectSingleNode         =
         Element.prototype.selectSingleNode      = function(sExpr, contextNode){
-            return apf.XPath.selectNodes(sExpr, contextNode || this)[0];
+            return ppc.XPath.selectNodes(sExpr, contextNode || this)[0];
         };
         
-        apf.importClass(apf.runXpath, true, self);
-        apf.importClass(apf.runXslt,  true, self);
+        ppc.importClass(ppc.runXpath, true, self);
+        ppc.importClass(ppc.runXslt,  true, self);
     }
     //#endif
     
@@ -151,7 +151,7 @@ apf.runWebkit = function(){
     // #endif
     
     var serializer = new XMLSerializer();
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
+    ppc.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
         var node, frag, a, i, l;
         if (nodeList) {
 	        frag = document.createDocumentFragment();
@@ -164,16 +164,16 @@ apf.runWebkit = function(){
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", s || apf.html_entity_decode(serializer.serializeToString(frag))
+            : "beforeend", s || ppc.html_entity_decode(serializer.serializeToString(frag))
                 .replace(/<([^>]+)\/>/g, "<$1></$1>"));
     };
 
-    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+    ppc.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
         if (htmlNode.nodeType != 11 && !htmlNode.style)
             return htmlNode.appendChild(xmlNode);
         
         if (!s) {
-            s = apf.html_entity_decode(xmlNode.serialize 
+            s = ppc.html_entity_decode(xmlNode.serialize 
                 ? xmlNode.serialize(true)
                 : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
                     ? xmlNode.nodeValue
@@ -187,40 +187,40 @@ apf.runWebkit = function(){
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };
 
-    apf.getHtmlLeft = function(oHtml){
+    ppc.getHtmlLeft = function(oHtml){
         return oHtml.offsetLeft;
     };
 
-    apf.getHtmlRight = function(oHtml){
+    ppc.getHtmlRight = function(oHtml){
         var p;
         return (((p = oHtml.offsetParent).tagName == "BODY" 
-          ? apf.getWindowWidth()
+          ? ppc.getWindowWidth()
           : p.offsetWidth)
             - oHtml.offsetLeft - oHtml.offsetWidth
-            - (parseInt(apf.getStyle(p, "borderLeftWidth")) || 0)
-            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
+            - (parseInt(ppc.getStyle(p, "borderLeftWidth")) || 0)
+            - (parseInt(ppc.getStyle(p, "borderRightWidth")) || 0));
     };
 
-    apf.getHtmlTop = function(oHtml){
+    ppc.getHtmlTop = function(oHtml){
         return oHtml.offsetTop
     };
 
-    apf.getHtmlBottom = function(oHtml){
+    ppc.getHtmlBottom = function(oHtml){
         var p;
         return (((p = oHtml.offsetParent).tagName == "BODY" 
-          ? apf.getWindowHeight()
+          ? ppc.getWindowHeight()
           : p.offsetHeight)
             - oHtml.offsetTop - oHtml.offsetHeight
-            - (parseInt(apf.getStyle(p, "borderTopWidth")) || 0)
-            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
+            - (parseInt(ppc.getStyle(p, "borderTopWidth")) || 0)
+            - (parseInt(ppc.getStyle(p, "borderBottomWidth")) || 0));
     };
 
-    apf.getBorderOffset = function(oHtml){
+    ppc.getBorderOffset = function(oHtml){
         return [0,0];
     };
     
-    if (apf.runNonIe)
-        apf.runNonIe();
+    if (ppc.runNonIe)
+        ppc.runNonIe();
 };
 
 // #endif

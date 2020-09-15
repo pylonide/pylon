@@ -19,7 +19,7 @@
  *
  */
 
-apf.__DRAGDROP__ = 1 << 5;
+ppc.__DRAGDROP__ = 1 << 5;
 
 // #ifdef __WITH_DRAGDROP
 
@@ -131,7 +131,7 @@ apf.__DRAGDROP__ = 1 << 5;
  *  </a:datagrid>
  *```
  * 
- * @class apf.DragDrop
+ * @class ppc.DragDrop
  * @baseclass
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -152,7 +152,7 @@ apf.__DRAGDROP__ = 1 << 5;
  *   - `data` ([[XMLElement]]): The data for the drag & drop operation
  *   - `selection` ([[XMLElement]]): The selection at the start of the drag operation
  *   - `indicator` ([[HTMLElement]]): The HTML element that is shown while dragging the data
- *   - `host` ([[apf.AmlElement]]): The AML source element.
+ *   - `host` ([[ppc.AmlElement]]): The AML source element.
  */
 /**
  * @event  dragover Fires when the users drags over this AML element.
@@ -161,7 +161,7 @@ apf.__DRAGDROP__ = 1 << 5;
  *   {XMLElement}  data      The data for the drag & drop operation
  *   {XMLElement}  selection The selection at the start of the drag operation
  *   {HTMLElement} indicator The HTML element that is shown while dragging the data
- *   {apf.AmlElement}  host      the AML source element.
+ *   {ppc.AmlElement}  host      the AML source element.
  */
 /**
  * @event  dragout  Fires when the user moves away from this AML element.
@@ -169,7 +169,7 @@ apf.__DRAGDROP__ = 1 << 5;
  *   {XMLElement}  data      the data for the drag & drop operation
  *   {XMLElement}  selection the selection at the start of the drag operation
  *   {HTMLElement} indicator the HTML element that is shown while dragging the data
- *   {apf.AmlElement}  host      the aml source element.
+ *   {ppc.AmlElement}  host      the aml source element.
  */
 /**
  * @event  dragdrop  Fires when the user drops an item on this aml element.
@@ -178,7 +178,7 @@ apf.__DRAGDROP__ = 1 << 5;
  *   {XMLElement}  data      The data for the drag & drop operation
  *   {XMLElement}  selection The selection at the start of the drag operation
  *   {HTMLElement} indicator The html element that is shown while dragging the data
- *   {apf.AmlElement}  host      The AML source element.
+ *   {ppc.AmlElement}  host      The AML source element.
  *   {Boolean}     candrop   Specifies whether the data can be inserted at the point hovered over by the user
  *
  *
@@ -224,8 +224,8 @@ apf.__DRAGDROP__ = 1 << 5;
  *                                     Use event.ctrlKey to use the [[keys: Ctrl]] key to
  *                                     determine whether the element is copied.
  */
-apf.DragDrop = function(){
-    this.$regbase = this.$regbase | apf.__DRAGDROP__;
+ppc.DragDrop = function(){
+    this.$regbase = this.$regbase | ppc.__DRAGDROP__;
 
     this.$dragInited = false;
 
@@ -305,11 +305,11 @@ apf.DragDrop = function(){
      *
      * @param  {XMLElement} dataNode The {@link term.datanode data node} subject to the test.
      * @return {Boolean} The result of the test
-     * @see apf.DragDrop.isDragAllowed
+     * @see ppc.DragDrop.isDragAllowed
      */
     this.isDragAllowed = function(x, data){
         //#ifdef __WITH_OFFLINE
-        if (typeof apf.offline != "undefined" && !apf.offline.canTransact())
+        if (typeof ppc.offline != "undefined" && !ppc.offline.canTransact())
             return false;
         //#endif
         
@@ -358,11 +358,11 @@ apf.DragDrop = function(){
      * @param  {XMLElement} target   The {@link term.datanode data node} on which
      *                               the dragged data node is dropped.
      * @return {Boolean} The result of the test
-     * @see apf.DragDrop.isDragAllowed
+     * @see ppc.DragDrop.isDragAllowed
      */
     this.isDropAllowed = function(x, target){
         //#ifdef __WITH_OFFLINE
-        if(typeof apf.offline != "undefined" && !apf.offline.canTransact())
+        if(typeof ppc.offline != "undefined" && !ppc.offline.canTransact())
             return false;
         //#endif
 
@@ -373,14 +373,14 @@ apf.DragDrop = function(){
             return false;
         
         for (var i = x.length - 1; i >= 0; i--)
-            if (apf.isChildOf(x[i], target, true))
+            if (ppc.isChildOf(x[i], target, true))
                 return false;
         
         var data, tgt, hasDropRule = this.$attrBindings && this.$attrBindings["drop"];
         if (this.drop && (!hasDropRule || hasDropRule.value == "true")) {
-            this.$setDynamicProperty("drop", this.hasFeature(apf.__MULTISELECT__)
+            this.$setDynamicProperty("drop", this.hasFeature(ppc.__MULTISELECT__)
               ? "[" + this.each + "]"
-              : "[node()]"); //@todo apf3.0 make sure each is without {}
+              : "[node()]"); //@todo ppc3.0 make sure each is without {}
             hasDropRule = true;
         }
 
@@ -390,7 +390,7 @@ apf.DragDrop = function(){
                 if (!data)
                     break;
             }
-            if (j == l && target && !apf.isChildOf(data, target, true))
+            if (j == l && target && !ppc.isChildOf(data, target, true))
                 return [target, null];
         }
 
@@ -425,7 +425,7 @@ apf.DragDrop = function(){
                 tgt = (rule.ctarget || rule.compile("target"))(target);
             }
             
-            if (tgt && !apf.isChildOf(data, tgt, true))
+            if (tgt && !ppc.isChildOf(data, tgt, true))
                 return [tgt, rule];
         }
 
@@ -447,7 +447,7 @@ apf.DragDrop = function(){
         else
             action = defaction;
             
-        // @todo apf3.0 action not known here yet... should be moved down?
+        // @todo ppc3.0 action not known here yet... should be moved down?
         if (action == "tree-append" && isParent) 
             return false;
 
@@ -456,20 +456,20 @@ apf.DragDrop = function(){
 
         //copy convenience variables
         var context = {
-              internal : apf.DragServer.dragdata && apf.DragServer.dragdata.host == this,
+              internal : ppc.DragServer.dragdata && ppc.DragServer.dragdata.host == this,
               ctrlKey  : event.ctrlKey,
               keyCode  : event.keyCode
           },
-          //@todo apf3.0 below should actually be compileNode with with_options
+          //@todo ppc3.0 below should actually be compileNode with with_options
           ifcopy = rule && rule.copy;//.getAttribute("copy");
 
         if (typeof forceCopy == "boolean")
             ifcopy = forceCopy;
         else if (ifcopy) {
             context.event = event || {};
-            ifcopy = !apf.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
+            ifcopy = !ppc.isFalse((rule.ccopy || rule.compile("copy"))(xmlNodeList[0], context));
         }
-        else if (typeof this.dragcopy == "boolean" || typeof this.dropcopy == "boolean") { //@todo apf3.0 boolean here?
+        else if (typeof this.dragcopy == "boolean" || typeof this.dropcopy == "boolean") { //@todo ppc3.0 boolean here?
             if (this.dropcopy) {
                 ifcopy = this.dropcopy;
             }
@@ -480,7 +480,7 @@ apf.DragDrop = function(){
                 //@todo read this from src
                 var copyRule = this.$attrBindings && this.$attrBindings["dragcopy"];
                 if (copyRule) {
-                    ifcopy = !apf.isFalse((copyRule.cvalue2
+                    ifcopy = !ppc.isFalse((copyRule.cvalue2
                       || copyRule.compile("value", {
                         withopt : true
                       }))(xmlNodeList[0], context));
@@ -491,7 +491,7 @@ apf.DragDrop = function(){
         if (!ifcopy && srcRule) { //Implemented one copy is all copy
             for (var i = 0, l = srcRule.length; i < l; i++) {
                 ifcopy = typeof srcRule[i] == "object" && srcRule[i].copy
-                    ? !apf.isFalse((srcRule[i].ccopy || srcRule[i].compile("copy"))(xmlNodeList[0], context))
+                    ? !ppc.isFalse((srcRule[i].ccopy || srcRule[i].compile("copy"))(xmlNodeList[0], context))
                     : event.ctrlKey;
                 if (ifcopy) break;
             }
@@ -499,7 +499,7 @@ apf.DragDrop = function(){
 
         var sNode,
             actRule     = ifcopy ? "copy" : "move",
-            parentXpath = rule ? rule.getAttribute("parent") : null; //@todo apf3.0 Should be lm syntax
+            parentXpath = rule ? rule.getAttribute("parent") : null; //@todo ppc3.0 Should be lm syntax
         switch (action) {
             case "list-append":
                 xmlReceiver = (isParent 
@@ -549,14 +549,14 @@ apf.DragDrop = function(){
     /*
      * Loads the dragdrop rules from the dragdrop element
      *
-     * @param  {Array}      rules     The rules array created using {@link core.apf.method.getrules}
+     * @param  {Array}      rules     The rules array created using {@link core.ppc.method.getrules}
      * @param  {XMLElement} [node] The reference to the drag & drop element
      * @see  SmartBinding
      * @private
      */
     this.enableDragDrop = function(){
         //#ifdef __DEBUG
-        apf.console.info("Initializing Drag&Drop for " + this.localName
+        ppc.console.info("Initializing Drag&Drop for " + this.localName
             + "[" + (this.name || '') + "]");
         //#endif
 
@@ -570,17 +570,17 @@ apf.DragDrop = function(){
 
         var _self = this;
 
-        this.$ext[apf.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
+        this.$ext[ppc.isIphone ? "ontouchstart" : "onmousedown"] = function(e){
             if (_self.disabled)
                 return;
 
             e = e || window.event;
             // #ifdef __SUPPORT_IPHONE
-            if (apf.isIphone) {
+            if (ppc.isIphone) {
                 if (e.touches.length == 1) return;
                 var old_e = e;
                 e = e.touches[0];
-                var pos = apf.getAbsolutePosition(e.target, this);
+                var pos = ppc.getAbsolutePosition(e.target, this);
                 e.offsetX = pos[0];
                 e.offsetY = pos[1];
             }
@@ -588,14 +588,14 @@ apf.DragDrop = function(){
 
             var fEl,
                 srcEl       = e.originalTarget || e.srcElement || e.target,
-                multiselect = _self.hasFeature(apf.__MULTISELECT__);
+                multiselect = _self.hasFeature(ppc.__MULTISELECT__);
             if (multiselect && srcEl == _self.$container)
                 return;
             _self.dragging = 0;
 
             try{ //Firefox can crash here because of some chrome permission issue 
-                if (!apf.isIphone && _self.allowdeselect
-                  && (srcEl == this || srcEl.getAttribute(apf.xmldb.htmlIdTag) 
+                if (!ppc.isIphone && _self.allowdeselect
+                  && (srcEl == this || srcEl.getAttribute(ppc.xmldb.htmlIdTag) 
                   && _self.$getLayoutNode("item", "select", this) != this))
                     return; //This broke making a selection with the mouse in rename:  _self.clearSelection(); //@todo hacky - should detect what element has the select from the skin
             }catch(e) {return;}
@@ -604,29 +604,29 @@ apf.DragDrop = function(){
             if (_self.$findValueNode)
                 fEl = _self.$findValueNode(srcEl);
             var el = (fEl
-                ? apf.xmldb.getNode(fEl)
-                : apf.xmldb.findXmlNode(srcEl));
+                ? ppc.xmldb.getNode(fEl)
+                : ppc.xmldb.findXmlNode(srcEl));
             if (multiselect && (!_self.selected || !el || el == _self.xmlRoot))
                 return;
 
             if (_self.isDragAllowed(multiselect ? _self.$getSelection() : el)) {
                 // #ifdef __SUPPORT_IPHONE
-                if (apf.isIphone)
+                if (ppc.isIphone)
                     old_e.preventDefault();
                 //#endif
 
-                apf.DragServer.start(_self, srcEl, e);
+                ppc.DragServer.start(_self, srcEl, e);
             }
 
             //e.cancelBubble = true;
         };
 
-        this.$ext[apf.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
+        this.$ext[ppc.isIphone ? "ontouchmove" : "onmousemove"] = function(e){
             if (this.host.dragging != 1 || _self.disabled) return;
         };
 
         // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone) {
+        if (ppc.isIphone) {
             this.$ext.ontouchend = this.$ext.ontouchcancel = function(){
                 if (_self.disabled)
                     return;
@@ -664,7 +664,7 @@ apf.DragDrop = function(){
         this.$dragInited = false; //@todo solve oExt event conflicts
         
         // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone) {
+        if (ppc.isIphone) {
             this.$ext.ontouchstart = this.$ext.ontouchmove
                 = this.$ext.ontouchend = this.$ext.ontouchcancel = null;
         }
@@ -681,10 +681,10 @@ apf.DragDrop = function(){
     
     this.implement(
       // #ifdef __WITH_MULTISELECT
-      this.hasFeature(apf.__MULTISELECT__)
-        ? apf.MultiselectDragDrop : 
+      this.hasFeature(ppc.__MULTISELECT__)
+        ? ppc.MultiselectDragDrop : 
       // #endif
-        apf.StandardDragDrop);
+        ppc.StandardDragDrop);
     
     //this.$booleanProperties["drag"]     = true;
     //this.$booleanProperties["dragcopy"] = true;
@@ -803,7 +803,7 @@ apf.DragDrop = function(){
     this.$propHandlers["dropcopy"] =
     this.$propHandlers["drag"]     =
     this.$propHandlers["drop"]     = function(value, prop){
-        this[prop] = apf.isTrue(value);
+        this[prop] = ppc.isTrue(value);
 
         if (this.$dragInited && prop == "drag" && value && this.$dragInited != 2) {
             this.$initDragDrop();
@@ -825,23 +825,23 @@ apf.DragDrop = function(){
         disableDragDrop.call(this);
         
         if (this.oDrag) {
-            apf.destroyHtmlNode(this.oDrag);
+            ppc.destroyHtmlNode(this.oDrag);
             this.oDrag = null;
         }
     });
 };
 
-apf.GuiElement.propHandlers["dragcopy"] =
-apf.GuiElement.propHandlers["dropcopy"] =
-apf.GuiElement.propHandlers["drop"]     =
-apf.GuiElement.propHandlers["drag"]     = function(value, prop) {
-    if (!apf.isFalse(value)) {
-        if (!this.hasFeature(apf.__DRAGDROP__)) {
-            this.implement(apf.DragDrop);
+ppc.GuiElement.propHandlers["dragcopy"] =
+ppc.GuiElement.propHandlers["dropcopy"] =
+ppc.GuiElement.propHandlers["drop"]     =
+ppc.GuiElement.propHandlers["drag"]     = function(value, prop) {
+    if (!ppc.isFalse(value)) {
+        if (!this.hasFeature(ppc.__DRAGDROP__)) {
+            this.implement(ppc.DragDrop);
             this.enableDragDrop();
         }
         
-        this[prop] = apf.isTrue(value);
+        this[prop] = ppc.isTrue(value);
     }
 };
 
@@ -849,21 +849,21 @@ apf.GuiElement.propHandlers["drag"]     = function(value, prop) {
  * Central object for dragdrop handling.
  * @private
  */
-apf.DragServer = {
+ppc.DragServer = {
     Init : function(){
         // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone) {
+        if (ppc.isIphone) {
             this.ontouchmove = this.onmousemove;
             this.ontouchend = this.ontouchcancel = this.onmouseup;
         }
         //#endif
 
-        apf.addEventListener("hotkey", function(e){
-            if (apf.window.dragging && e.keyCode == 27) {
+        ppc.addEventListener("hotkey", function(e){
+            if (ppc.window.dragging && e.keyCode == 27) {
                 if (document.body.lastHost && document.body.lastHost.dragOut)
-                    document.body.lastHost.dragOut(apf.dragHost);
+                    document.body.lastHost.dragOut(ppc.dragHost);
 
-                return apf.DragServer.stopdrag();
+                return ppc.DragServer.stopdrag();
             }
         });
     },
@@ -879,8 +879,8 @@ apf.DragServer = {
             ? d.html || d.documentElement
             : d.body
 
-        var scrollX = (apf.isIE ? d.scrollLeft : window.pageXOffset),
-            scrollY = (apf.isIE ? d.scrollTop  : window.pageYOffset),
+        var scrollX = (ppc.isIE ? d.scrollLeft : window.pageXOffset),
+            scrollY = (ppc.isIE ? d.scrollTop  : window.pageYOffset),
             oParent = amlNode.$ext.offsetParent,
             pos
         while (oParent && oParent != d && oParent.tagName != "BODY") {
@@ -897,16 +897,16 @@ apf.DragServer = {
         else {
             var loopEl = srcEl, lastId;
             while (loopEl && loopEl.nodeType == 1 
-              && !(lastId = loopEl.getAttribute(apf.xmldb.htmlIdTag))) {
+              && !(lastId = loopEl.getAttribute(ppc.xmldb.htmlIdTag))) {
                 loopEl = loopEl.parentNode;
             }
             if (!lastId)
                 return;
-            pos = apf.getAbsolutePosition(loopEl);
+            pos = ppc.getAbsolutePosition(loopEl);
         }
 
         //Set coordinates object
-        apf.DragServer.coordinates = {
+        ppc.DragServer.coordinates = {
             srcElement : srcEl,
             doc        : d,
             scrollX    : scrollX,
@@ -918,7 +918,7 @@ apf.DragServer = {
         };
         
         //Create Drag Data Object
-        var selection = customNode || amlNode.hasFeature(apf.__MULTISELECT__) 
+        var selection = customNode || amlNode.hasFeature(ppc.__MULTISELECT__) 
                 ? amlNode.getSelection()
                 : [amlNode.xmlRoot],
             data      = [],
@@ -929,7 +929,7 @@ apf.DragServer = {
             data = amlNode.dispatchEvent("dragdata", {data : data});
         
         /*for(var i = 0, l = data.length; i < l; i++) {
-            data[i] = apf.getCleanCopy(data[i]);
+            data[i] = ppc.getCleanCopy(data[i]);
         }*/
 
         this.dragdata = {
@@ -946,7 +946,7 @@ apf.DragServer = {
         
         amlNode.dragging = 2;
 
-        apf.dragMode         = true;
+        ppc.dragMode         = true;
         document.onmousemove = this.onmousemove;
         document.onmouseup   = this.onmouseup;
     },
@@ -954,7 +954,7 @@ apf.DragServer = {
     stop : function(runEvent, success, e){
         if (this.last) this.dragout();
         
-        this.dragdata.host.dispatchEvent("dragstop", apf.extend(this.dragdata, {
+        this.dragdata.host.dispatchEvent("dragstop", ppc.extend(this.dragdata, {
             success: success
         }));
         
@@ -965,7 +965,7 @@ apf.DragServer = {
         /*if (runEvent && this.dragdata.host.$dragstop) 
             this.dragdata.host.$dragstop();*/
         
-        apf.dragMode         = false;
+        ppc.dragMode         = false;
         document.onmousemove = 
         document.onmouseup   = null;
         
@@ -979,10 +979,10 @@ apf.DragServer = {
         function checkPermission(targetEl) {
             return o.isDropAllowed && o.xmlRoot
                 ? o.isDropAllowed(_self.dragdata.data, targetEl)
-                : apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
+                : ppc.isTrue(ppc.getInheritedAttribute(o, "", function(p){
                       if (p.drop) {
                           o = p;
-                          if (o == apf.DragServer.last)
+                          if (o == ppc.DragServer.last)
                             return false;
                           return true;
                       }
@@ -1002,8 +1002,8 @@ apf.DragServer = {
 
         //Check Permission
         var elSel = (fEl
-                ? apf.xmldb.getNode(fEl)
-                : apf.xmldb.findXmlNode(el)),
+                ? ppc.xmldb.getNode(fEl)
+                : ppc.xmldb.findXmlNode(el)),
             candrop = checkPermission(elSel || o.xmlRoot);
 
         if (this.last && this.last != o)
@@ -1015,13 +1015,13 @@ apf.DragServer = {
         if (!candrop) {
             if (o && o.$dragover) {
                 var parentNode = (elSel || o.xmlRoot).parentNode;
-                if(parentNode && (el = apf.xmldb.findHtmlNode(parentNode, o))) {                   
+                if(parentNode && (el = ppc.xmldb.findHtmlNode(parentNode, o))) {                   
                     if (o.$findValueNode)
                         fEl = o.$findValueNode(el);
                     
                     elSel = (fEl
-                        ? apf.xmldb.getNode(fEl)
-                        : apf.xmldb.findXmlNode(el));
+                        ? ppc.xmldb.getNode(fEl)
+                        : ppc.xmldb.findXmlNode(el));
                             
                     candrop = checkPermission(parentNode);
                     this.lastFel = el;
@@ -1086,7 +1086,7 @@ apf.DragServer = {
         function checkPermission(targetEl) {
             return o.isDropAllowed && o.xmlRoot
             ? o.isDropAllowed(_self.dragdata.data, targetEl)
-            : apf.isTrue(apf.getInheritedAttribute(o, "", function(p){
+            : ppc.isTrue(ppc.getInheritedAttribute(o, "", function(p){
                 if (p.drop) {
                     o = p;
                     return true;
@@ -1097,8 +1097,8 @@ apf.DragServer = {
         //Check Permission
         var isParent, lastTop,
             elSel   = (o.$findValueNode
-              ? apf.xmldb.getNode(o.$findValueNode(el))
-              : apf.xmldb.findXmlNode(el)),
+              ? ppc.xmldb.getNode(o.$findValueNode(el))
+              : ppc.xmldb.findXmlNode(el)),
             candrop = checkPermission(elSel || o.xmlRoot);
          
         if (this.dragdata.indicator) {
@@ -1110,7 +1110,7 @@ apf.DragServer = {
             if (o && o.$dragover) {
                 var parentNode = (elSel || o.xmlRoot).parentNode,
                     htmlParentNode;
-                if (parentNode && (htmlParentNode = apf.xmldb.findHtmlNode(parentNode, o))) {
+                if (parentNode && (htmlParentNode = ppc.xmldb.findHtmlNode(parentNode, o))) {
                     isParent = true;
                     candrop = checkPermission(parentNode);
                     el = htmlParentNode;
@@ -1120,7 +1120,7 @@ apf.DragServer = {
 
         //EVENT - cancelable: ondragdrop
         if (candrop) {
-            if (o.dispatchEvent("dragdrop", apf.extend({candrop : candrop, htmlEvent : e, top: lastTop},
+            if (o.dispatchEvent("dragdrop", ppc.extend({candrop : candrop, htmlEvent : e, top: lastTop},
               this.dragdata)) === false) {
                 candrop = false;
             }
@@ -1130,7 +1130,7 @@ apf.DragServer = {
                       ? o.getModel(true) 
                       :
                       //#ifdef __WITH_NAMESERVER
-                      apf.nameserver.get("model", o.model)
+                      ppc.nameserver.get("model", o.model)
                       /* #else
                       {}
                       #endif */
@@ -1166,7 +1166,7 @@ apf.DragServer = {
         }
         
         if (o.$dragdrop) {
-            o.$dragdrop(el, apf.extend({
+            o.$dragdrop(el, ppc.extend({
                 htmlEvent : e,
                 xmlNode   : rNode
             }, this.dragdata), candrop);
@@ -1185,26 +1185,26 @@ apf.DragServer = {
     ***********************/
 
     onmousemove : function(e){
-        if (!apf.DragServer.dragdata) return;
+        if (!ppc.DragServer.dragdata) return;
         e = e || window.event;
         // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone) {
+        if (ppc.isIphone) {
             e.preventDefault();
             if (!e.touches)
-                return apf.DragServer.stop(true, null, e);
+                return ppc.DragServer.stop(true, null, e);
             e = e.touches[0];
         }
         //#endif
         
-        var dragdata = apf.DragServer.dragdata,
+        var dragdata = ppc.DragServer.dragdata,
             c = {
                 clientX: e.pageX ? e.pageX - window.pageXOffset : e.clientX,
                 clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
             };
 
         if (!dragdata.started
-          && Math.abs(apf.DragServer.coordinates.clientX - c.clientX) < 6
-          && Math.abs(apf.DragServer.coordinates.clientY - c.clientY) < 6)
+          && Math.abs(ppc.DragServer.coordinates.clientX - c.clientX) < 6
+          && Math.abs(ppc.DragServer.coordinates.clientY - c.clientY) < 6)
             return;
 
         if (!dragdata.started) {
@@ -1223,45 +1223,45 @@ apf.DragServer = {
             dragdata.indicator.style.display = "block";
                 dragdata.indicator.style.top = "10000px";
         }
-        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (!apf.isIE
+        ppc.DragServer.dragdata.x = e.pageX ? e.pageX - (!ppc.isIE
             ? window.pageXOffset
             : 0) : c.clientX;
-        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (!apf.isIE
+        ppc.DragServer.dragdata.y = e.pageY ? e.pageY - (!ppc.isIE
             ? window.pageYOffset
             : 0) : c.clientY;
-        var el = document.elementFromPoint(apf.DragServer.dragdata.x,
-            apf.DragServer.dragdata.y);
+        var el = document.elementFromPoint(ppc.DragServer.dragdata.x,
+            ppc.DragServer.dragdata.y);
             if (!el) {
-                el = document.elementFromPoint(apf.DragServer.dragdata.x,
-                apf.DragServer.dragdata.y);
+                el = document.elementFromPoint(ppc.DragServer.dragdata.x,
+                ppc.DragServer.dragdata.y);
             }
         
         if (dragdata.indicator)
             dragdata.indicator.style.top = storeIndicatorTopPos;
         //console.log("INDICATOR AFTER: "+dragdata.indicator.style.top+" "
-        //+dragdata.indicator.style.left+" "+apf.DragServer.dragdata.x+" "+apf.DragServer.dragdata.y);
+        //+dragdata.indicator.style.left+" "+ppc.DragServer.dragdata.x+" "+ppc.DragServer.dragdata.y);
         //Set Indicator
         dragdata.host.$moveDragIndicator(c);
 
         //get element and call events
-        var receiver = apf.findHost(el);
+        var receiver = ppc.findHost(el);
 
         //Run Events
         if (receiver)
-            apf.DragServer.dragover(receiver, el, e);
-        else if (apf.DragServer.last)
-            apf.DragServer.dragout(apf.DragServer.last, e);
+            ppc.DragServer.dragover(receiver, el, e);
+        else if (ppc.DragServer.last)
+            ppc.DragServer.dragout(ppc.DragServer.last, e);
 
-        apf.DragServer.lastTime = new Date().getTime();
+        ppc.DragServer.lastTime = new Date().getTime();
     },
 
     onmouseup : function(e){
         e = e || window.event;
         // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone) {
+        if (ppc.isIphone) {
             e.preventDefault();
             if (!e.changedTouches)
-                return apf.DragServer.stop(true, null, e);
+                return ppc.DragServer.stop(true, null, e);
             e = e.changedTouches[0];
         }
         //#endif
@@ -1271,52 +1271,52 @@ apf.DragServer = {
             clientY: e.pageY ? e.pageY - window.pageYOffset : e.clientY
         };
 
-        if (!apf.DragServer.dragdata.started
-          && Math.abs(apf.DragServer.coordinates.clientX - c.clientX) < 6
-          && Math.abs(apf.DragServer.coordinates.clientY - c.clientY) < 6) {
-            apf.DragServer.stop(true, null, e)
+        if (!ppc.DragServer.dragdata.started
+          && Math.abs(ppc.DragServer.coordinates.clientX - c.clientX) < 6
+          && Math.abs(ppc.DragServer.coordinates.clientY - c.clientY) < 6) {
+            ppc.DragServer.stop(true, null, e)
             return;
         }
 
         //get Element at x, y
-        var indicator            = apf.DragServer.dragdata.indicator,
+        var indicator            = ppc.DragServer.dragdata.indicator,
             storeIndicatorTopPos = indicator.style.top;
-        //apf.console.info("INDICATOR UP BEFORE: "+indicator.style.top+" "+indicator.style.left);
+        //ppc.console.info("INDICATOR UP BEFORE: "+indicator.style.top+" "+indicator.style.left);
         if (indicator)
             indicator.style.top = "10000px";
 
-        apf.DragServer.dragdata.x = e.pageX ? e.pageX - (!apf.isIE
+        ppc.DragServer.dragdata.x = e.pageX ? e.pageX - (!ppc.isIE
             ? window.pageXOffset
             : 0) : c.clientX;
-        apf.DragServer.dragdata.y = e.pageY ? e.pageY - (!apf.isIE
+        ppc.DragServer.dragdata.y = e.pageY ? e.pageY - (!ppc.isIE
             ? window.pageYOffset
             : 0) : c.clientY;
 
-        var el = document.elementFromPoint(apf.DragServer.dragdata.x,
-            apf.DragServer.dragdata.y);
+        var el = document.elementFromPoint(ppc.DragServer.dragdata.x,
+            ppc.DragServer.dragdata.y);
         if (!el) {
-            el = document.elementFromPoint(apf.DragServer.dragdata.x,
-            apf.DragServer.dragdata.y);
+            el = document.elementFromPoint(ppc.DragServer.dragdata.x,
+            ppc.DragServer.dragdata.y);
         }
 
         indicator.style.top = storeIndicatorTopPos;
-        //apf.console.info("INDICATOR UP AFTER: "+indicator.style.top+" "+indicator.style.left);
+        //ppc.console.info("INDICATOR UP AFTER: "+indicator.style.top+" "+indicator.style.left);
 
         //get element and call events
-        var host = apf.findHost(el);
+        var host = ppc.findHost(el);
 
         //Run Events
-        if (apf.DragServer.host && host != apf.DragServer.host)
-            apf.DragServer.dragout(apf.DragServer.host, e);
-        var success = apf.DragServer.dragdrop(host, el, apf.DragServer.dragdata.host, e);
-        apf.DragServer.stop(true, success, e);
+        if (ppc.DragServer.host && host != ppc.DragServer.host)
+            ppc.DragServer.dragout(ppc.DragServer.host, e);
+        var success = ppc.DragServer.dragdrop(host, el, ppc.DragServer.dragdata.host, e);
+        ppc.DragServer.stop(true, success, e);
     }
 };
 
 /*
  * @private
  */
-apf.MultiselectDragDrop = function() {
+ppc.MultiselectDragDrop = function() {
     // *** Drag & Drop *** //
     // #ifdef __WITH_DRAGDROP
     this.diffX        =
@@ -1335,8 +1335,8 @@ apf.MultiselectDragDrop = function() {
             this.diffY = e.scrollY;
         }
         else {
-            var itemNode = apf.xmldb.findHtmlNode(sel[0], this);
-            this.diffX = -1 * (e.offsetX - parseInt(apf.getStyleRecur(itemNode, "padding-left").replace(/px$/, "") - 10));
+            var itemNode = ppc.xmldb.findHtmlNode(sel[0], this);
+            this.diffX = -1 * (e.offsetX - parseInt(ppc.getStyleRecur(itemNode, "padding-left").replace(/px$/, "") - 10));
             this.diffY = -1 * e.offsetY;
         }
         
@@ -1351,7 +1351,7 @@ apf.MultiselectDragDrop = function() {
         }
         else if (this.localName == "datagrid") {
             if (this.lastDragNode)
-                apf.destroyHtmlNode(this.lastDragNode);
+                ppc.destroyHtmlNode(this.lastDragNode);
 
             sel = this.$selected || this.$caret;
             var oDrag = sel.cloneNode(true);
@@ -1371,24 +1371,24 @@ apf.MultiselectDragDrop = function() {
             var dragnodes = oDrag.childNodes;
             for (var i = nodes.length - 1; i >= 0; i--) {
                 if (dragnodes[i].nodeType == 1)
-                    dragnodes[i].style.width = apf.getStyle(nodes[i], "width");
+                    dragnodes[i].style.width = ppc.getStyle(nodes[i], "width");
             }
-            //@todo apf3.0 remove all the event handlers of the children.
+            //@todo ppc3.0 remove all the event handlers of the children.
             return (this.lastDragNode = oDrag);
         }
         else {
             var sel = this.$selected || this.$caret,
-                width = apf.getStyle(this.oDrag, "width");
+                width = ppc.getStyle(this.oDrag, "width");
             
             if (!sel)
                 return;
             
             if (!width || width == "auto")
-                this.oDrag.style.width = (sel.offsetWidth - apf.getWidthDiff(this.oDrag)) + "px";
+                this.oDrag.style.width = (sel.offsetWidth - ppc.getWidthDiff(this.oDrag)) + "px";
             this.$updateNode(this.selected, this.oDrag);
         }
         
-        apf.window.zManager.set("drag", this.oDrag);
+        ppc.window.zManager.set("drag", this.oDrag);
         
         return this.oDrag;
     };
@@ -1399,18 +1399,18 @@ apf.MultiselectDragDrop = function() {
             if (!this.$selected && !this.$caret)
                 return;
             
-            var pos = apf.getAbsolutePosition(this.$selected || this.$caret);
-            apf.tween.multi(oDrag, {
-                anim     : apf.tween.easeInOutCubic,
-                steps    : apf.isIE ? 15 : 20,
+            var pos = ppc.getAbsolutePosition(this.$selected || this.$caret);
+            ppc.tween.multi(oDrag, {
+                anim     : ppc.tween.easeInOutCubic,
+                steps    : ppc.isIE ? 15 : 20,
                 interval : 15,
                 tweens   : [
-                    {type: "left", from: oDrag.offsetLeft, to: (pos[0] + parseInt(apf.getStyleRecur(this.$selected, "padding-left").replace(/px$/, "")))},
+                    {type: "left", from: oDrag.offsetLeft, to: (pos[0] + parseInt(ppc.getStyleRecur(this.$selected, "padding-left").replace(/px$/, "")))},
                     {type: "top",  from: oDrag.offsetTop,  to: pos[1]}
                 ],
                 onfinish : function(){
                     if (_self.lastDragNode) {
-                        apf.destroyHtmlNode(_self.lastDragNode);
+                        ppc.destroyHtmlNode(_self.lastDragNode);
                         _self.lastDragNode = null;
                     }
                     else {
@@ -1420,7 +1420,7 @@ apf.MultiselectDragDrop = function() {
             });
         }
         else if (this.lastDragNode) {
-            apf.destroyHtmlNode(this.lastDragNode);
+            ppc.destroyHtmlNode(this.lastDragNode);
             this.lastDragNode = null;
         }
         else {
@@ -1442,10 +1442,10 @@ apf.MultiselectDragDrop = function() {
         if (!this.$hasLayoutNode("dragindicator")) 
             return;
 
-        this.oDrag = apf.insertHtmlNode(
+        this.oDrag = ppc.insertHtmlNode(
             this.$getLayoutNode("dragindicator"), document.body);
 
-        apf.window.zManager.set("drag", this.oDrag);
+        ppc.window.zManager.set("drag", this.oDrag);
         
         this.oDrag.style.position = "absolute";
         this.oDrag.style.cursor   = "default";
@@ -1456,15 +1456,15 @@ apf.MultiselectDragDrop = function() {
         if (!el) return null;
 
         while(el && el.nodeType == 1 
-          && !el.getAttribute(apf.xmldb.htmlIdTag)) {
+          && !el.getAttribute(ppc.xmldb.htmlIdTag)) {
             if (this.$isTreeArch && el.previousSibling 
-              && el.previousSibling.nodeType == 1) //@todo hack!! apf3.0 fix this.
+              && el.previousSibling.nodeType == 1) //@todo hack!! ppc3.0 fix this.
                 el = el.previousSibling;
             else
                 el = el.parentNode;
         }
 
-        return (el && el.nodeType == 1 && el.getAttribute(apf.xmldb.htmlIdTag)) 
+        return (el && el.nodeType == 1 && el.getAttribute(ppc.xmldb.htmlIdTag)) 
             ? el 
             : null;
     };
@@ -1503,7 +1503,7 @@ apf.MultiselectDragDrop = function() {
         var action = extra[1] && extra[1].action;
         this.lastel = this.$findValueNode(el);
         if (this.$isTreeArch && action == "list-append") {
-            var htmlNode = apf.xmldb.findHtmlNode(this.getTraverseParent(apf.xmldb.getNode(this.lastel)), this);
+            var htmlNode = ppc.xmldb.findHtmlNode(this.getTraverseParent(ppc.xmldb.getNode(this.lastel)), this);
             
             this.lastel = htmlNode
                 ? this.$getLayoutNode("item", "container", htmlNode)
@@ -1525,7 +1525,7 @@ apf.MultiselectDragDrop = function() {
 /*
  * @private
  */
-apf.StandardDragDrop = function() {
+ppc.StandardDragDrop = function() {
     this.$showDragIndicator = function(sel, e){
         var x = e.offsetX + 22,
             y = e.offsetY;
@@ -1564,7 +1564,7 @@ apf.StandardDragDrop = function() {
         
         this.oDrag = document.body.appendChild(this.$ext.cloneNode(true));
         
-        apf.window.zManager.set("drag", this.oDrag);
+        ppc.window.zManager.set("drag", this.oDrag);
         
         this.oDrag.style.position   = "absolute";
         this.oDrag.style.cursor     = "default";
@@ -1575,6 +1575,6 @@ apf.StandardDragDrop = function() {
     };
 };
 
-apf.DragServer.Init();
+ppc.DragServer.Init();
 
 // #endif

@@ -21,7 +21,7 @@ var InactiveClass = "splitview_inactive";
 var NPlusOneClass = "splitview_nplus1";
 var SplitView, ActiveSplit;
 
-var K = apf.K;
+var K = ppc.K;
 var CloneUndoManager = exports.CloneUndoManager = {};
 ["execute", "undo", "redo", "reset", "hasUndo", "hasRedo", "add", "addSelection", "startNewGroup", "addSession"].forEach(function(func) {
     CloneUndoManager[func] = K;
@@ -126,7 +126,7 @@ exports.create = function(page, gridLayout) {
 };
 
 exports.set = function(splits) {
-    if (!apf.isArray(splits))
+    if (!ppc.isArray(splits))
         return this;
     Splits = [].concat(splits);
     for (var split, i = 0, l = Splits.length; i < l; ++i) {
@@ -214,7 +214,7 @@ exports.update = function(split, gridLayout) {
             for (var clone, i = 0, l = editors.length; i < l; ++i) {
                 clone = editors[i];
                 clone.hide();
-                apf.document.documentElement.appendChild(clone);
+                ppc.document.documentElement.appendChild(clone);
             }
         }
 
@@ -285,7 +285,7 @@ exports.mutate = function(split, page, type) {
             editor.removeAttribute("actiontracker");
             //removeEditorListeners(editor);
             editor.hide();
-            apf.document.documentElement.appendChild(editor);
+            ppc.document.documentElement.appendChild(editor);
             split.zManager.clear(editor.$ext);
         }
         page.$deactivateButton();
@@ -452,7 +452,7 @@ function createEditorClones(editor) {
         EditorClones.cloneEditor = editor.cloneNode(true);
         EditorClones.cloneEditor.removeAttribute("id");
         EditorClones.cloneEditor.setAttribute("visible", "false");
-        apf.document.documentElement.appendChild(EditorClones.cloneEditor);
+        ppc.document.documentElement.appendChild(EditorClones.cloneEditor);
 
         addEditorListeners.call(this, EditorClones.cloneEditor);
 
@@ -480,7 +480,7 @@ function createEditorClones(editor) {
         for (var clone, i = 0, l = EditorClones[id].length; i < l; ++i) {
             clone = EditorClones[id][i];
             clone.hide();
-            apf.document.documentElement.appendChild(clone);
+            ppc.document.documentElement.appendChild(clone);
         }
         return EditorClones[id];
     }
@@ -495,7 +495,7 @@ function createEditorClones(editor) {
         editor.removeAttribute("id");
         editor.setAttribute("visible", false);
         EditorClones[id].push(editor);
-        apf.document.documentElement.appendChild(editor);
+        ppc.document.documentElement.appendChild(editor);
         addEditorListeners.call(this, editor);
         if (isCodeEditor) {
             editor.$editor.commands = previousEditor.$editor.commands;
@@ -584,13 +584,13 @@ function onEditorFocus(editor) {
                     split.activePage = i;
                     ide.dispatchEvent("tab.afterswitch", { previousPage: previous, nextPage: page });
                 }
-                apf.setStyleClass(page.$button, ActiveClass, [InactiveClass]);
+                ppc.setStyleClass(page.$button, ActiveClass, [InactiveClass]);
             }
             else {
                 // for clone views, the UndoManagers need to be swapped.
                 if (isClone && editor.getUndoManager() !== CloneUndoManager)
                     session.setUndoManager(CloneUndoManager);
-                apf.setStyleClass(page.$button, InactiveClass, [ActiveClass]);
+                ppc.setStyleClass(page.$button, InactiveClass, [ActiveClass]);
             }
         }
     });
@@ -601,7 +601,7 @@ function clearSplitViewStyles(splitOrPage) {
         ? [splitOrPage]
         : splitOrPage.pairs.map(function(pair) { return pair.page; });
     pages.forEach(function(page) {
-        apf.setStyleClass(page.$button, null, [ActiveClass, InactiveClass, NPlusOneClass]);
+        ppc.setStyleClass(page.$button, null, [ActiveClass, InactiveClass, NPlusOneClass]);
     });
 }
 
@@ -613,9 +613,9 @@ function setSplitViewStyles(splitOrPage) {
         if (!pages[i])
             continue;
         if (i === 0)
-            apf.setStyleClass(pages[i].$button, null, [NPlusOneClass]);
+            ppc.setStyleClass(pages[i].$button, null, [NPlusOneClass]);
         else
-            apf.setStyleClass(pages[i].$button, NPlusOneClass, []);
+            ppc.setStyleClass(pages[i].$button, NPlusOneClass, []);
     }
 }
 
@@ -628,7 +628,7 @@ function correctQuickSearchDialog(e) {
         return;
 
     var parent = editor.parentNode;
-    var editorPos = apf.getAbsolutePosition(editor.$ext, parent.$ext);
+    var editorPos = ppc.getAbsolutePosition(editor.$ext, parent.$ext);
     var editorDims = {
         width: editor.$ext.offsetWidth,
         height: editor.$ext.offsetHeight
@@ -641,7 +641,7 @@ function correctQuickSearchDialog(e) {
 
     if (!searchWindow && self["winQuickSearch"]) {
         searchWindow = self["winQuickSearch"];
-        searchPos = apf.getStyle(searchWindow.$ext, "right");
+        searchPos = ppc.getStyle(searchWindow.$ext, "right");
         if (searchPos == "auto")
             searchPos = minRight + "px";
     }
@@ -682,7 +682,7 @@ function correctGotoLineDialog(e) {
     //Determine the position of the window
     var parent = editor.parentNode;
     var cursorPos = ace.renderer.textToScreenCoordinates(cursor.row, cursor.column);
-    var editorPos = apf.getAbsolutePosition(editor.$ext, parent.$ext);
+    var editorPos = ppc.getAbsolutePosition(editor.$ext, parent.$ext);
     var editorDims = {
         width: aceHtml.offsetWidth,
         height: aceHtml.offsetHeight

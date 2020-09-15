@@ -23,7 +23,7 @@ module.exports = ext.register("ext/richtext/richtext", {
     nodes : [],
 
     init : function(amlPage){
-        this.rteEditor = amlPage.appendChild(new apf.editor({
+        this.rteEditor = amlPage.appendChild(new ppc.editor({
             value   : "[data]",
             anchors : "0 0 0 0"
         }));

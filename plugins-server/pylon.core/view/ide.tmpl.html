@@ -7,7 +7,7 @@
         <meta name="keywords" content=""/>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no"/>
           <meta name="apple-mobile-web-app-capable" content="yes"/>
-          <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+          <meta name="apple-mobile-web-app-status-bar-style" content="black"/>
           <meta name="format-detection" content="telephone=no"/>
         <script type="text/javascript">
         //<![CDATA[
@@ -113,16 +113,16 @@
             }
 
             if (!cloud9config.packed) {
-                var RELEASE = "release";
+                var RELEASE = "";
                 var DEBUG   = "release";
                 var FILES   = "files";
 
                 var VERSION = window.cloud9config.debug ? DEBUG : RELEASE;
 
-                var apfLoc = "[%staticUrl%]/apf-packaged/apf_" + VERSION + ".js";
+                var ppcLoc = "[%staticUrl%]/ppc/ppc" + VERSION + ".js";
             }
             else {
-               var apfLoc = "";
+               var ppcLoc = "";
             }
             
             var config = <%requirejsConfig%>; 
@@ -130,7 +130,7 @@
             // configure text plugin to use XHR for crossorigin requests instead of falling back to .js files
             config.config = {text: {useXhr: function(){return true;}}};
 
-            require(config, [apfLoc], function(){
+            require(config, [ppcLoc], function(){
 
                 if (!cloud9config.packed) {
                     main();
@@ -153,8 +153,8 @@
                     // if you pass `force=true` into the querystring, then
                     // we bypass the browser check
                     if (window.cloud9config.hosted && !window.location.search.match(/\bforce\=true\b/)) {
-                        // otherwise, ask apf
-                        if (apf.isIE) {
+                        // otherwise, ask ppc
+                        if (ppc.isIE) {
                             // redirect to the notsupported page
                             var ref = encodeURIComponent(window.location.pathname + window.location.search);
                             window.location.href = "/site/notsupported.html?ref=" + ref;
@@ -170,7 +170,7 @@
                     aceConfig.set("basePath", "[%staticUrl%]/ace/build");
 
                     //Load extensions
-                    apf.addEventListener("load", function(){
+                    ppc.addEventListener("load", function(){
                         require(plugins, function() {
                             loadAndBegin(ide, plugins);
                         });

@@ -28,18 +28,18 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.style = function(struct, tagName){
-    this.$init(tagName || "style", apf.NODE_HIDDEN, struct);
+ppc.style = function(struct, tagName){
+    this.$init(tagName || "style", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
     this.$focussable = false;
     
     this.$propHandlers["src"] = function(value){
-        apf.getData(value, {
+        ppc.getData(value, {
             callback : function(data, state){
-                if (state == apf.SUCCESS) {
-                    apf.importCssString(data);
+                if (state == ppc.SUCCESS) {
+                    ppc.importCssString(data);
                 }
             }
         });
@@ -47,11 +47,11 @@ apf.style = function(struct, tagName){
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.type != "text/chartcss" && this.firstChild)
-            apf.importCssString(this.firstChild.nodeValue);
+            ppc.importCssString(this.firstChild.nodeValue);
     });
-}).call(apf.style.prototype = new apf.AmlElement());
+}).call(ppc.style.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("style", apf.style);
-apf.xhtml.setElement("style",  apf.style);
+ppc.aml.setElement("style", ppc.style);
+ppc.xhtml.setElement("style",  ppc.style);
 
 // #endif

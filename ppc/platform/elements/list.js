@@ -34,7 +34,7 @@
  * #### Example: A Simple List
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:list>
  *      <a:item>The Netherlands</a:item>
@@ -48,7 +48,7 @@
  * #### Example: Loading from a Model
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:list 
  *     model   = "/api/resources/xml/friends.xml"
@@ -64,27 +64,27 @@
  * #### Example: Using XPaths
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
- *   <a:list model="/api/apf/resources/xml/friends.xml" width="300">
+ *   <a:list model="/api/ppc/resources/xml/friends.xml" width="300">
  *       <a:each match="[friend]">
  *           <a:caption match="[@name]" />
  *           <a:icon 
  *             match = "[node()[@name='Ruben' or @name='Matt']]" 
- *             value = "/api/apf/resources/icons/medal_gold_1.png" />
- *           <a:icon value="/api/apf/resources/icons/medal_silver_1.png" />
+ *             value = "/api/ppc/resources/icons/medal_gold_1.png" />
+ *           <a:icon value="/api/ppc/resources/icons/medal_silver_1.png" />
  *       </a:each>
  *   </a:list>
  *   <!-- endcontent -->
  * </a:application>
  * ```
- * @class apf.list
+ * @class ppc.list
  * @define list
  * @allowchild {smartbinding}
  *
  * @selection
- * @inherits apf.BaseList
- * @inherits apf.Rename
+ * @inherits ppc.BaseList
+ * @inherits ppc.Rename
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -94,28 +94,28 @@
  * @event click Fires when a user presses a mouse button while over this element.
  */
 
-apf.list      = function(struct, tagName){
-    this.$init(tagName || "list", apf.NODE_VISIBLE, struct);
+ppc.list      = function(struct, tagName){
+    this.$init(tagName || "list", ppc.NODE_VISIBLE, struct);
 };
 
-apf.thumbnail = function(struct, tagName){
-    this.$init(tagName || "thumbnail", apf.NODE_VISIBLE, struct);
+ppc.thumbnail = function(struct, tagName){
+    this.$init(tagName || "thumbnail", ppc.NODE_VISIBLE, struct);
 };
 
-apf.select    = function(struct, tagName){
-    this.$init(tagName || "select", apf.NODE_VISIBLE, struct);
+ppc.select    = function(struct, tagName){
+    this.$init(tagName || "select", ppc.NODE_VISIBLE, struct);
 };
 
-apf.select1   = function(struct, tagName){
-    this.$init(tagName || "selectl", apf.NODE_VISIBLE, struct);
+ppc.select1   = function(struct, tagName){
+    this.$init(tagName || "selectl", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.morePos = "end";
     
     // #ifdef __WITH_RENAME
-    if (!apf.isIphone)
-        this.implement(apf.Rename);
+    if (!ppc.isIphone)
+        this.implement(ppc.Rename);
     // #endif
     
     // #ifdef __WITH_RENAME
@@ -150,7 +150,7 @@ apf.select1   = function(struct, tagName){
                     ? e.relatedTarget 
                     : null);
             
-            if (!apf.isChildOf(this.$ext, target, true)) {
+            if (!ppc.isChildOf(this.$ext, target, true)) {
                 this.highlight(this.$selected);
             }
         }
@@ -181,7 +181,7 @@ apf.select1   = function(struct, tagName){
     
     // #ifdef __AMLSUBMITFORM || __INC_ALL
     this.addEventListener("afterselect", function(e){
-        if (this.hasFeature(apf.__VALIDATION__)) 
+        if (this.hasFeature(ppc.__VALIDATION__)) 
             this.validate(true);
     });
     // #endif
@@ -197,23 +197,23 @@ apf.select1   = function(struct, tagName){
     this.$propHandlers["thumbsize"] = function(value){
         var className = this.thumbclass;
         
-        if (apf.isIE) { //@todo detection??
+        if (ppc.isIE) { //@todo detection??
             className = className.splitSafe(",");
             for (var i = 0; i < className.length; i++) {
-                apf.setStyleRule(className[i], "width", value + "px");
-                apf.setStyleRule(className[i], "height",  value + "px");
+                ppc.setStyleRule(className[i], "width", value + "px");
+                ppc.setStyleRule(className[i], "height",  value + "px");
             }
             return;
         }
         
-        apf.setStyleRule(className, "width", value + "px");
-        apf.setStyleRule(className, "height",  value + "px");
+        ppc.setStyleRule(className, "width", value + "px");
+        ppc.setStyleRule(className, "height",  value + "px");
     };
     
     
     /**
      * @attribute {String} appearance Sets or gets the type of select this element is. 
-     * This is an xforms property and only available if APF is compiled 
+     * This is an xforms property and only available if PPC is compiled 
      * with `__WITH_XFORMS` set to `1`.
      *   
      * Possible values include:
@@ -346,7 +346,7 @@ apf.select1   = function(struct, tagName){
         this.$ext = this.$getExternal();
         this.$container = this.$getLayoutNode("main", "container", this.$ext);
         
-        if (apf.hasCssUpdateScrollbarBug && !this.mode)
+        if (ppc.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
         
         var _self = this;
@@ -357,11 +357,11 @@ apf.select1   = function(struct, tagName){
         }
         
         //#ifdef __WITH_LISTGRID
-        this.$gridlist = apf.isTrue(this.$getOption("main", "grid"));
+        this.$gridlist = ppc.isTrue(this.$getOption("main", "grid"));
         
         if (this.$gridlist) {
             this.$ext.setAttribute("onmouseout", this.$ext.getAttribute("onmouseout") 
-                + ';var o = apf.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
+                + ';var o = ppc.lookup(' + this.$uniqueId + ');o.$selectSeries(event);');
         }
         //#endif 
         
@@ -381,17 +381,17 @@ apf.select1   = function(struct, tagName){
     this.$destroy = function(){
         if (this.$ext)
             this.$ext.onclick = null;
-        apf.destroyHtmlNode(this.oDrag);
+        ppc.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     };
-}).call(apf.list.prototype = new apf.BaseList());
+}).call(ppc.list.prototype = new ppc.BaseList());
 
-apf.thumbnail.prototype =
-apf.select.prototype    =
-apf.select1.prototype   = apf.list.prototype;
+ppc.thumbnail.prototype =
+ppc.select.prototype    =
+ppc.select1.prototype   = ppc.list.prototype;
 
-apf.aml.setElement("thumbnail", apf.thumbnail);
-apf.aml.setElement("select",    apf.select);
-apf.aml.setElement("select1",   apf.select1);
-apf.aml.setElement("list",      apf.list);
+ppc.aml.setElement("thumbnail", ppc.thumbnail);
+ppc.aml.setElement("select",    ppc.select);
+ppc.aml.setElement("select1",   ppc.select1);
+ppc.aml.setElement("list",      ppc.list);
 // #endif

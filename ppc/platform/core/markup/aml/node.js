@@ -19,7 +19,7 @@
  *
  */
 
-apf.__AMLNODE__ = 1 << 14;
+ppc.__AMLNODE__ = 1 << 14;
 
 // #ifdef __WITH_AMLNODE
 
@@ -34,7 +34,7 @@ apf.__AMLNODE__ = 1 << 14;
  *
  * Well known methods
  * from this specification are: `appendChild`, `removeChild`, `setAttribute`, and
- * `insertBefore`--to name a few. The Ajax.org Platform aims to implement DOM1
+ * `insertBefore`--to name a few. The Pylon Platform Code aims to implement DOM1
  * completely and parts of DOM2. For more information see {@link http://www.w3.org/DOM/} 
  * or {@link http://www.w3schools.com/dom/default.asp}.
  * 
@@ -52,15 +52,15 @@ apf.__AMLNODE__ = 1 << 14;
  * Using the Document Object Model in JavaScript:
  *
  * ```javascript
- *  //The following line is only there for completeness sake. In fact apf
+ *  //The following line is only there for completeness sake. In fact ppc
  *  //automatically adds a reference in javascript called winExample based
  *  //on the id it has.
- *  var winExample = apf.document.getElementById("winExample");
+ *  var winExample = ppc.document.getElementById("winExample");
  *  winExample.setAttribute("title", "Example");
  *  winExample.setAttribute("icon", "icoFolder.gif");
  *  winExample.setAttribute("left", "100");
  *
- *  var lblNew = apf.document.createElement("label");
+ *  var lblNew = ppc.document.createElement("label");
  *  winExample.appendChild(lblNew);
  *  lblNew.setAttribute("caption", "Example");
  *
@@ -85,9 +85,9 @@ apf.__AMLNODE__ = 1 << 14;
  * of tutorials and documentation for this API. If you need more information,
  * it's a good idea to search for tutorials online.
  *
- * @class apf.AmlNode
+ * @class ppc.AmlNode
  * @baseclass
- * @inherits apf.Class
+ * @inherits ppc.Class
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.5
@@ -105,7 +105,7 @@ apf.__AMLNODE__ = 1 << 14;
  * @event DOMNodeRemovedFromDocument Fires when a DOM node is removed from a document.
  */
 
-apf.AmlNode = function(){
+ppc.AmlNode = function(){
     this.$init(function(){
         /**
          * Nodelist containing all the child nodes of this element.
@@ -136,7 +136,7 @@ apf.AmlNode = function(){
      * Number specifying the type of node within the document.
      * @type {Number}
      */
-    this.$regbase = this.$regbase | apf.__AMLNODE__;
+    this.$regbase = this.$regbase | ppc.__AMLNODE__;
     
     /**
      * The constant for a DOM element node.
@@ -202,7 +202,7 @@ apf.AmlNode = function(){
     //#ifndef __PACKAGED
     /*
      * The parent in the tree of this element.
-     * @type {apf.AmlNode}
+     * @type {ppc.AmlNode}
      */
     if (!this.parentNode)
         this.parentNode = null;
@@ -210,7 +210,7 @@ apf.AmlNode = function(){
     /**
      * Returns the node immediately preceding the specified one in its parent's 
      * `childNodes` list. It's `null` if the specified node is the first in that list. 
-     * @type {apf.AmlNode}
+     * @type {ppc.AmlNode}
      */
     this.previousSibling = null;
     
@@ -218,7 +218,7 @@ apf.AmlNode = function(){
      * Returns the node immediately following the specified one in its parent's 
      * `childNodes` list. It's `null` if the specified node is the last node in that 
      * list. 
-     * @type {apf.AmlNode}
+     * @type {ppc.AmlNode}
      */
     this.nextSibling = null;
     
@@ -226,7 +226,7 @@ apf.AmlNode = function(){
      * Returns the node's first child in the tree, or `null` if the node is 
      * childless. If the node is a `Document`, it returns the first node in the 
      * list of its direct children.
-     * @type {apf.AmlNode}
+     * @type {ppc.AmlNode}
      */
     this.firstChild = null;
     
@@ -234,20 +234,20 @@ apf.AmlNode = function(){
      * Returns the node's last child in the tree, or `null` if the node is 
      * childless. If the node is a Document, it returns the last node in the 
      * list of its direct children.
-     * @type {apf.AmlNode}
+     * @type {ppc.AmlNode}
      */
     this.lastChild = null;
     //#endif
 
     /**
      * The document node of this application
-     * @type {apf.AmlDocument}
+     * @type {ppc.AmlDocument}
      */
     this.ownerDocument = null;
 
     /**
      * Returns the value of the current node. 
-     * @type {apf.AmlNode}
+     * @type {ppc.AmlNode}
      */
     this.nodeValue = "";
     
@@ -272,7 +272,7 @@ apf.AmlNode = function(){
         
     /**
      * 
-     * @inheritdoc apf.AmlNode.insertBefore
+     * @inheritdoc ppc.AmlNode.insertBefore
      * 
      */
     this.appendChild =
@@ -283,14 +283,14 @@ apf.AmlNode = function(){
      * removed from that parent before adding it this element.
      *
      * @method insertBefore
-     * @param  {apf.AmlNode}  amlNode     The element to insert as child of this element.
-     * @param  {apf.AmlNode}  beforeNode  The element which determines the insertion position of the element.
-     * @return  {apf.AmlNode}  The inserted node
+     * @param  {ppc.AmlNode}  amlNode     The element to insert as child of this element.
+     * @param  {ppc.AmlNode}  beforeNode  The element which determines the insertion position of the element.
+     * @return  {ppc.AmlNode}  The inserted node
      */
     this.insertBefore = function(amlNode, beforeNode, noHtmlDomEdit){
         //#ifdef __DEBUG
-        if (!amlNode || !amlNode.hasFeature || !amlNode.hasFeature(apf.__AMLNODE__)){
-            throw new Error(apf.formatErrorString(1072, this,
+        if (!amlNode || !amlNode.hasFeature || !amlNode.hasFeature(ppc.__AMLNODE__)){
+            throw new Error(ppc.formatErrorString(1072, this,
                 "Insertbefore DOM operation",
                 "Invalid argument passed. Expecting an AmlElement."));
         }
@@ -298,18 +298,18 @@ apf.AmlNode = function(){
 
         if (this.nodeType == this.NODE_DOCUMENT) {
             if (this.childNodes.length) {
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Insertbefore DOM operation",
                     "Only one top level element is allowed in an AML document."));
             }
-            else this.documentElement = amlNode; //@todo apf3.0 removal
+            else this.documentElement = amlNode; //@todo ppc3.0 removal
         }
         
         if (amlNode == beforeNode)
             return amlNode;
         
         if (this == amlNode) {
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Insertbefore DOM operation",
                 "Cannot append node as a child of itself."));
         }
@@ -333,11 +333,11 @@ apf.AmlNode = function(){
             if (index < 0) {
                 //#ifdef __DEBUG
                 if (beforeNode == this)
-                    throw new Error(apf.formatErrorString(1072, this,
+                    throw new Error(ppc.formatErrorString(1072, this,
                         "Insertbefore DOM operation",
                         "Before node is the same node as inserted node"));
                 else 
-                    throw new Error(apf.formatErrorString(1072, this,
+                    throw new Error(ppc.formatErrorString(1072, this,
                         "Insertbefore DOM operation",
                         "Before node is not a child of the parent node specified"));
                 //#endif
@@ -347,7 +347,7 @@ apf.AmlNode = function(){
         }
 
         if (!amlNode.ownerDocument)
-            amlNode.ownerDocument = this.ownerDocument || apf.ownerDocument;
+            amlNode.ownerDocument = this.ownerDocument || ppc.ownerDocument;
 
         if (amlNode.parentNode)
             amlNode.removeNode(isMoveWithinParent, true);//noHtmlDomEdit);
@@ -392,7 +392,7 @@ apf.AmlNode = function(){
             //@todo this is a hack, a good solution should be found
             if (document.adoptNode && amlNode.$ext && amlNode.$ext.nodeType == 1) {
                 var reappendlist = [];
-                var iframelist   = apf.getArrayFromNodelist(
+                var iframelist   = ppc.getArrayFromNodelist(
                     amlNode.$ext.getElementsByTagName("iframe"));
                 if (amlNode.$ext.tagName == "IFRAME")
                     document.adoptNode(amlNode.$ext);
@@ -476,7 +476,7 @@ apf.AmlNode = function(){
     this.removeNode = function(doOnlyAdmin, noHtmlDomEdit){
         //#ifdef __DEBUG
         if (doOnlyAdmin && typeof doOnlyAdmin != "boolean") {
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Removing node from parent",
                 "Invalid DOM Call. removeNode() does not take any arguments."));
         }
@@ -487,7 +487,7 @@ apf.AmlNode = function(){
 
         //#ifdef __DEBUG
         if (!this.parentNode.childNodes.contains(this)) {
-            /*throw new Error(apf.formatErrorString(0, this,
+            /*throw new Error(ppc.formatErrorString(0, this,
                 "Removing node from parent",
                 "Passed node is not a child of this node.", this.$aml));*/
             return false;
@@ -497,7 +497,7 @@ apf.AmlNode = function(){
         this.parentNode.childNodes.remove(this);
 
         //If we're not loaded yet, just remove us from the aml to be parsed
-        if (this.$amlLoaded && !apf.isDestroying) {
+        if (this.$amlLoaded && !ppc.isDestroying) {
             //this.parentNode.$aml.removeChild(this.$aml);
 
             this.dispatchEvent("DOMNodeRemoved", {
@@ -533,12 +533,12 @@ apf.AmlNode = function(){
     /**
      * Removes a child from the node list of this element. Call-chaining is
      * supported.
-     * @param {apf.AmlNode} childNode The child node to remove
+     * @param {ppc.AmlNode} childNode The child node to remove
      */
     this.removeChild = function(childNode) {
         //#ifdef __DEBUG
-        if (!childNode || !childNode.hasFeature || !childNode.hasFeature(apf.__AMLNODE__)) {
-            throw new Error(apf.formatErrorString(0, this,
+        if (!childNode || !childNode.hasFeature || !childNode.hasFeature(ppc.__AMLNODE__)) {
+            throw new Error(ppc.formatErrorString(0, this,
                 "Removing a child node",
                 "Invalid Argument. removeChild() requires one argument of type AMLElement."));
         }
@@ -556,7 +556,7 @@ apf.AmlNode = function(){
      * it in the document hierarchy.
      *
      * @param {Boolean} deep Specifies whether the elements are cloned recursively.
-     * @return {apf.AmlNode} The cloned element.
+     * @return {ppc.AmlNode} The cloned element.
      */
     this.cloneNode = function(deep){
         if (deep && this.nodeType == 1) {
@@ -638,15 +638,15 @@ apf.AmlNode = function(){
      * list. This is not an official API call, but can be useful in certain cases.
      *
      * @param {String}  sExpr          The xpath expression to query the AML DOM tree with.
-     * @param {apf.AmlNode} [contextNode]  The element that serves as the starting point of the search. Defaults to this element.
+     * @param {ppc.AmlNode} [contextNode]  The element that serves as the starting point of the search. Defaults to this element.
      * @returns {NodeList} List of found nodes.
      */
     this.selectNodes = function(sExpr, contextNode){
-        if (!apf) return;
+        if (!ppc) return;
         
-        if (!apf.XPath)
-            apf.runXpath();
-        return apf.XPath.selectNodes(sExpr,
+        if (!ppc.XPath)
+            ppc.runXpath();
+        return ppc.XPath.selectNodes(sExpr,
             contextNode || (this.nodeType == 9 ? this.documentElement : this));
     };
 
@@ -655,20 +655,20 @@ apf.AmlNode = function(){
      * node. This is not an official API call, but can be useful in certain cases.
      * 
      * @param {String}  sExpr          The xpath expression to query the AML DOM tree with.
-     * @param {apf.AmlNode} [contextNode]  The element that serves as the starting point of the search. Defaults to this element.
-     * @returns {apf.AmlNode} The first node that matches the query.
+     * @param {ppc.AmlNode} [contextNode]  The element that serves as the starting point of the search. Defaults to this element.
+     * @returns {ppc.AmlNode} The first node that matches the query.
      */
     this.selectSingleNode  = function(sExpr, contextNode){
-        if (!apf) return;
+        if (!ppc) return;
         
-        if (!apf.XPath)
-            apf.runXpath();
-        return apf.XPath.selectNodes(sExpr,
+        if (!ppc.XPath)
+            ppc.runXpath();
+        return ppc.XPath.selectNodes(sExpr,
             contextNode || (this.nodeType == 9 ? this.documentElement : this))[0];
     };
     
     /*this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         
     }, true);*/
-}).call(apf.AmlNode.prototype = new apf.Class());
+}).call(ppc.AmlNode.prototype = new ppc.Class());
 // #endif

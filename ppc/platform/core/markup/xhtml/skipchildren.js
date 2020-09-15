@@ -20,8 +20,8 @@
  */
 
 //#ifdef __PARSER_XHTML
-apf.XhtmlSkipChildrenElement = function(struct, tagName){
-    this.$init(tagName, apf.NODE_VISIBLE, struct);
+ppc.XhtmlSkipChildrenElement = function(struct, tagName){
+    this.$init(tagName, ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -29,12 +29,12 @@ apf.XhtmlSkipChildrenElement = function(struct, tagName){
     
     this.$redraw = function(){
         var _self = this;
-        apf.queue.add("redraw" + this.$uniqueId, function(){
+        ppc.queue.add("redraw" + this.$uniqueId, function(){
             var pHtmlNode  = _self.$ext.parentNode;
             var beforeNode = _self.$ext.nextSibling;
             pHtmlNode.removeChild(_self.$ext);
             
-            _self.$ext = apf.insertHtmlNode(null, pHtmlNode, beforeNode, _self.$aml 
+            _self.$ext = ppc.insertHtmlNode(null, pHtmlNode, beforeNode, _self.$aml 
                 ? (_self.$aml.serialize ? _self.$aml.serialize() : _self.$aml.xml)
                 : _self.serialize());
         });
@@ -45,15 +45,15 @@ apf.XhtmlSkipChildrenElement = function(struct, tagName){
         if (!(pHtmlNode = this.parentNode.$int)) 
             return;
 
-        this.$ext = apf.insertHtmlNode(null, pHtmlNode, null, this.$aml 
+        this.$ext = ppc.insertHtmlNode(null, pHtmlNode, null, this.$aml 
             ? (this.$aml.serialize ? this.$aml.serialize() : this.$aml.xml)
             : this.serialize());
     }, true);
-}).call(apf.XhtmlSkipChildrenElement.prototype = new apf.AmlElement());
+}).call(ppc.XhtmlSkipChildrenElement.prototype = new ppc.AmlElement());
 
-apf.xhtml.setElement("object", apf.XhtmlSkipChildrenElement);
-apf.xhtml.setElement("embed", apf.XhtmlSkipChildrenElement);
-apf.xhtml.setElement("table", apf.XhtmlSkipChildrenElement);
+ppc.xhtml.setElement("object", ppc.XhtmlSkipChildrenElement);
+ppc.xhtml.setElement("embed", ppc.XhtmlSkipChildrenElement);
+ppc.xhtml.setElement("table", ppc.XhtmlSkipChildrenElement);
 
-apf.xhtml.setElement("pre", apf.XhtmlSkipChildrenElement);
+ppc.xhtml.setElement("pre", ppc.XhtmlSkipChildrenElement);
 //#endif

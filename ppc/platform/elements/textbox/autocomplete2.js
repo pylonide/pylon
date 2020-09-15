@@ -11,8 +11,8 @@ this.$btndown = function(oHtml, e){
     }
     
     if (type == "dropdown" || type == "set") {
-        if (apf.popup.isShowing(this.$uniqueId)){
-            apf.popup.forceHide();
+        if (ppc.popup.isShowing(this.$uniqueId)){
+            ppc.popup.forceHide();
         }
         else {
             var oContainer = this.$editors["dropdown_container"],
@@ -26,7 +26,7 @@ this.$btndown = function(oHtml, e){
                 : oHtml.parentNode;
             //this.$setStyleClass(oContainer, mirrorNode.className);
             oContainer.className = "propeditcontainer" + type;
-            oContainer.style[apf.supportOverflowComponent 
+            oContainer.style[ppc.supportOverflowComponent 
                 ? "overflowY"
                 : "overflow"] = "hidden";
             
@@ -53,7 +53,7 @@ this.$btndown = function(oHtml, e){
                 var select = this.selected.getAttribute("select");
                 var values = [], n = this.xmlData.selectNodes(select);
                 for (var i = 0; i < n.length; i++) {
-                    values.push(n[i].nodeValue || apf.queryValue(n[i], "."));
+                    values.push(n[i].nodeValue || ppc.queryValue(n[i], "."));
                 }
                 
                 for (var v, c, i = 0, l = s.length; i < l; i++) {
@@ -78,7 +78,7 @@ this.$btndown = function(oHtml, e){
                 while (target.parentNode != this)
                     target = target.parentNode;
                 
-                apf.setStyleClass(target, "hover");
+                ppc.setStyleClass(target, "hover");
             };
             
             oContainer.firstChild.onmouseout = function(e){
@@ -91,7 +91,7 @@ this.$btndown = function(oHtml, e){
                 while (target.parentNode != this)
                     target = target.parentNode;
                 
-                apf.setStyleClass(target, "", ["hover"]);
+                ppc.setStyleClass(target, "", ["hover"]);
             };
             
             oContainer.firstChild.onmousedown = function(e){
@@ -106,18 +106,18 @@ this.$btndown = function(oHtml, e){
 
                 if (type == "set") {
                     if (target.className.indexOf("checked") > -1)
-                        apf.setStyleClass(target, "", ["checked"]);
+                        ppc.setStyleClass(target, "", ["checked"]);
                     else
-                        apf.setStyleClass(target, "checked");
+                        ppc.setStyleClass(target, "checked");
                 }
                 else {
                     _self.rename(_self.selected, target.getAttribute("tag"));
-                    apf.popup.forceHide();
+                    ppc.popup.forceHide();
                 }
             };
             
             var sel = this.selected;
-            apf.popup.show(this.$uniqueId, {
+            ppc.popup.show(this.$uniqueId, {
                 x       : this.namevalue ? -1 : 0,
                 y       : mirrorNode.offsetHeight - 1,
                 animate : true,
@@ -179,7 +179,7 @@ this.$btnup = function(oHtml, force){
 
             //#ifdef __DEBUG
             if (!form) {
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Showing form connected to property",
                     "Could not find form by name '" + this.selected.getAttribute("form")
                     + "'", this.selected));
@@ -198,7 +198,7 @@ this.$btnup = function(oHtml, force){
             //#ifdef __DEBUG
             }
             catch(e){
-                throw new Error(apf.formatErrorString(0, this,
+                throw new Error(ppc.formatErrorString(0, this,
                     "Executing the code inside the exec property",
                     "Could not find exec by name '" + this.selected.getAttribute("exec")
                     + "'\nError: " + e.message, this.selected));
@@ -208,7 +208,7 @@ this.$btnup = function(oHtml, force){
     }
     else if (!force && type == "children") {
         var select  = this.selected.getAttribute("select"),
-            xmlNode = apf.createNodeFromXpath(this.xmlData, select);//newNodes
+            xmlNode = ppc.createNodeFromXpath(this.xmlData, select);//newNodes
         
         this.dispatchEvent("multiedit", {
             xmlNode  : this.selected,
@@ -217,13 +217,13 @@ this.$btnup = function(oHtml, force){
     }
     
     if (force || "dropdown|set".indexOf(oHtml.getAttribute("type")) == -1 
-      || !apf.popup.isShowing(this.$uniqueId))
+      || !ppc.popup.isShowing(this.$uniqueId))
         this.$setStyleClass(oHtml, "", ["down"]);
 };
 
 this.$btnout = function(oHtml, force){
     if (force || "dropdown|set".indexOf(oHtml.getAttribute("type")) == -1
-      || !apf.popup.isShowing(this.$uniqueId))
+      || !ppc.popup.isShowing(this.$uniqueId))
         this.$setStyleClass(oHtml, "", ["down"]);
 };
 
@@ -255,7 +255,7 @@ this.addEventListener("popuphide", function(){
 
             oldNode = this.xmlData.selectSingleNode(select
               + (multiple == "single" ? "/node()" : "")),
-            newNode = apf.xmldb.getCleanCopy(dataNode),
+            newNode = ppc.xmldb.getCleanCopy(dataNode),
             s;
 
         if (multiple != "multiple") {
@@ -267,7 +267,7 @@ this.addEventListener("popuphide", function(){
             select = s.join("/") || null;
             
             if (tagName && tagName != newNode.tagName) {
-                newNode = apf.mergeXml(newNode, 
+                newNode = ppc.mergeXml(newNode, 
                     newNode.ownerDocument.createElement(tagName));
             }
             
@@ -312,8 +312,8 @@ this.addEventListener("popuphide", function(){
             }
         }
         
-        if (apf.popup.isShowing(this.$uniqueId))
-            apf.popup.hide();
+        if (ppc.popup.isShowing(this.$uniqueId))
+            ppc.popup.hide();
     };
 
     this.$lookup = function(value, isMultiple){
@@ -335,7 +335,7 @@ this.addEventListener("popuphide", function(){
         
         var lookupAml = self[this.lookupaml].render(oContainer);
         
-        if (!apf.popup.isShowing(this.$uniqueId)) {
+        if (!ppc.popup.isShowing(this.$uniqueId)) {
             var mirrorNode = oHtml;
             //this.$setStyleClass(oContainer, mirrorNode.className);
             //oContainer.style.height = "auto";
@@ -343,12 +343,12 @@ this.addEventListener("popuphide", function(){
             oContainer.style.display = "block";
             var height = oContainer.scrollHeight;
             oContainer.style.display = "none";
-            /*oContainer.style[apf.supportOverflowComponent 
+            /*oContainer.style[ppc.supportOverflowComponent 
                 ? "overflowY"
                 : "overflow"] = "hidden";*/
 
-            var widthdiff = apf.getWidthDiff(oContainer);
-            apf.popup.show(this.$uniqueId, {
+            var widthdiff = ppc.getWidthDiff(oContainer);
+            ppc.popup.show(this.$uniqueId, {
                 x       : -1,
                 y       : (isMultiple ? mirrorNode.firstChild.firstChild.offsetHeight : mirrorNode.offsetHeight) - 1,
                 animate : true,
@@ -357,7 +357,7 @@ this.addEventListener("popuphide", function(){
                 height  : height,
                 callback: function(){
                     oContainer.style.height = "auto";
-                    /*oContainer.style[apf.supportOverflowComponent 
+                    /*oContainer.style[ppc.supportOverflowComponent 
                         ? "overflowY"
                         : "overflow"] = "auto";*/
                 }

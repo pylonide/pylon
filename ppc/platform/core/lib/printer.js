@@ -24,9 +24,9 @@
 /**
  * @private
  */
-apf.printer = {
+ppc.printer = {
     tagName     : "printer",
-    nodeFunc    : apf.NODE_HIDDEN,
+    nodeFunc    : ppc.NODE_HIDDEN,
     lastContent : "",
     inited      : false,
     panel       : null,
@@ -40,7 +40,7 @@ apf.printer = {
         this.panel = document.body.appendChild(document.createElement("div"));
         this.panel.setAttribute("id", "print_content");
         this.panel.onmousedown = function(){
-            apf.printer.hide();
+            ppc.printer.hide();
         };
         with (this.panel.style) {
             position        = "absolute";
@@ -50,10 +50,10 @@ apf.printer = {
             height          = "100%";
             backgroundColor = "white";
         }
-        apf.window.zManager.set("print", this.panel);
+        ppc.window.zManager.set("print", this.panel);
         
-        apf.importCssString("#print_content{display:none}");
-        apf.importCssString(apf.hasCSSChildOfSelector && !apf.isIE
+        ppc.importCssString("#print_content{display:none}");
+        ppc.importCssString(ppc.hasCSSChildOfSelector && !ppc.isIE
           ? "body #print_content{display:block} body>*{display:none}"
           : "body #print_content, body #print_content *{display:block} body *{display:none}",
           document, "print");
@@ -66,9 +66,9 @@ apf.printer = {
             for (i = 0; i < attr.length; i++) {
                 a = attr[i];
                 if (a.nodeName.indexOf("on") == 0)
-                    apf.addEventListener(a.nodeName, 
+                    ppc.addEventListener(a.nodeName, 
                       // #ifdef __WITH_JSLT_EVENTS
-                      apf.lm.compile(a.nodeValue, {event: true, parsecode: true})
+                      ppc.lm.compile(a.nodeValue, {event: true, parsecode: true})
                       /* #else
                       new Function('event', a.nodeValue)
                       #endif */
@@ -78,9 +78,9 @@ apf.printer = {
 
         // #ifdef __WITH_IEPNGFIX
         function printPNGFix(disable) {
-            if (apf.supportPng24) return;
+            if (ppc.supportPng24) return;
             // #ifdef __WITH_APPSETTINGS
-            if (!apf.config.iePngFix) return;
+            if (!ppc.config.iePngFix) return;
             // #endif
             for (var e, i = 0, j = document.all.length; i < j; i++) {
                 e = document.all[i];
@@ -102,14 +102,14 @@ apf.printer = {
             // #ifdef __WITH_IEPNGFIX
             printPNGFix(true);
             // #endif
-            apf.dispatchEvent("beforeprint");
+            ppc.dispatchEvent("beforeprint");
         };
         
         window.onafterprint = function(){
             // #ifdef __WITH_IEPNGFIX
             printPNGFix(false);
             // #endif
-            apf.dispatchEvent("afterprint");
+            ppc.dispatchEvent("afterprint");
         };
 
         return this;
@@ -149,8 +149,8 @@ apf.printer = {
  * Sents html to a printer in formatted form.
  * @param {String} strHtml the html to be printed.
  */
-apf.print = function(strHtml){
-    apf.printer.init().preview(strHtml);
+ppc.print = function(strHtml){
+    ppc.printer.init().preview(strHtml);
     window.print();
 };
 

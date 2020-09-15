@@ -7,7 +7,7 @@ Action rules are part of the [smartbinding concept](./smartbinding.html).
 
 ## Syntax
 
-Actions are added to [`apf.actions`](./actions.html). The `select` attribute specifies
+Actions are added to [`ppc.actions`](./actions.html). The `select` attribute specifies
 whether an action can be executed. The `set` attribute specifies how the change
 to the data is send to the server. The following example shows a remove 
 action on a datagrid. A jsp script is called to process the change. This is
@@ -38,9 +38,9 @@ Action rules influence and trigger several parts of the user interaction.
      selected [data node](./datanode.html)
 2. It dispatches events, before and after the data is changed.
 3. It creates a [command object](http://en.wikipedia.org/wiki/Command_pattern)
-     that is pushed on the undo stack of the `apf.actiontracker`
+     that is pushed on the undo stack of the `ppc.actiontracker`
      connected to the element that triggered the action.
-4. The command object (`apf.UndoData`) contains all the 
+4. The command object (`ppc.UndoData`) contains all the 
      information to send the change back to the server.
 
 ## Fallbacks:

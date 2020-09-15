@@ -1,7 +1,9 @@
 define(function(require) {
 
-  var Terminal = require("xterm/xterm");
-  var fit = require("xterm/addons/fit/fit");
+  var Terminal = require("xterm/xterm").Terminal;
+
+  var Fit = require("xterm-fit/xterm-addon-fit").FitAddon;
+  var fit = new Fit();
 
   /**
    * Based on tty.js
@@ -40,7 +42,7 @@ define(function(require) {
         this.constructor = child;
       }
       f.prototype = parent.prototype;
-      child.prototype = new f;
+      child.prototype = new f();
     }
 
 
@@ -344,8 +346,8 @@ define(function(require) {
 
       el.addEventListener('mousedown', function (ev) {
         if (ev.target !== el && ev.target !== bar) {
-          if (apf.document.activeElement == null) return;
-          return apf.document.activeElement.blur();
+          if (ppc.document.activeElement == null) return;
+          return ppc.document.activeElement.blur();
         }
 
         self.focus();
@@ -551,7 +553,8 @@ define(function(require) {
       this.grip.style.display = 'none';
       root.className = 'maximized';
 
-      fit.fit(term);
+      term.loadAddon(fit);
+      fit.fit();
       term.element.focus();
     };
 
@@ -629,7 +632,7 @@ define(function(require) {
         cols: cols,
         rows: rows,
         cursorBlink: false,
-        tabStopWidth: 4,
+        tabStopWidth: 2,
         fontSize: 12,
         rendererType: "dom"
       });
@@ -653,7 +656,7 @@ define(function(require) {
       this.button = button;
       this.element = null;
       this.process = '';
-      this.open(document.getElementById('xterm-container'), false);
+      this.open(document.getElementsByClassName('xterm-container')[0]);
 
       this.hookKeys();
       this.hookMouse();
@@ -735,7 +738,7 @@ define(function(require) {
 
       this.handleTitle(this.title);
       
-      if(apf.isIphone) {
+      if(ppc.isIphone) {
         this.element.focus(); // Focus on element
       }
       else {
@@ -750,7 +753,7 @@ define(function(require) {
       this._resize(cols, rows);
     };
 
-    Tab.prototype.__destroy = Tab.prototype.destroy;
+    Tab.prototype.__destroy = Tab.prototype.dispose; // Release xterm resources
 
     Tab.prototype._destroy = function () {
       if (this.destroyed) return;
@@ -774,7 +777,6 @@ define(function(require) {
         win.destroy();
       }
 
-      this.dispose(); // Dispose the xterm terminal, release resources
       this.__destroy();
     };
 
@@ -786,9 +788,9 @@ define(function(require) {
 
     Tab.prototype.hookKeys = function () {
       var self = this;
-      
+
       // Ctrl-V (Paste on Windows)
-      if(apf.isWin) {
+      if(ppc.isWin) {
         this.attachCustomKeyEventHandler(function (e) {
           if (e.ctrlKey == true && e.keyCode == 86) {
             return false; // Do nothing
@@ -797,7 +799,7 @@ define(function(require) {
       }
       
       // Handle space in iOS & keep focus off from the xterm.js textarea
-      if(apf.isIphone) {
+      if(ppc.isIphone) {
         self.element.addEventListener('keydown', function (ev) {
           if(ev.charCode === 0 && ev.code === "Space") {
             self.handler(" ");
@@ -809,63 +811,42 @@ define(function(require) {
         });
       }
 
+      this.onData(function (data) {
+        self.handler(data);
+      });
+
       // Alt-[jk] to quickly swap between windows.
-      this.on('key', function (key, ev) {
+      this.attachCustomKeyEventHandler(function (key) {
         var offset
           , i;
 
-        if (key === '\x1bj') {
-          offset = -1;
-        } else if (key === '\x1bk') {
-          offset = +1;
-        } else {
-          self.handler(key);
-          return;
-        }
+        if(key.altKey === true && (key.key === "j" || key.key === "k")) {
+          if (key.key === 'j') {
+            offset = -1;
+          } else if (key.key === 'k') {
+            offset = +1;
+          } 
 
-        i = indexOf(tty.windows, this.window) + offset;
+          i = indexOf(tty.windows, this.window) + offset;
 
-        this._ignoreNext();
-
-        if (tty.windows[i]) return tty.windows[i].highlight();
-
-        if (offset > 0) {
-          if (tty.windows[0]) return tty.windows[0].highlight();
-        } else {
-          i = tty.windows.length - 1;
-          if (tty.windows[i]) return tty.windows[i].highlight();
-        }
-
-        return this.window.highlight();
-      });
-
-      this.on('request paste', function (key) {
-        this.socket.send(JSON.stringify({cmd: 'request paste'}));
-        this.socket.on('message', function (data) {
-          data = JSON.parse(data);
-          if (data.cmd == 'pasteACK') {
-            if (data.error) return;
-            self.handler(data.stdout);
+          if (tty.windows[i]) {
+            tty.windows[i].highlight();
           }
-        });
-      });
 
-      this.on('request create', function () {
-        this.window.createTab();
-      });
+          if (offset > 0) {
+            if (tty.windows[0]) {
+              tty.windows[0].highlight();
+            }
+          }
+          else {
+            i = tty.windows.length - 1;
+            if (tty.windows[i]) {
+              tty.windows[i].highlight();
+            }
+          }
 
-      this.on('request term', function (key) {
-        if (this.window.tabs[key]) {
-          this.window.tabs[key].focus();
+          return false;
         }
-      });
-
-      this.on('request term next', function (key) {
-        this.window.nextTab();
-      });
-
-      this.on('request term previous', function (key) {
-        this.window.previousTab();
       });
     };
 
@@ -874,11 +855,11 @@ define(function(require) {
 
       self.element.addEventListener('mouseup', function (ev) {
         // Left mouse button
-        if (ev.which == 1 && self._core.selectionManager.hasSelection) {
-          var termTextarea = document.getElementsByClassName('xterm-helper-textarea')[0];
+        if (ev.which == 1 && self.hasSelection()) {
+          var termTextarea = self._core.textarea;
 
-          apf.clipboard.put(self._core.selectionManager.selectionText);
-          termTextarea.value = self._core.selectionManager.selectionText;
+          ppc.clipboard.put(self.getSelection());
+          termTextarea.value = self.getSelection();
           termTextarea.focus();
 
           document.execCommand('SelectAll');
@@ -894,9 +875,9 @@ define(function(require) {
           termTextarea.value = "";
         }
         // Right mouse button
-        else if (ev.which == 3 && !apf.clipboard.empty) {
-          if (typeof apf.clipboard.store === 'string') {
-            self.handler(apf.clipboard.store);
+        else if (ev.which == 3 && !ppc.clipboard.empty) {
+          if (typeof ppc.clipboard.store === 'string') {
+            self.handler(ppc.clipboard.store);
           }
         }
       }, false);
@@ -904,18 +885,6 @@ define(function(require) {
       self.element.addEventListener('contextmenu', function (ev) {
         ev.preventDefault();
       }, false);
-    };
-
-    Tab.prototype._ignoreNext = function () {
-      // Don't send the next key.
-      var handler = this.handler;
-      this.handler = function () {
-        this.handler = handler;
-      };
-      var showCursor = this.showCursor;
-      this.showCursor = function () {
-        this.showCursor = showCursor;
-      };
     };
 
     /**
@@ -1007,7 +976,7 @@ define(function(require) {
 
     function sanitize(text) {
       if (!text) return '';
-      return (text + '').replace(/[&<>]/g, '')
+      return (text + '').replace(/[&<>]/g, '');
     }
 
     /**

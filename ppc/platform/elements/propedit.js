@@ -25,7 +25,7 @@
 
 /**
  * Element providing a two column grid with properties and values. The values
- * are editable using apf elements.
+ * are editable using ppc elements.
  *
  * @constructor
  * @define propedit
@@ -35,10 +35,10 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.DataBinding
+ * @inherits ppc.DataBinding
  */
-apf.propedit    = function(struct, tagName){
-    this.$init(tagName || "propedit", apf.NODE_VISIBLE, struct);
+ppc.propedit    = function(struct, tagName){
+    this.$init(tagName || "propedit", ppc.NODE_VISIBLE, struct);
     
     //this.$headings       = [],
     //this.$cssRules       = []; //@todo Needs to be reset;
@@ -58,10 +58,10 @@ apf.propedit    = function(struct, tagName){
     });
     
     //#ifdef __WITH_CACHE
-    this.implement(apf.Cache);
+    this.implement(ppc.Cache);
     //#endif
     //#ifdef __WITH_DATAACTION
-    this.implement(apf.DataAction);
+    this.implement(ppc.DataAction);
     //#endif
     
     this.$focussable     = true; // This object can get the focus
@@ -69,14 +69,14 @@ apf.propedit    = function(struct, tagName){
     this.$isWindowContainer = -1;
     
     this.startClosed     = true;
-    this.$animType       = apf.tween.NORMAL;
+    this.$animType       = ppc.tween.NORMAL;
     this.$animSteps      = 3;
     this.$animSpeed      = 20;
 
     this.$useiframe      = 0;
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         properties : 3 //only when it has an xpath
     }, this.$attrExcludePropBind);
     
@@ -123,7 +123,7 @@ apf.propedit    = function(struct, tagName){
      *              <prop match="[name]" datatype="string" caption="Name*" 
      *                required="1" maxlength="255" 
      *                invalidmsg="Incorrect name;The name is required."/> 
-     *              <prop match="[email]" datatype="apf:email" caption="Email" 
+     *              <prop match="[email]" datatype="ppc:email" caption="Email" 
      *                maxlength="255" 
      *                invalidmsg="Incorrect e-mail;Please retype."/> 
      *              <prop match="[date]" datatype="xsd:date" caption="Date*" 
@@ -149,7 +149,7 @@ apf.propedit    = function(struct, tagName){
                 _self.$loadingProps = false;
                 
                 if (typeof data == "string")
-                    data = apf.getXml(data);
+                    data = ppc.getXml(data);
 
                 _self.$properties = data;
 
@@ -174,7 +174,7 @@ apf.propedit    = function(struct, tagName){
             if (value.substr(0, 1) == "<") 
                 propLoadObj.load(value);
             else
-                apf.setModel(value, propLoadObj);
+                ppc.setModel(value, propLoadObj);
         }
         else if (value.$isModel){
             //Value is model aml element
@@ -310,11 +310,11 @@ apf.propedit    = function(struct, tagName){
                 }
                 else {
                     sNode = node.parentNode
-                    if (sNode[apf.TAGNAME] != "prop") {
+                    if (sNode[ppc.TAGNAME] != "prop") {
                         sNode = sNode.previousSibling;
                         while(sNode && sNode.nodeType != 1) sNode = sNode.previousSibling;
                         
-                        if (sNode && sNode[apf.TAGNAME] != "prop") {
+                        if (sNode && sNode[ppc.TAGNAME] != "prop") {
                             sNode = (nodes = sNode.selectNodes("prop"))[nodes.length - 1];
                             while(sNode && sNode.nodeType != 1) sNode = sNode.previousSibling;
                         }
@@ -324,11 +324,11 @@ apf.propedit    = function(struct, tagName){
                 if (!sNode)
                     return;
 
-                var selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                var selHtml = ppc.xmldb.findHtmlNode(sNode, this);
                 while (!selHtml.offsetWidth)
-                    selHtml = apf.xmldb.findHtmlNode(sNode = sNode.parentNode, this);
+                    selHtml = ppc.xmldb.findHtmlNode(sNode = sNode.parentNode, this);
                 
-                var top = apf.getAbsolutePosition(selHtml, this.$body)[1]
+                var top = ppc.getAbsolutePosition(selHtml, this.$body)[1]
                      - (selHtml.offsetHeight/2);
                 if (top <= this.$ext.scrollTop)
                     this.$ext.scrollTop = top;
@@ -340,12 +340,12 @@ apf.propedit    = function(struct, tagName){
                 //DOWN
                 var node, sNode = (node = selXml).selectSingleNode("prop") || node.nextSibling;
                 do {
-                    while(sNode && (sNode.nodeType != 1 || sNode[apf.TAGNAME] != "prop")) 
+                    while(sNode && (sNode.nodeType != 1 || sNode[ppc.TAGNAME] != "prop")) 
                         sNode = sNode.nextSibling;
                     
                     if (!sNode) {
                         sNode = node.parentNode.nextSibling;
-                        if (sNode && sNode[apf.TAGNAME] != "prop")
+                        if (sNode && sNode[ppc.TAGNAME] != "prop")
                             sNode = sNode.selectSingleNode("prop");
                     }
                 }while(sNode && sNode.nodeType != 1);
@@ -353,18 +353,18 @@ apf.propedit    = function(struct, tagName){
                 if (!sNode)
                     return;
 
-                var selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                var selHtml = ppc.xmldb.findHtmlNode(sNode, this);
                 while (!selHtml.offsetWidth)
-                    selHtml = apf.xmldb.findHtmlNode(sNode = sNode.parentNode, this);
+                    selHtml = ppc.xmldb.findHtmlNode(sNode = sNode.parentNode, this);
                 
                 if (sNode == node) {
                     sNode = node.nextSibling
-                    while(sNode && (sNode.nodeType != 1 || sNode[apf.TAGNAME] != "prop")) 
+                    while(sNode && (sNode.nodeType != 1 || sNode[ppc.TAGNAME] != "prop")) 
                         sNode = sNode.nextSibling;
-                    var selHtml = apf.xmldb.findHtmlNode(sNode, this);
+                    var selHtml = ppc.xmldb.findHtmlNode(sNode, this);
                 }
                 
-                var top = apf.getAbsolutePosition(selHtml, this.$body)[1] 
+                var top = ppc.getAbsolutePosition(selHtml, this.$body)[1] 
                     + (selHtml.offsetHeight/2);
                 if (top > this.$ext.scrollTop + this.$ext.offsetHeight)
                     this.$ext.scrollTop = top - this.$ext.offsetHeight;
@@ -381,7 +381,7 @@ apf.propedit    = function(struct, tagName){
     // Too slow for IE
     
     this.$focus = function(){
-        if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
+        if (!this.$ext || (ppc.isIE && this.$useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
             return;
 
         this.$setStyleClass(this.oFocus || this.$ext, this.$baseCSSname + "Focus");
@@ -400,7 +400,7 @@ apf.propedit    = function(struct, tagName){
         //#endif
 
         //@todo fix this by fixing focussing for this component
-        if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix))
+        if (!this.$ext || (ppc.isIE && this.$useiframe && this.cssfix))
             return;
 
         this.$setStyleClass(this.oFocus || this.$ext, "", [this.$baseCSSname + "Focus"]);
@@ -417,7 +417,7 @@ apf.propedit    = function(struct, tagName){
     this.$slideToggle = function(htmlNode){
         container = htmlNode.parentNode.lastChild;
         
-        if (apf.getStyle(container, "display") == "block") {
+        if (ppc.getStyle(container, "display") == "block") {
             htmlNode.className = htmlNode.className.replace(/min/, "plus");
             this.$slideClose(container);
         }
@@ -430,7 +430,7 @@ apf.propedit    = function(struct, tagName){
     this.$slideOpen = function(container){
         container.style.display = "";
 
-        apf.tween.single(container, {
+        ppc.tween.single(container, {
             type    : 'scrollheight', 
             from    : 3, 
             diff    : -2,
@@ -449,7 +449,7 @@ apf.propedit    = function(struct, tagName){
         container.style.height   = container.offsetHeight;
         container.style.overflow = "hidden";
 
-        apf.tween.single(container, {
+        ppc.tween.single(container, {
             type    : 'scrollheight', 
             from    : container.scrollHeight, 
             diff    : -2,
@@ -600,7 +600,7 @@ apf.propedit    = function(struct, tagName){
         */
         else if (false) {
             var _self = this;
-            apf.queue.add("load" + this.$uniqueId, function(){
+            ppc.queue.add("load" + this.$uniqueId, function(){
                 _self.$allowLoad = true;
                 _self.$checkLoadQueue();
                 delete _self.$allowLoad;
@@ -611,8 +611,8 @@ apf.propedit    = function(struct, tagName){
     
     this.$generateCacheId = function(xmlNode){
         var node = this.$getProperties();
-        return node ? node.getAttribute(apf.xmldb.xmlIdTag) 
-                || apf.xmldb.nodeConnect(apf.xmldb.getXmlDocId(node), node)
+        return node ? node.getAttribute(ppc.xmldb.xmlIdTag) 
+                || ppc.xmldb.nodeConnect(ppc.xmldb.getXmlDocId(node), node)
               : 0;
     }
     
@@ -632,10 +632,10 @@ apf.propedit    = function(struct, tagName){
     this.$setCurrentFragment = function(fragment){
         this.$container.appendChild(fragment);
 
-        if (!apf.window.hasFocus(this))
+        if (!ppc.window.hasFocus(this))
             this.blur();
 
-        apf.xmldb.addNodeListener(this.xmlRoot, this); //set node listener if not set yet
+        ppc.xmldb.addNodeListener(this.xmlRoot, this); //set node listener if not set yet
         
         //@todo most unoptimized way possible:
         if (this.filter && this.$allowLoad != 2) {
@@ -646,7 +646,7 @@ apf.propedit    = function(struct, tagName){
         else {
             this.$xmlUpdate(null, this.xmlRoot);
             this.$properties = fragment.properties;
-            this.select(apf.xmldb.findHtmlNode(this.$properties.selectSingleNode(".//prop"), this));
+            this.select(ppc.xmldb.findHtmlNode(this.$properties.selectSingleNode(".//prop"), this));
         }
     };
     
@@ -655,11 +655,11 @@ apf.propedit    = function(struct, tagName){
         if (!p) return false;
 
         var output = [];
-        var docId = this.documentId = apf.xmldb.getXmlDocId(p);
+        var docId = this.documentId = ppc.xmldb.getXmlDocId(p);
 
         //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(xmlNode, this); //@todo apf3 potential cleanup problem
-        //apf.xmldb.addNodeListener(this.xmlRoot, this);
+        ppc.xmldb.addNodeListener(xmlNode, this); //@todo ppc3 potential cleanup problem
+        //ppc.xmldb.addNodeListener(this.xmlRoot, this);
 
         var _self = this, doc = p.ownerDocument;
         (function walk(nodes, parent, depth){
@@ -668,12 +668,12 @@ apf.propedit    = function(struct, tagName){
                 _self.$getNewContext("row") 
                 html = _self.$getLayoutNode("row");
                 
-                if (node[apf.TAGNAME] == "group") {
+                if (node[ppc.TAGNAME] == "group") {
                     _self.$getNewContext("cell");
-                    apf.setStyleClass(html, "heading");
+                    ppc.setStyleClass(html, "heading");
 
                     cell = html.appendChild(_self.$getLayoutNode("cell"));
-                    apf.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
+                    ppc.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
                         (node.getAttribute("caption") || "").trim() || ""); //@todo for IE but seems not a good idea
                 
                     //group|
@@ -683,14 +683,14 @@ apf.propedit    = function(struct, tagName){
                     u.setAttribute("class", "min");
                 }
                 else {
-                    apf.xmldb.nodeConnect(docId, node, html, _self);
+                    ppc.xmldb.nodeConnect(docId, node, html, _self);
                 
                     //Build the Cells
                     _self.$getNewContext("cell");
                     h = _self.$headings[0];
         
                     cell = html.appendChild(_self.$setStyleClass(_self.$getLayoutNode("cell"), h.$className));
-                    apf.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
+                    ppc.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
                         (node.getAttribute("caption") || "").trim() || ""); //@todo for IE but seems not a good idea
 
                     if (depth)
@@ -700,8 +700,8 @@ apf.propedit    = function(struct, tagName){
                     h = _self.$headings[1];
 
                     cell = html.appendChild(_self.$setStyleClass(_self.$getLayoutNode("cell"), h.$className));
-                    apf.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
-                        ((apf.lm.compile(node.getAttribute("value"), {nostring: true}))(_self.xmlRoot) || "") || ""); //@todo for IE but seems not a good idea
+                    ppc.setNodeValue(_self.$getLayoutNode("cell", "caption", cell),
+                        ((ppc.lm.compile(node.getAttribute("value"), {nostring: true}))(_self.xmlRoot) || "") || ""); //@todo for IE but seems not a good idea
                     
                     if ((s = node.selectNodes("prop")).length) {
                         pnode = html.appendChild(doc.createElement("blockquote"));
@@ -721,7 +721,7 @@ apf.propedit    = function(struct, tagName){
             }
         })(p.selectNodes("group|prop"), null, 0);
         
-        apf.insertHtmlNodes(output, this.$body);
+        ppc.insertHtmlNodes(output, this.$body);
         
         this.setProperty("root", this.xmlRoot); //or xmlNode ??
 
@@ -729,7 +729,7 @@ apf.propedit    = function(struct, tagName){
         var prop = p.selectSingleNode(".//prop");
         if (prop) {
             this.select(this.$findHtmlNode(
-              prop.getAttribute(apf.xmldb.xmlIdTag) 
+              prop.getAttribute(ppc.xmldb.xmlIdTag) 
               + "|" + this.$uniqueId));
         }
         
@@ -746,7 +746,7 @@ apf.propedit    = function(struct, tagName){
 
         if (UndoObj && this.$lastEditor[0] == UndoObj.amlNode) {
             this.$lastEditor[1].firstChild.innerHTML = 
-                ((apf.lm.compile(this.$lastEditor[2].getAttribute("value"), {
+                ((ppc.lm.compile(this.$lastEditor[2].getAttribute("value"), {
                     nostring: true
                 }))(this.xmlRoot) || "") || "";
         }
@@ -759,11 +759,11 @@ apf.propedit    = function(struct, tagName){
             for (var i = 0, l = nodes.length; i < l; i++) {
                 node     = nodes[i];
                 htmlNode = this.$findHtmlNode(
-                    node.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId);
+                    node.getAttribute(ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId);
                 
                 htmlNode.childNodes[htmlNode.firstChild.tagName == "U" ? 2 : 1]
                   .firstChild.innerHTML = 
-                    ((apf.lm.compile(node.getAttribute("value"), {
+                    ((ppc.lm.compile(node.getAttribute("value"), {
                         nostring: true
                     }))(this.xmlRoot) || "") || "";
             }
@@ -799,7 +799,7 @@ apf.propedit    = function(struct, tagName){
     }
     
     this.select = function(htmlNode){
-        if (this.disabled) //@todo apf3.0 userAction
+        if (this.disabled) //@todo ppc3.0 userAction
             return;
         
         
@@ -820,7 +820,7 @@ apf.propedit    = function(struct, tagName){
 
         this.$hideEditor();
         
-        var prop = apf.xmldb.getNode(htmlNode);
+        var prop = ppc.xmldb.getNode(htmlNode);
         var _self = this;
         
         this.setProperty("selected", prop);
@@ -831,19 +831,19 @@ apf.propedit    = function(struct, tagName){
          */
         var editParent = this.$selected.childNodes[this.$selected.firstChild.tagName == "U" ? 2 : 1];
         var oEditor, editor = prop.getAttribute("editor");
-        var ceditor = apf.lm.compile(editor, {xpathmode: 2});
+        var ceditor = ppc.lm.compile(editor, {xpathmode: 2});
         if (ceditor.type == 2) {
             //#ifdef __DEBUG
             if (!editor) {
                 if (prop.childNodes.length) //It's a group
                     return;
                 else 
-                    throw new Error("Missing editor attribute on property element: " + prop.xml); //@todo apf3.0 make into proper error
+                    throw new Error("Missing editor attribute on property element: " + prop.xml); //@todo ppc3.0 make into proper error
             }
             //#endif
             
             if (!this.$editors[editor]) {
-                var constr = apf.namespaces[apf.ns.aml].elements[editor];
+                var constr = ppc.namespaces[ppc.ns.aml].elements[editor];
                 var isTextbox = "textarea|textbox|secret".indexOf(editor) > -1;
                 var info   = {
                     htmlNode : editParent,
@@ -868,17 +868,17 @@ apf.propedit    = function(struct, tagName){
                 
                 //@todo copy all non-known properties of the prop element
 
-                if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
+                if (constr.prototype.hasFeature(ppc.__MULTISELECT__)) {
                     info.caption   = "[text()]";
                     info.eachvalue = "[@value]";
                     info.each      = "item";
-                    info.model     = "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}";
+                    info.model     = "{ppc.xmldb.getElementById('" 
+                        + prop.getAttribute(ppc.xmldb.xmlIdTag) + "')}";
                 }
 
                 oEditor = this.$editors[editor] = new constr(info);
                 
-                var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
+                var box = ppc.getBox(ppc.getStyle(oEditor.$ext, "margin"));
                 if (box[1] || box[3]) {
                     oEditor.setAttribute("width", "100%+2-" + (box[1] + box[3]));
                 }
@@ -911,9 +911,9 @@ apf.propedit    = function(struct, tagName){
             else {
                 oEditor = this.$editors[editor];
 
-                if (oEditor.hasFeature(apf.__MULTISELECT__)) {
-                    oEditor.setAttribute("model", "{apf.xmldb.getElementById('" 
-                        + prop.getAttribute(apf.xmldb.xmlIdTag) + "')}");
+                if (oEditor.hasFeature(ppc.__MULTISELECT__)) {
+                    oEditor.setAttribute("model", "{ppc.xmldb.getElementById('" 
+                        + prop.getAttribute(ppc.xmldb.xmlIdTag) + "')}");
                 }
 
                 oEditor.setAttribute("value", "[{" + this.id + ".root}::" 
@@ -923,7 +923,7 @@ apf.propedit    = function(struct, tagName){
                 oEditor.setProperty("visible", true);
                 if (oEditor.$ext.parentNode 
                   && oEditor.$ext.parentNode.nodeType == 1
-                  && !apf.hasSingleResizeEvent) {
+                  && !ppc.hasSingleResizeEvent) {
                     if (!oEditor.$parentRsz) 
                         oEditor.$parentRsz = oEditor.$ext.parentNode.onresize;
                     oEditor.$ext.parentNode.removeAttribute("id");
@@ -932,7 +932,7 @@ apf.propedit    = function(struct, tagName){
 
                 editParent.appendChild(oEditor.$ext);
                 editParent.setAttribute("id", editParent.$parentId);
-                if (oEditor.$parentRsz && !apf.hasSingleResizeEvent) {
+                if (oEditor.$parentRsz && !ppc.hasSingleResizeEvent) {
                     editParent.onresize = oEditor.$parentRsz;
                     editParent.onresize();
                 }
@@ -994,7 +994,7 @@ apf.propedit    = function(struct, tagName){
 
         var widthdiff = this.$widthdiff = this.$getOption("main", "widthdiff") || 0;
         this.$defaultwidth = this.$getOption("main", "defaultwidth") || "100";
-        this.$useiframe    = apf.isIE && (apf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
+        this.$useiframe    = ppc.isIE && (ppc.isTrue(this.$getOption("main", "iframe")) || this.iframe);
 
         var _self = this;
         
@@ -1004,7 +1004,7 @@ apf.propedit    = function(struct, tagName){
             //var sInt = this.$body.outerHTML 
             var sClass   = this.$body.className;
             //this.$body.parentNode.removeChild(this.$body);
-            this.oIframe = this.$body.appendChild(document.createElement(apf.isIE 
+            this.oIframe = this.$body.appendChild(document.createElement(ppc.isIE 
                 ? "<iframe frameborder='0'></iframe>"
                 : "iframe"));
             this.oIframe.frameBorder = 0;
@@ -1013,9 +1013,9 @@ apf.propedit    = function(struct, tagName){
             this.oDoc.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
                 <html xmlns="http://www.w3.org/1999/xhtml">\
                     <head><script>\
-                        apf = {\
+                        ppc = {\
                             lookup : function(uid){\
-                                return window.parent.apf.lookup(uid);\
+                                return window.parent.ppc.lookup(uid);\
                             },\
                             Init : {add:function(){},run:function(){}}\
                         };</script>\
@@ -1029,14 +1029,14 @@ apf.propedit    = function(struct, tagName){
             this.oDoc.documentElement.className = this.$ext.className;
             //this.oDoc.body.className = this.$ext.className;
 
-            apf.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
+            ppc.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
             
-            if (apf.isIE) //@todo this can be removed when focussing is fixed for this component
+            if (ppc.isIE) //@todo this can be removed when focussing is fixed for this component
                 this.$setStyleClass(this.oDoc.documentElement, this.$baseCSSname + "Focus");
             
-            apf.convertIframe(this.oIframe, true);
+            ppc.convertIframe(this.oIframe, true);
 
-            if (apf.getStyle(this.oDoc.documentElement, "overflowY") == "auto") {
+            if (ppc.getStyle(this.oDoc.documentElement, "overflowY") == "auto") {
                 //@todo ie only
                 this.oIframe.onresize = function(){
                     _self.$head.style.marginRight = 
@@ -1051,7 +1051,7 @@ apf.propedit    = function(struct, tagName){
             this.oDoc.documentElement.onmousedown = function(e){
                 if (!e) e = _self.oWin.event;
                 if ((e.srcElement || e.target).tagName == "HTML")
-                    apf.popup.forceHide();
+                    ppc.popup.forceHide();
             }
                         
             this.oDoc.documentElement.onscroll = 
@@ -1061,7 +1061,7 @@ apf.propedit    = function(struct, tagName){
                 };
         }
         else {
-            if (apf.getStyle(this.$body, "overflowY") == "auto") {
+            if (ppc.getStyle(this.$body, "overflowY") == "auto") {
                 this.$resize = function(){
                     _self.$head.style.marginRight = 
                       _self.$body.scrollHeight > _self.$body.offsetHeight 
@@ -1079,7 +1079,7 @@ apf.propedit    = function(struct, tagName){
             this.$body.onmousedown = function(e){
                 if (!e) e = event;
                 if ((e.srcElement || e.target) == this)
-                    apf.popup.forceHide();
+                    ppc.popup.forceHide();
             }
             
             this.$body.onscroll = 
@@ -1101,7 +1101,7 @@ apf.propedit    = function(struct, tagName){
                 return;
             }
             
-            while (target.host || (target.getAttribute(apf.xmldb.htmlIdTag) || "").indexOf("|") == -1) {
+            while (target.host || (target.getAttribute(ppc.xmldb.htmlIdTag) || "").indexOf("|") == -1) {
                 target = target.parentNode;
                 if (target == this) return;
             }
@@ -1113,13 +1113,13 @@ apf.propedit    = function(struct, tagName){
     this.$loadAml = function(x){
         //Create two columns
         this.$headings = [
-            new apf.BindingColumnRule().$draw(this, "Property", this.$columns[0], "first"),
-            new apf.BindingColumnRule().$draw(this, "Value", this.$columns[1])
+            new ppc.BindingColumnRule().$draw(this, "Property", this.$columns[0], "first"),
+            new ppc.BindingColumnRule().$draw(this, "Value", this.$columns[1])
         ];
     };
     
     this.$destroy = function(){
-        apf.popup.removeContent(this.$uniqueId);
+        ppc.popup.removeContent(this.$uniqueId);
         
         for (var prop in this.$editors) {
             this.$editors[prop].destroy();
@@ -1128,15 +1128,15 @@ apf.propedit    = function(struct, tagName){
         this.$ext.onclick = null;
     };
 // #ifdef __WITH_DATABINDING
-}).call(apf.propedit.prototype = new apf.DataBinding());
+}).call(ppc.propedit.prototype = new ppc.DataBinding());
 /* #else
-}).call(apf.propedit.prototype = new apf.Presentation());
+}).call(ppc.propedit.prototype = new ppc.Presentation());
 #endif*/
 
-apf.aml.setElement("propedit",    apf.propedit);
-apf.aml.setElement("column",      apf.BindingColumnRule);
-apf.aml.setElement("description", apf.BindingRule);
-apf.aml.setElement("color",       apf.BindingRule);
+ppc.aml.setElement("propedit",    ppc.propedit);
+ppc.aml.setElement("column",      ppc.BindingColumnRule);
+ppc.aml.setElement("description", ppc.BindingRule);
+ppc.aml.setElement("color",       ppc.BindingRule);
 
 //#endif
 
@@ -1144,27 +1144,27 @@ apf.aml.setElement("color",       apf.BindingRule);
 /**
  * @private
  */
-//@todo this is all broken. needs to be fixed before apf3.0
-apf.convertIframe = function(iframe, preventSelect){
+//@todo this is all broken. needs to be fixed before ppc3.0
+ppc.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;
     var pos;
 
-    if (!apf.isIE)
-        apf.importClass(apf.runNonIe, true, win);
+    if (!ppc.isIE)
+        ppc.importClass(ppc.runNonIe, true, win);
         
     //Load Browser Specific Code
     // #ifdef __SUPPORT_WEBKIT
     if (this.isSafari) 
-        this.importClass(apf.runSafari, true, win);
+        this.importClass(ppc.runSafari, true, win);
     // #endif
     // #ifdef __SUPPORT_OPERA
     if (this.isOpera) 
-        this.importClass(apf.runOpera, true, win);
+        this.importClass(ppc.runOpera, true, win);
     // #endif
     // #ifdef __SUPPORT_GECKO
     if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
-        this.importClass(apf.runGecko, true, win);
+        this.importClass(ppc.runGecko, true, win);
     // #endif
     
     doc.onkeydown = function(e){
@@ -1179,7 +1179,7 @@ apf.convertIframe = function(iframe, preventSelect){
         if (!e) e = win.event;
 
         if (!pos)
-            pos = apf.getAbsolutePosition(iframe);
+            pos = ppc.getAbsolutePosition(iframe);
 
         var q = {
             offsetX       : e.offsetX,
@@ -1199,7 +1199,7 @@ apf.convertIframe = function(iframe, preventSelect){
         if (document.onmousedown)
             document.onmousedown(q);
         
-        if (preventSelect && !apf.isIE)
+        if (preventSelect && !ppc.isIE)
             return false;
     };
     
@@ -1229,7 +1229,7 @@ apf.convertIframe = function(iframe, preventSelect){
     doc.documentElement.oncontextmenu = function(e){
         if (!e) e = win.event;
         if (!pos)
-            pos = apf.getAbsolutePosition(iframe);
+            pos = ppc.getAbsolutePosition(iframe);
         
         var q = {
             offsetX       : e.offsetX,
@@ -1254,13 +1254,13 @@ apf.convertIframe = function(iframe, preventSelect){
     };
 
     doc.documentElement.onmouseover = function(e){
-        pos = apf.getAbsolutePosition(iframe);
+        pos = ppc.getAbsolutePosition(iframe);
     };
 
     doc.documentElement.onmousemove = function(e){
         if (!e) e = win.event;
         if (!pos)
-            pos = apf.getAbsolutePosition(iframe);
+            pos = ppc.getAbsolutePosition(iframe);
     
         var q = {
             offsetX       : e.offsetX,

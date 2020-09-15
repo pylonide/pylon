@@ -23,7 +23,7 @@
 
 // Only add setZeroTimeout to the window object, and hide everything
 // else in a closure.
-apf.setZeroTimeout = !window.postMessage
+ppc.setZeroTimeout = !window.postMessage
   ? (function() {
         function setZeroTimeout() {
             return $setTimeout.apply(null, arguments);
@@ -53,19 +53,19 @@ apf.setZeroTimeout = !window.postMessage
         function handleMessage(e) {
             if (!e) e = event;
             if (e.source == window && e.data == messageName) {
-                apf.stopPropagation(e);
+                ppc.stopPropagation(e);
                 if (timeouts.length > 0 && (t = timeouts.shift()))
                     t();
             }
         }
 
-        apf.addListener(window, "message", handleMessage, true);
+        ppc.addListener(window, "message", handleMessage, true);
 
         // Add the one thing we want added to the window object.
         return setZeroTimeout;
     })();
 /* #else
-apf.setZeroTimeout = setTimeout;
+ppc.setZeroTimeout = setTimeout;
 #endif */
 
 // #ifdef __WITH_QUEUE
@@ -73,8 +73,8 @@ apf.setZeroTimeout = setTimeout;
 /*
  *
  */
-apf.queue = {
-    //@todo apf3.0
+ppc.queue = {
+    //@todo ppc3.0
     q : {},
 
     timer : null,
@@ -82,12 +82,12 @@ apf.queue = {
         this.q[id] = f;
         if (!this.timer)
             //#ifdef __WITH_ZERO_TIMEOUT
-            this.timer = apf.setZeroTimeout(function(){
-                apf.queue.empty();
+            this.timer = ppc.setZeroTimeout(function(){
+                ppc.queue.empty();
             });
             /* #else
-            this.timer = apf.setTimeout(function(){
-                apf.queue.empty();
+            this.timer = ppc.setTimeout(function(){
+                ppc.queue.empty();
             });
             #endif */
     },
@@ -98,19 +98,19 @@ apf.queue = {
 
     empty : function(prop){
         //#ifdef __WITH_ZERO_TIMEOUT
-        apf.setZeroTimeout.clearTimeout(this.timer);
+        ppc.setZeroTimeout.clearTimeout(this.timer);
         /* #else
         clearTimeout(this.timer);
         #endif */
         this.timer = null;
 
         //#ifdef __WITH_LAYOUT
-        if (apf.layout && apf.layout.$hasQueue)
-            apf.layout.processQueue();
+        if (ppc.layout && ppc.layout.$hasQueue)
+            ppc.layout.processQueue();
         //#endif
         //#ifdef __WITH_XMLDATABASE
-        if (apf.xmldb && apf.xmldb.$hasQueue)
-            apf.xmldb.notifyQueued();
+        if (ppc.xmldb && ppc.xmldb.$hasQueue)
+            ppc.xmldb.notifyQueued();
         //#endif
 
         var q  = this.q;

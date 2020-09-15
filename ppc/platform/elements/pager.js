@@ -25,7 +25,7 @@
  * This elements displays buttons which can be used to navigate between some
  * parts of data, for example between parts of article
  * 
- * @class apf.pager
+ * @class ppc.pager
  * @define pager
  * 
  * @selection
@@ -33,9 +33,9 @@
  * @attribute {String} previous   determines the caption of "go to previous page" button
  * @attribute {String} next       determines the caption of "go to next page" button
  * 
- * @inherits apf.Presentation
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
+ * @inherits ppc.Presentation
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
  *     
  * @version     %I%, %G% 
  * 
@@ -46,8 +46,8 @@
  * @binding total        Determines the number of pages.
  * 
  */
-apf.pager = function(struct, tagName){
-    this.$init(tagName || "pager", apf.NODE_VISIBLE, struct);
+ppc.pager = function(struct, tagName){
+    this.$init(tagName || "pager", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
@@ -60,7 +60,7 @@ apf.pager = function(struct, tagName){
     this.oEmpty     = null;
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         pageload : 1
     }, this.$attrExcludePropBind);
     
@@ -177,10 +177,10 @@ apf.pager = function(struct, tagName){
             this.$setStyleClass(btn, "previous");
             
             if (curpage != 1) {
-                btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
+                btn.setAttribute("onclick", "ppc.lookup(" + this.$uniqueId
                     + ").gotoPage(null, -1, true)");
-                btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
-                btn.setAttribute("onmouseup", 'apf.setStyleClass(this,"", ["down"]);');
+                btn.setAttribute("onmousedown", 'ppc.setStyleClass(this, "down");');
+                btn.setAttribute("onmouseup", 'ppc.setStyleClass(this,"", ["down"]);');
             }
             else {
                 this.$setStyleClass(btn, "disabled");
@@ -201,10 +201,10 @@ apf.pager = function(struct, tagName){
             this.$getNewContext("button");
             btn = this.$getLayoutNode("button");
             this.$getLayoutNode("button", "caption").nodeValue = i;
-            btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
+            btn.setAttribute("onclick", "ppc.lookup(" + this.$uniqueId
                 + ").gotoPage(" + i + ", null, true)");
-            btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
-            btn.setAttribute("onmouseup", 'apf.setStyleClass(this,"", ["down"]);');
+            btn.setAttribute("onmousedown", 'ppc.setStyleClass(this, "down");');
+            btn.setAttribute("onmouseup", 'ppc.setStyleClass(this,"", ["down"]);');
             nodes.push(btn);
             
             if (i == curpage)
@@ -218,10 +218,10 @@ apf.pager = function(struct, tagName){
             this.$setStyleClass(btn, "next");
             
             if (curpage != totalpages) {
-                btn.setAttribute("onclick", "apf.lookup(" + this.$uniqueId
+                btn.setAttribute("onclick", "ppc.lookup(" + this.$uniqueId
                     + ").gotoPage(null, 1, true)");
-                btn.setAttribute("onmousedown", 'apf.setStyleClass(this, "down");');
-                btn.setAttribute("onmouseup", 'apf.setStyleClass(this,"", ["down"]);');
+                btn.setAttribute("onmousedown", 'ppc.setStyleClass(this, "down");');
+                btn.setAttribute("onmouseup", 'ppc.setStyleClass(this,"", ["down"]);');
             }
             else {
                 this.$setStyleClass(btn, "disabled");
@@ -230,19 +230,19 @@ apf.pager = function(struct, tagName){
             nodes.push(btn);
         }
         
-        apf.insertHtmlNodes(nodes, this.$container);
+        ppc.insertHtmlNodes(nodes, this.$container);
         
         if (this.$empty)
             this.$container.appendChild(this.$empty);
     }
     
 // #ifdef __WITH_DATABINDING
-}).call(apf.pager.prototype = new apf.StandardBinding());
+}).call(ppc.pager.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.pager.prototype = new apf.Presentation());
+}).call(ppc.pager.prototype = new ppc.Presentation());
 #endif */
 
-apf.aml.setElement("pager",   apf.pager);
-apf.aml.setElement("total",   apf.BindingRule);
-apf.aml.setElement("current", apf.BindingRule);
+ppc.aml.setElement("pager",   ppc.pager);
+ppc.aml.setElement("total",   ppc.BindingRule);
+ppc.aml.setElement("current", ppc.BindingRule);
 // #endif

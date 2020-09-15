@@ -24,7 +24,7 @@
 /**
  * Element allowing data synchronization between multiple clients using the same
  * application or application part. This element is designed as thecore of
- * collaborative application logic for Ajax.org Platform. The children of this
+ * collaborative application logic for Pylon Platform Code. The children of this
  * element specify how the uniqueness of {@link term.datanode data nodes} is determined. By pointing
  * models to this element, all changes to their data will be streamed through
  * this element to all listening client over a choosen protocol.
@@ -68,7 +68,7 @@
  * to remote databindings. When multiple people are working within the same
  * application it's important to have a system that prevents corruption of data
  * and data loss by either user overwriting records edited during the same period.
- * Ajax.org Platform has built in support for optimistic and pessimistic locking
+ * Pylon Platform Code has built in support for optimistic and pessimistic locking
  * in smartbindings. For more information please see {@link term.locking}.
  *
  * Advanced:
@@ -86,7 +86,7 @@
  * collaborative protocols (i.e. xmpp). In many cases offline rdb messages should
  * not be stored after the user has been offline for longer then a certain time.
  * For instance 10 minutes. An accumulation of change messages would create a
- * serious scaling problem and is not preferred. apf.offline has built in support
+ * serious scaling problem and is not preferred. ppc.offline has built in support
  * for this type of timeout. By setting the rdb-timeout attribute it is aware
  * of when the server has timed out. When this timeout is reached the application
  * will reload all its data from the server and discard all offline rdb
@@ -141,8 +141,8 @@
  * @todo Think about wrapping multiple messages in a single call
  * @todo Make RDB support different encoding protocols (think REX)
  */
-apf.remote = function(struct, tagName){
-    this.$init(tagName || "remote", apf.NODE_HIDDEN, struct);
+ppc.remote = function(struct, tagName){
+    this.$init(tagName || "remote", ppc.NODE_HIDDEN, struct);
 
 //    this.lookup              = {};
 //    this.select              = [];
@@ -153,9 +153,9 @@ apf.remote = function(struct, tagName){
     this.offlineQueue        = [];
 };
 
-apf.remote.SESSION_INITED     = 0x0001; //Session has not started yet.
-apf.remote.SESSION_STARTED    = 0x0002; //Session is started
-apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
+ppc.remote.SESSION_INITED     = 0x0001; //Session has not started yet.
+ppc.remote.SESSION_STARTED    = 0x0002; //Session is started
+ppc.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
 (function(){
     //#ifdef __WITH_OFFLINE
@@ -163,14 +163,14 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     //#endif
 
     this.logprefix = "";
-    if (!apf.isO3) {
+    if (!ppc.isO3) {
         this.log = function(msg){
-            apf.console.log(msg);
+            ppc.console.log(msg);
         }
     }
 
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         match : 1
     }, this.$attrExcludePropBind);
 
@@ -188,7 +188,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         //#ifdef __DEBUG
         if (!this.transport) {
-            throw new Error(apf.formatErrorString(0, this, "RDB: Missing transport",
+            throw new Error(ppc.formatErrorString(0, this, "RDB: Missing transport",
                 "A transport element with ID '" + value + "' could not be found."));
         }
         //#endif
@@ -198,7 +198,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             var uri, oSession;
             for (uri in _self.$sessions) {
                 oSession = _self.$sessions[uri];
-                if (oSession.state == apf.remote.SESSION_STARTED)
+                if (oSession.state == ppc.remote.SESSION_STARTED)
                     continue;
 
                 this.join(uri, function(uri, iTime) {
@@ -211,7 +211,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             var uri, oSession;
             for (uri in _self.$sessions) {
                 oSession       = _self.$sessions[uri];
-                oSession.state = apf.remote.SESSION_TERMINATED;
+                oSession.state = ppc.remote.SESSION_TERMINATED;
             }
         });
 
@@ -253,7 +253,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     this.$update = function(e){
         var sData    = e.message.args ? [e.message] : e.message;
         var oData    = typeof sData == "string"
-                ? apf.unserialize(sData)
+                ? ppc.unserialize(sData)
                 : sData;
         var oSession = this.$sessions[e.uri];
         var i        = 0;
@@ -283,7 +283,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             //@todo if this model is in a session stop that session
         }
         else
-            model = new apf.model(); //apf.nameserver.register("model", id, );
+            model = new ppc.model(); //ppc.nameserver.register("model", id, );
 
         model.setProperty("remote", this);
         model.rdb = this;
@@ -319,10 +319,10 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             return;
 
         var oSession = this.$sessions[uri];
-        if (this.transport && this.transport.isConnected() && oSession.state != apf.remote.SESSION_TERMINATED)
+        if (this.transport && this.transport.isConnected() && oSession.state != ppc.remote.SESSION_TERMINATED)
             this.transport.leave(uri);
 
-        oSession.state = apf.remote.SESSION_TERMINATED;
+        oSession.state = ppc.remote.SESSION_TERMINATED;
 
         delete this.$sessions[uri];
     };
@@ -334,7 +334,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             uri   : uri,
             model : model,
             xpath : xpath,
-            state : apf.remote.SESSION_INITED
+            state : ppc.remote.SESSION_INITED
         };
     };
 
@@ -348,7 +348,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             return false;
         }
 
-        oSession.state = apf.remote.SESSION_STARTED;
+        oSession.state = ppc.remote.SESSION_STARTED;
         if (basetime && !oSession.basetime)
             oSession.basetime = basetime;
 
@@ -366,7 +366,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         // #ifdef __DEBUG
         if (!oSession) {
-            this.log && this.log(this.logprefix + apf.formatErrorString(0, this, "RDB: sending message",
+            this.log && this.log(this.logprefix + ppc.formatErrorString(0, this, "RDB: sending message",
                 "No RDB session found. Please make sure a session is created for this model: "
                 + model.serialize()));
             return false;
@@ -387,7 +387,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
                 args[i] = this.xmlToXpath(args[i], model.data);
             }
-            else if (node && node.dataType == apf.ARRAY) {
+            else if (node && node.dataType == ppc.ARRAY) {
                 for (var j = 0; j < node.length; j++) {
                     if (node[j] && node[j].nodeType)
                         node[j] = this.xmlToXpath(node[j], model.data);
@@ -405,7 +405,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     this.$processQueue = function(qHost){
         if (qHost === this)
             clearTimeout(this.queueTimer);
-        if (apf.xmldb.disableRDB)
+        if (ppc.xmldb.disableRDB)
             return;
 
         var list;
@@ -430,14 +430,14 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
     };
 
     this.$receiveChange = function(oMessage, oSession, sAnnotator){
-        //if (apf.xmldb.disableRDB) {
-            this.log && this.log(this.logprefix + "Receiving change. disableRDB=" + apf.xmldb.disableRDB);
+        //if (ppc.xmldb.disableRDB) {
+            this.log && this.log(this.logprefix + "Receiving change. disableRDB=" + ppc.xmldb.disableRDB);
             //return;
         //}
 
         //#ifdef __WITH_OFFLINE
-        // @todo apf3.0 implement proper offline support in RDB
-        if (apf.offline && apf.offline.inProcess == 2) {
+        // @todo ppc3.0 implement proper offline support in RDB
+        if (ppc.offline && ppc.offline.inProcess == 2) {
              //We're coming online, let's queue until after sync
             this.offlineQueue.push(oMessage);
 
@@ -451,7 +451,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
 
         if (!oSession) {
             // #ifdef __DEBUG
-            apf.console.error("Could not find session while receiving data for a session with id '"
+            ppc.console.error("Could not find session while receiving data for a session with id '"
                 + oMessage.uri + "'");
             // #endif
             return;
@@ -463,16 +463,16 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         var model = oSession.model;
         if (!model) {
             //#ifdef __DEBUG
-            apf.console.error("Remote Databinding Received: Could not find model while"
+            ppc.console.error("Remote Databinding Received: Could not find model while"
                  + " receiving data for it with identifier '" + oMessage.model + "'");
             //#endif
             return;
         }
         if (!model.$at)
-            model.$at = apf.window.$at; //@todo find better solution to the case of a missing ActionTracker...
+            model.$at = ppc.window.$at; //@todo find better solution to the case of a missing ActionTracker...
 
-        var oError, xmlNode, disableRDB = apf.xmldb.disableRDB;
-        apf.xmldb.disableRDB = 2; //Feedback prevention
+        var oError, xmlNode, disableRDB = ppc.xmldb.disableRDB;
+        ppc.xmldb.disableRDB = 2; //Feedback prevention
 
         // Correct timestamp with the session basetime
         var time = oSession.basetime + parseInt(oMessage.currdelta, 10);
@@ -503,7 +503,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
             if (action == "addChildNode")
                 q[3] = this.xpathToXml(q[3], model.data);
             else if (action == "appendChild") {
-                q[1] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
+                q[1] = typeof q[1] == "string" ? ppc.getXml(q[1]) : q[1];
                 q[2] = q[2] ? this.xpathToXml(q[2], model.data) : null;
             }
             else if (action == "moveNode") {
@@ -511,7 +511,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
                 q[2] = q[2] ? this.xpathToXml(q[2], model.data) : null;
             }
             else if (action == "replaceNode") {
-                q[0] = typeof q[1] == "string" ? apf.getXml(q[1]) : q[1];
+                q[0] = typeof q[1] == "string" ? ppc.getXml(q[1]) : q[1];
                 q[1] = xmlNode;
             }
             else if (action == "removeNodeList") {
@@ -540,7 +540,7 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         }
         //#ifdef __DEBUG
         else {
-            oError = new Error(apf.formatErrorString(0, this,
+            oError = new Error(ppc.formatErrorString(0, this,
                 "Remote Databinding Received", "Could not get XML node from \
                  model with Xpath '" + xpath + "' for URI '" + oMessage.uri + "' " + JSON.stringify(oMessage)));
         }
@@ -552,15 +552,15 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
                 delete aUndos[i].$dontapply;
         }
 
-        apf.xmldb.disableRDB = disableRDB;
+        ppc.xmldb.disableRDB = disableRDB;
 
         if (oError) {
-            apf.console.error(this.logprefix + oError.message)
+            ppc.console.error(this.logprefix + oError.message)
         }
     };
 
-    this.xmlToXpath = apf.xmlToXpath;
-    this.xpathToXml = apf.xpathToXml;
+    this.xmlToXpath = ppc.xmlToXpath;
+    this.xpathToXml = ppc.xpathToXml;
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         //#ifdef __DEBUG
@@ -570,9 +570,9 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         //#endif
 
         //#ifdef __WITH_OFFLINE
-        if (apf.offline && apf.offline.enabled) {
+        if (ppc.offline && ppc.offline.enabled) {
             var _self = this;
-            apf.offline.addEventListener("afteronline", function(){
+            ppc.offline.addEventListener("afteronline", function(){
                 for (var i = 0, l = _self.offlineQueue.length; i < l; i++)
                     _self.$receiveChange(_self.offlineQueue[i]);
 
@@ -586,8 +586,8 @@ apf.remote.SESSION_TERMINATED = 0x0004; //Session is terminated
         for (var i = 0, l = this.$sessions.length; i < l; ++i)
             this.endSession(this.$sessions[i].uri);
     });
-}).call(apf.remote.prototype = new apf.AmlElement());
+}).call(ppc.remote.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("remote", apf.remote);
+ppc.aml.setElement("remote", ppc.remote);
 
 // #endif

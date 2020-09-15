@@ -33,20 +33,20 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.video.TypeFlv = function(oVideo, node, options) {
+ppc.video.TypeFlv = function(oVideo, node, options) {
     this.oVideo              = oVideo;
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH    = (apf.config.resourcePath || apf.basePath) + "elements/video/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = (ppc.config.resourcePath || ppc.basePath) + "elements/video/FAVideo.swf";
     /* #else
-    this.DEFAULT_SWF_PATH    = (apf.config.resourcePath || apf.basePath) + "resources/FAVideo.swf";
+    this.DEFAULT_SWF_PATH    = (ppc.config.resourcePath || ppc.basePath) + "resources/FAVideo.swf";
     #endif */
     /* #ifdef __WITH_CDN
-    this.DEFAULT_SWF_PATH    = apf.CDN + apf.VERSION + "/resources/videoplayer.swf";
+    this.DEFAULT_SWF_PATH    = ppc.CDN + ppc.VERSION + "/resources/videoplayer.swf";
     #endif */
     //this.DEFAULT_WIDTH       = "100%";
     //this.DEFAULT_HEIGHT      = "100%";
 
-    this.id = apf.flash.addPlayer(this); // Manager manages multiple players
+    this.id = ppc.flash.addPlayer(this); // Manager manages multiple players
     this.inited       = false;
     this.resizeTimer  = null;
 
@@ -62,16 +62,16 @@ apf.video.TypeFlv = function(oVideo, node, options) {
 
     // Initialize player
     this.player = null;
-    apf.extend(this, apf.video.TypeInterface);
+    ppc.extend(this, ppc.video.TypeInterface);
 
     this.initProperties().setOptions(options).createPlayer();
 }
 
-apf.video.TypeFlv.isSupported = function() {
-    return apf.flash.isAvailable();
+ppc.video.TypeFlv.isSupported = function() {
+    return ppc.flash.isAvailable();
 };
 
-apf.video.TypeFlv.prototype = {
+ppc.video.TypeFlv.prototype = {
     /**
      * Play an FLV. Does a call to the flash player to load or load & play the
      * video, depending on the 'autoPlay' flag (TRUE for play).
@@ -219,7 +219,7 @@ apf.video.TypeFlv.prototype = {
     },
 
     /*setFullscreen: function(value) {
-        apf.console.info('video::flash - going fullscreen = ' + value);
+        ppc.console.info('video::flash - going fullscreen = ' + value);
         return this.callMethod('setFullscreen', value);
     },*/
 
@@ -236,7 +236,7 @@ apf.video.TypeFlv.prototype = {
         else {
             var args = Array.prototype.slice.call(arguments);
             args.unshift(this.player, "callMethod");
-            apf.flash.remote.apply(null, args);
+            ppc.flash.remote.apply(null, args);
         }
 
         return this;
@@ -290,7 +290,7 @@ apf.video.TypeFlv.prototype = {
      * @type {void}
      */
     event: function(eventName, evtObj) {
-        apf.console.log("[FLASH] video event: " + eventName + ", " + evtObj);
+        ppc.console.log("[FLASH] video event: " + eventName + ", " + evtObj);
         switch (eventName) {
             case "progress":
                 this.bytesLoaded = evtObj.bytesLoaded;
@@ -330,7 +330,7 @@ apf.video.TypeFlv.prototype = {
                 this.oVideo.$cuePointHook({type:"cuePoint", infoObject:evtObj});
                 break;
             case "fullscreen":
-                apf.console.log('fullscreen: ', evtObj.state);
+                ppc.console.log('fullscreen: ', evtObj.state);
                 this.oVideo.fullscreen = false;
             case "init":
                 this.inited = true;
@@ -346,13 +346,13 @@ apf.video.TypeFlv.prototype = {
                 var node = this.oVideo.$int;
                 //#ifdef __WITH_LAYOUT
                 $setTimeout(function() {
-                    apf.layout.forceResize(node);
+                    ppc.layout.forceResize(node);
                 }, 1000);
                 //#endif
                 break;
             // #ifdef __DEBUG
             case "debug":
-                apf.console.log('Flash debug: ' + evtObj.msg);
+                ppc.console.log('Flash debug: ' + evtObj.msg);
                 break;
             // #endif
         }
@@ -390,12 +390,12 @@ apf.video.TypeFlv.prototype = {
             "bufferTime", "videoScaleMode", "videoAlign", "playheadUpdateInterval",
             "previewImagePath"];
         //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo",
-            "(apf.all[" + this.oVideo.$uniqueId + "].player && apf.all["
+        ppc.layout.setRules(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo",
+            "(ppc.all[" + this.oVideo.$uniqueId + "].player && ppc.all["
             + this.oVideo.$uniqueId + "].player.onResize \
-                ? apf.all[" + this.oVideo.$uniqueId + "].player \
-                : {onResize:apf.K}).onResize()");
-        apf.layout.queue(this.oVideo.$ext);
+                ? ppc.all[" + this.oVideo.$uniqueId + "].player \
+                : {onResize:ppc.K}).onResize()");
+        ppc.layout.queue(this.oVideo.$ext);
         //#endif
         return this;
     },
@@ -410,8 +410,8 @@ apf.video.TypeFlv.prototype = {
 
         this.pluginError = false;
         
-        apf.flash.embed({
-            // apf.flash#embed properties
+        ppc.flash.embed({
+            // ppc.flash#embed properties
             context          : this,
             htmlNode         : this.htmlElement,
             property         : "player",
@@ -492,8 +492,8 @@ apf.video.TypeFlv.prototype = {
 
     $destroy: function() {
         //#ifdef __WITH_LAYOUT
-        if (apf.layout)
-            apf.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo");
+        if (ppc.layout)
+            ppc.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_favideo");
         //#endif
         if (this.player) {
             try {

@@ -39,12 +39,12 @@ module.exports = ext.register("ext/splitview/splitview", {
     splits   : [],
 
     init : function(){
-        apf.importCssString(css || "");
+        ppc.importCssString(css || "");
         ide.addEventListener("theme.init", function(e) {
             var cssClass = e.theme.cssClass;
             var isDark = e.theme.isDark;
-            var stringColor = apf.getStyleRule("." + cssClass + " .ace_string", "color");
-            apf.importStylesheet([
+            var stringColor = ppc.getStyleRule("." + cssClass + " .ace_string", "color");
+            ppc.importStylesheet([
                 ["." + cssClass + " .editor_tab .btnsesssioncontainer div.curbtn.splitview_active .tab_middle", "color: " + stringColor + " !important"],
                 ["." + cssClass + " .editor_tab .btnsesssioncontainer div.curbtn.splitview_active .tab_middle", "text-shadow: " + (isDark
                     ? "rgba(0, 0, 0, .71) !important"
@@ -117,10 +117,10 @@ module.exports = ext.register("ext/splitview/splitview", {
         //@todo use menus
 
         this.nodes.push(
-            parent.appendChild(new apf.divider()),
+            parent.appendChild(new ppc.divider()),
             parent.appendChild(
                 //@todo turn into command
-                (mnuCloneView = new apf.item({
+                (mnuCloneView = new ppc.item({
                     caption : "Clone Editor",
                     type    : "check",
                     checked : false,
@@ -137,7 +137,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             ),
             parent.appendChild(
                 //@todo turn into command
-                (mnuSplitAlign = new apf.item({
+                (mnuSplitAlign = new ppc.item({
                     caption : "Align splits Vertically",
                     type    : "check",
                     checked : true,
@@ -277,7 +277,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         ide.addEventListener("tab.create", function(e) {
             var page = e.page;
             var xmlNode = e.doc.getNode();
-            if (!apf.isTrue(xmlNode.getAttribute("clone")))
+            if (!ppc.isTrue(xmlNode.getAttribute("clone")))
                 return;
 
             var id = page.id;
@@ -323,7 +323,7 @@ module.exports = ext.register("ext/splitview/splitview", {
                     break;
                 }
             }
-            if (settings && apf.isTrue(settings.getAttribute("active")))
+            if (settings && ppc.isTrue(settings.getAttribute("active")))
                 tabs.set(origPage);
 
             if (!page.$doc.acedoc)
@@ -521,8 +521,8 @@ module.exports = ext.register("ext/splitview/splitview", {
                 return;
             // tabs can be merged into and unmerged from a splitview by clicking a
             // tab while holding shift
-            //console.log("is clone?",apf.isTrue(page.$doc.getNode().getAttribute("clone")));
-            if (split && apf.isTrue(page.$doc.getNode().getAttribute("clone"))) {
+            //console.log("is clone?",ppc.isTrue(page.$doc.getNode().getAttribute("clone")));
+            if (split && ppc.isTrue(page.$doc.getNode().getAttribute("clone"))) {
                 // close the page that contains the clone editor
                 var cloneEditor = Splits.getCloneEditor(page);
                 for (i = 0, l = split.pairs.length; i < l; ++i) {
@@ -619,7 +619,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         else
             mnuCloneView.disable();
 
-        apf.layout.forceResize();
+        ppc.layout.forceResize();
 
         this.save();
 
@@ -646,7 +646,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         if (split || !doc || !Splits.getEditorSession(page))
             return;
 
-        apf.xmldb.setAttribute(doc.getNode(), "clone", true);
+        ppc.xmldb.setAttribute(doc.getNode(), "clone", true);
         Editors.openEditor(doc, false, false, true);
     },
 
@@ -657,7 +657,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             return;
 
         delete split.clone;
-        apf.xmldb.setAttribute(page.$doc.getNode(), "clone", false);
+        ppc.xmldb.setAttribute(page.$doc.getNode(), "clone", false);
     },
 
     getCloneView: function(page) {
@@ -677,7 +677,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         if (!Settings.model || restoring)
             return;
 
-        var node = apf.createNodeFromXpath(Settings.model.data, "splits");
+        var node = ppc.createNodeFromXpath(Settings.model.data, "splits");
         var i, l;
         for (i = node.childNodes.length - 1; i >= 0; --i)
             node.removeChild(node.childNodes[i]);
@@ -685,7 +685,7 @@ module.exports = ext.register("ext/splitview/splitview", {
         var splits = Splits.get();
         var splitEl;
         for (i = 0, l = splits.length; i < l; ++i) {
-            splitEl = apf.getXml("<split />");
+            splitEl = ppc.getXml("<split />");
             splitEl.setAttribute("pages", splits[i].pairs.map(function(pair) {
                 return pair.page.id;
             }).join(","));
@@ -694,7 +694,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             splitEl.setAttribute("layout", splits[i].gridLayout);
             node.appendChild(splitEl);
         }
-        apf.xmldb.applyChanges("synchronize", node);
+        ppc.xmldb.applyChanges("synchronize", node);
     },
 
     restore: function(settings) {
@@ -705,7 +705,7 @@ module.exports = ext.register("ext/splitview/splitview", {
 
         var nodes;
         var splits = Splits.get();
-        if (apf.isArray(settings))
+        if (ppc.isArray(settings))
             nodes = settings;
         else
             nodes = settings.selectNodes("splits/split");
@@ -783,7 +783,7 @@ module.exports = ext.register("ext/splitview/splitview", {
             }
 
             if (split.pairs.length > 1) {
-                if (apf.isTrue(node.getAttribute("active")))
+                if (ppc.isTrue(node.getAttribute("active")))
                     active = split;
                 if (splits.indexOf(split) == -1)
                     splits.push(split);

@@ -1,6 +1,6 @@
 "use strict";
 
-var nodefs = require("vfs-nodefs-adapter");
+var nodefs = require("@pylonide/vfs-nodefs-adapter");
 var c9util = require("../pylon.core/util");
 
 /**

@@ -34,7 +34,7 @@ exports.isNewPage = function(page) {
 
 exports.alert = function(title, header, msg, onhide) {
     if (!self.winAlert)
-        apf.document.documentElement.insertMarkup(markup);
+        ppc.document.documentElement.insertMarkup(markup);
 
     winAlert.show();
     winAlert.setAttribute("title", title);
@@ -51,7 +51,7 @@ exports.alert = function(title, header, msg, onhide) {
 
 exports.confirm = function(title, header, msg, onconfirm, oncancel) {
     if (!self.winConfirm)
-        apf.document.documentElement.insertMarkup(markup);
+        ppc.document.documentElement.insertMarkup(markup);
 
     winConfirm.show();
     winConfirm.setAttribute("title", title);
@@ -63,7 +63,7 @@ exports.confirm = function(title, header, msg, onconfirm, oncancel) {
 
 exports.question = function(title, header, msg, onyes, onyestoall, onno, onnotoall) {
     if (!self.winQuestion)
-        apf.document.documentElement.insertMarkup(markup);
+        ppc.document.documentElement.insertMarkup(markup);
 
     winQuestion.show();
     winQuestion.setAttribute("title", title);
@@ -261,9 +261,9 @@ exports.escapeRegExp = function(str) {
     return str.replace(/[-[\]{}()*+?.,\\^$|#\s"']/g, "\\$&");
 };
 
-exports.escapeXml = apf.escapeXML;
-exports.isTrue = apf.isTrue;
-exports.isFalse = apf.isFalse;
+exports.escapeXml = ppc.escapeXML;
+exports.isTrue = ppc.isTrue;
+exports.isFalse = ppc.isFalse;
 
 exports.replaceStaticPrefix = function (string) {
     return string.replace(new RegExp("{ide.staticPrefix}", "g"), window.cloud9config.staticUrl);
@@ -405,7 +405,7 @@ exports.toXmlTag = function (tag, attrs, noclose) {
 exports.toXmlAttributes = function(obj) {
     var xml = Object.keys(obj)
         .map(function (k) {
-            return k + '="' + apf.escapeXML(obj[k]) + '"';
+            return k + '="' + ppc.escapeXML(obj[k]) + '"';
         })
         .join(" ");
 

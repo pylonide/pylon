@@ -23,7 +23,7 @@
 
 /**
  * Implementation of the Common Gateway Interface (REST) as a module for the RPC
- * plugin of apf.teleport.
+ * plugin of ppc.teleport.
  * Example:
  * Ajax.org Markup Language
  * <code>
@@ -62,9 +62,9 @@
  *
  * @constructor
  *
- * @inherits apf.Teleport
- * @inherits apf.http
- * @inherits apf.rpc
+ * @inherits ppc.Teleport
+ * @inherits ppc.http
+ * @inherits ppc.rpc
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @author      Mike de Boer (mike AT javeline DOT com)
@@ -73,7 +73,7 @@
  *
  * @default_private
  */
-apf.rest = function(){
+ppc.rest = function(){
     this.supportMulticall = false;
     this.namedArguments   = false;
     this.nocache          = false;
@@ -95,7 +95,7 @@ apf.rest = function(){
 
         //#ifdef __DEBUG
         if ("NOTIFY|SEND|POST|PUT".indexOf(options["http-method"]) > -1)
-            apf.console.log("Found method " + options["http-method"] + ". Taking body from last argument");
+            ppc.console.log("Found method " + options["http-method"] + ". Taking body from last argument");
         //#endif
         
         var body = "NOTIFY|SEND|POST|PUT".indexOf(options["http-method"].toUpperCase()) > -1 ? args.pop() : "",

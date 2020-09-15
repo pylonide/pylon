@@ -48,9 +48,9 @@
  *  </a:appsettings>
  * ```
  *
- * @inherits apf.Class
+ * @inherits ppc.Class
  * @define offline
- * @class apf.offline
+ * @class ppc.offline
  * @logic
  *
  */
@@ -93,7 +93,7 @@
  * <a:modalwindow title="Synchronizing" visible="{offline.syncing}">
  *    <a:Label>Synchronizing your changes</a:label>
  *    <a:progressbar value="{offline.progress}" />
- *    <a:button onclick="apf.offline.stopSync()">Cancel</a:button>
+ *    <a:button onclick="ppc.offline.stopSync()">Cancel</a:button>
  *    <a:button onclick="this.parentNode.hide()">Hide Window</a:button>
  * </a:modalwindow>
  * ```
@@ -129,7 +129,7 @@
  * 
  * @default_private
  */
-apf.offline = {
+ppc.offline = {
     /**
      * Indicates whether offline support is enabled.
      * @type {Boolean}
@@ -148,7 +148,7 @@ apf.offline = {
     rdbTimeout  : 600000,//After 10 minutes, we assume the RDB messaged will be destroyed
 
     init : function(aml){
-        apf.makeClass(this);
+        ppc.makeClass(this);
 
         //Read configuration
         if (aml) {
@@ -174,7 +174,7 @@ apf.offline = {
                     if (a.nodeName.indexOf("on") == 0)
                         this.addEventListener(a.nodeName, 
                           // #ifdef __WITH_JSLT_EVENTS
-                          apf.lm.compile(a.nodeValue, {event: true, parsecode: true})
+                          ppc.lm.compile(a.nodeValue, {event: true, parsecode: true})
                           /* #else
                           new Function('event', a.nodeValue)
                           #endif */
@@ -182,28 +182,28 @@ apf.offline = {
                 }
             }
             else {
-                apf.extend(this, aml);
+                ppc.extend(this, aml);
             }
         }
 
         // #ifdef __WITH_OFFLINE_APPLICATION
-        var provider = apf.offline.application.init(aml)
+        var provider = ppc.offline.application.init(aml)
         // #endif
 
         //Check for storage provider
         if (provider) {
-            this.storage = apf.storage.getProvider(provider);
+            this.storage = ppc.storage.getProvider(provider);
 
             //#ifdef __DEBUG
             if (this.storage)
-                apf.console.info("Installed storage provider '" + provider + "'");
+                ppc.console.info("Installed storage provider '" + provider + "'");
             //#endif
         }
 
         if (!this.storage) {
-            this.storage = apf.storage.initialized
-                ? apf.storage
-                : apf.storage.init(); //autodetect
+            this.storage = ppc.storage.initialized
+                ? ppc.storage
+                : ppc.storage.init(); //autodetect
         }
 
         if (!this.storage) {
@@ -216,19 +216,19 @@ apf.offline = {
         }
 
         if (!this.storage.isPermanent()) {
-            apf.addEventListener("exit", function(){
-                return apf.offline.dispatchEvent("losechanges");
+            ppc.addEventListener("exit", function(){
+                return ppc.offline.dispatchEvent("losechanges");
             });
         }
 
         //@todo this code is deprecated
         throw new Error("This code is deprecated");
         if (this.storage.asyncInit) {
-            apf.document.$domParser.$shouldWait++; //@todo apf3.0 make this work again
+            ppc.document.$domParser.$shouldWait++; //@todo ppc3.0 make this work again
             this.storage.ready(function(){
-                apf.offline.storage.onready = null; //Prevent being called twice
-                apf.offline.continueInit();
-                apf.document.$domParser.$continueParsing(apf.document.documentElement);
+                ppc.offline.storage.onready = null; //Prevent being called twice
+                ppc.offline.continueInit();
+                ppc.document.$domParser.$continueParsing(ppc.document.documentElement);
             });
 
             return;
@@ -260,12 +260,12 @@ apf.offline = {
         else //Else we try to go online
             this.goOnline();
 
-        apf.offline.dispatchEvent("load");
+        ppc.offline.dispatchEvent("load");
     },
 
     $destroy : function(){
         //#ifdef __DEBUG
-        apf.console.info("Cleaning offline");
+        ppc.console.info("Cleaning offline");
         //#endif
 
         if (this.provider && this.provider.destroy)
@@ -323,8 +323,8 @@ apf.offline = {
         }
 
         //#ifdef __WITH_AUTH
-        //if (apf.auth.retry) //Don't want to ruin the chances of having a smooth ride on a bad connection
-        //    apf.auth.loggedIn = false; //we're logged out now, we'll auto-login when going online
+        //if (ppc.auth.retry) //Don't want to ruin the chances of having a smooth ride on a bad connection
+        //    ppc.auth.loggedIn = false; //we're logged out now, we'll auto-login when going online
         //#endif
 
         //#ifdef __WITH_OFFLINE_DETECTOR
@@ -339,10 +339,10 @@ apf.offline = {
              * @private
              */
             this.initial = {
-                disableRDB : apf.xmldb.disableRDB //@todo record this in storage
+                disableRDB : ppc.xmldb.disableRDB //@todo record this in storage
             }
         }
-        apf.xmldb.disableRDB = true;
+        ppc.xmldb.disableRDB = true;
         //#endif
 
         this.inProcess = this.IDLE;
@@ -350,7 +350,7 @@ apf.offline = {
         this.dispatchEvent("afteroffline");
 
         //#ifdef __DEBUG
-        apf.console.info("The application is now working offline.")
+        ppc.console.info("The application is now working offline.")
         //#endif
 
         return true;//success
@@ -374,7 +374,7 @@ apf.offline = {
         this.reloading  = false;
 
         //#ifdef __DEBUG
-        apf.console.info("Trying to go online.")
+        ppc.console.info("Trying to go online.")
         //#endif
 
         //#ifdef __WITH_OFFLINE_DETECTOR
@@ -389,7 +389,7 @@ apf.offline = {
 
         //Reset RDB in original state
         if (this.initial)
-            apf.xmldb.disableRDB = this.initial.disableRDB;
+            ppc.xmldb.disableRDB = this.initial.disableRDB;
         //#endif
 
         var callback = function(){
@@ -404,7 +404,7 @@ apf.offline = {
         }
 
         //#ifdef __WITH_AUTH
-        var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+        var auth = ppc.document.getElementsByTagNameNS(ppc.ns.ppc, "auth")[0];
         if (!auth)
             return;
         //First let's log in to the services that need it before syncing changes
@@ -432,7 +432,7 @@ apf.offline = {
         if (!this.rdbTimeout)
             return;
         //#ifdef __WITH_NAMESERVER
-        var i, j, k, rdbs = apf.nameserver.getAll("remote");
+        var i, j, k, rdbs = ppc.nameserver.getAll("remote");
         for (i = 0; i < rdbs.length; i++) {
             var rdb = rdbs[i];
             if (this.reloading
@@ -440,7 +440,7 @@ apf.offline = {
                 if (!this.reloading) {
                     if (this.dispatchEvent("beforereload") === false) {
                         //#ifdef __DEBUG
-                        apf.console.warn("Warning, potential data corruption\
+                        ppc.console.warn("Warning, potential data corruption\
                             because you've cancelled reloading the data of all \
                             remote databinding synchronized models.");
                         //#endif
@@ -457,7 +457,7 @@ apf.offline = {
                     rdb.models[j].clear();
 
                     // #ifdef __WITH_OFFLINE_MODEL
-                    apf.offline.models.addToInitQueue(rdb.models[j])
+                    ppc.offline.models.addToInitQueue(rdb.models[j])
                     /* #else
                     rbs[i].models[j].init();
                     #endif */
@@ -467,17 +467,17 @@ apf.offline = {
         //#endif
         if (this.reloading) {
             //#ifdef __DEBUG
-            apf.console.warn("The application has been offline longer than the \
+            ppc.console.warn("The application has been offline longer than the \
                               server timeout. To maintain consistency the models\
                               are reloaded. All undo stacks will be purged.");
             //#endif
 
             //#ifdef __WITH_OFFLINE_TRANSACTIONS && __WITH_OFFLINE_STATE
-            apf.offline.transactions.clear("undo|redo");
+            ppc.offline.transactions.clear("undo|redo");
             //#endif
 
             //#ifdef __WITH_NAMESERVER
-            var ats = apf.nameserver.getAll("actiontracker");
+            var ats = ppc.nameserver.getAll("actiontracker");
             for (var i = 0; i < ats.length; i++) {
                 ats[i].reset();
             }
@@ -497,13 +497,13 @@ apf.offline = {
             this.storage.remove("offlinetime", this.namespace);
 
             //#ifdef __DEBUG
-            apf.console.info("Syncing done.")
-            apf.console.info("The application is now working online.")
+            ppc.console.info("Syncing done.")
+            ppc.console.info("The application is now working online.")
             //#endif
         }
         else {
             //#ifdef __DEBUG
-            apf.console.info("Syncing was cancelled. Going online failed")
+            ppc.console.info("Syncing was cancelled. Going online failed")
             //#endif
 
             //Going online has failed. Going offline again
@@ -519,7 +519,7 @@ apf.offline = {
             return false;
 
         //#ifdef __DEBUG
-        apf.console.info("Clearing all offline and state cache");
+        ppc.console.info("Clearing all offline and state cache");
         //#endif
 
          for (var i = this.resources.length - 1; i >= 0; i--) {
@@ -539,7 +539,7 @@ apf.offline = {
         this.setProperty("syncing", true);
 
         //#ifdef __DEBUG
-        apf.console.info("Start syncing offline changes.")
+        ppc.console.info("Start syncing offline changes.")
         //#endif
 
         var syncResources = [],
@@ -560,7 +560,7 @@ apf.offline = {
             }
         }
 
-        var fln      = apf.offline;
+        var fln      = ppc.offline;
         var callback = function(extra){
             if (fln.inProcess == fln.STOPPING) {
                 if (!extra.finished && extra.length - 1 != extra.position) {
@@ -596,7 +596,7 @@ apf.offline = {
             fln.setProperty("position", syncPos);
             fln.setProperty("length", syncLength);
 
-            fln.dispatchEvent("sync", apf.extend(extra, {
+            fln.dispatchEvent("sync", ppc.extend(extra, {
                 position : syncPos,
                 length   : syncLength
             }));
@@ -608,7 +608,7 @@ apf.offline = {
         }
         else {
             //#ifdef __DEBUG
-            apf.console.info("Nothing to synchronize.")
+            ppc.console.info("Nothing to synchronize.")
             //#endif
 
             this.$goOnlineDone(true);
@@ -619,7 +619,7 @@ apf.offline = {
             When going online check $loadedWhenOffline of
             the multiselect widgets and reload() them
         */
-        var nodes = apf.all; //@todo maintaining a list is more efficient, is it necesary??
+        var nodes = ppc.all; //@todo maintaining a list is more efficient, is it necesary??
         for (i = 0; i < nodes.length; i++) {
             if (nodes[i].$loadedWhenOffline)
                 nodes[i].reload();
@@ -633,7 +633,7 @@ apf.offline = {
     }
 };
 /*#else
-apf.offline = {
+ppc.offline = {
     onLine : true
 };
 #endif */

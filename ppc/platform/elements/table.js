@@ -34,7 +34,7 @@
  * how many columns there are.
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  * <a:window visible="true" width="500" height="260" title="Form">
  *  <!-- startcontent -->
  *      <a:table id="tableTest" 
@@ -76,19 +76,19 @@
  * </a:application>
  * ```
  *
- * @class apf.table
+ * @class ppc.table
  * @define table
  * @allowchild {elements}, {anyaml}
  *
  * @container
- * @inherits apf.GuiElement
+ * @inherits ppc.GuiElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.table = function(struct, tagName){
-    this.$init(tagName || "table", apf.NODE_VISIBLE, struct);
+ppc.table = function(struct, tagName){
+    this.$init(tagName || "table", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -133,7 +133,7 @@ apf.table = function(struct, tagName){
     this.$propHandlers["columns"] = function(value){
         if (!value.match(/^((?:\d+\%?|\*)\s*(?:,\s*|\s*$))+$/)) {
             //#ifdef __DEBUG
-            apf.console.warn("Invalid column string found for table: " + value);
+            ppc.console.warn("Invalid column string found for table: " + value);
             //#endif
             return;
         }
@@ -199,7 +199,7 @@ apf.table = function(struct, tagName){
     }
     
     this.$propHandlers["edge"] = function(value){
-        this.$table.style.padding = (this.$edge = apf.getBox(value)).join("px ") + "px";
+        this.$table.style.padding = (this.$edge = ppc.getBox(value)).join("px ") + "px";
         this.$resize();
     }
     
@@ -208,7 +208,7 @@ apf.table = function(struct, tagName){
         if (e.sync || e.value && !this.$altExt || !e.value && this.$altExt) {
             var nodes = table.childNodes;
 
-            var cells = apf.getArrayFromNodelist(table.$tbody.getElementsByTagName("td"));
+            var cells = ppc.getArrayFromNodelist(table.$tbody.getElementsByTagName("td"));
             var rows  = table.$tbody.getElementsByTagName("tr");
             var empty = [], row = 1, cs, rs, collen = table.$columns.length;
             var z = table.$columns.length, lastCol;
@@ -305,19 +305,19 @@ apf.table = function(struct, tagName){
     var propHandlers = {
         "width" : function(value){
             this.$ext.style.width = "";/*value 
-                ? Math.max(0, value - apf.getWidthDiff(this.$ext)) + "px"
+                ? Math.max(0, value - ppc.getWidthDiff(this.$ext)) + "px"
                 : "";*/
         },
         
         "height" : function(value){
             this.$ext.style.height = value 
-                ? Math.max(0, value - apf.getHeightDiff(this.$ext)) + "px"
+                ? Math.max(0, value - ppc.getHeightDiff(this.$ext)) + "px"
                 : "";
             this.parentNode.$resize();
         },
         
         "margin" : function(value){
-            this.$ext.style.margin = apf.getBox(value).join("px ") + "px";
+            this.$ext.style.margin = ppc.getBox(value).join("px ") + "px";
             this.parentNode.$resize();
         },
         
@@ -362,7 +362,7 @@ apf.table = function(struct, tagName){
         amlNode.$propHandlers["left"]   = 
         amlNode.$propHandlers["top"]    = 
         amlNode.$propHandlers["right"]  = 
-        amlNode.$propHandlers["bottom"] = apf.K;
+        amlNode.$propHandlers["bottom"] = ppc.K;
         
         for (var prop in propHandlers) {
             amlNode.$propHandlers[prop] = propHandlers[prop];
@@ -444,7 +444,7 @@ apf.table = function(struct, tagName){
     });
     
     this.$draw = function(){
-        this.$ext = apf.insertHtmlNode(null, this.$pHtmlNode, null, 
+        this.$ext = ppc.insertHtmlNode(null, this.$pHtmlNode, null, 
             "<div><table cellSpacing='0' cellPadding='0'><tbody><tr class='first'></tr></tbody></table></div>");
         this.$table = this.$ext.firstChild;
         this.$tbody = this.$table.firstChild;
@@ -454,7 +454,7 @@ apf.table = function(struct, tagName){
         this.$ext.host = this;
 
         if (this.getAttribute("class")) 
-            apf.setStyleClass(this.$ext, this.getAttribute("class"));
+            ppc.setStyleClass(this.$ext, this.getAttribute("class"));
         
         this.addEventListener("resize", this.$resize);
         this.$originalMin = [this.minwidth || 0,  this.minheight || 0];
@@ -467,7 +467,7 @@ apf.table = function(struct, tagName){
         
         if (this.$table.offsetWidth >= this.$ext.offsetWidth)
             this.$ext.style.minWidth = (this.minwidth = Math.max(0, this.$table.offsetWidth 
-                - apf.getWidthDiff(this.$ext))) + "px";
+                - ppc.getWidthDiff(this.$ext))) + "px";
         else {
             this.$ext.style.minWidth = "";
             this.minwidth = this.$originalMin[0];
@@ -475,7 +475,7 @@ apf.table = function(struct, tagName){
 
         if (this.$table.offsetHeight >= this.$ext.offsetHeight)
             this.$ext.style.minHeight = (this.minheight = Math.max(0, this.$table.offsetHeight 
-                - apf.getHeightDiff(this.$ext))) + "px";
+                - ppc.getHeightDiff(this.$ext))) + "px";
         else {
             this.$ext.style.minHeight = "";
             this.minheight = this.$originalMin[1];
@@ -489,7 +489,7 @@ apf.table = function(struct, tagName){
             this.$propHandlers.columns.call(this, this.columns = "150, 200");
         this.$amlLoaded = true; //@todo hack
     };
-}).call(apf.table.prototype = new apf.GuiElement());
+}).call(ppc.table.prototype = new ppc.GuiElement());
 
-apf.aml.setElement("table", apf.table);
+ppc.aml.setElement("table", ppc.table);
 // #endif

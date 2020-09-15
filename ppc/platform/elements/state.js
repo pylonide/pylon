@@ -23,7 +23,7 @@
 /**
  * @private
  */
-apf.StateServer = {
+ppc.StateServer = {
     states: {},
     groups: {},
     locs  : {},
@@ -44,22 +44,22 @@ apf.StateServer = {
         if (!this.groups[name]) {
             this.groups[name] = [];
 
-            var pState = new apf.state({
+            var pState = new ppc.state({
                 id : name
             });
             pState.parentNode = pNode;
-            //pState.implement(apf.AmlNode);
+            //pState.implement(ppc.AmlNode);
             //pState.name   = name;
             pState.toggle = function(){
-                for (var next = 0, i = 0; i < apf.StateServer.groups[name].length; i++) {
-                    if (apf.StateServer.groups[name][i].active) {
+                for (var next = 0, i = 0; i < ppc.StateServer.groups[name].length; i++) {
+                    if (ppc.StateServer.groups[name][i].active) {
                         next = i + 1;
                         break;
                     }
                 }
 
-                apf.StateServer.groups[name][
-                    (next == apf.StateServer.groups[name].length) ? 0 : next
+                ppc.StateServer.groups[name][
+                    (next == ppc.StateServer.groups[name].length) ? 0 : next
                   ].activate();
             }
 
@@ -93,7 +93,7 @@ apf.StateServer = {
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:state 
  *     group   = "stRole" 
@@ -117,11 +117,11 @@ apf.StateServer = {
  * </a:application>
  * ```
  *
- * @class apf.state
+ * @class ppc.state
  * @define state
  *
  * @logic
- * @inherits apf.AmlElement
+ * @inherits ppc.AmlElement
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -131,8 +131,8 @@ apf.StateServer = {
  * @event change Fires when the active property of this element changes.
  *
  */
-apf.state = function(struct, tagName){
-    this.$init(tagName || "state", apf.NODE_HIDDEN, struct);
+ppc.state = function(struct, tagName){
+    this.$init(tagName || "state", ppc.NODE_HIDDEN, struct);
     
     this.$signalElements = [];
     this.$groupAdded     = {};
@@ -150,12 +150,12 @@ apf.state = function(struct, tagName){
      */
     this.$propHandlers["active"] = function(value){
         //Activate State
-        if (apf.isTrue(value)) {
+        if (ppc.isTrue(value)) {
             if (this.group) {
-                var nodes = apf.StateServer.groups[this.group];
+                var nodes = ppc.StateServer.groups[this.group];
                 if (!nodes) {
-                    apf.StateServer.addGroup(this.group, this);
-                    nodes = apf.StateServer.groups[this.group];
+                    ppc.StateServer.addGroup(this.group, this);
+                    nodes = ppc.StateServer.groups[this.group];
                 }
                 
                 for (var i = 0; i < nodes.length; i++) {
@@ -168,11 +168,11 @@ apf.state = function(struct, tagName){
             for (var i = 0; i < q.length; i++) {
                 if (!self[q[i][0]] || !self[q[i][0]].setProperty) {
                     //#ifdef __DEBUG
-                    /*throw new Error(apf.formatErrorString(1013, this,
+                    /*throw new Error(ppc.formatErrorString(1013, this,
                         "Setting State",
                         "Could not find object to give state: '"
                         + q[i][0] + "' on property '" + q[i][1] + "'"));*/
-                    apf.console.warn("Could not find object to give state: " 
+                    ppc.console.warn("Could not find object to give state: " 
                         + q[i][0] + "' on property '" + q[i][1] + "'");
                     //#endif
                     
@@ -190,13 +190,13 @@ apf.state = function(struct, tagName){
                     self[this.group].setProperty(attr[i].nodeName,
                         attr[i].nodeValue);
                 }
-                apf.StateServer.groups[this.group].pState.dispatchEvent("change");
+                ppc.StateServer.groups[this.group].pState.dispatchEvent("change");
             }
 
             this.dispatchEvent("activate");
 
             //#ifdef __DEBUG
-            apf.console.info("Setting state '" + this.name + "' to ACTIVE");
+            ppc.console.info("Setting state '" + this.name + "' to ACTIVE");
             //#endif
         }
 
@@ -206,7 +206,7 @@ apf.state = function(struct, tagName){
             this.dispatchEvent("deactivate");
 
             //#ifdef __DEBUG
-            apf.console.info("Setting state '" + this.name + "' to INACTIVE");
+            ppc.console.info("Setting state '" + this.name + "' to INACTIVE");
             //#endif
         }
     };
@@ -250,28 +250,28 @@ apf.state = function(struct, tagName){
 
     this.$propHandlers["group"] = function(value){  
         if (value) {
-            apf.StateServer.addGroup(value, this);
+            ppc.StateServer.addGroup(value, this);
             this.$groupAdded = {'value' : value, elState : this};
         }
         else {
-            apf.StateServer.removeGroup(this.$groupAdded.value, this.$groupAdded.elState);
+            ppc.StateServer.removeGroup(this.$groupAdded.value, this.$groupAdded.elState);
             this.$groupAdded     = {};
         }
     }
 
     this.$propHandlers["location"] = function(value){
         if (value) {
-            apf.StateServer.locs[value] = this;
+            ppc.StateServer.locs[value] = this;
             this.$locationAdded = value;
         }
         else {
-            delete apf.StateServer.locs[this.$locationAdded];
+            delete ppc.StateServer.locs[this.$locationAdded];
             this.$locationAdded = '';
         }
     }
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
-        apf.StateServer.addState(this);
+        ppc.StateServer.addState(this);
 
         //Properties initialization
         var attr = this.attributes;
@@ -284,11 +284,11 @@ apf.state = function(struct, tagName){
 
     this.addEventListener("DOMNodeRemovedFromDocument", function(){
         this.$signalElements = null;
-        apf.StateServer.removeState(this);
+        ppc.StateServer.removeState(this);
         if (this.group)
-            apf.StateServer.removeGroup(this.group, this);
+            ppc.StateServer.removeGroup(this.group, this);
     });
-}).call(apf.state.prototype = new apf.AmlElement());
+}).call(ppc.state.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("state", apf.state);
+ppc.aml.setElement("state", ppc.state);
 // #endif

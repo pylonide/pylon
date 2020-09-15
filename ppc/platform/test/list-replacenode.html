@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">
     <head>
-        <script src="../apf.js"></script>
+        <script src="../ppc.js"></script>
     </head>
     <body>
         <a:skin src="../skins.xml" media-path="../images/" icon-path="../icons/" />
@@ -42,6 +42,6 @@
             </messages>
         </a:model>
         
-        <a:button width="80" onclick="apf.xmldb.replaceNode(mdlMessages.data, mdlDashboard.queryNode('messages'))">click</a:button>
+        <a:button width="80" onclick="ppc.xmldb.replaceNode(mdlMessages.data, mdlDashboard.queryNode('messages'))">click</a:button>
     </body>
 </html>

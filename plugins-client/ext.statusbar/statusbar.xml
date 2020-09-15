@@ -8,9 +8,9 @@
       skinset = "c9statusbar"
       class   = "expanded"
       visible = "{{
-        apf.isTrue([mdlStatusBar::state/@isCodeEditor]) 
+        ppc.isTrue([mdlStatusBar::state/@isCodeEditor]) 
         and
-        apf.isTrue([mdlStatusBar::state/@showStatusbar])
+        ppc.isTrue([mdlStatusBar::state/@showStatusbar])
       }}"
       height  = "28"
       bottom  = "15"

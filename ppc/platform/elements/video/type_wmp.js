@@ -21,7 +21,7 @@
 
 // #ifdef __AMLVIDEO || __INC_ALL
 
-apf.video.TypeWmpCompat = (function() {
+ppc.video.TypeWmpCompat = (function() {
     var hasWMP = false;
 
     /**
@@ -41,7 +41,7 @@ apf.video.TypeWmpCompat = (function() {
         var is_WMP64  = false,
             is_WMP7up = false;
 
-        if (apf.isWin && apf.isIE) {  //use ActiveX test
+        if (ppc.isWin && ppc.isIE) {  //use ActiveX test
             var oMP;
             try {
                 oMP      = new ActiveXObject("MediaPlayer.MediaPlayer.1");
@@ -157,7 +157,7 @@ apf.video.TypeWmpCompat = (function() {
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.video.TypeWmp = function(oVideo, node, options) {
+ppc.video.TypeWmp = function(oVideo, node, options) {
     this.oVideo      = oVideo;
     this.name        = "WMP_" + this.oVideo.$uniqueId;
     this.htmlElement = node;
@@ -165,7 +165,7 @@ apf.video.TypeWmp = function(oVideo, node, options) {
     this.player    = this.pollTimer = null;
     this.volume    = 50; //default WMP
     this.videoPath = options.src;
-    apf.extend(this, apf.video.TypeInterface);
+    ppc.extend(this, ppc.video.TypeInterface);
 
     this.setOptions(options);
     var _self = this;
@@ -174,11 +174,11 @@ apf.video.TypeWmp = function(oVideo, node, options) {
     }, 1);
 };
 
-apf.video.TypeWmp.isSupported = function(){
-    return apf.video.TypeWmpCompat.isAvailable();
+ppc.video.TypeWmp.isSupported = function(){
+    return ppc.video.TypeWmpCompat.isAvailable();
 };
 
-apf.video.TypeWmp.prototype = {
+ppc.video.TypeWmp.prototype = {
     /**
      * Play a Quicktime movie. Does a call to the embedded QT object to load or
      * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
@@ -284,7 +284,7 @@ apf.video.TypeWmp.prototype = {
 
         var playerId = this.name + "_Player";
 
-        this.htmlElement.innerHTML = apf.video.TypeWmpCompat.generateOBJECTText(playerId,
+        this.htmlElement.innerHTML = ppc.video.TypeWmpCompat.generateOBJECTText(playerId,
             this.videoPath, "100%", "100%", {
                 "AutoStart": this.autoPlay.toString(),
                 "uiMode"   : this.showControls ? "mini" : "none",
@@ -327,7 +327,7 @@ apf.video.TypeWmp.prototype = {
             case 3:   //Playing - The current media clip is playing.
                 this.oVideo.$stateChangeHook({type: "stateChange", state: "playing"})
                 if (!this.oVideo.ready)
-                    this.oVideo.setProperty("readyState", apf.Media.HAVE_ENOUGH_DATA);
+                    this.oVideo.setProperty("readyState", ppc.Media.HAVE_ENOUGH_DATA);
                 this.startPlayPoll();
                 break;
             case 10:  //Ready - Ready to begin playing.

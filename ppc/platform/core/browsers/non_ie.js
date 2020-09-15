@@ -23,7 +23,7 @@
 /**
  * @private
  */
-apf.runNonIe = function (){
+ppc.runNonIe = function (){
     //#ifdef __SUPPORT_IE_API
 
     DocumentFragment.prototype.getElementById = function(id){
@@ -32,14 +32,14 @@ apf.runNonIe = function (){
 
     //#ifdef __WITH_UIRECORDER
     // *** Event.cancelBubble *** //
-    if (!apf.isOpera) {  // @todo, add solution for Opera
+    if (!ppc.isOpera) {  // @todo, add solution for Opera
         if (MouseEvent.prototype.__defineSetter__) {
             //Event.cancelBubble
             MouseEvent.prototype.__defineSetter__("cancelBubble", function(b){
-                if (apf.uirecorder.isRecording || apf.uirecorder.isTesting) {
+                if (ppc.uirecorder.isRecording || ppc.uirecorder.isTesting) {
                     // ignore click event
                     if (this.type != "click")
-                        apf.uirecorder.capture[this.type](this);
+                        ppc.uirecorder.capture[this.type](this);
                 }
             });
         }
@@ -53,7 +53,7 @@ apf.runNonIe = function (){
             return (new XMLSerializer()).serializeToString(this);
         });
         XMLDocument.prototype.__defineSetter__("xml", function(){
-            throw new Error(apf.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
+            throw new Error(ppc.formatErrorString(1042, null, "XML serializer", "Invalid assignment on read-only property 'xml'."));
         });
         
         //Node.xml
@@ -100,7 +100,7 @@ apf.runNonIe = function (){
             Text.prototype.insertAdjacentHTML =
             HTMLElement.prototype.insertAdjacentHTML = function(where,htmlStr){
                 var r = this.ownerDocument.createRange();
-                r.setStartBefore(apf.isWebkit
+                r.setStartBefore(ppc.isWebkit
                     ? document.body
                     : (self.document ? document.body : this));
                 var parsedHTML = r.createContextualFragment(htmlStr);
@@ -108,7 +108,7 @@ apf.runNonIe = function (){
             };
         }
 
-        if (!HTMLBodyElement.prototype.insertAdjacentHTML) //apf.isWebkit)
+        if (!HTMLBodyElement.prototype.insertAdjacentHTML) //ppc.isWebkit)
             HTMLBodyElement.prototype.insertAdjacentHTML = HTMLElement.prototype.insertAdjacentHTML;
     
         if (!HTMLElement.prototype.insertAdjacentText) {
@@ -157,7 +157,7 @@ apf.runNonIe = function (){
         ASYNCNOTSUPPORTED           = true;
     } catch(e) {/*trap*/} 
     
-    if(!apf.isEdge) Document.prototype.onreadystatechange = null;
+    if(!ppc.isEdge) Document.prototype.onreadystatechange = null;
     Document.prototype.parseError         = 0;
     
     Array.prototype.item = function(i){return this[i];};
@@ -187,13 +187,13 @@ apf.runNonIe = function (){
     
     //XMLDocument.loadXML();
     XMLDocument.prototype.loadXML = function(strXML){
-        apf.xmldb.setReadyState(this, 1);
+        ppc.xmldb.setReadyState(this, 1);
         var sOldXML = this.xml || this.serialize();
         var oDoc    = (new DOMParser()).parseFromString(strXML, "text/xml");
-        apf.xmldb.setReadyState(this, 2);
+        ppc.xmldb.setReadyState(this, 2);
         this.$copyDOM(oDoc);
-        apf.xmldb.setReadyState(this, 3);
-        apf.xmldb.loadHandler(this);
+        ppc.xmldb.setReadyState(this, 3);
+        ppc.xmldb.loadHandler(this);
         return sOldXML;
     };
     
@@ -213,7 +213,7 @@ apf.runNonIe = function (){
         var oDoc = document.implementation.createDocument("", "", null);
         oDoc.$copyDOM(this);
         this.parseError = 0;
-        apf.xmldb.setReadyState(this, 1);
+        ppc.xmldb.setReadyState(this, 1);
     
         try {
             if (this.async == false && ASYNCNOTSUPPORTED) {
@@ -221,9 +221,9 @@ apf.runNonIe = function (){
                 tmp.open("GET", sURI, false);
                 tmp.overrideMimeType("text/xml");
                 tmp.send(null);
-                apf.xmldb.setReadyState(this, 2);
+                ppc.xmldb.setReadyState(this, 2);
                 this.$copyDOM(tmp.responseXML);
-                apf.xmldb.setReadyState(this, 3);
+                ppc.xmldb.setReadyState(this, 3);
             } else
                 this.$load(sURI);
         }
@@ -231,7 +231,7 @@ apf.runNonIe = function (){
             this.parseError = -1;
         }
         finally {
-            apf.xmldb.loadHandler(this);
+            ppc.xmldb.loadHandler(this);
         }
     
         return oDoc;
@@ -256,7 +256,7 @@ apf.runNonIe = function (){
             
             if (xsltProcessor.reset) {
                 // new nsIXSLTProcessor is available
-                xslDoc = apf.getXmlDom(xslDoc.xml || xslDoc.serialize());
+                xslDoc = ppc.getXmlDom(xslDoc.xml || xslDoc.serialize());
                 xsltProcessor.importStylesheet(xslDoc);
                 var newFragment = xsltProcessor.transformToFragment(this, oResult);
                 oResult.$copyDOM(newFragment);
@@ -268,13 +268,13 @@ apf.runNonIe = function (){
         }
         catch(e) {
             if (xslDoc && oResult)
-                throw new Error(apf.formatErrorString(1043, null, "XSLT Transformation", "Failed to transform document. \nInfo : " + e));
+                throw new Error(ppc.formatErrorString(1043, null, "XSLT Transformation", "Failed to transform document. \nInfo : " + e));
             else if (!xslDoc)
-                throw new Error(apf.formatErrorString(1044, null, "XSLT Transformation", "No Stylesheet Document was provided. \nInfo : " + e));
+                throw new Error(ppc.formatErrorString(1044, null, "XSLT Transformation", "No Stylesheet Document was provided. \nInfo : " + e));
             else if (!oResult)
-                throw new Error(apf.formatErrorString(1045, null, "XSLT Transformation", "No Result Document was provided. \nInfo : " + e));
+                throw new Error(ppc.formatErrorString(1045, null, "XSLT Transformation", "No Result Document was provided. \nInfo : " + e));
             else if (xsltProcessor == null)
-                throw new Error(apf.formatErrorString(1046, null, "XSLT Transformation", "Could not instantiate an XSLTProcessor object. \nInfo : " + e));
+                throw new Error(ppc.formatErrorString(1046, null, "XSLT Transformation", "Could not instantiate an XSLTProcessor object. \nInfo : " + e));
             else
                 throw e;
         }
@@ -282,14 +282,14 @@ apf.runNonIe = function (){
     
     //Element.transformNode
     Element.prototype.transformNode = function(xslDoc){
-        return apf.getXmlDom(this.xml || this.serialize())
+        return ppc.getXmlDom(this.xml || this.serialize())
             .transformNode(xslDoc);
     };
     
     //Document.transformNode
     Document.prototype.transformNode = function(xslDoc){
         var xsltProcessor = new XSLTProcessor();
-        xslDoc        = apf.getXmlDom(xslDoc.xml || xslDoc.serialize());
+        xslDoc        = ppc.getXmlDom(xslDoc.xml || xslDoc.serialize());
         xsltProcessor.importStylesheet(xslDoc);
         var newFragment   = xsltProcessor.transformToFragment(this,
             document.implementation.createDocument("", "", null));
@@ -301,7 +301,7 @@ apf.runNonIe = function (){
             str = serializer.serializeToString(out);
         }
         catch(e){
-            throw new Error("---- APF Error ----\nProcess : XSLT Transformation\nMessage : Failed to serialize result document. \nInfo : " + e);
+            throw new Error("---- PPC Error ----\nProcess : XSLT Transformation\nMessage : Failed to serialize result document. \nInfo : " + e);
         }
         
         return str;*/
@@ -315,7 +315,7 @@ apf.runNonIe = function (){
      * @param {String}      prop  the property to read
      * @returns {String}
      */
-    var getStyle = apf.getStyle = function(el, prop) {
+    var getStyle = ppc.getStyle = function(el, prop) {
         try{
             return (window.getComputedStyle(el, "") || {})[prop] || "";
         }catch(e){}
@@ -328,13 +328,13 @@ apf.runNonIe = function (){
     /* ******** XML Compatibility ************************************************
         Extensions to the xmldb
     ****************************************************************************/
-    apf.getHttpReq = function(){
-        if (apf.availHTTP.length)
-            return apf.availHTTP.pop();
+    ppc.getHttpReq = function(){
+        if (ppc.availHTTP.length)
+            return ppc.availHTTP.pop();
         return new XMLHttpRequest();
     };
 
-    apf.getXmlDom = function(message, noError, preserveWhiteSpaces){
+    ppc.getXmlDom = function(message, noError, preserveWhiteSpaces){
         var xmlParser;
         if (message) {
             if (preserveWhiteSpaces === false)
@@ -345,13 +345,13 @@ apf.runNonIe = function (){
 
             //#ifdef __WITH_JSON2XML
             //xmlParser.documentElement.tagName == "parsererror"
-            if (xmlParser.getElementsByTagName("parsererror").length && apf.xmldb
-              && apf.isJson(message)) {
+            if (xmlParser.getElementsByTagName("parsererror").length && ppc.xmldb
+              && ppc.isJson(message)) {
                 try {
-                    xmlParser = apf.json2Xml(message, noError);
+                    xmlParser = ppc.json2Xml(message, noError);
                 }
                 catch(e) {
-                    throw new Error(apf.formatErrorString(1051, null,
+                    throw new Error(ppc.formatErrorString(1051, null,
                         "JSON to XML conversion error occurred.",
                         "\nSource Text : " + message.replace(/\t/gi, " ")));
                 }
@@ -368,7 +368,7 @@ apf.runNonIe = function (){
         return xmlParser;
     };
     
-    apf.xmlParseError = function(xml){
+    ppc.xmlParseError = function(xml){
         //if (xml.documentElement.tagName == "parsererror") {
         if (xml.getElementsByTagName("parsererror").length) { 
             var nodeValue = xml.documentElement.firstChild.nodeValue;
@@ -393,7 +393,7 @@ apf.runNonIe = function (){
             if(srcText && srcText.nodeValue) {
                 srcMsg = "\nSource Text : " + srcText.nodeValue.replace(/\t/gi, " ")
             }
-            throw new Error(apf.formatErrorString(1050, null, 
+            throw new Error(ppc.formatErrorString(1050, null, 
                 "XML Parse Error on line " +  linenr, message + srcMsg));
         }
         
@@ -401,22 +401,22 @@ apf.runNonIe = function (){
     };
 
     //#ifdef __WITH_XMLDATABASE
-    apf.xmldb.setReadyState = function(oDoc, iReadyState) {
+    ppc.xmldb.setReadyState = function(oDoc, iReadyState) {
         oDoc.readyState = iReadyState;
         if (oDoc.onreadystatechange != null && typeof oDoc.onreadystatechange == "function")
             oDoc.onreadystatechange();
     };
     
-    apf.xmldb.loadHandler = function(oDoc){
+    ppc.xmldb.loadHandler = function(oDoc){
         if (!oDoc.documentElement || oDoc.documentElement.tagName == "parsererror")
             oDoc.parseError = -1;
         
-        apf.xmldb.setReadyState(oDoc, 4);
+        ppc.xmldb.setReadyState(oDoc, 4);
     };
     //#endif
     //
     //Fix XML Data-Island Support Problem with Form Tag
-    apf.Init.add(function(){
+    ppc.Init.add(function(){
         var i, nodes = document.getElementsByTagName("form");
         for (i = 0; i < nodes.length; i++)
             nodes[i].removeNode();
@@ -429,7 +429,7 @@ apf.runNonIe = function (){
     /*window.onerror = function(message, filename, linenr){
         if(++ERROR_COUNT > MAXMSG) return;
         filename = filename ? filename.match(/\/([^\/]*)$/)[1] : "[Mozilla Library]";
-        new Error("---- APF Error ----\nProcess : Javascript code in '" + filename +  "'\nLine : " + linenr + "\nMessage : " + message);
+        new Error("---- PPC Error ----\nProcess : Javascript code in '" + filename +  "'\nLine : " + linenr + "\nMessage : " + message);
         return false;
     }*/
     
@@ -581,12 +581,12 @@ apf.runNonIe = function (){
         }
         
         function getElementPosY(myObj){
-            return myObj.offsetTop + parseInt(apf.getStyle(myObj, "borderTopWidth"))
+            return myObj.offsetTop + parseInt(ppc.getStyle(myObj, "borderTopWidth"))
                 + (myObj.offsetParent ? getElementPosY(myObj.offsetParent) : 0);
         }
         
         function getElementPosX(myObj){
-            return myObj.offsetLeft + parseInt(apf.getStyle(myObj, "borderLeftWidth"))
+            return myObj.offsetLeft + parseInt(ppc.getStyle(myObj, "borderLeftWidth"))
                 + (myObj.offsetParent ? getElementPosX(myObj.offsetParent) : 0);
         }
         
@@ -603,11 +603,11 @@ apf.runNonIe = function (){
     
     //#endif
 
-    apf.getOpacity = function(oHtml) {
-        return apf.getStyle(oHtml, "opacity");
+    ppc.getOpacity = function(oHtml) {
+        return ppc.getStyle(oHtml, "opacity");
     };
     
-    apf.setOpacity = function(oHtml, value){
+    ppc.setOpacity = function(oHtml, value){
         oHtml.style.opacity = value;
     };
 };

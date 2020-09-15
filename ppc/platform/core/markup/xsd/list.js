@@ -20,13 +20,13 @@
  */
 
 //#ifdef __WITH_XSDLIST
-apf.XsdList = function(struct, tagName){
-    this.$init(tagName || "list", apf.NODE_HIDDEN, struct);
+ppc.XsdList = function(struct, tagName){
+    this.$init(tagName || "list", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
     this.$compile = function(stack){};
-}).call(apf.XsdList.prototype = new apf.XsdElement());
+}).call(ppc.XsdList.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("list", apf.XsdList);
+ppc.xsd.setElement("list", ppc.XsdList);
 //#endif

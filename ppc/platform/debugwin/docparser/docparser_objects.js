@@ -217,8 +217,8 @@ function Base() {
                     
                     words = (t[i-3] == 5) ? t[i-1].split(".") : null;
 
-                    // set apf namespace
-                    if (words[0] == "apf")
+                    // set ppc namespace
+                    if (words[0] == "ppc")
                         this.namespace = words.shift();
                     
                     if (words.length)
@@ -232,7 +232,7 @@ function Base() {
         };
 
         // search for filename
-        // /*FILEHEAD(/var/lib/apf/genapi/core/markup/aml/element.js)SIZE(17957)TIME(1256034097)*/
+        // /*FILEHEAD(/var/lib/ppc/genapi/core/markup/aml/element.js)SIZE(17957)TIME(1256034097)*/
         for (var k = i; k >= 0; k -= 3) {
             var fPos = t[k + 2].indexOf("/*FILEHEAD(");
             if (t[k] == 7 && fPos == 0) {
@@ -310,8 +310,8 @@ function Base() {
                     // starts with { of [
                     if (t[i + 5][2] == "{" || t[i + 5][2] == "[") {
                         
-                        // object of apf
-                        if (this.name == "apf") {
+                        // object of ppc
+                        if (this.name == "ppc") {
                             addObj(t, i + 3, docTree, docTree, t[i + 5], true);
                         }
                             
@@ -326,8 +326,8 @@ function Base() {
                 // check for functions
                 else if (t[i + 5] == "function") {
 
-                    // methods of apf
-                    if (this.name == "apf") {
+                    // methods of ppc
+                    if (this.name == "ppc") {
                         addFunc(t, i + 3, docTree, docTree, t[i + 11], true);
                     }
                     
@@ -615,7 +615,7 @@ function Base() {
 		var keywords = {"author", "version", "url", "event", "default_private", "type", "see", "private", 
 						"param", "return", "constructor", "inherits", "since", "returns", "baseclass", 
 						"term", "method", "parser", "define", "attribute", "addnode", "allownode", "todo", 
-						"todo:", "experimental", "apfclass", "namespace", "class", "allowchild", "link", 
+						"todo:", "experimental", "ppcclass", "namespace", "class", "allowchild", "link", 
 						"deprecated", "result", "throw", "fileoverview", "throws", "for", "macro", 
 						"extends", "bug", "binding", "note", "example", "action", "ignore", 
 						"classDescription", "alias", "notimplemented", "ref", "addenum", "default",

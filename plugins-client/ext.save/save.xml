@@ -141,7 +141,7 @@
                     if(this.checked)
                         trSaveAs.$ext.className = trSaveAs.$ext.className.replace(/hidefiles/, '');
                     else
-                        apf.setStyleClass(trSaveAs.$ext, 'hidefiles');
+                        ppc.setStyleClass(trSaveAs.$ext, 'hidefiles');
                   ">Show files in tree</a:checkbox>
             </a:hbox>
             

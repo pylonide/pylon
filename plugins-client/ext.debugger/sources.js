@@ -36,8 +36,8 @@ module.exports = {
     init: function() {
         var _self = this;
         var modelName = "mdlDbgSources";
-        var model = apf.nameserver.register("model", modelName, new apf.model());
-        apf.setReference(modelName, model);
+        var model = ppc.nameserver.register("model", modelName, new ppc.model());
+        ppc.setReference(modelName, model);
         mdlDbgSources.load("<sources/>");
 
 
@@ -70,8 +70,8 @@ module.exports = {
 
         // stack view
         modelName = "mdlDbgStack";
-        model = apf.nameserver.register("model", modelName, new apf.model());
-        apf.setReference(modelName, model);
+        model = ppc.nameserver.register("model", modelName, new ppc.model());
+        ppc.setReference(modelName, model);
         dbgCallStack.addEventListener("afterrender", function() {
             dgStack.addEventListener("afterselect", function(e) {
                 // afterselect can be called after setting value, without user interaction
@@ -194,7 +194,7 @@ module.exports = {
                 });
             }
             else {
-                var node = apf.n("<file />")
+                var node = ppc.n("<file />")
                     .attr("name", path.split("/").pop())
                     .attr("path", path)
                     .attr("contenttype", "application/javascript")

@@ -20,8 +20,8 @@
  */
 
 // #ifdef __WITH_AMLCHARACTERDATA
-//@todo apf3.0 The functions seem to not set nodeValue...
-apf.AmlCharacterData = function(){
+//@todo ppc3.0 The functions seem to not set nodeValue...
+ppc.AmlCharacterData = function(){
     this.data = "";
     this.length = 0;
     
@@ -57,5 +57,5 @@ apf.AmlCharacterData = function(){
     
     this.substringData = function(nOffset, nCount){};
 }
-apf.AmlCharacterData.prototype = new apf.AmlNode();
+ppc.AmlCharacterData.prototype = new ppc.AmlNode();
 // #endif

@@ -33,7 +33,7 @@ module.exports = ext.register("ext/themes/themes", {
         var timer;
         
         function themeMenuCreator(name, path) {
-            menus.addItemByPath("View/Themes/" + name, new apf.item({
+            menus.addItemByPath("View/Themes/" + name, new ppc.item({
                 type    : "radio",
                 value   : path || themes[name],
                 
@@ -66,7 +66,7 @@ module.exports = ext.register("ext/themes/themes", {
         
         for (var name in themes) {
             if (themes[name] instanceof Array) {
-                menus.addItemByPath("View/Themes/" + name, new apf.item());
+                menus.addItemByPath("View/Themes/" + name, new ppc.item());
                 themes[name].forEach(function (n) {
                     var themeprop = Object.keys(n)[0];
                     themeMenuCreator(name + "/" + themeprop, n[themeprop]);
@@ -125,15 +125,15 @@ module.exports = ext.register("ext/themes/themes", {
         tabsDiv.setAttribute("id", "tabsDiv");
         
         if (theme.isDark) {
-            apf.setStyleClass(editorDiv, "dark");
-            apf.setStyleClass(editorHolder, "dark");
-            if (!apf.isGecko) 
-                apf.setStyleClass(tabsDiv, "dark");
+            ppc.setStyleClass(editorDiv, "dark");
+            ppc.setStyleClass(editorHolder, "dark");
+            if (!ppc.isGecko) 
+                ppc.setStyleClass(tabsDiv, "dark");
         }
         else {
-            apf.setStyleClass(editorDiv, "", ["dark"]);
-            apf.setStyleClass(editorHolder, "", ["dark"]);
-            apf.setStyleClass(tabsDiv, "", ["dark"]);
+            ppc.setStyleClass(editorDiv, "", ["dark"]);
+            ppc.setStyleClass(editorHolder, "", ["dark"]);
+            ppc.setStyleClass(tabsDiv, "", ["dark"]);
         }
         
         // !important puting ace into more divs with theme.cssClass makes it slower
@@ -141,22 +141,22 @@ module.exports = ext.register("ext/themes/themes", {
         var cssClass = aceClass.replace(/^ace/, "c9");
         
         if (_self.lastTheme) {
-            apf.setStyleClass(editorDiv, "", [_self.lastTheme]);
-            apf.setStyleClass(editorHolder, "", [_self.lastTheme]);
-            apf.setStyleClass(tabsDiv, "", [_self.lastTheme]);
+            ppc.setStyleClass(editorDiv, "", [_self.lastTheme]);
+            ppc.setStyleClass(editorHolder, "", [_self.lastTheme]);
+            ppc.setStyleClass(tabsDiv, "", [_self.lastTheme]);
         }
         
         _self.lastTheme = cssClass;
         
-        apf.setStyleClass(editorDiv, cssClass);
-        apf.setStyleClass(editorHolder, cssClass);
-        apf.setStyleClass(tabsDiv, cssClass);
+        ppc.setStyleClass(editorDiv, cssClass);
+        ppc.setStyleClass(editorHolder, cssClass);
+        ppc.setStyleClass(tabsDiv, cssClass);
         
         if (!theme.bg) {
-            theme.bg = apf.getStyleRule("." + aceClass + " .ace_gutter", "backgroundColor");
-            theme.fg = apf.getStyleRule("." + aceClass + " .ace_gutter", "color");
-            theme.textBg = apf.getStyleRule("." + aceClass, "backgroundColor") ||
-                apf.getStyleRule("." + aceClass + ", ." + aceClass + " .ace_scroller", "backgroundColor");
+            theme.bg = ppc.getStyleRule("." + aceClass + " .ace_gutter", "backgroundColor");
+            theme.fg = ppc.getStyleRule("." + aceClass + " .ace_gutter", "color");
+            theme.textBg = ppc.getStyleRule("." + aceClass, "backgroundColor") ||
+                ppc.getStyleRule("." + aceClass + ", ." + aceClass + " .ace_scroller", "backgroundColor");
         }
         
         ide.dispatchEvent("theme.change", {theme: theme, path: path});
@@ -169,8 +169,8 @@ module.exports = ext.register("ext/themes/themes", {
         if (theme.textBg == "rgb(255, 255, 255)")
             theme.textBg = "#fbfbfb";
                 
-        apf.importStylesheet([
-            (apf.isGecko ? [] : 
+        ppc.importStylesheet([
+            (ppc.isGecko ? [] : 
                 ["#tabsDiv." + cssClass + " .curbtn .tab_middle",
                  (theme.isDark  ? "color:rgba(255, 255, 255, 0.8)" : "") 
                  + ";background-color: " + theme.bg + " !important"]),
@@ -203,13 +203,13 @@ module.exports = ext.register("ext/themes/themes", {
     init : function(){
         var _self = this;
         
-        this.stylesheet = apf.createStylesheet();
+        this.stylesheet = ppc.createStylesheet();
         
         this.nodes.push(
-            this.group = new apf.group()
+            this.group = new ppc.group()
         );
         
-        var mnuThemes = menus.addItemByPath("View/Themes/", new apf.menu({
+        var mnuThemes = menus.addItemByPath("View/Themes/", new ppc.menu({
             "onprop.visible" : function(e){
                 if (e.value) {
                     mnuThemes.select(null, 

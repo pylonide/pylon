@@ -33,11 +33,11 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.MultiSelect
- * @inherits apf.DataAction
+ * @inherits ppc.MultiSelect
+ * @inherits ppc.DataAction
  */
-apf.vectorflow = function(struct, tagName){
-    this.$init(tagName || "vectorflow", apf.NODE_VISIBLE, struct);
+ppc.vectorflow = function(struct, tagName){
+    this.$init(tagName || "vectorflow", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -50,7 +50,7 @@ apf.vectorflow = function(struct, tagName){
     this.$selectionLayers = ["selection_outline", "selection_resize", "selection_lineConnect"];
 
     //#ifdef __WITH_DATAACTION
-    this.implement(apf.DataAction);
+    this.implement(ppc.DataAction);
     //#endif
     
     //Options
@@ -174,7 +174,7 @@ apf.vectorflow = function(struct, tagName){
         node = this.$setPositions(node);
         
         if (this.nodes.nodes[node.id]) {
-            apf.console.error("block with id " + node.id + " already exists");
+            ppc.console.error("block with id " + node.id + " already exists");
             return;
         }
         this.nodes.nodes[node.id] = node;
@@ -427,18 +427,18 @@ apf.vectorflow = function(struct, tagName){
     
     this.$drawLayers = function() {
         var err = {};
-        var $style = apf.draw.parseStyle(this.$node_style , "", err );
-        apf.draw.initLayer(this.$rootLayers["root"], this);
+        var $style = ppc.draw.parseStyle(this.$node_style , "", err );
+        ppc.draw.initLayer(this.$rootLayers["root"], this);
         this.$drawCode = this.$compile( this.$rootLayers["root"], $style, "root");
         this.$drawCode(this.$rootLayers["root"], this);
-        apf.draw.resizeLayer(this.$rootLayers["root"]);
+        ppc.draw.resizeLayer(this.$rootLayers["root"]);
 
         var err = {};
-        var $style = apf.draw.parseStyle(this.$node_style , "", err );
-        apf.draw.initLayer(this.$rootLayers["grid"], this);
+        var $style = ppc.draw.parseStyle(this.$node_style , "", err );
+        ppc.draw.initLayer(this.$rootLayers["grid"], this);
         this.$drawCode = this.$compile( this.$rootLayers["grid"], $style, "grid");
         this.$drawCode(this.$rootLayers["grid"], this);
-        apf.draw.resizeLayer(this.$rootLayers["grid"]);
+        ppc.draw.resizeLayer(this.$rootLayers["grid"]);
         
         this.$calculateLines();
         
@@ -446,11 +446,11 @@ apf.vectorflow = function(struct, tagName){
             if ("root|grid|selection".indexOf(type) > -1) continue;
             if (this.$rootLayers[type]) {
                 var err = {};
-                var $style = apf.draw.parseStyle(this.$node_style , "", err );
-                apf.draw.initLayer(this.$rootLayers[type], this);
+                var $style = ppc.draw.parseStyle(this.$node_style , "", err );
+                ppc.draw.initLayer(this.$rootLayers[type], this);
                 this.$drawCode = this.$compile( this.$rootLayers[type], $style, type);
                 this.$drawCode(this.$rootLayers[type], this);
-                apf.draw.resizeLayer(this.$rootLayers[type]);
+                ppc.draw.resizeLayer(this.$rootLayers[type]);
             }
         }
         
@@ -460,11 +460,11 @@ apf.vectorflow = function(struct, tagName){
             if (!this.nodes[type] || (this.nodes[type] && !this.nodes[type].length)) continue;
             
             var err = {};
-            var $style = apf.draw.parseStyle(this.$node_style , "", err );
-            apf.draw.initLayer(this.$rootLayers[type], this);
+            var $style = ppc.draw.parseStyle(this.$node_style , "", err );
+            ppc.draw.initLayer(this.$rootLayers[type], this);
             this.$drawCode = this.$compile( this.$rootLayers[type], $style, type);
             this.$drawCode(this.$rootLayers[type], this);
-            apf.draw.resizeLayer(this.$rootLayers[type]);
+            ppc.draw.resizeLayer(this.$rootLayers[type]);
         }
         
         /*
@@ -474,11 +474,11 @@ apf.vectorflow = function(struct, tagName){
         /*
         type = "text";
         var err = {};
-        var $style = apf.draw.parseStyle(this.$node_style , "", err );
-        apf.draw.initLayer(this.$rootLayers[type], this);
+        var $style = ppc.draw.parseStyle(this.$node_style , "", err );
+        ppc.draw.initLayer(this.$rootLayers[type], this);
         this.$drawCode = this.$compileText( this.$rootLayers[type], $style, type);
         this.$drawCode(this.$rootLayers[type], this);
-        apf.draw.resizeLayer(this.$rootLayers[type]);
+        ppc.draw.resizeLayer(this.$rootLayers[type]);
         */
         /*
          * end compile text
@@ -487,7 +487,7 @@ apf.vectorflow = function(struct, tagName){
 
 /*
     this.$compileText = function(l,s,t){
-        var e = apf.draw;
+        var e = ppc.draw;
 
         var c = e.optimize([
             e.beginLayer(l),
@@ -515,7 +515,7 @@ apf.vectorflow = function(struct, tagName){
     };
 
     this.$compile = function(l,s,t){
-        var e = apf.draw;
+        var e = ppc.draw;
 
         // draw root layer
         if (t === "root") {
@@ -743,7 +743,7 @@ apf.vectorflow = function(struct, tagName){
     
     this.$calcSelectRange = function(xmlStartNode, xmlEndNode){
         var r     = [],
-            nodes = this.hasFeature(apf.__VIRTUALVIEWPORT__)
+            nodes = this.hasFeature(ppc.__VIRTUALVIEWPORT__)
                 ? this.xmlRoot.selectNodes(this.each)
                 : this.getTraverseNodes(),
             f, i;
@@ -951,16 +951,16 @@ apf.vectorflow = function(struct, tagName){
         this.top = 0, this.left = 0,
         this.width = 800, this.height = 800;
         //Any initialization code comes here
-        apf.draw.initDriver();
-        apf.draw.initRoot(this);
-        apf.draw.resizeRoot(this);
+        ppc.draw.initDriver();
+        ppc.draw.initRoot(this);
+        ppc.draw.resizeRoot(this);
         
         var err = {};
-        var $style = apf.draw.parseStyle(this.$node_style , "", err );
-        apf.draw.initLayer(this.$rootLayers["root"], this);
+        var $style = ppc.draw.parseStyle(this.$node_style , "", err );
+        ppc.draw.initLayer(this.$rootLayers["root"], this);
         this.$drawCode = this.$compile( this.$rootLayers["root"], $style, "root");
         this.$drawCode(this.$rootLayers["root"], this);
-        apf.draw.resizeLayer(this.$rootLayers["root"]);
+        ppc.draw.resizeLayer(this.$rootLayers["root"]);
 
         var self = this;
         this.$resetSelection();
@@ -1455,12 +1455,12 @@ apf.vectorflow = function(struct, tagName){
         //Any deinitialization code comes here
     };
 // #ifdef __WITH_MULTISELECT
-}).call(apf.vectorflow.prototype = new apf.MultiSelect());
+}).call(ppc.vectorflow.prototype = new ppc.MultiSelect());
 /* #elseif __WITH_DATABINDING
-}).call(apf.vectorflow.prototype = new apf.MultiselectBinding());
+}).call(ppc.vectorflow.prototype = new ppc.MultiselectBinding());
    #else
-}).call(apf.vectorflow.prototype = new apf.Presentation());
+}).call(ppc.vectorflow.prototype = new ppc.Presentation());
 #endif*/
 
-apf.aml.setElement("vectorflow", apf.vectorflow);
+ppc.aml.setElement("vectorflow", ppc.vectorflow);
 // #endif

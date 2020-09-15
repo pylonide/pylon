@@ -29,8 +29,8 @@
  * 
  * @attribute {Number}  state        the current state of the element.
  *   Possible values:
- *   apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
- *   apf.upload.STARTED   Upload process is running
+ *   ppc.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
+ *   ppc.upload.STARTED   Upload process is running
  * @attribute {Number}  chunksize    the size of each chunk of data that is uploaded via the html5 upload control.
  * @attribute {Number}  maxfilesize  the maximum file size of a single file.
  * @attribute {Boolean} multiple     whether the user can select multiple files from the browse dialog.
@@ -53,13 +53,13 @@
  *   object:
  *   {Number} code      the type of error.
  *     Possible values:
- *     apf.upload.ERROR_CODES.GENERIC_ERROR        Generic error for example if an exception is thrown inside Silverlight.
- *     apf.upload.ERROR_CODES.HTTP_ERROR           HTTP transport error. For example if the server produces a HTTP status other than 200.
- *     apf.upload.ERROR_CODES.IO_ERROR             Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
- *     apf.upload.ERROR_CODES.SECURITY_ERROR       Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
- *     apf.upload.ERROR_CODES.INIT_ERROR           Initialization error. Will be triggered if no runtime was initialized.
- *     apf.upload.ERROR_CODES.FILE_SIZE_ERROR      File size error. If the user selects a file that is to large it will be blocked and an error of this type will be triggered.
- *     apf.upload.ERROR_CODES.FILE_EXTENSION_ERROR File extension error. If the user selects a file that isn't valid according to the filters setting.
+ *     ppc.upload.ERROR_CODES.GENERIC_ERROR        Generic error for example if an exception is thrown inside Silverlight.
+ *     ppc.upload.ERROR_CODES.HTTP_ERROR           HTTP transport error. For example if the server produces a HTTP status other than 200.
+ *     ppc.upload.ERROR_CODES.IO_ERROR             Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+ *     ppc.upload.ERROR_CODES.SECURITY_ERROR       Generic I/O error. For exampe if it wasn't possible to open the file stream on local machine.
+ *     ppc.upload.ERROR_CODES.INIT_ERROR           Initialization error. Will be triggered if no runtime was initialized.
+ *     ppc.upload.ERROR_CODES.FILE_SIZE_ERROR      File size error. If the user selects a file that is to large it will be blocked and an error of this type will be triggered.
+ *     ppc.upload.ERROR_CODES.FILE_EXTENSION_ERROR File extension error. If the user selects a file that isn't valid according to the filters setting.
  *   {String} message   the description of the error.
  *   {Object}  file     the file that was being uploaded when the error occurred.
  *     Properties:
@@ -72,12 +72,12 @@
  *     {Number}  size             the size of this file in bytes.
  *     {String}  status           the upload status of this file.
  *       Possible values:
- *       apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
- *       apf.upload.STARTED   Upload process is running
- *       apf.upload.QUEUED    File is queued for upload
- *       apf.upload.UPLOADING File is being uploaded
- *       apf.upload.FAILED    File has failed to be uploaded
- *       apf.upload.DONE      File has been uploaded successfully
+ *       ppc.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
+ *       ppc.upload.STARTED   Upload process is running
+ *       ppc.upload.QUEUED    File is queued for upload
+ *       ppc.upload.UPLOADING File is being uploaded
+ *       ppc.upload.FAILED    File has failed to be uploaded
+ *       ppc.upload.DONE      File has been uploaded successfully
  *     {Number} loaded           the number of bytes uploaded.
  *
  * @event uploaded Fires after the entire queue is uploaded.
@@ -93,12 +93,12 @@
  *     {Number}  size             the size of this file in bytes.
  *     {String}  status           the upload status of this file.
  *       Possible values:
- *       apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
- *       apf.upload.STARTED   Upload process is running
- *       apf.upload.QUEUED    File is queued for upload
- *       apf.upload.UPLOADING File is being uploaded
- *       apf.upload.FAILED    File has failed to be uploaded
- *       apf.upload.DONE      File has been uploaded successfully
+ *       ppc.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
+ *       ppc.upload.STARTED   Upload process is running
+ *       ppc.upload.QUEUED    File is queued for upload
+ *       ppc.upload.UPLOADING File is being uploaded
+ *       ppc.upload.FAILED    File has failed to be uploaded
+ *       ppc.upload.DONE      File has been uploaded successfully
  *     {Number} loaded           the number of bytes uploaded.
  *
  * @event queue Fires after the user selected files, put in the queue and are ready for upload.
@@ -114,19 +114,19 @@
  *     {Number}  size             the size of this file in bytes.
  *     {String}  status           the upload status of this file.
  *       Possible values:
- *       apf.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
- *       apf.upload.STARTED   Upload process is running
- *       apf.upload.QUEUED    File is queued for upload
- *       apf.upload.UPLOADING File is being uploaded
- *       apf.upload.FAILED    File has failed to be uploaded
- *       apf.upload.DONE      File has been uploaded successfully
+ *       ppc.upload.STOPPED   Inital state of the queue and also the state ones it's finished all it's uploads.
+ *       ppc.upload.STARTED   Upload process is running
+ *       ppc.upload.QUEUED    File is queued for upload
+ *       ppc.upload.UPLOADING File is being uploaded
+ *       ppc.upload.FAILED    File has failed to be uploaded
+ *       ppc.upload.DONE      File has been uploaded successfully
  *     {Number} loaded           the number of bytes uploaded.
  *
  * @constructor
  * @alias upload
  *
  *
- * @inherits apf.StandardBinding
+ * @inherits ppc.StandardBinding
  *
  * @author      Mike de Boer (mike AT ajax DOT org)
  * @version     %I%, %G%
@@ -142,32 +142,32 @@
  *
  * @todo get server side information to update the progressbar.
  */
-apf.upload = function(struct, tagName){
-    this.$init(tagName || "upload", apf.NODE_HIDDEN, struct);
+ppc.upload = function(struct, tagName){
+    this.$init(tagName || "upload", ppc.NODE_HIDDEN, struct);
 
     var o,
         i = 0,
         a = ["html5", "flash", "html4"];
     for (; i < 4 && !this.$method; ++i) {
-        o = apf.upload[a[i]];
+        o = ppc.upload[a[i]];
         if (typeof o != "undefined" && o.isSupported())
             this.$method = new o(this);
     }
 
     if (!this.$method) {
-        throw new Error(apf.formatErrorString(0, this, "upload",
+        throw new Error(ppc.formatErrorString(0, this, "upload",
             "No upload method found that us supported by your browser!"));
     }
 };
 
-apf.upload.STOPPED   = 0x0001; // Inital state of the queue and also the state ones it's finished all it's uploads.
-apf.upload.STARTED   = 0x0002; // Upload process is running
-apf.upload.QUEUED    = 0x0004; // File is queued for upload
-apf.upload.UPLOADING = 0x0008; // File is being uploaded
-apf.upload.FAILED    = 0x0010; // File has failed to be uploaded
-apf.upload.DONE      = 0x0020; // File has been uploaded successfully
+ppc.upload.STOPPED   = 0x0001; // Inital state of the queue and also the state ones it's finished all it's uploads.
+ppc.upload.STARTED   = 0x0002; // Upload process is running
+ppc.upload.QUEUED    = 0x0004; // File is queued for upload
+ppc.upload.UPLOADING = 0x0008; // File is being uploaded
+ppc.upload.FAILED    = 0x0010; // File has failed to be uploaded
+ppc.upload.DONE      = 0x0020; // File has been uploaded successfully
 // Error constants used by the Error event:
-apf.upload.ERROR_CODES = {
+ppc.upload.ERROR_CODES = {
     // Generic error for example if an exception is thrown inside Silverlight.
     GENERIC_ERROR        : -100,
     // HTTP transport error. For example if the server produces a HTTP status other than 200.
@@ -189,10 +189,10 @@ apf.upload.ERROR_CODES = {
 (function(constants){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         //#ifdef __WITH_VALIDATION
-        ,apf.Validation
+        ,ppc.Validation
         //#endif
     );
 
@@ -239,7 +239,7 @@ apf.upload.ERROR_CODES = {
 
         // #ifdef __DEBUG
         if (!this.$button) {
-            throw new Error(apf.formatErrorString(0, this, "upload init",
+            throw new Error(ppc.formatErrorString(0, this, "upload init",
                 "No valid identifier for a Button element passed to the 'button' attribute."));
         }
         //#endif
@@ -256,7 +256,7 @@ apf.upload.ERROR_CODES = {
             return;
         }
 
-        if (!apf.window.vManager.check(this.$button, this.$uniqueId, function(){
+        if (!ppc.window.vManager.check(this.$button, this.$uniqueId, function(){
             _self.$method.refresh();
         }))
             return;
@@ -269,16 +269,16 @@ apf.upload.ERROR_CODES = {
     };
 
     this.$propHandlers["target"] = function(value) {
-        var oUrl = new apf.url(value);
+        var oUrl = new ppc.url(value);
         this.target = oUrl.uri;
 
         // #ifdef __DEBUG
         if (oUrl.protocol == "file")
-            apf.console.warn("Upload: files uploaded to URL '" + this.src + "'\n"
+            ppc.console.warn("Upload: files uploaded to URL '" + this.src + "'\n"
                 + "will be loaded through the 'file://' protocol.\nThis may be "
                 + "unsupported by your browser.", "upload");
         else if (!oUrl.isSameLocation())
-            apf.console.warn("Upload: the upload target with URL '" + this.src + "'\n"
+            ppc.console.warn("Upload: the upload target with URL '" + this.src + "'\n"
                 + "does not have the same origin as your web application.\nThis may "
                 + "be unsupported by your browser.", "upload");
         // #endif
@@ -524,7 +524,7 @@ apf.upload.ERROR_CODES = {
         var parentVis = true,
             p         = this.parentNode;
 
-        while ((parentVis = typeof p.visible == "undefined" ? true : p.visible) && p != apf.document.documentElement)
+        while ((parentVis = typeof p.visible == "undefined" ? true : p.visible) && p != ppc.document.documentElement)
             p = p.parentNode;
         if (!parentVis) {
             var f, _self = this;
@@ -606,15 +606,15 @@ apf.upload.ERROR_CODES = {
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         if (!this.$files)
-            this.$files = new constants.files(this, "apfupload".appendRandomNumber(5));
+            this.$files = new constants.files(this, "ppcupload".appendRandomNumber(5));
 
         // #ifdef __DEBUG
         if (!this.$button) {
-            throw new Error(apf.formatErrorString(0, this, "upload init",
+            throw new Error(ppc.formatErrorString(0, this, "upload init",
                 "Required: 'button' attribute not set, no button element available."));
         }
         if (!this.target) {
-            throw new Error(apf.formatErrorString(0, this, "upload init",
+            throw new Error(ppc.formatErrorString(0, this, "upload init",
                 "Required: 'target' attribute not set, thus no valid uri to send files to."));
         }
         //#endif
@@ -633,15 +633,15 @@ apf.upload.ERROR_CODES = {
             }
         });
     });
-}).call(apf.upload.prototype = new apf.GuiElement(), apf.upload);
+}).call(ppc.upload.prototype = new ppc.GuiElement(), ppc.upload);
 
-apf.upload.files = function(oUpload, model) {
+ppc.upload.files = function(oUpload, model) {
     if (typeof model == "string") {
         //#ifdef __WITH_NAMESERVER
         var sModel = model;
-        if (!(model = apf.nameserver.get(sModel))) {
-            model = apf.setReference(sModel,
-                apf.nameserver.register("model", sModel, new apf.model()));
+        if (!(model = ppc.nameserver.get(sModel))) {
+            model = ppc.setReference(sModel,
+                ppc.nameserver.register("model", sModel, new ppc.model()));
             if (model === 0)
                 model = self[sModel];
             else
@@ -651,7 +651,7 @@ apf.upload.files = function(oUpload, model) {
     }
     //#ifdef __DEBUG
     if (!model) {
-        throw new Error(apf.formatErrorString(0, oUpload, "upload",
+        throw new Error(ppc.formatErrorString(0, oUpload, "upload",
             "For the upload control to work, you MUST specify a valid value for the 'model' attribute!"));
     }
     //#endif
@@ -683,7 +683,7 @@ apf.upload.files = function(oUpload, model) {
         aFiles.pushUnique(file);
         if (model) {
             file.xml = model.data.ownerDocument.createElement("file");
-            apf.xmldb.appendChild(model.data, file.xml);
+            ppc.xmldb.appendChild(model.data, file.xml);
         }
 
         return this.update(file);
@@ -720,7 +720,7 @@ apf.upload.files = function(oUpload, model) {
             file.xml.setAttribute(i, file[i]);
         }
 
-        apf.xmldb.applyChanges("synchronize", file.xml);
+        ppc.xmldb.applyChanges("synchronize", file.xml);
 
         return file;
     };
@@ -730,7 +730,7 @@ apf.upload.files = function(oUpload, model) {
 
         file = oFiles[file.id];
         if (model && file.xml && !noXml)
-            apf.xmldb.removeNode(file.xml);
+            ppc.xmldb.removeNode(file.xml);
         aFiles.remove(file);
         delete oFiles[file.id];
     };
@@ -779,5 +779,5 @@ apf.upload.files = function(oUpload, model) {
     };
 };
 
-apf.aml.setElement("upload", apf.upload);
+ppc.aml.setElement("upload", ppc.upload);
 // #endif

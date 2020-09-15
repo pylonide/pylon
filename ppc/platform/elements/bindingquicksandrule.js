@@ -24,8 +24,8 @@
 /*
  * @todo docs
  */
-apf.BindingQuicksandRule = function(struct, tagName){
-    this.$init(tagName, apf.NODE_HIDDEN, struct);
+ppc.BindingQuicksandRule = function(struct, tagName){
+    this.$init(tagName, ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -73,12 +73,12 @@ apf.BindingQuicksandRule = function(struct, tagName){
         var i, l, dest, src, offset,
             _self            = this,
             coll             = getFilteredNodes.call(this), // destination (target) collection
-            //sourceHeight = apf.getStyle(parent, "height"), // used to keep height and document flow during the animation
-            parentOffset     = apf.getAbsolutePosition(parent), // offset of visible container, used in animation calculations
+            //sourceHeight = ppc.getStyle(parent, "height"), // used to keep height and document flow during the animation
+            parentOffset     = ppc.getAbsolutePosition(parent), // offset of visible container, used in animation calculations
             offsets          = [], // coordinates of every source collection item
             callbackFunction = typeof(arguments[1]) == "function"
                 ? arguments[1]
-                : typeof arguments[2] == "function" ? arguments[2] : apf.K,
+                : typeof arguments[2] == "function" ? arguments[2] : ppc.K,
             // Gets called when any animation is finished
             //var postCallbackPerformed = 0; // prevents the function from being called more than one time
             postCallback     = function() {
@@ -94,15 +94,15 @@ apf.BindingQuicksandRule = function(struct, tagName){
             },
             options = {
                 steps: 60,
-                anim: apf.tween.easeInOutQuad,
+                anim: ppc.tween.easeInOutQuad,
                 onfinish: postCallback,
                 // put false if you don't want the plugin to adjust height of container to fit all the items
                 adjustHeight: true
             };
-        apf.extend(options, customOptions);;
+        ppc.extend(options, customOptions);;
 
         // Replace the collection and quit if IE6
-        if (apf.isIE && apf.isIE < 7) {
+        if (ppc.isIE && ppc.isIE < 7) {
             parent.innerHTML = "";
             for (i = 0, l = coll.length; i < l; i++)
                 parent.appendChild(coll[i]);
@@ -114,8 +114,8 @@ apf.BindingQuicksandRule = function(struct, tagName){
         // Position: relative situations
         var correctionOffset = [0, 0];
         /*var $correctionParent = parent.offsetParent();
-        var correctionOffset = apf.getAbsolutePosition($correctionParent);
-        if (apf.getStyle($correctionParent, "position") == "relative") {
+        var correctionOffset = ppc.getAbsolutePosition($correctionParent);
+        if (ppc.getStyle($correctionParent, "position") == "relative") {
             if ($correctionParent.get(0).nodeName.toLowerCase() == "body") {
 
             }
@@ -135,12 +135,12 @@ apf.BindingQuicksandRule = function(struct, tagName){
         parent.style.height = parent.offsetHeight + "px";
 
         // stops previous animations on source container
-        apf.tween.clearQueue(parent, true);//$(this).stop();
+        ppc.tween.clearQueue(parent, true);//$(this).stop();
 
         // get positions of source collections
         for (i = 0, l = $source.length; i < l; ++i) {
             src = $source[i];
-            offsets[i] = apf.getAbsolutePosition(src, parent, false);
+            offsets[i] = ppc.getAbsolutePosition(src, parent, false);
         }
         for (i = 0, l = $source.length; i < l; ++i) {
             src = $source[i];
@@ -149,8 +149,8 @@ apf.BindingQuicksandRule = function(struct, tagName){
             with (src.style) {
                 position = "absolute";
                 margin   = "0";
-                top      = (offsets[i][1] - parentOffset[1]) + "px";// - parseFloat(apf.getStyle(src, "margin-top"))  + "px";
-                left     = (offsets[i][0] - parentOffset[0]) + "px";// - parseFloat(apf.getStyle(src, "margin-left")) + "px";
+                top      = (offsets[i][1] - parentOffset[1]) + "px";// - parseFloat(ppc.getStyle(src, "margin-top"))  + "px";
+                left     = (offsets[i][0] - parentOffset[0]) + "px";// - parseFloat(ppc.getStyle(src, "margin-left")) + "px";
             }
         }
 
@@ -163,7 +163,7 @@ apf.BindingQuicksandRule = function(struct, tagName){
 
         for (i = 0, l = coll.length; i < l; ++i) {
             $dest.appendChild(coll[i].cloneNode(true));
-            coll[i].$offset = apf.getAbsolutePosition(coll[i]);
+            coll[i].$offset = ppc.getAbsolutePosition(coll[i]);
         }
         // insert node into HTML
         // Note that the node is under visible source container in the exactly same position
@@ -184,7 +184,7 @@ apf.BindingQuicksandRule = function(struct, tagName){
         // If destination container has different height than source container
         // the height can be animated, adjusting it to destination height
         if (false) {//options.adjustHeight) {
-            apf.tween.single(parent, {
+            ppc.tween.single(parent, {
                 steps: options.steps,
                 anim : options.anim,
                 type : "height",
@@ -213,10 +213,10 @@ apf.BindingQuicksandRule = function(struct, tagName){
                     to  : offset[0] - parentOffset[0]
                 }, {
                     type: "opacity",
-                    from: apf.getStyle(src, "opacity"),
+                    from: ppc.getStyle(src, "opacity"),
                     to  : 1
                 }];
-                if (apf.supportCSSAnim) {
+                if (ppc.supportCSSAnim) {
                     options.tweens.push({
                         type: "transform",
                         subType: "scale",
@@ -224,17 +224,17 @@ apf.BindingQuicksandRule = function(struct, tagName){
                         to: 1.0
                     });
                 }
-                apf.tween.multi(src, options);
+                ppc.tween.multi(src, options);
             }
             else {
                 // The item from source collection is not present in destination collections
                 // Let's remove it
                 options.tweens = [{
                     type: "opacity",
-                    from: apf.getStyle(src, "opacity"),
+                    from: ppc.getStyle(src, "opacity"),
                     to  : 0
                 }];
-                if (apf.supportCSSAnim) {
+                if (ppc.supportCSSAnim) {
                     options.tweens.push({
                         type: "transform",
                         subType: "scale",
@@ -243,7 +243,7 @@ apf.BindingQuicksandRule = function(struct, tagName){
                     });
                 }
                 insets.push(offsets[i]);
-                apf.tween.multi(src, options);
+                ppc.tween.multi(src, options);
             }
         }
 
@@ -259,12 +259,12 @@ apf.BindingQuicksandRule = function(struct, tagName){
                     from: 0,
                     to  : 1
                 }];
-                if (!apf.isIE) {
+                if (!ppc.isIE) {
                     // @todo add scaleTo animation (CSS3) to 0.0
                 }
                 
                 // Let's create it
-                offset = apf.getAbsolutePosition(dest);
+                offset = ppc.getAbsolutePosition(dest);
                 dest   = dest.cloneNode(true);
 
                 with (dest.style) {
@@ -276,7 +276,7 @@ apf.BindingQuicksandRule = function(struct, tagName){
                     transform = "scale(.0)";
                 }
                 parent.appendChild(dest);
-                apf.tween.multi(dest, options);
+                ppc.tween.multi(dest, options);
             }
         }
     }
@@ -296,8 +296,8 @@ apf.BindingQuicksandRule = function(struct, tagName){
             quicksand.call(_self);
         });
     });
-}).call(apf.BindingQuicksandRule.prototype = new apf.BindingRule());
+}).call(ppc.BindingQuicksandRule.prototype = new ppc.BindingRule());
 
-apf.aml.setElement("quicksand", apf.BindingQuicksandRule);
+ppc.aml.setElement("quicksand", ppc.BindingQuicksandRule);
 // #endif
 

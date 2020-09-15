@@ -1,7 +1,7 @@
 <html>
  <head>
      <!--meta http-equiv='X-UA-Compatible' content='IE=EmulateIE7'/-->
-    <script LANGUAGE="JavaScript" type="text/javascript" src="apf_stub.js"></script>
+    <script LANGUAGE="JavaScript" type="text/javascript" src="ppc_stub.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/util/color.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/parsers/livemarkup.js"></script>
     <script LANGUAGE="JavaScript" type="text/javascript" src="../core/lib/vector.js"></script>
@@ -37,7 +37,7 @@
     }
 
     function draw(){
-        var ctx = new apf.vector.vml('drawnode',800,600,0,0,'red');
+        var ctx = new ppc.vector.vml('drawnode',800,600,0,0,'red');
         // lets add a new group to to our root group
         var g = ctx.group({x:0,y:0,w:800,h:600});
         var r = [];
@@ -51,7 +51,7 @@
         }
         col[i] = 'red';
         
-        apf.profile_loop(1,function(){  
+        ppc.profile_loop(1,function(){  
         for(var y=0,i=0;y<yw;y++)
             for(var x=0;x<xw;x++,i++)
                 r[i] = ctx.rect({x:x*xs,y:y*ys,w:xs,h:ys,o:1,f:col[Math.round((Math.sin((x+y)/2 )*0.5+0.5)*zd)]},g);
@@ -59,7 +59,7 @@
         });
         var t = 0;
         window.setInterval(function(){
-       // apf.profile_loop(1,function(){  
+       // ppc.profile_loop(1,function(){  
 //        document.onkeydown=function(){
         t++;
         //for(t = 0;t<32;t++){
@@ -68,7 +68,7 @@
                 var c = Math.round((Math.sin(((Math.sqrt(x*x+y*y))-t/5)/2 )*0.5+0.5)*zd);
                 if(c>=zd)c = zd-1; if(c<0)c = 0;
                 //if(t==31 && x==6 && y==2){c = 16;
-                //apf.logw((((((Math.sqrt((x-1)*(x-1)+y*y))+t/10)/2 )*0.5+0.5)));
+                //ppc.logw((((((Math.sqrt((x-1)*(x-1)+y*y))+t/10)/2 )*0.5+0.5)));
                 //}//c=16;//debugger;
                 //if((x+t)&1)c = 'rgb('+((255/xs)*(x+t))%255+',0,1)';
                 r[i].style({o2:(t/10)%1,s:col[c],f:col[c]});

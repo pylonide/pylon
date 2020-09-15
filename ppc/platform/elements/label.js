@@ -28,7 +28,7 @@
  * #### Example: Connecting with "For"
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:label 
  *     for       = "txtAddress"
@@ -42,12 +42,12 @@
  * </a:application>
  * ```
  *
- * @class apf.label
+ * @class ppc.label
  * @define label
  * @allowchild {smartbinding}
  *
  * @form 
- * @inherits apf.BaseSimple
+ * @inherits ppc.BaseSimple
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -77,16 +77,16 @@
  *  <a:label value="[mdlLabel::@text]" />
  * ```
  */
-apf.label = function(struct, tagName){
-    this.$init(tagName || "label", apf.NODE_VISIBLE, struct);
+ppc.label = function(struct, tagName){
+    this.$init(tagName || "label", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction,
+        ppc.DataAction,
         //#endif
-        apf.ChildValue
+        ppc.ChildValue
     );
 
     var _self = this;
@@ -152,17 +152,17 @@ apf.label = function(struct, tagName){
         }
         
         var _self = this;
-        apf.addListener(this.$ext, "click", function(e) {
+        ppc.addListener(this.$ext, "click", function(e) {
             if (!_self.disabled)
                 _self.dispatchEvent("click", {htmlEvent: e});
         });
         
-        apf.addListener(this.$ext, "mouseover", function(e) {
+        ppc.addListener(this.$ext, "mouseover", function(e) {
             if (!_self.disabled)
                 _self.dispatchEvent("mouseover", {htmlEvent: e});
         });
         
-        apf.addListener(this.$ext, "mouseout", function(e) {
+        ppc.addListener(this.$ext, "mouseout", function(e) {
             if (!_self.disabled)
                 _self.dispatchEvent("mouseout", {htmlEvent: e});
         });
@@ -170,7 +170,7 @@ apf.label = function(struct, tagName){
     
     this.$childProperty = "caption";
     
-}).call(apf.label.prototype = new apf.BaseSimple());
+}).call(ppc.label.prototype = new ppc.BaseSimple());
 
-apf.aml.setElement("label", apf.label);
+ppc.aml.setElement("label", ppc.label);
 //#endif

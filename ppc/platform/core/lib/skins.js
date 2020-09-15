@@ -27,7 +27,7 @@
  *
  * @private
  */
-apf.skins = {
+ppc.skins = {
     skins  : {},
     css    : [],
     // @TODO Doc these ?
@@ -57,24 +57,24 @@ apf.skins = {
         var mediaPath = null, iconPath = null;
         mediaPath = xmlNode.getAttribute("media-path");
         if (mediaPath !== null)
-            mediaPath = apf.getAbsolutePath(base || apf.hostPath, mediaPath);
+            mediaPath = ppc.getAbsolutePath(base || ppc.hostPath, mediaPath);
         else if (refNode) {
             mediaPath = refNode.getAttribute("media-path");
             if (mediaPath !== null)
-                mediaPath = apf.getAbsolutePath(apf.hostPath, mediaPath);
+                mediaPath = ppc.getAbsolutePath(ppc.hostPath, mediaPath);
             else
-                mediaPath = apf.getAbsolutePath(base || apf.hostPath, "images/");
+                mediaPath = ppc.getAbsolutePath(base || ppc.hostPath, "images/");
         }
         
         iconPath = xmlNode.getAttribute("icon-path");
         if (iconPath !== null)
-            iconPath = apf.getAbsolutePath(base || apf.hostPath, iconPath);
+            iconPath = ppc.getAbsolutePath(base || ppc.hostPath, iconPath);
         else if (refNode) {
             iconPath = refNode.getAttribute("icon-path");
             if (iconPath !== null)
-                iconPath = apf.getAbsolutePath(apf.hostPath, iconPath);
+                iconPath = ppc.getAbsolutePath(ppc.hostPath, iconPath);
             else
-                iconPath = apf.getAbsolutePath(base || apf.hostPath, "icons/");
+                iconPath = ppc.getAbsolutePath(base || ppc.hostPath, "icons/");
         }
         
         if (!name)
@@ -148,12 +148,12 @@ apf.skins = {
      Import
      ************/
     importSkinDef: function(xmlNode, basepath, name){
-        var i, l, nodes = $xmlns(xmlNode, "style", apf.ns.aml), tnode, node;
+        var i, l, nodes = $xmlns(xmlNode, "style", ppc.ns.aml), tnode, node;
         for (i = 0, l = nodes.length; i < l; i++) {
             node = nodes[i];
 
             if (node.getAttribute("src"))
-                this.loadStylesheet(apf.getAbsolutePath(basepath, node.getAttribute("src")));
+                this.loadStylesheet(ppc.getAbsolutePath(basepath, node.getAttribute("src")));
             else {
                 var test = true;
                 if (node.getAttribute("condition")) {
@@ -179,7 +179,7 @@ apf.skins = {
             }
         }
 
-        nodes = $xmlns(xmlNode, "alias", apf.ns.apf);
+        nodes = $xmlns(xmlNode, "alias", ppc.ns.ppc);
         var t = this.skins[name].templates;
         for (i = 0; i < nodes.length; i++) {
             if (!nodes[i].firstChild)
@@ -194,7 +194,7 @@ apf.skins = {
             return;
 
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
-        apf.importCssString(cssString);
+        ppc.importCssString(cssString);
 
         //#ifdef __WITH_OFFLINE_APPLICATION
         this.loadedCss += cssString;
@@ -210,7 +210,7 @@ apf.skins = {
         var template = skin.templates[name[1]];
         this.importSkinDef(template, skin.base, skin.name);
         var cssString = this.css.join("\n").replace(/images\//g, imagepath).replace(/icons\//g, iconpath);
-        apf.importCssString(cssString);
+        ppc.importCssString(cssString);
 
         this.css = [];
     },
@@ -225,7 +225,7 @@ apf.skins = {
 
         // #ifdef __DEBUG
         if (!this.skins[name]) {
-            throw new Error(apf.formatErrorString(1076, null,
+            throw new Error(ppc.formatErrorString(1076, null,
                 "Retrieving Skin",
                 "Could not find skin '" + name + "'", amlNode.$aml));
         }
@@ -245,7 +245,7 @@ apf.skins = {
                 return false;
             
             // #ifdef __DEBUG
-            throw new Error(apf.formatErrorString(1077, null,
+            throw new Error(ppc.formatErrorString(1077, null,
                 "Retrieving Template",
                 "Could not find skin '" + name + "'"));
             // #endif
@@ -262,17 +262,17 @@ apf.skins = {
             originals = this.skins[name].originals[type] = {};
 
             // #ifdef __DEBUG
-            if (!$xmlns(skin, "presentation", apf.ns.aml)[0]) {
-                throw new Error(apf.formatErrorString(1078, null,
+            if (!$xmlns(skin, "presentation", ppc.ns.aml)[0]) {
+                throw new Error(ppc.formatErrorString(1078, null,
                     "Retrieving Template",
                     "Missing presentation tag in '" + name + "'"));
             }
             // #endif
 
-            var nodes = $xmlns(skin, "presentation", apf.ns.aml)[0].childNodes;
+            var nodes = $xmlns(skin, "presentation", ppc.ns.aml)[0].childNodes;
             for (var i = 0; i < nodes.length; i++) {
                 if (nodes[i].nodeType != 1) continue;
-                originals[nodes[i].baseName || nodes[i][apf.TAGNAME]] = nodes[i];
+                originals[nodes[i].baseName || nodes[i][ppc.TAGNAME]] = nodes[i];
             }
         }
 
@@ -284,16 +284,16 @@ apf.skins = {
     },
 
     getCssString : function(skinName){
-        return apf.queryValue($xmlns(this.skins[skinName.split(":")[0]].xml,
-            "style", apf.ns.aml)[0], "text()");
+        return ppc.queryValue($xmlns(this.skins[skinName.split(":")[0]].xml,
+            "style", ppc.ns.aml)[0], "text()");
     },
 
     //#ifdef __WITH_SKIN_CHANGE
     changeSkinset : function(value){
-        var node = apf.document.documentElement;
+        var node = ppc.document.documentElement;
         while (node) {
-            if (node && node.nodeFunc == apf.NODE_VISIBLE
-              && node.hasFeature(apf.__PRESENTATION__) && !node.skinset) {
+            if (node && node.nodeFunc == ppc.NODE_VISIBLE
+              && node.hasFeature(ppc.__PRESENTATION__) && !node.skinset) {
                 node.$propHandlers["skinset"].call(node, value);//$forceSkinChange
                 node.skinset = null;
             }
@@ -352,7 +352,7 @@ apf.skins = {
         }
 
         //#ifdef __AMLICONMAP
-        var parts = strQuery.split(":"); //@todo apf3.x optimize this
+        var parts = strQuery.split(":"); //@todo ppc3.x optimize this
         var map = this.iconMaps[parts[0]];
         if (map) {
             var left, top, coords = parts[1].split(",");

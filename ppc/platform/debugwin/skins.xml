@@ -1,5 +1,5 @@
 <?xml version='1.0'?>
-<a:skin xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<a:skin xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">
 <a:codeeditor name="codeeditor">
     <a:style><![CDATA[
         .ceDisabled {
@@ -417,17 +417,17 @@
             overflow            : hidden;
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!ppc.isIE"><![CDATA[
         .macro_tree BLOCKQUOTE DIV.macro_arrow {
             margin : 0 7px;
         }
     ]]></a:style>
-    <a:style condition="apf.isChrome"><![CDATA[
+    <a:style condition="ppc.isChrome"><![CDATA[
         .macro_tree BLOCKQUOTE SPAN.macro_cont_middle DIV {
             float : left;
         }
     ]]></a:style>
-    <a:style condition="apf.isOpera"><![CDATA[
+    <a:style condition="ppc.isOpera"><![CDATA[
        .macro_tree BLOCKQUOTE {
             display : block;
         }
@@ -447,7 +447,7 @@
           openclose = "div[2]"
           select    = "."
           container = "blockquote/span[2]">
-            <div><div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton" onclick="apf.findHost(this).remove()"> </span></blockquote></div>
+            <div><div class="macro_rcaption">-</div><div class="macro_rright"></div><div class="macro_arrow"></div><blockquote><span class="macro_cont_left"> </span><span class="macro_cont_middle"> </span><span class="macro_cont_right"> </span><span class="macro_xbutton" onclick="ppc.findHost(this).remove()"> </span></blockquote></div>
         </a:item>
         <a:dragindicator>
             <div class="dragmacro_tree">
@@ -905,7 +905,7 @@
             background : #f6f6f6;
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!ppc.isIE"><![CDATA[
         .tree LABEL, 
         .dragtree LABEL {
             padding : 3px 0 0 20px;
@@ -1282,7 +1282,7 @@
             webkit-border-radius: 5px;
             border-radius: 5px;
         }
-        .has_apf .debugmarkup .highlight{
+        .has_ppc .debugmarkup .highlight{
             background-color : #FFFF00;
             color : #000000;
             
@@ -1383,7 +1383,7 @@
             margin-bottom : 1px;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE">
+    <a:style condition="ppc.isIE">
         .debugmarkup .attribute{
             margin : 0 -7px 0 0;
         }
@@ -1391,7 +1391,7 @@
             margin : 0;
         }
     </a:style>
-    <a:style condition="apf.isWebkit">
+    <a:style condition="ppc.isWebkit">
         .debugmarkup #txt_rename{
             margin-top : -2px;
         }
@@ -1516,7 +1516,7 @@
             background-position : 0 0;
         }
         
-        .debug2010tab .apf_logo {
+        .debug2010tab .ppc_logo {
             width               : 116px;
             height              : 43px;
             position            : absolute;
@@ -1673,7 +1673,7 @@
             background-position : -15px 0;
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!ppc.isIE"><![CDATA[
         .debug2010tab .scrollerdebug .scroller_btn_left.hover {
             background-position : 0 -17px;
         }
@@ -1698,7 +1698,7 @@
             background-position : -15px -51px;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE"><![CDATA[
+    <a:style condition="ppc.isIE"><![CDATA[
         .debug2010tab .scrollerdebug SPAN.hover {
             background-position-y : -17px;
         }
@@ -1724,7 +1724,7 @@
                     <span class="scroller_btn_left"> </span>
                     <span class="scroller_btn_right"> </span>
                 </div>
-                <div class="apf_logo"> </div>
+                <div class="ppc_logo"> </div>
             </div>
         </a:main>
         <a:button caption="div/span/text()" btncontainer="div">
@@ -2613,7 +2613,7 @@
           select  = ".">
             <div>
                 <span class="caption">
-                    <blockquote class="ico" onclick="apf.findHost(this).remove();"> </blockquote>
+                    <blockquote class="ico" onclick="ppc.findHost(this).remove();"> </blockquote>
                     <u>-</u>
                 </span>
             </div>
@@ -2975,7 +2975,7 @@
             font-weight : normal;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE6"><![CDATA[
+    <a:style condition="ppc.isIE6"><![CDATA[
         .propedit{
             overflow-x : hidden;
             padding-right : 16px;
@@ -3022,7 +3022,7 @@
             height : expression(this.parentNode.offsetHeight - 2);
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE || apf.isIE &gt; 7"><![CDATA[
+    <a:style condition="!ppc.isIE || ppc.isIE &gt; 7"><![CDATA[
         .propedit .records{
             overflow-x: hidden;
             overflow-y: auto;
@@ -3039,7 +3039,7 @@
             margin-top : 17px;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko &amp;&amp; apf.versionGecko &lt; 3"><![CDATA[
+    <a:style condition="ppc.isGecko &amp;&amp; ppc.versionGecko &lt; 3"><![CDATA[
         .propedit .headings{
             height : 18px;
         }
@@ -3176,12 +3176,12 @@
             margin : 5px 5px 0 3px;
         }
     </a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
+    <a:style condition="ppc.isWebkit"><![CDATA[
         .propedit .tb{
             padding-left : 2px;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko"><![CDATA[
+    <a:style condition="ppc.isGecko"><![CDATA[
         .propedit .tb{
             padding-left : 2px;
             padding-top : 1px;
@@ -3564,7 +3564,7 @@
             border-bottom : 1px solid #eee;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE &amp;&amp; !apf.isIE8"><![CDATA[
+    <a:style condition="ppc.isIE &amp;&amp; !ppc.isIE8"><![CDATA[
         .datagrid .headings div{
             float : left;
         }
@@ -3573,7 +3573,7 @@
             float : left;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko &amp;&amp; apf.versionGecko &lt; 3"><![CDATA[
+    <a:style condition="ppc.isGecko &amp;&amp; ppc.versionGecko &lt; 3"><![CDATA[
         .datagrid .headings{
             padding-top : 2px;
             height : 15px;
@@ -3594,7 +3594,7 @@
             position : relative;
         }
     ]]></a:style>
-    <a:style condition="apf.isChrome"><![CDATA[
+    <a:style condition="ppc.isChrome"><![CDATA[
         .datagrid .treecell strong {
             top : 0;
         }
@@ -3811,7 +3811,7 @@
         }
 
     ]]></a:style>
-    <a:style condition="apf.isIE6">
+    <a:style condition="ppc.isIE6">
     	.menu div.menuShadowTop, .menu div.menuShadowRight, .menu div.menuShadowLeft, .menu div.menuShadowBottom {
     	   display: none;
     	}
@@ -3975,7 +3975,7 @@
         .dockblank .text{
             height : 100%;
         }
-        .apf_console{
+        .ppc_console{
             font-family: "Lucida Grande", Verdana;
         }
 
@@ -4154,7 +4154,7 @@
             background-position : 0 -14px;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE &amp;&amp; !apf.isIE8"><![CDATA[
+    <a:style condition="ppc.isIE &amp;&amp; !ppc.isIE8"><![CDATA[
         .tbempty input{
             margin : 0 0 0 -7px;
         }
@@ -4163,7 +4163,7 @@
             margin : 0 0 0 -14px;
         }
     ]]></a:style>
-    <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+    <a:style condition="ppc.isSafari || ppc.isChrome"><![CDATA[
         .tbempty input{
             margin : -1px 0 0 -1px;
         }
@@ -4266,7 +4266,7 @@
     <a:alias>submit</a:alias>
     <a:alias>reset</a:alias>
     <a:style><![CDATA[
-    .apf_btn {
+    .ppc_btn {
         color       : #333;
         font-family : Tahoma, Arial;
         font-size   : 8pt;
@@ -4276,14 +4276,14 @@
         cursor      : default;
     }
 
-    .apf_btn .left {
+    .ppc_btn .left {
         float         : left;
         width         : 8px;
         height        : 25px;
         _margin-right : -3px; /* IE6 bug fix */
     }
 
-    .apf_btn .lbl {
+    .ppc_btn .lbl {
         height        : 20px;
         padding-top   : 5px;
         text-align    : center;
@@ -4294,34 +4294,34 @@
         text-overflow : ellipsis;
     }
 
-    .apf_btn .right {
+    .ppc_btn .right {
         float       : right;
         width       : 9px;
         height      : 25px;
        _margin-left : -3px; /* IE6 bug fix */
     }
     
-    .apf_btn .left{
+    .ppc_btn .left{
         background : url("images/button_left.png") no-repeat 0 -25px;
     }
     
-    .apf_btn .lbl{
+    .ppc_btn .lbl{
         background : url("images/button_middle.png") repeat-x 0 -25px;
     }
     
-    .apf_btn .right{
+    .ppc_btn .right{
         background : url("images/button_right.png") no-repeat 0 -25px;
     }
     
-    .apf_btnDefault .left {
+    .ppc_btnDefault .left {
         background : url("images/button_left.png") no-repeat top left;
     }
     
-    .apf_btnDefault .lbl {
+    .ppc_btnDefault .lbl {
         background : url("images/button_middle.png") repeat-x top left;
     }
     
-    .apf_btnDefault .right {
+    .ppc_btnDefault .right {
         background : url("images/button_right.png") no-repeat top left;
     }        
 
@@ -4341,7 +4341,7 @@
         background-image: url("images/red_button_right.png");
     }
 
-    .apf_btn span{
+    .ppc_btn span{
         padding  : 1px 3px 1px 3px;
         border   : 1px solid transparent;
         position : relative;
@@ -4350,68 +4350,68 @@
         _margin  : 0;
     }
     
-    .apf_btnDisabled  {
+    .ppc_btnDisabled  {
         color : #bebebe;
     }
     
-    .apf_btnDisabled .left {
+    .ppc_btnDisabled .left {
         background : url("images/button_left.png") no-repeat 0 -50px;
     }
     
-    .apf_btnDisabled .lbl {
+    .ppc_btnDisabled .lbl {
         background : url("images/button_middle.png") repeat-x 0 -50px;
     }
     
-    .apf_btnDisabled .right {
+    .ppc_btnDisabled .right {
         background : url("images/button_right.png") no-repeat 0 -50px;
     }
-    .apf_btnFocus {
+    .ppc_btnFocus {
     }
     
-    .apf_btnFocus span{
+    .ppc_btnFocus span{
         border  : 1px dotted #BBB;
         padding : 1px 3px 1px 3px;
     }
     
-    .apf_btnDown .left {
+    .ppc_btnDown .left {
         background : url("images/button_left.png") no-repeat 0 -75px;
     }
 
-    .apf_btnDown .lbl {
+    .ppc_btnDown .lbl {
         background : url("images/button_middle.png") repeat-x 0 -75px;
     }
         
-    .apf_btnDown .right {
+    .ppc_btnDown .right {
         background : url("images/button_right.png") no-repeat 0 -75px;
     }
-    .apf_btnDown.redBtn .left{
+    .ppc_btnDown.redBtn .left{
         background-image: url("images/red_button_left.png");
     }
 
-    .apf_btnDown.redBtn .lbl{
+    .ppc_btnDown.redBtn .lbl{
         background-image: url("images/red_button_middle.png");
     }
 
-    .apf_btnDown.redBtn .right{
+    .ppc_btnDown.redBtn .right{
         background-image: url("images/red_button_right.png");
     }
-    .apf_btnOver {   
+    .ppc_btnOver {   
     }
 ]]>
     </a:style>
-    <a:style condition="apf.isIE7">
-    .apf_btn .right {
+    <a:style condition="ppc.isIE7">
+    .ppc_btn .right {
         margin: 0;
     }
     
-    .apf_btn .left {
+    .ppc_btn .left {
         margin: 0;
     }
     </a:style>
 
     <a:presentation>
         <a:main caption="div[3]/span/text()" background=".">
-            <div class="apf_btn">
+            <div class="ppc_btn">
                 <div class="left"> </div>
                 <div class="right"> </div>
                 <div class="lbl">
@@ -4710,7 +4710,7 @@
     }
 ]]>
     </a:style>
-    <a:style condition="apf.isIE">
+    <a:style condition="ppc.isIE">
     .tree_demosmenu div.root {
         width:auto;
     }
@@ -4730,7 +4730,7 @@
         padding-right:13px;
     }
     </a:style>
-    <a:style condition="apf.isSafari">
+    <a:style condition="ppc.isSafari">
     .tree_demosmenu blockquote.root div.minlast span.counter {
 
     }
@@ -4845,7 +4845,7 @@
             display: none;
         }
     ]]></a:style>
-    <a:style condition="!apf.isIE"><![CDATA[
+    <a:style condition="!ppc.isIE"><![CDATA[
         .cbcontainer br{
             line-height: 0;
             display: block;
@@ -5661,19 +5661,19 @@
             margin-left : 10px;
         }
     ]]></a:style>
-    <a:style condition="apf.isOpera"><![CDATA[
+    <a:style condition="ppc.isOpera"><![CDATA[
         /* Fix for Opera 10.01 */
         .tslider .fixdiv .tb {
             padding : 1px 0 1px 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE7"><![CDATA[
+    <a:style condition="ppc.isIE7"><![CDATA[
         .tslider .fixdiv .tb {
             margin  : -1px 0 0 -1px;
             padding : 2px 0 2px 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko &amp;&amp; apf.versionFF == 3.6"><![CDATA[
+    <a:style condition="ppc.isGecko &amp;&amp; ppc.versionFF == 3.6"><![CDATA[
         .tslider .fixdiv .tb {
             padding : 1px 0 1px 0;
         }
@@ -5830,7 +5830,7 @@
             border-right        : 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isOpera"><![CDATA[
+    <a:style condition="ppc.isOpera"><![CDATA[
         .spinner .divfix {
             right : 20px;
         }

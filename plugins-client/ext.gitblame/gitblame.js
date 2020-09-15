@@ -25,7 +25,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
     
     hook : function() {
         var _self = this;
-        menus.addItemByPath("Tools/Git/Blame", new apf.item({
+        menus.addItemByPath("Tools/Git/Blame", new ppc.item({
             // @TODO: Support more CVSs? Just "Blame this File"
             onclick : function(){
                 _self.startBlame();
@@ -35,7 +35,7 @@ module.exports = ext.register("ext/gitblame/gitblame", {
             }
         }), 500);
         
-        menus.addItemByPath("File/Git Blame", new apf.item({
+        menus.addItemByPath("File/Git Blame", new ppc.item({
             onclick : function() {
                 _self.startBlame();
             },

@@ -16,11 +16,11 @@
 
 // #ifdef __WITH_RSA
 
-apf.crypto.RSA = (function() {
+ppc.crypto.RSA = (function() {
     function RSAKeyPair(encryptionExponent, decryptionExponent, modulus) {
-        this.e = apf.crypto.BigInt.fromHex(encryptionExponent);
-        this.d = apf.crypto.BigInt.fromHex(decryptionExponent);
-        this.m = apf.crypto.BigInt.fromHex(modulus);
+        this.e = ppc.crypto.BigInt.fromHex(encryptionExponent);
+        this.d = ppc.crypto.BigInt.fromHex(decryptionExponent);
+        this.m = ppc.crypto.BigInt.fromHex(modulus);
         /*
          * We can do two bytes per digit, so
          * chunkSize = 2 * (number of digits in modulus - 1).
@@ -28,11 +28,11 @@ apf.crypto.RSA = (function() {
          * already been subtracted.
          */
         ////////////////////////////////// TYF
-        this.digitSize = 2 * apf.crypto.BigInt.highIndex(this.m) + 2;
+        this.digitSize = 2 * ppc.crypto.BigInt.highIndex(this.m) + 2;
         this.chunkSize = this.digitSize - 11; // maximum, anything lower is fine
         ////////////////////////////////// TYF
         this.radix = 16;
-        this.barrett = new apf.crypto.Barrett(this.m);
+        this.barrett = new ppc.crypto.Barrett(this.m);
     }
     
     function twoDigit(n) {
@@ -65,7 +65,7 @@ apf.crypto.RSA = (function() {
         var result = "";
         var j, k, block;
         for (i = 0; i < al; i += key.chunkSize) {
-            block = new apf.crypto.BigInt.construct();
+            block = new ppc.crypto.BigInt.construct();
             j = 0;
             ////////////////////////////////// TYF
             /*
@@ -99,7 +99,7 @@ apf.crypto.RSA = (function() {
             ////////////////////////////////// TYF
             
             var crypt = key.barrett.powMod(block, key.e);
-            var text = key.radix == 16 ? apf.crypto.BigInt.toHex(crypt) : apf.crypto.BigInt.toString(crypt, key.radix);
+            var text = key.radix == 16 ? ppc.crypto.BigInt.toHex(crypt) : ppc.crypto.BigInt.toString(crypt, key.radix);
             result += text + " ";
         }
         return result.substring(0, result.length - 1); // Remove last space.
@@ -112,12 +112,12 @@ apf.crypto.RSA = (function() {
         for (i = 0; i < blocks.length; ++i) {
             var bi;
             if (key.radix == 16) {
-                bi = apf.crypto.BigInt.fromHex(blocks[i]);
+                bi = ppc.crypto.BigInt.fromHex(blocks[i]);
             } else {
-                bi = apf.crypto.BigInt.fromString(blocks[i], key.radix);
+                bi = ppc.crypto.BigInt.fromString(blocks[i], key.radix);
             }
             block = key.barrett.powMod(bi, key.d);
-            for (j = 0; j <= apf.crypto.BigInt.highIndex(block); ++j) {
+            for (j = 0; j <= ppc.crypto.BigInt.highIndex(block); ++j) {
                 result += String.fromCharCode(block.digits[j] & 255,
                   block.digits[j] >> 8);
             }

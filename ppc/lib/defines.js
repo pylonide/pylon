@@ -4,7 +4,7 @@ var Path = require("path"),
 /**
  * Reads defines and has utility function to deal with ifdefs
  */
-apf.definesCls = function() {
+ppc.definesCls = function() {
     this.$init(true);
 };
 (function(){
@@ -14,7 +14,7 @@ apf.definesCls = function() {
                 return eval(expr);
             }
             catch(e){
-                apf.console.error("Error parsing ifdef: " + expr + "\n" + e.message, "defines");
+                ppc.console.error("Error parsing ifdef: " + expr + "\n" + e.message, "defines");
             }
         }
     };
@@ -66,10 +66,10 @@ apf.definesCls = function() {
 
         // Output the warnings to stdout
         for (i = 0, j = warnings.length; i < j; i++)
-            apf.console.warn(warnings[i], "defines");
+            ppc.console.warn(warnings[i], "defines");
         // Throw an error to stdout that some of the requirements are not fulfilled.
         if (errors.length) {
-            apf.console.error(errors.join("\n"), "defines", apf.vardump(defines, null, false));
+            ppc.console.error(errors.join("\n"), "defines", ppc.vardump(defines, null, false));
             throw new Error;
         }
 
@@ -108,7 +108,7 @@ apf.definesCls = function() {
             switch (m[2]) {
                 case "begindef": 
                     if (blockdef){
-                        apf.console.error(path + "(" + (j + 1)
+                        ppc.console.error(path + "(" + (j + 1)
                             + ") - Fatal: Cannot nest #begindef", "defines");
                         throw new Error();
                     }
@@ -118,7 +118,7 @@ apf.definesCls = function() {
                     break;
                 case "enddef":
                     if (!blockdef){
-                        apf.console.error(path + "(" + (j + 1)
+                        ppc.console.error(path + "(" + (j + 1)
                             + ") - Fatal: #enddef without #begindef", "defines");
                         return;
                     }
@@ -127,12 +127,12 @@ apf.definesCls = function() {
                     var blockdefd = blockdefdata.join("\n");
                     
                     if (defines[blockdef] !== blockdefd) {
-                        apf.console.warn(path + "(" + (j + 1)
+                        ppc.console.warn(path + "(" + (j + 1)
                             + ") - WARNING differently defining Block:" 
                             + blockdef + "", "defines");
                     }
                     else {
-                        apf.console.info(path + "(" + (j + 1)
+                        ppc.console.info(path + "(" + (j + 1)
                             + ") - Defining Block:#" + blockdef + "#", "definess");
                     }
                     
@@ -143,7 +143,7 @@ apf.definesCls = function() {
                     level++;
                     if (!this.check(m[3]) && nowrite == -1){
                         nowrite = level; 
-                        apf.console.warn(path + "(" + (j + 1)
+                        ppc.console.warn(path + "(" + (j + 1)
                             + ") - Ignoring code by ifdef " + m[3] + "", "defines");
                     }
                     break;
@@ -152,7 +152,7 @@ apf.definesCls = function() {
                 case "elseif":
                     if ( this.check(m[3]) && nowrite == -1){
                         nowrite = level;
-                        apf.console.warn(path + "(" + (j + 1)
+                        ppc.console.warn(path + "(" + (j + 1)
                             + ") - Ignoring code by ifndef " + m[3] + "", "defines");
                     }
                     break;
@@ -162,7 +162,7 @@ apf.definesCls = function() {
                     level--; //inside or outside??
                 
                     if (level < 0){
-                        apf.console.error(path + "(" + (j + 1)
+                        ppc.console.error(path + "(" + (j + 1)
                             + ") - Fatal: #endif missing #ifdef/ifndef " + level,
                             "defines");
                         return;
@@ -173,7 +173,7 @@ apf.definesCls = function() {
                         var def = m[3].split(" ");
                         
                         if (!defines[def[0]]){
-                            apf.console.info(path + "(" + (j + 1)
+                            ppc.console.info(path + "(" + (j + 1)
                                 + ") - Defining:" + def[0] + " as:" 
                                 + def[1] + "", "defines");
 
@@ -184,7 +184,7 @@ apf.definesCls = function() {
                 case "undef":
                     if (nowrite == -1 )
                     {
-                        apf.console.info(path + "(" + (j + 1)
+                        ppc.console.info(path + "(" + (j + 1)
                             + ") - Undefining:" + m[3] + "", "defines");
 
                         delete defines[trim(m[3])];
@@ -200,13 +200,13 @@ apf.definesCls = function() {
         }
         
         if (blockdef){
-            apf.console.error(path + "(" + (j + 1)
+            ppc.console.error(path + "(" + (j + 1)
                 + ") - Fatal: #begindef without #enddef", "defines");
             return;
         }
         
         if (level > 0){
-            apf.console.error(path + "(" + (j + 1)
+            ppc.console.error(path + "(" + (j + 1)
                 + ") - Fatal: #ifdef/#ifndef without #endif " + level + "", "defines");
             return;
         }
@@ -222,28 +222,28 @@ apf.definesCls = function() {
         requires = {};
 
         if (x.getAttribute("defaults")) {
-            fpath = Path.normalize(__dirname + "/../projects/" + apf.settings.parseAttribute(x.getAttribute("defaults")));
+            fpath = Path.normalize(__dirname + "/../projects/" + ppc.settings.parseAttribute(x.getAttribute("defaults")));
             try {
                 var file = Fs.readFileSync(fpath, "utf8");
                 file.path = fpath;
                 file.name = Path.basename(fpath);
             }
             catch (ex) {
-                apf.console.error("File not found " + fpath);
+                ppc.console.error("File not found " + fpath);
                 throw new Error();
             }
 
-            var xml = apf.getXml(file);
+            var xml = ppc.getXml(file);
 
             //n = xml.selectNodes("//p:define");//childNodes;
             n = xml.getElementsByTagName("define");
             for (i = 0, l = n.length; i < l; i++) {
-               // apf.console.log('defines   ' + n[i].getAttribute("name"));
+               // ppc.console.log('defines   ' + n[i].getAttribute("name"));
                 if (n[i].nodeType != 1)
                     continue;
 
                 node = n[i];
-                v    = apf.settings.parseAttribute(node.getAttribute("value"));
+                v    = ppc.settings.parseAttribute(node.getAttribute("value"));
                 name = node.getAttribute("name");
                 defines[name] = (parseFloat(v) == v ? parseFloat(v) : v) || 0;
 
@@ -269,15 +269,15 @@ apf.definesCls = function() {
         for (i = 0, l = n.length; i < l; i++) {
             if (n[i].nodeType != 1)
                 continue;
-            v = apf.settings.parseAttribute(n[i].getAttribute("value"));
+            v = ppc.settings.parseAttribute(n[i].getAttribute("value"));
             defines[n[i].getAttribute("name")] = (parseFloat(v) == v 
                 ? parseFloat(v) 
                 : v) || 0;
         }
 
-        apf.console.info("Defines loaded from " + fpath, "defines");
+        ppc.console.info("Defines loaded from " + fpath, "defines");
 
         this.checkRequired();
     };
-}).call(apf.definesCls.prototype = new apf.ProjectBase());
-apf.defines = new apf.definesCls();
+}).call(ppc.definesCls.prototype = new ppc.ProjectBase());
+ppc.defines = new ppc.definesCls();

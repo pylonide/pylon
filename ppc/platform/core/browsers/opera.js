@@ -24,9 +24,9 @@
  * Compatibility layer for Opera browsers.
  * @private
  */
-apf.runOpera = function (){
-    if (apf.runNonIe)
-        apf.runNonIe();
+ppc.runOpera = function (){
+    if (ppc.runNonIe)
+        ppc.runNonIe();
     
     /* ***************************************************************************
      XML Serialization
@@ -74,7 +74,7 @@ apf.runOpera = function (){
         if (doc.selectNodes) 
             return doc.selectNodes(sExpr, this);
         else {
-            throw new Error(apf.formatErrorString(1047, null, "XPath Selection", 
+            throw new Error(ppc.formatErrorString(1047, null, "XPath Selection", 
                 "Method selectNodes is only supported by XML Nodes"));
         }
     };
@@ -101,7 +101,7 @@ apf.runOpera = function (){
             return doc.selectSingleNode(sExpr, this);
         }
         else {
-            throw new Error(apf.formatErrorString(1048, null, "XPath Selection", 
+            throw new Error(ppc.formatErrorString(1048, null, "XPath Selection", 
                 "Method selectSingleNode is only supported by XML Nodes. \nInfo : " + e));
         }
     };
@@ -109,7 +109,7 @@ apf.runOpera = function (){
     //#endif
     
     var serializer = new XMLSerializer();
-    apf.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
+    ppc.insertHtmlNodes = function(nodeList, htmlNode, beforeNode, s) {
         var node, frag, i, l;
         if (nodeList) {
             frag = document.createDocumentFragment();
@@ -123,15 +123,15 @@ apf.runOpera = function (){
         
         (beforeNode || htmlNode).insertAdjacentHTML(beforeNode
             ? "beforebegin"
-            : "beforeend", s || apf.html_entity_decode(serializer.serializeToString(frag)).replace(/<([^>]+)\/>/g, "<$1></$1>"));
+            : "beforeend", s || ppc.html_entity_decode(serializer.serializeToString(frag)).replace(/<([^>]+)\/>/g, "<$1></$1>"));
     };
 
-    apf.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
+    ppc.insertHtmlNode = function(xmlNode, htmlNode, beforeNode, s) {
         if (htmlNode.nodeType != 11 && !htmlNode.style)
             return htmlNode.appendChild(xmlNode);
         
         if (!s) {
-            s = apf.html_entity_decode(xmlNode.serialize 
+            s = ppc.html_entity_decode(xmlNode.serialize 
                 ? xmlNode.serialize(true)
                 : ((xmlNode.nodeType == 3 || xmlNode.nodeType == 4 || xmlNode.nodeType == 2)
                     ? xmlNode.nodeValue
@@ -145,37 +145,37 @@ apf.runOpera = function (){
         return beforeNode ? beforeNode.previousSibling : htmlNode.lastChild;
     };
     
-    apf.getHtmlLeft = function(oHtml){
+    ppc.getHtmlLeft = function(oHtml){
         return (oHtml.offsetLeft
-            - (parseInt(apf.getStyle(oHtml.parentNode, "borderLeftWidth")) || 0));
+            - (parseInt(ppc.getStyle(oHtml.parentNode, "borderLeftWidth")) || 0));
     };
 
-    apf.getHtmlRight = function(oHtml){
+    ppc.getHtmlRight = function(oHtml){
         var p;
         return (((p = oHtml.offsetParent).tagName == "BODY" 
-          ? apf.getWindowWidth()
+          ? ppc.getWindowWidth()
           : p.offsetWidth)
             - oHtml.offsetLeft - oHtml.offsetWidth
-            - (parseInt(apf.getStyle(p, "borderRightWidth")) || 0));
+            - (parseInt(ppc.getStyle(p, "borderRightWidth")) || 0));
     };
 
-    apf.getHtmlTop = function(oHtml){
+    ppc.getHtmlTop = function(oHtml){
         return (oHtml.offsetTop
-            - (parseInt(apf.getStyle(oHtml.offsetParent, "borderTopWidth")) || 0));
+            - (parseInt(ppc.getStyle(oHtml.offsetParent, "borderTopWidth")) || 0));
     };
 
-    apf.getHtmlBottom = function(oHtml){
+    ppc.getHtmlBottom = function(oHtml){
         var p;
         return (((p = oHtml.offsetParent).tagName == "BODY" 
-          ? apf.getWindowHeight()
+          ? ppc.getWindowHeight()
           : p.offsetHeight)
             - oHtml.offsetTop - oHtml.offsetHeight
-            - (parseInt(apf.getStyle(p, "borderBottomWidth")) || 0));
+            - (parseInt(ppc.getStyle(p, "borderBottomWidth")) || 0));
     };
 
-    apf.getBorderOffset = function(oHtml){
-        return [parseInt(apf.getStyle(oHtml, "borderLeftWidth")) || 0,
-                parseInt(apf.getStyle(oHtml, "borderTopWidth")) || 0]
+    ppc.getBorderOffset = function(oHtml){
+        return [parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0,
+                parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0]
     };
 };
 

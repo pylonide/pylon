@@ -35,11 +35,11 @@
  * @attribute {String} src the location of the aml file to include in this application.
  *
  */
-apf.DOMParser = function(){};
+ppc.DOMParser = function(){};
 
-apf.DOMParser.prototype = new (function(){
+ppc.DOMParser.prototype = new (function(){
     this.caseInsensitive    = true;
-    this.preserveWhiteSpace = false; //@todo apf3.0 whitespace issue
+    this.preserveWhiteSpace = false; //@todo ppc3.0 whitespace issue
 
     this.$waitQueue  = {}
     this.$callCount  = 0;
@@ -61,16 +61,16 @@ apf.DOMParser.prototype = new (function(){
               .replace(RE[2], //.replace(/^[\r\n\s]*/, "")
                 function(m){ return m.toLowerCase(); });
 
-            /* @todo apf3.0 integrate this
+            /* @todo ppc3.0 integrate this
             x.ownerDocument.setProperty("SelectionNamespaces",
-                                    "xmlns:a='" + apf.ns.aml + "'");
+                                    "xmlns:a='" + ppc.ns.aml + "'");
             */
 
             if (!this.supportNamespaces)
                 str = str.replace(/xmlns\=\"[^"]*\"/g, "");
 
             //#ifdef __WITH_EXPLICIT_LOWERCASE
-            xmlNode = apf.getXmlDom(str, null, this.preserveWhiteSpace || apf.debug).documentElement;
+            xmlNode = ppc.getXmlDom(str, null, this.preserveWhiteSpace || ppc.debug).documentElement;
             var i, l,
                 nodes = XPath.select(XPATH, xmlNode);
             // Case insensitive support
@@ -80,13 +80,13 @@ apf.DOMParser.prototype = new (function(){
             }
             /* #else
 
-            var xmlNode = apf.getXmlDom(str);
-            if (apf.xmlParseError) apf.xmlParseError(xmlNode);
+            var xmlNode = ppc.getXmlDom(str);
+            if (ppc.xmlParseError) ppc.xmlParseError(xmlNode);
             xmlNode = xmlNode.documentElement;
             #endif */
         }
         else {
-            xmlNode = apf.getXmlDom(xmlStr, null, this.preserveWhiteSpace || apf.debug).documentElement;
+            xmlNode = ppc.getXmlDom(xmlStr, null, this.preserveWhiteSpace || ppc.debug).documentElement;
         }
 
         return this.parseFromXml(xmlNode, options);
@@ -105,7 +105,7 @@ apf.DOMParser.prototype = new (function(){
                 docFrag = options.docFrag || doc.createDocumentFragment();
             }
             else {
-                doc            = new apf.AmlDocument();
+                doc            = new ppc.AmlDocument();
                 doc.$aml       = xmlNode;
                 doc.$domParser = this;
             }
@@ -115,7 +115,7 @@ apf.DOMParser.prototype = new (function(){
             // #ifdef __DEBUG
             //Check for children in Aml node
             /*if (!xmlNode.childNodes.length) {
-                apf.console.warn("DOMParser got markup without any children");
+                ppc.console.warn("DOMParser got markup without any children");
                 return (docFrag || doc);
             }*/
             // #endif
@@ -248,7 +248,7 @@ apf.DOMParser.prototype = new (function(){
 
     this.$continueParsing = function(amlNode, options){
         if (!amlNode)
-            amlNode = apf.document.documentElement;
+            amlNode = ppc.document.documentElement;
 
         var uId  = amlNode.$uniqueId;
         if (uId in this.$waitQueue) {
@@ -265,7 +265,7 @@ apf.DOMParser.prototype = new (function(){
                 node = node.parentNode;
             }
 
-            var parseAmlNode = apf.all[uId];
+            var parseAmlNode = ppc.all[uId];
             delete this.$waitQueue[uId];
             if (parseAmlNode) {
                 for (var i = 0; i < item.length; i++)
@@ -320,7 +320,7 @@ apf.DOMParser.prototype = new (function(){
         })(amlNode.childNodes);
 
         if (!--this.$callCount && !options.delay)
-            apf.queue.empty();
+            ppc.queue.empty();
 
         if (options.callback)
             options.callback.call(amlNode.ownerDocument);
@@ -333,7 +333,7 @@ apf.DOMParser.prototype = new (function(){
             case 1:
                 var id, prefix;
                 if (xmlNode) {
-                    if ((namespaceURI = xmlNode.namespaceURI || apf.ns.xhtml)
+                    if ((namespaceURI = xmlNode.namespaceURI || ppc.ns.xhtml)
                       && !(prefix = doc.$prefixes[namespaceURI])) {
                         doc.$prefixes[prefix = xmlNode.prefix || xmlNode.scopeName || ""] = namespaceURI;
                         doc.$namespaceURIs[namespaceURI] = prefix;
@@ -351,21 +351,21 @@ apf.DOMParser.prototype = new (function(){
 
                 //#ifdef __DEBUG
                 if (!namespaceURI) {
-                    throw new Error("Missing namespace definition."); //@todo apf3.0 make proper error
+                    throw new Error("Missing namespace definition."); //@todo ppc3.0 make proper error
                 }
-                if (!apf.namespaces[namespaceURI]) {
+                if (!ppc.namespaces[namespaceURI]) {
                     if (this.allowAnyElement)
-                        namespaceURI = apf.ns.xhtml;
+                        namespaceURI = ppc.ns.xhtml;
                     else
-                        throw new Error("Missing namespace handler for '" + namespaceURI + "'"); //@todo apf3.0 make proper error
+                        throw new Error("Missing namespace handler for '" + namespaceURI + "'"); //@todo ppc3.0 make proper error
                 }
                 //#endif
 
-                var els = apf.namespaces[namespaceURI].elements;
+                var els = ppc.namespaces[namespaceURI].elements;
 
                 //#ifdef __DEBUG
                 if (!(els[nodeName] || els["@default"])) {
-                    throw new Error("Missing element constructor: " + nodeName); //@todo apf3.0 make proper error
+                    throw new Error("Missing element constructor: " + nodeName); //@todo ppc3.0 make proper error
                 }
                 //#endif
 
@@ -382,7 +382,7 @@ apf.DOMParser.prototype = new (function(){
                     //attributes
                     var attr = xmlNode.attributes, n;
                     for (var a, na, i = 0, l = attr.length; i < l; i++) {
-                        o.attributes.push(na = new apf.AmlAttr(o,
+                        o.attributes.push(na = new ppc.AmlAttr(o,
                             (n = (a = attr[i]).nodeName), a.nodeValue));
                         //#ifdef __WITH_DELAYEDRENDER
                         if (n == "render")
@@ -396,7 +396,7 @@ apf.DOMParser.prototype = new (function(){
 
                 break;
             case 2:
-                o = new apf.AmlAttr();
+                o = new ppc.AmlAttr();
                 o.name  = o.nodeName = nodeName;
                 if (nodeValue || (nodeValue = xmlNode && xmlNode.nodeValue))
                     o.value = o.nodeValue = nodeValue;
@@ -416,47 +416,47 @@ apf.DOMParser.prototype = new (function(){
                 if (!this.preserveWhiteSpace && !(nodeValue || "").trim())
                     return;
 
-                o = new apf.AmlText();
+                o = new ppc.AmlText();
                 o.nodeValue = nodeValue || xmlNode && xmlNode.nodeValue;
                 break;
             case 7:
                 var target = nodeName || xmlNode && xmlNode.nodeName;
                 //#ifdef __DEBUG
-                if(!apf.aml.processingInstructions[target])
-                    throw new Error(apf.formatErrorString(0, null,
+                if(!ppc.aml.processingInstructions[target])
+                    throw new Error(ppc.formatErrorString(0, null,
                         "The processing instruction does not exist", "Could not find the processing instruction with target: " + target));
                 //#endif
-                o = new apf.aml.processingInstructions[target]();
+                o = new ppc.aml.processingInstructions[target]();
 
                 o.target = o.nodeName  = target;
                 o.data   = o.nodeValue = nodeValue || xmlNode && xmlNode.nodeValue;
                 break;
             case 4:
-                o = new apf.AmlCDATASection();
+                o = new ppc.AmlCDATASection();
                 o.nodeValue = nodeValue || xmlNode && xmlNode.nodeValue;
                 break;
             case 5: //unsupported
-                o = new apf.AmlNode();
+                o = new ppc.AmlNode();
                 o.nodeType = nodeType;
                 break;
             case 6: //unsupported
-                o = new apf.AmlNode();
+                o = new ppc.AmlNode();
                 o.nodeType = nodeType;
                 break;
             case 8:
-                o = new apf.AmlComment();
+                o = new ppc.AmlComment();
                 o.nodeValue = nodeValue || xmlNode && xmlNode.nodeValue;
                 break;
             case 9:
-                o = new apf.AmlDocument();
+                o = new ppc.AmlDocument();
                 o.$domParser = this;
                 break;
             case 10: //unsupported
-                o = new apf.AmlNode();
+                o = new ppc.AmlNode();
                 o.nodeType = nodeType;
                 break;
             case 11:
-                o = new apf.AmlDocumentFragment();
+                o = new ppc.AmlDocumentFragment();
                 break;
         }
 
@@ -473,12 +473,12 @@ apf.DOMParser.prototype = new (function(){
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.AmlNamespace = function(){
+ppc.AmlNamespace = function(){
     this.elements = {};
     this.processingInstructions = {};
 };
 
-apf.AmlNamespace.prototype = {
+ppc.AmlNamespace.prototype = {
     setElement : function(tagName, fConstr){
         return this.elements[tagName] = fConstr;
     },

@@ -30,7 +30,7 @@
  * 
  * @private
  */
-apf.silverlight = (function() {
+ppc.silverlight = (function() {
     /**
      * {Number} silverlightCount:
      *
@@ -68,7 +68,7 @@ apf.silverlight = (function() {
     var onGetSilverlight = null;
     
     /**
-     * Called by apf.silverlight.WaitForInstallCompletion when the page detects
+     * Called by ppc.silverlight.WaitForInstallCompletion when the page detects
      * that Silverlight has been installed. The event handler is not called
      * in upgrade scenarios.
      * 
@@ -162,13 +162,13 @@ apf.silverlight = (function() {
     /**
      * Occasionally checks for Silverlight installation status. If it
      * detects that Silverlight has been installed then it calls
-     * apf.silverlight.onSilverlightInstalled();. This is only supported
+     * ppc.silverlight.onSilverlightInstalled();. This is only supported
      * if Silverlight was not previously installed on this computer.
      * 
      * @type {void}
      */
     function WaitForInstallCompletion(){
-        if (!apf.silverlight.isBrowserRestartRequired && onSilverlightInstalled) {
+        if (!ppc.silverlight.isBrowserRestartRequired && onSilverlightInstalled) {
             try {
                 navigator.plugins.refresh();
             }
@@ -190,8 +190,8 @@ apf.silverlight = (function() {
      */
     function startup() {
         navigator.plugins.refresh();
-        apf.silverlight.isBrowserRestartRequired = isInstalled(null);
-        if (!apf.silverlight.isBrowserRestartRequired) {
+        ppc.silverlight.isBrowserRestartRequired = isInstalled(null);
+        if (!ppc.silverlight.isBrowserRestartRequired) {
             WaitForInstallCompletion();
             if (!__installationEventFired) {
                 onInstallRequired();
@@ -468,7 +468,7 @@ apf.silverlight = (function() {
             }
             errMsg.push("MethodName: ", args.methodName, "     \n");
         }
-        throw new Error(apf.formatErrorString(0, this, errMsg.join('')));
+        throw new Error(ppc.formatErrorString(0, this, errMsg.join('')));
     }
     
     /**
@@ -711,7 +711,7 @@ apf.silverlight = (function() {
         /**
          * onGetSilverlight:
          *
-         * Called by apf.silverlight.GetSilverlight to notify the page that a user
+         * Called by ppc.silverlight.GetSilverlight to notify the page that a user
          * has requested the Silverlight installer
          */
         onGetSilverlight        : null,

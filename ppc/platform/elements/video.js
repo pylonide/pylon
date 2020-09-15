@@ -53,8 +53,8 @@
  *
  * @return {Video} Returns a new video
  * @type {Video}
- * @inherits apf.Presentation
- * @inherits apf.Media
+ * @inherits ppc.Presentation
+ * @inherits ppc.Media
  * @constructor
  * @allowchild text, source, nomedia
  *
@@ -65,14 +65,14 @@
  * @since       1.0
  */
 
-apf.video = function(struct, tagName){
-    this.$init(tagName || "video", apf.NODE_VISIBLE, struct);
+ppc.video = function(struct, tagName){
+    this.$init(tagName || "video", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
     );
 
@@ -95,8 +95,8 @@ apf.video = function(struct, tagName){
                     height   : this.parentNode.getHeight(),
                     top      : this.parentNode.getTop(),
                     left     : this.parentNode.getLeft(),
-                    position : apf.getStyle(oParent, 'position'),
-                    zIndex   : apf.getStyle(oParent, 'zIndex'),
+                    position : ppc.getStyle(oParent, 'position'),
+                    zIndex   : ppc.getStyle(oParent, 'zIndex'),
                     resizable: this.parentNode.resizable,
                     nodes    : []
                 }
@@ -105,9 +105,9 @@ apf.video = function(struct, tagName){
                     while (oParent.parentNode != document.body) {
                         var node = oParent.parentNode;
                         i = oldStyle.nodes.push({
-                            pos:  apf.getSyle(node, 'position') || "",
-                            top:  apf.getSyle(node, 'top')  || node.offsetTop + "px",
-                            left: apf.getSyle(node, 'left') || node.offsetLeft + "px",
+                            pos:  ppc.getSyle(node, 'position') || "",
+                            top:  ppc.getSyle(node, 'top')  || node.offsetTop + "px",
+                            left: ppc.getSyle(node, 'left') || node.offsetLeft + "px",
                             node: node
                         }) - 1;
                         node.style.position = "absolute";
@@ -116,7 +116,7 @@ apf.video = function(struct, tagName){
                         /*window.console.log('still reparenting!');
                         window.console.dir(oParent.parentNode);
                         placeHolder = document.createElement('div');
-                        placeHolder.setAttribute('id', 'apf.__apf_video_placeholder__');
+                        placeHolder.setAttribute('id', 'ppc.__ppc_video_placeholder__');
                         placeHolder.style.display = "none";
                         oParent.parentNode.insertBefore(placeHolder, oParent);
 
@@ -173,7 +173,7 @@ apf.video = function(struct, tagName){
             var _self = this;
             //#ifdef __WITH_LAYOUT
             window.setTimeout(function() {
-                apf.layout.forceResize(_self.parentNode.$ext);
+                ppc.layout.forceResize(_self.parentNode.$ext);
             }, 100);
             //#endif
         }
@@ -214,7 +214,7 @@ apf.video = function(struct, tagName){
     this.loadMedia = function() {
         if (this.player) {
             this.setProperty('currentSrc',   this.src);
-            this.setProperty('networkState', apf.Media.NETWORK_LOADING);
+            this.setProperty('networkState', ppc.Media.NETWORK_LOADING);
             this.player.load(this.src);
         }
 
@@ -266,15 +266,15 @@ apf.video = function(struct, tagName){
             type = "video/flv";
         else if (typesWMP.indexOf(ext) != -1)
             type = "video/wmv";
-        else if (typesNtv.indexOf(ext) != -1 && apf.hasVideo)
+        else if (typesNtv.indexOf(ext) != -1 && ppc.hasVideo)
             type = "video/ogg";
         else if (typesVLC.indexOf(ext) != -1)
             type = "video/vlc";
         // mpeg video is better to be played by native players
         if (ext == "mpg" || ext == "mpeg" || ext == "mpe")
-            type = apf.isMac ? "video/quicktime" : "video/wmv";
+            type = ppc.isMac ? "video/quicktime" : "video/wmv";
         // default to VLC on *NIX machines
-        if (!apf.isWin && !apf.isMac && type == "video/wmv")
+        if (!ppc.isWin && !ppc.isMac && type == "video/wmv")
             type = "video/vlc";
 
         return type;
@@ -312,15 +312,15 @@ apf.video = function(struct, tagName){
                 playerType = "TypeVlc";
 
             if (playerType == "TypeWmp") {
-                if (!apf.isIE && typeof apf.video.TypeVlc != "undefined"
-                  && apf.video.TypeVlc.isSupported())
+                if (!ppc.isIE && typeof ppc.video.TypeVlc != "undefined"
+                  && ppc.video.TypeVlc.isSupported())
                     playerType = "TypeVlc";
-                else if (apf.isMac)
+                else if (ppc.isMac)
                     playerType = "TypeQT";
             }
 
-            if (playerType && apf.video[playerType] &&
-              apf.video[playerType].isSupported()) {
+            if (playerType && ppc.video[playerType] &&
+              ppc.video[playerType].isSupported()) {
                 this.$lastMimeType = i;
                 return playerType;
             }
@@ -331,13 +331,13 @@ apf.video = function(struct, tagName){
     };
 
     /**
-     * Checks if a specified playerType is supported by APF or not...
+     * Checks if a specified playerType is supported by PPC or not...
      *
      * @type {Boolean}
      */
     this.$isSupported = function(sType) {
         sType = sType || this.playerType;
-        return (apf.video[sType] && apf.video[sType].isSupported());
+        return (ppc.video[sType] && ppc.video[sType].isSupported());
     };
 
     /**
@@ -346,7 +346,7 @@ apf.video = function(struct, tagName){
      * @type {Object}
      */
     this.$initPlayer = function() {
-        this.player = new apf.video[this.playerType](this, this.$ext, {
+        this.player = new ppc.video[this.playerType](this, this.$ext, {
             src         : this.src.splitSafe(",")[this.$lastMimeType] || this.src,
             width       : this.width,
             height      : this.height,
@@ -398,7 +398,7 @@ apf.video = function(struct, tagName){
      * @type {void}
      */
     this.$errorHook = function(e) {
-        apf.console.error(e.error);
+        ppc.console.error(e.error);
     };
 
     /**
@@ -414,7 +414,7 @@ apf.video = function(struct, tagName){
         this.setProperty('totalBytes', e.totalBytes);
         var iDiff = Math.abs(e.bytesLoaded - e.totalBytes);
         if (iDiff <= 20)
-            this.setProperty('readyState', apf.Media.HAVE_ENOUGH_DATA);
+            this.setProperty('readyState', ppc.Media.HAVE_ENOUGH_DATA);
     };
 
     /**
@@ -428,10 +428,10 @@ apf.video = function(struct, tagName){
     this.$stateChangeHook = function(e) {
         //loading, playing, seeking, paused, stopped, connectionError
         if (e.state == "loading") {
-            this.setProperty('networkState', this.networkState = apf.Media.NETWORK_LOADING);
+            this.setProperty('networkState', this.networkState = ppc.Media.NETWORK_LOADING);
         }
         else if (e.state == "connectionError") {
-            this.$propHandlers["readyState"].call(this, this.networkState = apf.Media.HAVE_NOTHING);
+            this.$propHandlers["readyState"].call(this, this.networkState = ppc.Media.HAVE_NOTHING);
         }
         else if (e.state == "playing" || e.state == "paused") {
             if (e.state == "playing")
@@ -487,8 +487,8 @@ apf.video = function(struct, tagName){
      * @type {Object}
      */
     this.$readyHook = function(e) {
-        this.setProperty('networkState', apf.Media.NETWORK_LOADED);
-        this.setProperty('readyState',   apf.Media.HAVE_FUTURE_DATA);
+        this.setProperty('networkState', ppc.Media.NETWORK_LOADED);
+        this.setProperty('readyState',   ppc.Media.HAVE_FUTURE_DATA);
         this.setProperty('duration', this.player.getTotalTime());
         this.seeking  = false;
         this.seekable = true;
@@ -504,7 +504,7 @@ apf.video = function(struct, tagName){
      * @type {void}
      */
     this.$metadataHook = function(e) {
-        this.oVideo.setProperty('readyState', apf.Media.HAVE_METADATA);
+        this.oVideo.setProperty('readyState', ppc.Media.HAVE_METADATA);
     };
 
     /**
@@ -556,11 +556,11 @@ apf.video = function(struct, tagName){
         if (bRuntime)
             this.$ext.innerHTML = "";
     };
-}).call(apf.video.prototype = new apf.Media());
+}).call(ppc.video.prototype = new ppc.Media());
 
-apf.aml.setElement("video", apf.video);
+ppc.aml.setElement("video", ppc.video);
 
-apf.video.TypeInterface = {
+ppc.video.TypeInterface = {
     properties: ["src", "width", "height", "volume", "showControls",
         "autoPlay", "totalTime", "mimeType"],
 
@@ -594,12 +594,12 @@ apf.video.TypeInterface = {
 
         if (typeof id == "object")
             return id;
-        if (apf.isIE)
+        if (ppc.isIE)
             return window[id];
         else {
             elem = document[id] ? document[id] : document.getElementById(id);
             if (!elem)
-                elem = apf.lookup(id);
+                elem = ppc.lookup(id);
             return elem;
         }
     }

@@ -1,10 +1,10 @@
 {
     "name": "pln",
     "description": "Pylon IDE",
-    "version": "2.5.0",
+    "version": "2.6.0",
     "homepage": "http://github.com/pylonide/pylon",
     "engines": {
-        "node": ">= 4.9.1"
+        "node": ">= 10.20.1"
     },
     "author": "Sten Feldman <exile@chamber.ee>",
     "contributors": [
@@ -16,49 +16,49 @@
         "web": "https://github.com/pylonide/pylon/blob/master/README.md"
     },
     "dependencies": {
-        "async": "~3.1.0",
-        "colors": "~1.3.3",
+        "async": "~3.2.0",
+        "colors": "~1.4.0",
         "connect": "~3.7.0",
-        "express-session": "~1.16.2",
+        "express-session": "~1.17.0",
         "cookie-parser": "~1.4.3",
         "body-parser": "~1.19.0",
         "serve-static": "~1.14.1",
         "serve-favicon": "~2.5.0",
-        "csurf": "~1.10.0",
+        "csurf": "~1.11.0",
         "urlrouter": "~0.5.4",
-        "qs": "~6.7.0",
+        "qs": "~6.9.0",
         "parseurl": "~1.3.2",
         "passport": "~0.4.0",
         "passport-http": "~0.3.0",
         "passport-local": "~1.0.0",
         "optimist": "~0.6.1",
         "msgpack-js-browser": "~0.1.4",
-        "engine.io": "~3.3.2",
-        "engine.io-client": "~3.3.1",
+        "engine.io": "~4.0.0",
+        "engine.io-client": "~4.0.0",
         "amd-loader": "~0.0.8",
         "http-error": "~0.0.6",
         "simple-template": "~0.0.1",
         "netutil": "~0.0.2",
         "architect": "~0.1.13",
-        "node-pty": "0.9.0-beta19",
-        "xterm": "~3.14.5",
+        "node-pty": "0.9.0",
+        "xterm": "~4.9.0",
+        "xterm-addon-fit": "~0.4.0",
         "vary": "^1.1.2",
+        "asyncjs": "~0.0.13",
         "@pylonide/dryice": "^0.5.2",
         "@pylonide/jsdav": "~0.4.0",
-        "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.5",
+        "@pylonide/vfs-architect": "~0.2.0",
+        "@pylonide/vfs-nodefs-adapter": "~0.4.0",
+        "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.12",
         "smith": "https://github.com/pylonide/smith/tarball/4d0f096553a47160330f5dd9bac8bf77cc27e8ab",
         "architect-build": "https://github.com/pylonide/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
-        "vfs-architect": "https://github.com/pylonide/vfs-architect/tarball/15bab6a21c3d3e164d5e557ef178ec71144ae8f7",
-        "vfs-nodefs-adapter": "https://github.com/pylonide/vfs-nodefs-adapter/tarball/7ce86b0242aa0941aad68cc8ecca3d82308dd276",
-        "vfs-local": "https://github.com/pylonide/vfs-local/tarball/66d1fb254f5086f03170890905b28ea9709e45f1",
-        "asyncjs": "https://github.com/pylonide/async.js/tarball/be2c5b9195312c9c4aa8c3e29932b0b9784bcae7",
         "v8debug": "https://github.com/pylonide/lib-v8debug/tarball/863c0ce1e39a4f100457d306e1d2cc2b0283fa2a",
         "treehugger": "https://github.com/pylonide/treehugger/tarball/65876760a809d93f627d5f9834c8bfc56f142a7e"
     },
     "devDependencies": {
         "nodeunit": "~0.11.2",
-        "rimraf": "~2.6.3",
-        "xmldom": "~0.1.27",
+        "rimraf": "~3.0.0",
+        "xmldom": "~0.3.0",
         "xpath": "~0.0.27"
     },
     "repository": {
@@ -69,6 +69,6 @@
         "start": "./bin/pylon.sh",
         "test": "npm run-script build && ./test/run-tests.sh",
         "build": "mkdir -p ./plugins-client/lib.ppc/www/ppc && cd ppc && mkdir -p build && node ppc-package.js projects/default.ppp && cat ./build/ppc_release.js | sed 's/\\(\\/\\*FILEHEAD(\\).*//g' > ../plugins-client/lib.ppc/www/ppc/ppc.js && cd ..",
-        "postinstall": "if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi"
+        "postinstall": "npm run-script build; if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker; make mode; make theme; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi"
     }
 }

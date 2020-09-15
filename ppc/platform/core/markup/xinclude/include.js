@@ -23,19 +23,19 @@
 /**
  * Defines a list of acceptable values
  */
-apf.XiInclude = function(struct, tagName){
-    this.$init(tagName || "include", apf.NODE_HIDDEN, struct);
+ppc.XiInclude = function(struct, tagName){
+    this.$init(tagName || "include", ppc.NODE_HIDDEN, struct);
 };
 
-apf.xinclude.setElement("include", apf.XiInclude);
-apf.aml.setElement("include", apf.XiInclude);
+ppc.xinclude.setElement("include", ppc.XiInclude);
+ppc.aml.setElement("include", ppc.XiInclude);
 
 //@todo test defer="true" situation
 (function(){
     this.$parsePrio = "002";
 
     //1 = force no bind rule, 2 = force bind rule 
-    /*this.$attrExcludePropBind = apf.extend({
+    /*this.$attrExcludePropBind = ppc.extend({
         href : 1,
         src  : 1
     }, this.$attrExcludePropBind);*/
@@ -52,7 +52,7 @@ apf.aml.setElement("include", apf.XiInclude);
 
         this.$path = value.charAt(0) == "{" //@todo this shouldn't happen anymore
           ? value
-          : apf.getAbsolutePath(apf.hostPath, value);
+          : ppc.getAbsolutePath(ppc.hostPath, value);
         
         var domParser = this.ownerDocument.$domParser;
         if (!this.defer) {
@@ -60,7 +60,7 @@ apf.aml.setElement("include", apf.XiInclude);
               this.$parseContext = domParser.$parseContext || [this.parentNode]);
         }
 
-        //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
+        //var basePath = ppc.hostPath;//only for recursion: ppc.getDirname(xmlNode.getAttribute("filename")) || 
         loadIncludeFile.call(this, this.$path);
     };
     
@@ -136,17 +136,17 @@ apf.aml.setElement("include", apf.XiInclude);
     
     function loadIncludeFile(path){
         //#ifdef __DEBUG
-        apf.console.info("Loading include file: " + path);
+        ppc.console.info("Loading include file: " + path);
         //#endif
 
         var _self = this;
-        apf.getData(path, apf.extend(this.options || {}, {
+        ppc.getData(path, ppc.extend(this.options || {}, {
             //#ifdef __DEBUG
             type : "markup",
             //#endif
             callback : function(xmlString, state, extra){
-                if (state != apf.SUCCESS) {
-                    var oError = new Error(apf.formatErrorString(1007,
+                if (state != ppc.SUCCESS) {
+                    var oError = new Error(ppc.formatErrorString(1007,
                         _self, "Loading Includes", "Could not load Include file '"
                         + (path || _self.src)
                         + "'\nReason: " + extra.message));
@@ -154,7 +154,7 @@ apf.aml.setElement("include", apf.XiInclude);
                     if (extra.tpModule.retryTimeout(extra, state, null, oError) === true)
                         return true;
 
-                    apf.console.error(oError.message);
+                    ppc.console.error(oError.message);
 
                     finish.call(_self, null);
 
@@ -162,27 +162,27 @@ apf.aml.setElement("include", apf.XiInclude);
                     return;
                 }
 
-                //@todo apf3.0 please make one way of doing this
+                //@todo ppc3.0 please make one way of doing this
                 xmlString = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
                     .replace(/^[\r\n\s]*/, ""); //.replace(/&nbsp;/g, " ")
-                if (!apf.supportNamespaces)
+                if (!ppc.supportNamespaces)
                     xmlString = xmlString.replace(/xmlns\=\"[^"]*\"/g, "");
                 
                 if (xmlString.indexOf("<a:application") == -1)
-                    xmlString = "<a:application xmlns:a='" + apf.ns.aml +"'>"
+                    xmlString = "<a:application xmlns:a='" + ppc.ns.aml +"'>"
                       + xmlString + "</a:application>";
 
-                var xmlNode = apf.getXml(xmlString, null, true);//apf.getAmlDocFromString(xmlString);
+                var xmlNode = ppc.getXml(xmlString, null, true);//ppc.getAmlDocFromString(xmlString);
             
                 if (!xmlNode) {
-                    throw new Error(apf.formatErrorString(0, null,
+                    throw new Error(ppc.formatErrorString(0, null,
                         "Loading include",
                         "Could not parse include file. Maybe the file does not exist?", xmlNode));
                 }
                 xmlNode.setAttribute("filename", extra.url);
 
                 // #ifdef __DEBUG
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
+                ppc.console.info("Loading of " + xmlNode[ppc.TAGNAME].toLowerCase() + " include done from file: " + extra.url);
                 // #endif
 
                 finish.call(_self, xmlNode); //@todo add recursive includes support here
@@ -191,5 +191,5 @@ apf.aml.setElement("include", apf.XiInclude);
             ignoreOffline : true
         }));
     }
-}).call(apf.XiInclude.prototype = new apf.AmlElement());
+}).call(ppc.XiInclude.prototype = new ppc.AmlElement());
 //#endif

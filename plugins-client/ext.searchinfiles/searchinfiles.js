@@ -32,7 +32,7 @@ var UndoManager = require("ace/undomanager").UndoManager;
 var EditSession = require("ace/edit_session").EditSession;
 var Document = require("ace/document").Document;
 
-module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
+module.exports = ext.register("ext/searchinfiles/searchinfiles", ppc.extend({
     name     : "Search in files",
     dev      : "Ajax.org",
     type     : ext.GENERAL,
@@ -70,8 +70,8 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         });
 
         this.nodes.push(
-            menus.addItemByPath("Find/~", new apf.divider(), 10000),
-            menus.addItemByPath("Find/Find in Files...", new apf.item({
+            menus.addItemByPath("Find/~", new ppc.divider(), 10000),
+            menus.addItemByPath("Find/Find in Files...", new ppc.item({
                 command : "searchinfiles"
             }), 20000)
         );
@@ -144,10 +144,10 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
         var tt = document.body.appendChild(tooltipSearchInFiles.$ext);
 
         chkSFRegEx.addEventListener("prop.value", function(e){
-            _self.$setRegexpMode(txtSFFind, apf.isTrue(e.value));
+            _self.$setRegexpMode(txtSFFind, ppc.isTrue(e.value));
         });
 
-        var cbs = winSearchInFiles.getElementsByTagNameNS(apf.ns.aml, "checkbox");
+        var cbs = winSearchInFiles.getElementsByTagNameNS(ppc.ns.aml, "checkbox");
         cbs.forEach(function(cb){
             tooltip.add(cb.$ext, {
                 message : cb.label,
@@ -156,7 +156,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 tooltip : tt,
                 animate : false,
                 getPosition : function(){
-                    var pos = apf.getAbsolutePosition(winSearchInFiles.$ext);
+                    var pos = ppc.getAbsolutePosition(winSearchInFiles.$ext);
                     var left = pos[0] + cb.getLeft();
                     var top = pos[1];
                     return [left, top - 16];
@@ -202,7 +202,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 name = p.pop();
         }
 
-        rbSFSelection.setAttribute("label", apf.escapeXML("Selection ( " + name + " )"));
+        rbSFSelection.setAttribute("label", ppc.escapeXML("Selection ( " + name + " )"));
     },
 
     getSelectedTreeNode: function() {
@@ -221,7 +221,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
         tooltipSearchInFiles.$ext.style.display = "none";
 
-        var animate = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        var animate = ppc.isTrue(settings.model.queryValue("general/@animateui"));
         if (!force && !winSearchInFiles.visible || force > 0) {
             if (winSearchInFiles.visible) {
                 txtSFFind.focus();
@@ -275,17 +275,17 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                         timingFunction: "cubic-bezier(.10, .10, .25, .90)",
                         duration: 0.2
                     }, function() {
-                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                    winSearchInFiles.$ext.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
                     winSearchInFiles.$ext.style.height = "";
 
                     setTimeout(function(){
-                        apf.layout.forceResize();
+                        ppc.layout.forceResize();
                     }, 50);
                 });
             }
             else {
                 winSearchInFiles.$ext.style.height = "";
-                apf.layout.forceResize();
+                ppc.layout.forceResize();
             }
         }
         else if (winSearchInFiles.visible) {
@@ -293,7 +293,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                 _self.saveHistory(txtSFFind.getValue());
 
             //Animate
-            if (animate && !apf.isGecko) {
+            if (animate && !ppc.isGecko) {
                 winSearchInFiles.visible = false;
 
                 winSearchInFiles.$ext.style.height =
@@ -308,7 +308,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     winSearchInFiles.hide();
                     winSearchInFiles.parentNode.removeChild(winSearchInFiles);
 
-                    winSearchInFiles.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                    winSearchInFiles.$ext.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
 
                     if (!noselect && editors.currentEditor)
                         editors.currentEditor.amlEditor.focus();
@@ -316,7 +316,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
                     setTimeout(function(){
                         callback
                             ? callback()
-                            : apf.layout.forceResize();
+                            : ppc.layout.forceResize();
                     }, 50);
                 });
             }
@@ -326,7 +326,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
                 callback
                     ? callback()
-                    : apf.layout.forceResize();
+                    : ppc.layout.forceResize();
             }
         }
 
@@ -389,7 +389,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
             options.replacement = "";
 
         // prepare new Ace document to handle search results
-        var node = apf.n("<file/>")
+        var node = ppc.n("<file/>")
             .attr("name", "Search Results")
             .attr("path", this.searchFilePath)
             .attr("customtype", util.getContentType(this.searchContentType))
@@ -440,14 +440,14 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
                 _self.searchPage = ide.getActivePage();
                 _self.searcheditor = _self.searchPage.$editor.amlEditor.$editor;
-                _self.apfeditor = _self.searchPage.$editor.amlEditor;
+                _self.ppceditor = _self.searchPage.$editor.amlEditor;
                 _self.tabacedoc = _self.searchPage.$doc.acedoc;
                 _self.tabacedoc.node = node;
 
-                apf.setStyleClass(_self.apfeditor.$ext, "aceSearchResults");
+                ppc.setStyleClass(_self.ppceditor.$ext, "aceSearchResults");
 
-                _self.apfeditor.$editor.renderer.scroller.addEventListener("dblclick", function() {
-                    _self.launchFileFromSearch(_self.apfeditor.$editor);
+                _self.ppceditor.$editor.renderer.scroller.addEventListener("dblclick", function() {
+                    _self.launchFileFromSearch(_self.ppceditor.$editor);
                 });
             }
             else {
@@ -618,7 +618,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
             tabConsole.set(this.pageID);
 
-            this.searchConsole = this.$panel.appendChild(new apf.codeeditor({
+            this.searchConsole = this.$panel.appendChild(new ppc.codeeditor({
                 syntax            : "c9search",
                 "class"           : "nocorner aceSearchConsole aceSearchResults",
                 theme             : "ace/theme/monokai",
@@ -668,7 +668,7 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
             _self.searchConsole.addEventListener("keyup", function(e) {
                 if (e.keyCode >= 37 && e.keyCode <= 40) { // KEYUP or KEYDOWN
-                    if (apf.isTrue(settings.model.queryValue("editors/code/filesearch/@consolelaunch"))) {
+                    if (ppc.isTrue(settings.model.queryValue("editors/code/filesearch/@consolelaunch"))) {
                         _self.launchFileFromSearch(_self.searchConsole.$editor);
                         _self.returnFocus = true;
                         return false;
@@ -682,12 +682,12 @@ module.exports = ext.register("ext/searchinfiles/searchinfiles", apf.extend({
 
             tabConsole.addEventListener("afterswitch", function(e){
                 if (e.currentTarget.activepage == "pgSFResults") {
-                    apf.layout.forceResize(_self.searchConsole.$ext);
+                    ppc.layout.forceResize(_self.searchConsole.$ext);
                 }
             });
         }
         else {
-            if (apf.isTrue(settings.model.queryValue("auto/console/@clearonrun")))
+            if (ppc.isTrue(settings.model.queryValue("auto/console/@clearonrun")))
                 this.consoleacedoc.removeLines(0, this.consoleacedoc.getLength());
 
             tabConsole.appendChild(this.$panel);

@@ -53,14 +53,14 @@ module.exports = ext.register("ext/watcher/watcher", {
                 ["automergeenabled", "false"],
                 ["dontaskautomerge", "false"]
             ]);
-            _self.isAutoMergeEnabled = apf.isTrue(e.model.queryValue("general/@automergeenabled")) || false;
+            _self.isAutoMergeEnabled = ppc.isTrue(e.model.queryValue("general/@automergeenabled")) || false;
         });
 
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
 
-            _self.isAutoMergeEnabled = apf.isTrue(e.model.queryValue("general/@automergeenabled")) || false;
+            _self.isAutoMergeEnabled = ppc.isTrue(e.model.queryValue("general/@automergeenabled")) || false;
         });
 
         function checkPage() {
@@ -144,7 +144,7 @@ module.exports = ext.register("ext/watcher/watcher", {
 
             var newData;
             fs.readFile(path, function(data, state, extra) {
-                if (state != apf.SUCCESS)
+                if (state != ppc.SUCCESS)
                     return dialog();
 
                 newData = data;
@@ -235,13 +235,13 @@ module.exports = ext.register("ext/watcher/watcher", {
             }
 
             function askAutoMerge() {
-                var ask = !(apf.isTrue(settings.model.queryValue("general/@dontaskautomerge")) || false);
+                var ask = !(ppc.isTrue(settings.model.queryValue("general/@dontaskautomerge")) || false);
 
                 if (!ask)
                     return;
 
                 if (!_self.cbAutoMerge) {
-                    _self.cbAutoMerge = new apf.checkbox({
+                    _self.cbAutoMerge = new ppc.checkbox({
                         skin: "checkbox_black",
                         label: "Don't ask again",
                         id: "cbWatcherDontAsk"
@@ -451,7 +451,7 @@ module.exports = ext.register("ext/watcher/watcher", {
 
 function question(title, header, onlocal, onlocaltoall, onremote, onremotetoall, onmerge, onmergetoall) {
     if (!window.winWatcher)
-        apf.document.documentElement.insertMarkup(markup);
+        ppc.document.documentElement.insertMarkup(markup);
 
     
     winWatcher.show();

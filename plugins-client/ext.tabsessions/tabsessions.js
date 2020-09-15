@@ -49,32 +49,32 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
 
             var sessions = model.queryNodes("auto/sessions/session");
 
-            menus.addItemByPath("View/Tabs/~", new apf.divider(), 700);
+            menus.addItemByPath("View/Tabs/~", new ppc.divider(), 700);
 
             menus.addItemByPath("View/Tabs/Load Tab Session", {
-                menu : _self.mnuTabLoadSessions = new apf.menu({
+                menu : _self.mnuTabLoadSessions = new ppc.menu({
                     onitemclick : function(e){
                         _self.loadSession(e.relatedNode.value);
                     }
                 }),
-                item : _self.mnuFileLoadSession = new apf.item({
+                item : _self.mnuFileLoadSession = new ppc.item({
                     disabled: !sessions.length
                 })
             }, 800);
 
-            menus.addItemByPath("View/Tabs/Save Tab Session", new apf.item({
+            menus.addItemByPath("View/Tabs/Save Tab Session", new ppc.item({
                 caption : "Save Tab Session",
                 command : "savetabsession",
                 disabled : "{!!!tabEditors.activepage}"
             }), 900);
 
             menus.addItemByPath("View/Tabs/Delete Tab Session", {
-                menu : _self.mnuTabDeleteSessions = new apf.menu({
+                menu : _self.mnuTabDeleteSessions = new ppc.menu({
                     onitemclick : function(e){
                         _self.removeSession(e.relatedNode.value);
                     }
                 }),
-                item : _self.mnuFileDeleteSession = new apf.item({
+                item : _self.mnuFileDeleteSession = new ppc.item({
                     disabled: !sessions.length
                 })
             }, 1000);
@@ -87,11 +87,11 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
             sessionnames.sort();
 
             sessionnames.forEach(function(name) {
-                _self.mnuTabLoadSessions.appendChild(new apf.item({
+                _self.mnuTabLoadSessions.appendChild(new ppc.item({
                     caption : name,
                     value   : name
                 }));
-                _self.mnuTabDeleteSessions.appendChild(new apf.item({
+                _self.mnuTabDeleteSessions.appendChild(new ppc.item({
                     caption : name,
                     value   : name
                 }));
@@ -100,7 +100,7 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
     },
 
     init : function(amlNode){
-        apf.importCssString((this.css || ""));
+        ppc.importCssString((this.css || ""));
     },
 
     saveSession : function(name, overwrite) {
@@ -136,17 +136,17 @@ module.exports = ext.register("ext/tabsessions/tabsessions", {
         if (session)
             settings.model.removeXml(session);
         else {
-            this.mnuTabLoadSessions.appendChild(new apf.item({
+            this.mnuTabLoadSessions.appendChild(new ppc.item({
                 caption : name,
                 value   : name
             }));
-            this.mnuTabDeleteSessions.appendChild(new apf.item({
+            this.mnuTabDeleteSessions.appendChild(new ppc.item({
                 caption : name,
                 value   : name
             }));
         }
 
-        session = apf.n("<session />").attr("name", name).node();
+        session = ppc.n("<session />").attr("name", name).node();
         session.appendChild(files);
         settings.model.appendXml(session, "auto/sessions");
 

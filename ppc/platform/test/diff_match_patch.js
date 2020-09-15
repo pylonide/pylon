@@ -14,7 +14,7 @@ function diff_rebuildtexts(diffs) {
 var DIFF_DELETE = -1,
     DIFF_INSERT = 1,
     DIFF_EQUAL  = 0,
-    dmp         = apf.diff_match_patch;
+    dmp         = ppc.diff_match_patch;
 
 test("diff_commonPrefix()", function() {
     // Detect and remove any common prefix.

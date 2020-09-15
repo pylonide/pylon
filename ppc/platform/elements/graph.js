@@ -36,14 +36,14 @@
  * @since       0.4
  */
 
- apf.Graph     = function(struct, tagName){
-    this.$init(tagName || "graph", apf.NODE_VISIBLE, struct);
+ ppc.Graph     = function(struct, tagName){
+    this.$init(tagName || "graph", ppc.NODE_VISIBLE, struct);
 };
 
-apf.aml.setElement("graph", apf.Graph);
+ppc.aml.setElement("graph", ppc.Graph);
  
 (function(){
-    //this.$attrExcludePropBind = apf.extend({
+    //this.$attrExcludePropBind = ppc.extend({
     //���style : 1
     //}, this.$attrExcludePropBind);
 
@@ -109,7 +109,7 @@ apf.aml.setElement("graph", apf.Graph);
             //alert(formula);
             var mdl = this.getModel();
             if(!mdl.v_yval){
-                var f = new Function('length','v_yval',apf.draw.baseMacro(
+                var f = new Function('length','v_yval',ppc.draw.baseMacro(
                         ["for(v = 0;v<length;v++){",
                             "v_yval[v] = ",[formula],";",
                         "}"]));
@@ -213,7 +213,7 @@ apf.aml.setElement("graph", apf.Graph);
     }
     
     this.$propHandlers["formula"] = function(value){
-        this.pformula = apf.draw.parseJSS(value);
+        this.pformula = ppc.draw.parseJSS(value);
         // set source type
         this.$datamode = 'math';
         this.$docompile = true;
@@ -249,11 +249,11 @@ apf.aml.setElement("graph", apf.Graph);
 		if(this.$doinit){
             this.$doinit = false;
             this.$parentAxis.$copySubPos(this);
-			apf.draw.initLayer(this, this.$parentChart);
+			ppc.draw.initLayer(this, this.$parentChart);
 		}else if(doresize){
 			// resize layer
             this.$parentAxis.$copySubPos(this);
- 			apf.draw.resizeLayer(this, this.$parentChart);
+ 			ppc.draw.resizeLayer(this, this.$parentChart);
 		}
 	    
 		if(this.$docompile){
@@ -265,7 +265,7 @@ apf.aml.setElement("graph", apf.Graph);
 			var mode = this.mode+this.$parentAxis.mode;
             // go and reparse style
            if(!this.$_style)this.$_style = 
-                    apf.draw.parseStyle( apf.chart_draw['_'+mode], this.style+this.$styletag, err );
+                    ppc.draw.parseStyle( ppc.chart_draw['_'+mode], this.style+this.$styletag, err );
             if(this.$_style.graph && this.$_style.graph.$clslist && this.v_class){
                 for(var t,c = this.v_class,s = this.v_state,i=0,j=c.length;i<j;i++){
                     if(t=c[i]){
@@ -274,8 +274,8 @@ apf.aml.setElement("graph", apf.Graph);
                 }
             }
             //alert(this.$datatype);
-			this.$datatype = apf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
-			this.$drawCode  = apf.chart_draw[mode]( this, this.$datatype, this.$_style );
+			this.$datatype = ppc.chart_draw['dt_'+this.$datamode+this.dataslice](this);
+			this.$drawCode  = ppc.chart_draw[mode]( this, this.$datatype, this.$_style );
             // we'll also have to compile the balloon and knob code.
         }
 	
@@ -290,11 +290,11 @@ apf.aml.setElement("graph", apf.Graph);
     this.$drawBalloons = function(v, doresize){
         if(this.$doinit){
             this.$doinit = false;
-			apf.draw.initLayer(this, this.$parentChart);
+			ppc.draw.initLayer(this, this.$parentChart);
 		}else if(doresize){
 			// resize layer
             this.$parentAxis.$copySubPos(this);
- 			apf.draw.resizeLayer(this, this.$parentChart);
+ 			ppc.draw.resizeLayer(this, this.$parentChart);
 		}
 	    
 		if(this.$docompile){
@@ -307,7 +307,7 @@ apf.aml.setElement("graph", apf.Graph);
             // go and reparse style
            if(!this.$_style){
 				this.$_style = 
-                    apf.draw.parseStyle( apf.chart_draw['_'+mode], this.style+this.$styletag, err );
+                    ppc.draw.parseStyle( ppc.chart_draw['_'+mode], this.style+this.$styletag, err );
             }
 			if(this.$_style.graph.$clslist && this.v_class){
                 for(var t,c = this.v_class,s = this.v_state,i=0,j=c.length;i<j;i++){
@@ -317,10 +317,10 @@ apf.aml.setElement("graph", apf.Graph);
                 }
             }
             //alert(this.$datatype);
-			this.$datatype = apf.chart_draw['dt_'+this.$datamode+this.dataslice](this);
-			this.$drawCode  = apf.chart_draw[mode]( this, this.$datatype, this.$_style );
+			this.$datatype = ppc.chart_draw['dt_'+this.$datamode+this.dataslice](this);
+			this.$drawCode  = ppc.chart_draw[mode]( this, this.$datatype, this.$_style );
             // lets get some ballooons.
-            //this.$balloonCode = apf.chart_draw[
+            //this.$balloonCode = ppc.chart_draw[
             // we'll also have to compile the balloon and knob code.
         }
 	
@@ -367,7 +367,7 @@ apf.aml.setElement("graph", apf.Graph);
         }
         
         if(o!=(l=this.lastOver)){
-            var sb = apf.draw.stateBit;
+            var sb = ppc.draw.stateBit;
             // we should remove the over-state from the last
             if(l>=0){
                 switchState(l, sb.hoverout, sb.hoverin );
@@ -398,7 +398,7 @@ apf.aml.setElement("graph", apf.Graph);
     this.$load = function(XMLRoot){
 	
         //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(XMLRoot, this);
+        ppc.xmldb.addNodeListener(XMLRoot, this);
 
         var v_yval = this.v_yval  = [];
         var v_xval = this.v_xval  = [];
@@ -432,7 +432,7 @@ apf.aml.setElement("graph", apf.Graph);
             // x / y value array
             var n,p,v,k,length,t = (new Date()).getTime()*0.001;
             if (!this.$hasBindRule("y")){
-                apf.console.warn("No y binding rule found for graph "
+                ppc.console.warn("No y binding rule found for graph "
                                  + this.name + " [" + this.localName + "]");
             }
             else {
@@ -441,7 +441,7 @@ apf.aml.setElement("graph", apf.Graph);
                 for (v = 0, length = v_nodes.length; v < length; v++) {
                     n = v_nodes[v];
                     //caching
-                    //v_cacheid[apf.xmldb.nodeConnect(this.documentId, n, null, this)] = v;
+                    //v_cacheid[ppc.xmldb.nodeConnect(this.documentId, n, null, this)] = v;
                 
                     this.v_time[v] = t;
                     v_yval[v] = parseFloat(this.$applyBindRule("y", n));
@@ -508,7 +508,7 @@ addEventListener("DOMNodeInsertedIntoDocument", function( e ){
                 UndoObj.xmlNode = this.xmlRoot;
                 
             //#ifdef __WITH_PROPERTY_BINDING
-            //@todo apf3.0 check if this is still needed
+            //@todo ppc3.0 check if this is still needed
             /*var lrule, rule;
             for (rule in this.bindingRules) {
                 lrule = rule.toLowerCase();
@@ -530,14 +530,14 @@ addEventListener("DOMNodeInsertedIntoDocument", function( e ){
             var v_caption = this.v_caption  = []; // mouseover title
             var v_state = this.v_state = []; // class
         
-            //cacheid = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+            //cacheid = xmlNode.getAttribute(ppc.xmldb.xmlIdTag);
             // this.info = [];
             // this.ylabel = {};hoeveel 
             var v_nodes = this.v_nodes  = this.getTraverseNodes(this.xmlRoot);
             // x / y value array
             var n,p,v,k,length,t = (new Date()).getTime()*0.001;
             if (!this.$hasBindRule("y")){
-                apf.console.warn("No y binding rule found for graph "
+                ppc.console.warn("No y binding rule found for graph "
                                  + this.name + " [" + this.localName + "]");
             }
             else {
@@ -546,7 +546,7 @@ addEventListener("DOMNodeInsertedIntoDocument", function( e ){
                 for (v = 0, length = v_nodes.length; v < length; v++) {
                     n = v_nodes[v];
                     //caching
-                    //v_cacheid[apf.xmldb.nodeConnect(this.documentId, n, null, this)] = v;
+                    //v_cacheid[ppc.xmldb.nodeConnect(this.documentId, n, null, this)] = v;
                 
                     this.v_time[v] = t;
                     v_yval[v] = parseFloat(this.$applyBindRule("y", n));
@@ -563,7 +563,7 @@ addEventListener("DOMNodeInsertedIntoDocument", function( e ){
                 this.$sourcetype = 'seriesX';
             }
             //if (this.focussable)
-                //apf.document.activeElement == this ? this.$focus() : this.$blur();
+                //ppc.document.activeElement == this ? this.$focus() : this.$blur();
 
             //#ifdef __WITH_PROPERTY_BINDING
             if (length != this.length)
@@ -577,10 +577,10 @@ addEventListener("DOMNodeInsertedIntoDocument", function( e ){
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.$parentAxis = this.parentNode;
         this.$parentChart = this.$parentAxis.parentNode;
-		var n = this.getElementsByTagNameNS(apf.ns.apf, "style");
+		var n = this.getElementsByTagNameNS(ppc.ns.ppc, "style");
 		if(n.length>0){
 			this.$styletag = n[0].firstChild.nodeValue;
 		}
     });
-}).call(apf.Graph.prototype = new apf.AmlElement());
+}).call(ppc.Graph.prototype = new ppc.AmlElement());
 // #endif

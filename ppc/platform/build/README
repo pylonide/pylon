@@ -1,4 +1,4 @@
-Each Flash project that is used by Ajax.org Platform, may be compiled with a Flash
+Each Flash project that is used by Pylon Platform Code, may be compiled with a Flash
 compiler like MTASC or the one bundled with the Flex SDK.
 
 We recommend to always use the latest versions of the compiler, so that your SWF

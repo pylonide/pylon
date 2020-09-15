@@ -35,8 +35,8 @@
  * @since       0.4
  */
 
-apf.template = function(struct, tagName){
-    this.$init(tagName || "template", apf.NODE_HIDDEN, struct);
+ppc.template = function(struct, tagName){
+    this.$init(tagName || "template", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -50,11 +50,11 @@ apf.template = function(struct, tagName){
         else {
             var model, xpath, attr, frag = this.$frags[id] = this.cloneNode(true);
             frag.$int = htmlNode;
-            if (xmlNode) { //@todo apf3.0 is this generic enough?
-                model = apf.xmldb.findModel(xmlNode);
-                xpath = apf.xmlToXpath(xmlNode, model.data, true) || ".";
-                frag.attributes.push(attr = new apf.AmlAttr(frag, "model", ""));
-                attr.inheritedValue = [model.name, xpath]; //@todo apf3.0 to be tested
+            if (xmlNode) { //@todo ppc3.0 is this generic enough?
+                model = ppc.xmldb.findModel(xmlNode);
+                xpath = ppc.xmlToXpath(xmlNode, model.data, true) || ".";
+                frag.attributes.push(attr = new ppc.AmlAttr(frag, "model", ""));
+                attr.inheritedValue = [model.name, xpath]; //@todo ppc3.0 to be tested
             }
             frag.ownerDocument.$domParser.$continueParsing(frag, {delay:true});
         }
@@ -68,7 +68,7 @@ apf.template = function(struct, tagName){
 
         frag.destroy(true);
     }
-}).call(apf.template.prototype = new apf.AmlElement());
+}).call(ppc.template.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("template", apf.template);
+ppc.aml.setElement("template", ppc.template);
 // #endif

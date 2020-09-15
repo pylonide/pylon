@@ -5,7 +5,7 @@ var Path = require("path"),
  * Reads the files from xml or loader.js and makes them accessible to the 
  * processor.
  */
-apf.filesCls = function() {
+ppc.filesCls = function() {
     this.$init(true);
 
     this.groups = {};
@@ -13,7 +13,7 @@ apf.filesCls = function() {
 (function(){
     this.get = function(group){
         if (!this.groups[group]) {
-            apf.console.error("Unknown group: " + group, "files", apf.vardump(this.groups));
+            ppc.console.error("Unknown group: " + group, "files", ppc.vardump(this.groups));
             throw new Error();
         }
 
@@ -23,7 +23,7 @@ apf.filesCls = function() {
     this.$loadPml = function(x){
         var value,
             _self = this,
-            s     = apf.settings;
+            s     = ppc.settings;
        
         //Read from loader.js
         if (value = s.parseAttribute(x.getAttribute("parse"))) {
@@ -53,7 +53,7 @@ apf.filesCls = function() {
                         file.data = !file.isDirectory() ? Fs.readFileSync(fpath).toString() : "";
                     }
                     catch (ex) {
-                        apf.console.error("File not found: " + fpath);
+                        ppc.console.error("File not found: " + fpath);
                         throw ex;
                     }
                     
@@ -65,7 +65,7 @@ apf.filesCls = function() {
 
                     if (file.isDirectory()) {//directory
                         recur = s.parseAttribute(node.getAttribute("recursive"));
-                        if (!apf.isFalse(recur))
+                        if (!ppc.isFalse(recur))
                             fileLoop(node.childNodes, file, fgroup, fmask);
                     }
                     else {
@@ -76,7 +76,7 @@ apf.filesCls = function() {
                         }
                         
                         if (!fgroup) {
-                            apf.console.error("No group was specified for: "
+                            ppc.console.error("No group was specified for: "
                                 + file.path, "files");
                             throw new Error();
                         }
@@ -94,7 +94,7 @@ apf.filesCls = function() {
                               .replace(/\*/, ".*") + "$");
                     
                     if (!group) {
-                        apf.console.error("No group was specified for: "
+                        ppc.console.error("No group was specified for: "
                             + dir.path, "files");
                         throw new Error();
                     }
@@ -136,8 +136,8 @@ apf.filesCls = function() {
                 }
             })(x.childNodes);
 
-            apf.console.info("Getting filelist done.", "files");
+            ppc.console.info("Getting filelist done.", "files");
         }
     };
-}).call(apf.filesCls.prototype = new apf.ProjectBase());
-apf.files = new apf.filesCls();
+}).call(ppc.filesCls.prototype = new ppc.ProjectBase());
+ppc.files = new ppc.filesCls();

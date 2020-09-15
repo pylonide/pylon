@@ -44,21 +44,21 @@
  *  </a:state-group>
  * ```
  *
- * @class apf.stateGroup
+ * @class ppc.stateGroup
  * @define state-group
  * @logic
- * @inherits apf.AmlElement
+ * @inherits ppc.AmlElement
  *
- * @see apf.state
+ * @see ppc.state
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.stateGroup = function(){
-    this.$init("state-group", apf.NODE_HIDDEN);
+ppc.stateGroup = function(){
+    this.$init("state-group", ppc.NODE_HIDDEN);
 };
-apf.aml.setElement("state-group", apf.stateGroup);
+ppc.aml.setElement("state-group", ppc.stateGroup);
 
 (function(){
     this.$handlePropSet = function(prop, value, force){
@@ -84,13 +84,13 @@ apf.aml.setElement("state-group", apf.stateGroup);
         if (!this.id)
             this.id = "stategroup" + this.$uniqueId;
         
-        //apf.StateServer.addGroup(this.id, null, this.parentNode); //@todo rearch this
+        //ppc.StateServer.addGroup(this.id, null, this.parentNode); //@todo rearch this
         
         var nodes = this.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++){
             nodes[i].setProperty("group", this.id);
         }
     });
-}).call(apf.stateGroup.prototype = new apf.AmlElement());
+}).call(ppc.stateGroup.prototype = new ppc.AmlElement());
 
 // #endif

@@ -102,20 +102,20 @@ parse: [x] += <node/>
                 clearLog();
                 try{
                     var lm = getLM();
-					apf.lm.resetCache();
+					ppc.lm.resetCache();
                     if(lm.indexOf('##')!=-1){
                         var args = lm.split(/##/);
                         for(i=0;i<args.length;i++)if(args[i]=='-')args[i]='';
-                        jsltCode = apf.lm.compileMatch( args, {node:1} );
+                        jsltCode = ppc.lm.compileMatch( args, {node:1} );
                     }else if(lm.indexOf('!!')==0){
-                        jsltCode = apf.lm.compile( lm.slice(2), {event:1,parsecode:1,funcglobal:1});
+                        jsltCode = ppc.lm.compile( lm.slice(2), {event:1,parsecode:1,funcglobal:1});
                     }if(lm.indexOf('??')==0){
-                        jsltCode = apf.lm.compile( lm.slice(2), {precall:1,parsecode:1});
+                        jsltCode = ppc.lm.compile( lm.slice(2), {precall:1,parsecode:1});
                     }else{
 						//{editable:1,parsecode:0,xpathmode:0} 
                         var opt = {parsecode:0,xpathmode:0,storedyn:1}; 
 						//var dt = new Date().getTime();
-                        jsltCode = apf.lm.compile( lm,opt );
+                        jsltCode = ppc.lm.compile( lm,opt );
                         //event:1,xpathmode:0,injectself:1
 						//logw((new Date().getTime())-dt);
                     }
@@ -123,7 +123,7 @@ parse: [x] += <node/>
                     setResult("JSLT Compilation occured:\n"+e.message);
                     jsltCode = null;
                 }
-                setCode(apf.lm.lastCode());
+                setCode(ppc.lm.lastCode());
             }
 
             // do the processing
@@ -195,7 +195,7 @@ parse: [x] += <node/>
                 return x;
             }
             
-            var apf = {
+            var ppc = {
                 SUCCESS:1,
 				xmldb:{
 					removeNode:function(xmlNode){
@@ -259,12 +259,12 @@ parse: [x] += <node/>
                           t = Array(d+2).join('   '), u  =Array(d+1).join('   ');
                           if(o.constructor == Array){
                               s[l++]="[\n";
-                              for(k = 0;k<o.length;k++)s[l++]=t,apf.dump(o[k],s,d+1),l=s.length,s[l++]=",\n";
+                              for(k = 0;k<o.length;k++)s[l++]=t,ppc.dump(o[k],s,d+1),l=s.length,s[l++]=",\n";
                               s[l]="\n", s[l++]=u, s[l++]="]";
                           }else{
                               s[l++]="{\n";
                               for(k in o)s[l++]=t,s[l++]=k.match(/[^a-zA-Z0-9_]/)?'"'+k+'"':k,
-                                 s[l++]=':',apf.dump(o[k],s,d+1),l=s.length,l=s.length,s[l++]=",\n";
+                                 s[l++]=':',ppc.dump(o[k],s,d+1),l=s.length,l=s.length,s[l++]=",\n";
                               s[l]="\n", s[l++]=u, s[l++]="}";
                           }
                       }else s[l++] = 'null';break;

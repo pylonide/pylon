@@ -3,7 +3,7 @@
  * Provides a way to record user actions, store them and play them back.
  * @experimental
  */
-apf.uirecorder = {
+ppc.uirecorder = {
     $inited         : false,
     isRecording     : false,
     isPlaying       : false,

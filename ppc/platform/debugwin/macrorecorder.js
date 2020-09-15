@@ -1,6 +1,6 @@
-var o3_mouseTranslate = (apf.isIE) 
+var o3_mouseTranslate = (ppc.isIE) 
     ? [3,4] 
-    : (apf.isGecko || apf.isChrome)
+    : (ppc.isGecko || ppc.isChrome)
         ? [1, 2]
         : [0, 0];
 
@@ -14,13 +14,13 @@ var $o3 = o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", {
     // o3 browser extension not found
     oninstallprompt : function(){
         winNoextension.setProperty("visible", true);
-        if (apf.isIE) {
-            apf.console.error("o3 not installed");
+        if (ppc.isIE) {
+            ppc.console.error("o3 not installed");
             lblIE.setProperty("visible", true);
             lblNoIE.setProperty("visible", false);
         }
         else {
-            apf.console.error("o3 not available for this browser. Use IE instead.");
+            ppc.console.error("o3 not available for this browser. Use IE instead.");
             lblNoIE.setProperty("visible", true);
             lblIE.setProperty("visible", false);
         }
@@ -28,18 +28,18 @@ var $o3 = o3.create("8A66ECAC-63FD-4AFA-9D42-3034D18C88F4", {
     product : 'O3Demo'
 });
 
-apf.$debugwin.apf.uirecorder.$o3 = $o3;
+ppc.$debugwin.ppc.uirecorder.$o3 = $o3;
 
 // WinXp save folder: C:\Documents and Settings\Admin\Local Settings\Temp\Low\o3_v0_9\localhost
 if ($o3) {
     (function loadData() {
         if ($o3.fs.get("macros.xml").exists)
-            loadMacros(apf.getXml($o3.fs.get("macros.xml").data) || apf.getXml("<data/>"));
+            loadMacros(ppc.getXml($o3.fs.get("macros.xml").data) || ppc.getXml("<data/>"));
         else
             loadMacros(mdlMacro.getXml());
 
         if ($o3.fs.get("playlists.xml").exists)
-            loadPlaylists(apf.getXml($o3.fs.get("playlists.xml").data) || apf.getXml("<data/>"));
+            loadPlaylists(ppc.getXml($o3.fs.get("playlists.xml").data) || ppc.getXml("<data/>"));
         else
             loadPlaylists(mdlPlaylist.getXml());
     })();
@@ -110,7 +110,7 @@ function loadPlaylists(xml) {
                     }
                     else { 
                         refNode = mdlMacro.queryNode("test[@id='" + macros[mi].getAttribute("ref") + "']");
-                        apf.xmldb.replaceNode(apf.getCleanCopy(refNode), macros[mi]);
+                        ppc.xmldb.replaceNode(ppc.getCleanCopy(refNode), macros[mi]);
                     }
                 }
             }
@@ -163,7 +163,7 @@ function savePlaylists() {
                 // replace entire node with node with reference
                 refNode = outputXml.ownerDocument.createElement("test");
                 refNode.setAttribute("ref", macros[mi].getAttribute("id"))
-                apf.xmldb.replaceNode(refNode, macros[mi]);
+                ppc.xmldb.replaceNode(refNode, macros[mi]);
             }
         }
     }
@@ -179,16 +179,16 @@ function recordMacro() {
     // IE
     //debugger;
     if (document.parentWindow)
-        apf.$debugwin.apf.uirecorder.capture.record(document.parentWindow.frameElement.parentElement.document.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
+        ppc.$debugwin.ppc.uirecorder.capture.record(document.parentWindow.frameElement.parentElement.document.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
     
     // FF
     else if (window.parent) {
-        apf.$debugwin.apf.uirecorder.capture.record(window.parent.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
+        ppc.$debugwin.ppc.uirecorder.capture.record(window.parent.location.href, "macro" + (mdlMacro.data.childNodes.length+1));
     }
 }
 
 function stopRecord() {
-    apf.$debugwin.apf.uirecorder.capture.stop();
+    ppc.$debugwin.ppc.uirecorder.capture.stop();
     btnStopRecord.setProperty("visible", false);
     btnRec.setProperty("visible", true);
     btnRec.setProperty("disabled", false);
@@ -199,8 +199,8 @@ function stopRecord() {
         macroId++;
     }
     
-    apf.$debugwin.apf.uirecorder.capture.outputXml.setAttribute("id", "m" + macroId);
-    mdlMacro.appendXml(apf.$debugwin.apf.uirecorder.capture.outputXml);
+    ppc.$debugwin.ppc.uirecorder.capture.outputXml.setAttribute("id", "m" + macroId);
+    mdlMacro.appendXml(ppc.$debugwin.ppc.uirecorder.capture.outputXml);
 
     lstMacro.select(mdlMacro.data.lastChild);
     lstMacro.startRename();
@@ -218,27 +218,27 @@ function playSingleMacro(e) {
     btnStopPlay.setProperty("visible", true);
     btnRec.setProperty("disabled", true);
 
-    apf.$debugwin.apf.addEventListener("testcomplete", onPlaybackComplete);
-    apf.$debugwin.apf.addEventListener("testerror", onTestFailed);
+    ppc.$debugwin.ppc.addEventListener("testcomplete", onPlaybackComplete);
+    ppc.$debugwin.ppc.addEventListener("testerror", onTestFailed);
 
     // play selected macro
 //speed = (cbMax.checked) ? "max" : "realtime";
-    apf.$debugwin.apf.uirecorder.playback.play(lstMacro.selected, speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]}, false);
+    ppc.$debugwin.ppc.uirecorder.playback.play(lstMacro.selected, speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]}, false);
 }
 
 function playMacro() {
-    apf.$debugwin.apf.addEventListener("testcomplete", onPlayNextMacro);
-    apf.$debugwin.apf.addEventListener("testerror", onTestFailed);
+    ppc.$debugwin.ppc.addEventListener("testcomplete", onPlayNextMacro);
+    ppc.$debugwin.ppc.addEventListener("testerror", onTestFailed);
 
     // select current playing macro
-    apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "playing");
-    apf.$debugwin.apf.uirecorder.playback.play(macroList[curMacroIdx], speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]}, false);
+    ppc.setStyleClass(ppc.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "playing");
+    ppc.$debugwin.ppc.uirecorder.playback.play(macroList[curMacroIdx], speed, $o3, {top: o3_mouseTranslate[1], left:  o3_mouseTranslate[0]}, false);
 }
 
 function onPlaybackComplete(e) {
-    apf.$debugwin.apf.removeEventListener("testcomplete", onPlaybackComplete);
-    apf.$debugwin.apf.removeEventListener("testcomplete", onPlayNextMacro);
-    apf.$debugwin.apf.removeEventListener("testerror", onTestFailed);
+    ppc.$debugwin.ppc.removeEventListener("testcomplete", onPlaybackComplete);
+    ppc.$debugwin.ppc.removeEventListener("testcomplete", onPlayNextMacro);
+    ppc.$debugwin.ppc.removeEventListener("testerror", onTestFailed);
 
     btnStopPlay.setProperty("visible", false);
     btnRec.setProperty("disabled", false);
@@ -252,12 +252,12 @@ function onPlaybackComplete(e) {
 function resetMacroStyles() {
     // reset classes for macros
     for (var i = 0, l = macroList.length; i < l; i++) {
-        apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[i], trPlaylist), "", ["playing", "finished"]);
+        ppc.setStyleClass(ppc.xmldb.getHtmlNode(macroList[i], trPlaylist), "", ["playing", "finished"]);
     }
 }
 
 function onPlayNextMacro(e) {
-    apf.setStyleClass(apf.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "finished", ["playing"]);
+    ppc.setStyleClass(ppc.xmldb.getHtmlNode(macroList[curMacroIdx], trPlaylist), "finished", ["playing"]);
     // check for more macro's to be played
     if (curMacroIdx + 1 < macroList.length) {
         curMacroIdx++;
@@ -287,7 +287,7 @@ function onTestFailed(e) {
 
 function playPlaylist(id) {
     //if (!id) debugger;
-    //var xml = apf.xmldb.getElementById(id); 
+    //var xml = ppc.xmldb.getElementById(id); 
     var xml = mdlPlaylist.data.selectSingleNode("playlist[@id='" + id + "']");
     //if (!xml) debugger;
     trPlaylist.select(xml);
@@ -330,11 +330,11 @@ function onKeyDown(e) {
     if (e.keyCode == 27) {
         //$o3.DOM.onkeydown = null;
         document.documentElement.onkeydown = onKeyDown;
-        apf.$debugwin.apf.uirecorder.playback.stop();
+        ppc.$debugwin.ppc.uirecorder.playback.stop();
         // mouseup and keyup to prevent dragging if last action was mousedown
         $o3.mouseLeftUp();
         onPlaybackComplete();
-        apf.$debugwin.apf.console.error("playback aborted");
+        ppc.$debugwin.ppc.console.error("playback aborted");
         
     }
 }
@@ -348,7 +348,7 @@ function removeMacroFromPlaylist() {
     for (var pi = 0, pl = playlists.length; pi < pl; pi++) {
         var nodes = playlists[pi].selectNodes("test[@id='" + id + "']");
         for (var ni = 0, nl = nodes.length; ni < nl; ni++) {
-            apf.xmldb.removeNode(nodes[ni]);
+            ppc.xmldb.removeNode(nodes[ni]);
         }
     }
     atPlaylist.commit(mdlPlaylist);
@@ -357,5 +357,5 @@ function removeMacroFromPlaylist() {
     updateMacros();
 }
 
-//var recordings = apf.storage.get("recordings", location.href.split("#")[0]);
+//var recordings = ppc.storage.get("recordings", location.href.split("#")[0]);
 //mdlMacro.load(recordings || "<recordings />");

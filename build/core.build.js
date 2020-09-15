@@ -8,7 +8,7 @@
         "treehugger" : "node_modules/treehugger/lib/treehugger",
         "v8debug": "node_modules/v8debug/lib/v8debug",
         "ext/main": "plugins-client/ext.main",
-        "apf-packaged": "plugins-client/lib.apf/www/apf-packaged",
+        "ppc": "plugins-client/lib.ppc/www/ppc",
 
         // Needed because `r.js` has a bug based on packages config below:
         //   `Error evaluating module "undefined" at location "~/pyloninfra/node_modules/cloud9/events-amd.js"`
@@ -62,7 +62,7 @@
         "node_modules/ace/build/src/theme-tomorrow_night_eighties",
         "node_modules/ace/build/src/theme-twilight",
         "node_modules/ace/build/src/theme-vibrant_ink",
-        "apf-packaged/apf_release",
+        "ppc/ppc",
         "core/document",
         "core/ext",
         "core/ide",

@@ -57,8 +57,8 @@
  *
  * @allowchild variable
  */
-apf.method = function(struct, tagName){
-    this.$init(tagName || "method", apf.NODE_HIDDEN, struct);
+ppc.method = function(struct, tagName){
+    this.$init(tagName || "method", ppc.NODE_HIDDEN, struct);
 
     this.async             = true;
     this.caching           = false;
@@ -104,7 +104,7 @@ apf.method = function(struct, tagName){
         if (this.parentNode.$addMethod)
             this.parentNode.$addMethod(this);
     });
-}).call(apf.method.prototype = new apf.AmlElement());
+}).call(ppc.method.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("method", apf.method);
+ppc.aml.setElement("method", ppc.method);
 // #endif

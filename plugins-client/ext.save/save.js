@@ -124,7 +124,7 @@ module.exports = ext.register("ext/save/save", {
                 winCloseConfirm.all  = -100;
                 winCloseConfirm.show();
 
-                fileDesc.replaceMarkup("<div><h3>Save " + apf.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
+                fileDesc.replaceMarkup("<div><h3>Save " + ppc.escapeXML(filename) + "?</h3><div>This file has unsaved changes. Your changes will be lost if you don't save them.</div></div>", {"noLoadingMsg": false});
 
                 winCloseConfirm.addEventListener("hide", function() {
                   if (winCloseConfirm.all != -100) {
@@ -168,7 +168,7 @@ module.exports = ext.register("ext/save/save", {
         });
 
         this.nodes.push(
-            menus.$insertByIndex(barTools, new apf.button({
+            menus.$insertByIndex(barTools, new ppc.button({
                 id       : "btnSave",
                 icon     : "save.png",
                 caption  : "Save",
@@ -181,22 +181,22 @@ module.exports = ext.register("ext/save/save", {
 
         var saveItem, saveAsItem, itmRevertToSaved;
         this.nodes.push(
-            saveItem = menus.addItemByPath("File/Save", new apf.item({
+            saveItem = menus.addItemByPath("File/Save", new ppc.item({
                 command : "quicksave",
                 disabled : "{!!!tabEditors.activepage}"
             }), 1000),
 
-            saveAsItem = menus.addItemByPath("File/Save As...", new apf.item({
+            saveAsItem = menus.addItemByPath("File/Save As...", new ppc.item({
                 command : "saveas",
                 disabled : "{!!!tabEditors.activepage}"
             }), 1100),
 
-            menus.addItemByPath("File/Save All", new apf.item({
+            menus.addItemByPath("File/Save All", new ppc.item({
                 command : "saveall",
                 disabled : "{!!!tabEditors.activepage}"
             }), 1200),
 
-            itmRevertToSaved = menus.addItemByPath("File/Revert to Saved", new apf.item({
+            itmRevertToSaved = menus.addItemByPath("File/Revert to Saved", new ppc.item({
                 command : "reverttosaved",
                 disabled : "{!!!tabEditors.activepage}"
             }), 700)
@@ -237,7 +237,7 @@ module.exports = ext.register("ext/save/save", {
     init : function(amlNode){
         this.fileDesc = winCloseConfirm.selectSingleNode("a:vbox");
 
-        apf.importCssString((this.css || ""));
+        ppc.importCssString((this.css || ""));
         winCloseConfirm.onafterrender = function(){
             btnYesAll.addEventListener("click", function(){
                 winCloseConfirm.all = 1;
@@ -319,7 +319,7 @@ module.exports = ext.register("ext/save/save", {
         winCloseConfirm.all = 0;
 
         var _self = this;
-        apf.asyncForEach(pages, function(item, next) {
+        ppc.asyncForEach(pages, function(item, next) {
             var at = item.$at;
             if (at.undo_ptr && at.$undoStack[at.$undoStack.length-1] !== at.undo_ptr) {
                 if (winCloseConfirm.all == 1)
@@ -408,7 +408,7 @@ module.exports = ext.register("ext/save/save", {
             return;
         }
 
-        apf.xmldb.setAttribute(node, "saving", "1");
+        ppc.xmldb.setAttribute(node, "saving", "1");
 
         if (callback) {
             ide.addEventListener("afterfilesave", function(e) {
@@ -430,13 +430,13 @@ module.exports = ext.register("ext/save/save", {
             ide.dispatchEvent("track_action", {
                 type: "save as filetype",
                 fileType: node.getAttribute("name").split(".").pop().toLowerCase(),
-                success: state != apf.SUCCESS ? "false" : "true"
+                success: state != ppc.SUCCESS ? "false" : "true"
             });
-            apf.xmldb.removeAttribute(node, "saving");
+            ppc.xmldb.removeAttribute(node, "saving");
 
-            ide.dispatchEvent("fs.afterfilesave", { path: path, success: state == apf.SUCCESS });
+            ide.dispatchEvent("fs.afterfilesave", { path: path, success: state == ppc.SUCCESS });
 
-            if (state != apf.SUCCESS) {
+            if (state != ppc.SUCCESS) {
                 // ide is not online, or away??
                 if (!ide.onLine || ide.connection.away) {
                     // if we're doing a silent save, we'll ignore it
@@ -453,7 +453,7 @@ module.exports = ext.register("ext/save/save", {
                     "Could not save document",
                     "An error occurred while saving this document",
                     "Please see if your internet connection is available and try again. "
-                        + (state == apf.TIMEOUT
+                        + (state == ppc.TIMEOUT
                             ? "The connection timed out."
                             : "The error reported was " + extra.message));
             }
@@ -471,10 +471,10 @@ module.exports = ext.register("ext/save/save", {
             });
 
             if (at.undo_ptr == at.$undoStack[at.$undoStack.length-1])
-                apf.xmldb.removeAttribute(node, "changed");
+                ppc.xmldb.removeAttribute(node, "changed");
             
-            apf.xmldb.removeAttribute(node, "new");
-            apf.xmldb.setAttribute(node, "modifieddate", apf.queryValue(extra.data, "//d:getlastmodified"));
+            ppc.xmldb.removeAttribute(node, "new");
+            ppc.xmldb.setAttribute(node, "modifieddate", ppc.queryValue(extra.data, "//d:getlastmodified"));
 
             if (_self.saveBuffer[path]) {
                 delete _self.saveBuffer[path];
@@ -500,13 +500,13 @@ module.exports = ext.register("ext/save/save", {
             this.saveBuffer[path] = page;
             return;
         }
-        apf.xmldb.setAttribute(file, "saving", "1");
+        ppc.xmldb.setAttribute(file, "saving", "1");
 
         var _self = this;
         var value = page.$doc.getValue();
         fs.saveFile(newPath, value, function(value, state, extra) {
-            if (state !== apf.SUCCESS) {
-                apf.xmldb.removeAttribute(file, "saving")
+            if (state !== ppc.SUCCESS) {
+                ppc.xmldb.removeAttribute(file, "saving")
                 return util.alert("Could not save document",
                     "An error occurred while saving this document",
                     "Please see if your internet connection is available and try again." +
@@ -518,15 +518,15 @@ module.exports = ext.register("ext/save/save", {
             var doc = page.$doc;
 
             if (path !== newPath || parseInt(node.getAttribute("newfile") || 0, 10) === 1) {
-                file = apf.getCleanCopy(node);
+                file = ppc.getCleanCopy(node);
                 fs.beforeRename(file, null, newPath, false, isReplace);
                 doc.setNode(file);
                 model.load(file);
                 tabEditors.set(ide.getActivePage());
             }
 
-            apf.xmldb.removeAttribute(oldFile, "saving");
-            apf.xmldb.removeAttribute(file, "saving");
+            ppc.xmldb.removeAttribute(oldFile, "saving");
+            ppc.xmldb.removeAttribute(file, "saving");
 
             if (_self.saveBuffer[path]) {
                 delete _self.saveBuffer[path];
@@ -534,8 +534,8 @@ module.exports = ext.register("ext/save/save", {
             }
 
             if (parseInt(file.getAttribute("newfile") || "0", 10) === 1) {
-                apf.xmldb.removeAttribute(file, "newfile");
-                apf.xmldb.removeAttribute(file, "changed");
+                ppc.xmldb.removeAttribute(file, "newfile");
+                ppc.xmldb.removeAttribute(file, "changed");
                 var xpath = newPath.replace(new RegExp("\/" + window.cloud9config.davPrefix.split("/")[1]), "")
                                     .replace(new RegExp("\/" + file.getAttribute("name")), "")
                                     .replace(/\/([^/]*)/g, "/node()[@name=\"$1\"]")
@@ -544,7 +544,7 @@ module.exports = ext.register("ext/save/save", {
                 if (self.trFiles && xpath) {
                     var oNode = trFiles.queryNode(xpath);
                     if (oNode && !trFiles.queryNode('//node()[@path=' + util.escapeXpathString(newPath) + ']'))
-                        apf.xmldb.appendChild(oNode, file);
+                        ppc.xmldb.appendChild(oNode, file);
                 }
             }
 
@@ -626,7 +626,7 @@ module.exports = ext.register("ext/save/save", {
             return;
         }
 
-        //apf.xmldb.setAttribute(file, "saving", "1");
+        //ppc.xmldb.setAttribute(file, "saving", "1");
 
         var _self = this;
         var doSave = function() {
@@ -695,7 +695,7 @@ module.exports = ext.register("ext/save/save", {
         var path = node.getAttribute("path");
         var oldpath = node.getAttribute("oldpath");
         davProject.rename(oldpath, path, true, false, function(data, state, extra) {
-            if (state !== apf.SUCCESS) {
+            if (state !== ppc.SUCCESS) {
                 // TODO: revert the rename!!
                 return;
             }
@@ -715,8 +715,8 @@ module.exports = ext.register("ext/save/save", {
     setUiStateSaving: function () {
         btnSave.show();
 
-        apf.setStyleClass(btnSave.$ext, "saving", ["saved", "error"]);
-        apf.setStyleClass(saveStatus, "saving", ["saved"]);
+        ppc.setStyleClass(btnSave.$ext, "saving", ["saved", "error"]);
+        ppc.setStyleClass(saveStatus, "saving", ["saved"]);
         btnSave.currentState = SAVING;
         btnSave.setCaption("Saving");
     },
@@ -730,8 +730,8 @@ module.exports = ext.register("ext/save/save", {
 
         btnSave.show();
 
-        apf.setStyleClass(btnSave.$ext, "saved", ["saving", "error"]);
-        apf.setStyleClass(saveStatus, "saved", ["saving"]);
+        ppc.setStyleClass(btnSave.$ext, "saved", ["saving", "error"]);
+        ppc.setStyleClass(saveStatus, "saved", ["saving"]);
         btnSave.currentState = SAVED;
         btnSave.setCaption("Changes saved");
 
@@ -750,8 +750,8 @@ module.exports = ext.register("ext/save/save", {
         btnSave.show();
 
         // don't blink!
-        apf.setStyleClass(btnSave.$ext, "saved");
-        apf.setStyleClass(btnSave.$ext, "error", ["saving"]);
+        ppc.setStyleClass(btnSave.$ext, "saved");
+        ppc.setStyleClass(btnSave.$ext, "error", ["saving"]);
 
         btnSave.currentState = OFFLINE;
         btnSave.setCaption("Not saved");

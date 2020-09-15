@@ -105,7 +105,7 @@
                 cursor: default;
             }
         ]]></a:style>
-        <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+        <a:style condition="ppc.isSafari || ppc.isChrome"><![CDATA[
             .revisions_btn .lbl {
                 margin  : 0;
                 height  : 22px;
@@ -116,7 +116,7 @@
                 overflow : hidden;
             }
         ]]></a:style>
-        <a:style condition="apf.isIE"><![CDATA[
+        <a:style condition="ppc.isIE"><![CDATA[
             .revisions_btn .lbl {
                 line-height : 19px;
             }

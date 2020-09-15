@@ -29,13 +29,13 @@
  * @attribute {String} split
  * @attribute {String} css
  */
-apf.BindingSeriesRule = function(struct, tagName){
-    this.$init(tagName || "series", apf.NODE_HIDDEN, struct);
+ppc.BindingSeriesRule = function(struct, tagName){
+    this.$init(tagName || "series", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         formula : 1
     }, this.$attrExcludePropBind);
 
@@ -52,8 +52,8 @@ apf.BindingSeriesRule = function(struct, tagName){
         if (!pNode)
             return;
     });*/
-}).call(apf.BindingSeriesRule.prototype = new apf.BindingRule());
+}).call(ppc.BindingSeriesRule.prototype = new ppc.BindingRule());
 
-apf.aml.setElement("series", apf.BindingSeriesRule);
+ppc.aml.setElement("series", ppc.BindingSeriesRule);
 // #endif
 

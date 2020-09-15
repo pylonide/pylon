@@ -19,7 +19,7 @@
  *
  */
 
-apf.__TRANSACTION__ = 1 << 3;
+ppc.__TRANSACTION__ = 1 << 3;
 
 // #ifdef __WITH_TRANSACTION
 
@@ -100,11 +100,11 @@ apf.__TRANSACTION__ = 1 << 3;
  *   </a:window>
  * ```
  *
- * @class apf.Transaction
+ * @class ppc.Transaction
  * @baseclass
  *
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
  * 
  * 
  * @author      Ruben Daniels (ruben AT ajax DOT org)
@@ -116,8 +116,8 @@ apf.__TRANSACTION__ = 1 << 3;
  *
  *
  */
-apf.Transaction = function(){
-    this.$regbase = this.$regbase | apf.__TRANSACTION__;
+ppc.Transaction = function(){
+    this.$regbase = this.$regbase | ppc.__TRANSACTION__;
 
     this.$addParent          =
     this.$transactionNode    =
@@ -165,20 +165,20 @@ apf.Transaction = function(){
         }
         else {
             //#ifdef __DEBUG
-            apf.console.info("Committing transaction on " + this.localName + "[" + this.name + "]");
+            ppc.console.info("Committing transaction on " + this.localName + "[" + this.name + "]");
             //#endif
             
             this.$at.reset();//purge();
             this.$inTransaction = false;
             
             //@todo recursive
-            this.$transactionNode.removeAttribute(apf.xmldb.xmlListenTag)
+            this.$transactionNode.removeAttribute(ppc.xmldb.xmlListenTag)
             
             if (this.$lastAction == "add") {
                 //Use ActionTracker :: this.xmlData.selectSingleNode("DataBinding/@select") ? o.xmlRoot : o.selected
                 if (this.$transactionSubject.$executeAction("appendChild",
                   [this.$addParent, this.$transactionNode], "add", this.$transactionNode)
-                  && this.$transactionSubject.hasFeature(apf.__MULTISELECT__)) {
+                  && this.$transactionSubject.hasFeature(ppc.__MULTISELECT__)) {
                     this.$transactionSubject.select(this.$transactionNode);
                 }
                 
@@ -223,7 +223,7 @@ apf.Transaction = function(){
             return;
         
         //#ifdef __DEBUG
-        apf.console.info("Rolling back transaction on " + this.localName + "[" + this.name + "]");
+        ppc.console.info("Rolling back transaction on " + this.localName + "[" + this.name + "]");
         //#endif
         
         if (this.$at) {
@@ -267,17 +267,17 @@ apf.Transaction = function(){
      *
      * @param {XMLElement} xmlNode  The node to add or update to
      * @param {XMLElement} parentXmlNode The parent node to add or udpate to
-     * @param {apf.AmlElement} dataParent Determines the actiontracker to integrate the grouped action into
+     * @param {ppc.AmlElement} dataParent Determines the actiontracker to integrate the grouped action into
      */
     this.begin = function(strAction, xmlNode, parentXmlNode, dataParent){
         if (this.$inTransaction) {
-            /*throw new Error(apf.formatErrorString(0, this, 
+            /*throw new Error(ppc.formatErrorString(0, this, 
                 "Starting Transaction", 
                 "Cannot start a transaction without committing or rolling \
                  back previously started transaction.", this.oldRoot));*/
             
             //#ifdef __DEBUG
-            apf.console.warn("Rolling back transaction, while starting a new one");
+            ppc.console.warn("Rolling back transaction, while starting a new one");
             //#endif
             
             if (this.autoshow)
@@ -286,7 +286,7 @@ apf.Transaction = function(){
         }
 
         //#ifdef __DEBUG
-        apf.console.info("Beginning transaction on " + this.localName + "[" + this.name + "]");
+        ppc.console.info("Beginning transaction on " + this.localName + "[" + this.name + "]");
         //#endif
 
         //Add should look at dataParent and take selection or xmlRoot
@@ -306,7 +306,7 @@ apf.Transaction = function(){
         
         //#ifdef __DEBUG
         if (!this.$lastAction) {
-            throw new Error(apf.formatErrorString(0, this, 
+            throw new Error(ppc.formatErrorString(0, this, 
                 "Starting Transaction", 
                 "Could not determine whether to add or update."));
         }
@@ -333,7 +333,7 @@ apf.Transaction = function(){
          *   Setting replaceat="start" or replaceat="end"
          */
         if (!this.$at) {
-            this.$at  = new apf.actiontracker();
+            this.$at  = new ppc.actiontracker();
             var propListen = function(e){
                 _self.setProperty(e.prop, e.value);
             };
@@ -343,7 +343,7 @@ apf.Transaction = function(){
             this.setProperty("redolength", 0);
         }
         if (!this.$helperModel) {
-            this.$helperModel = new apf.model();
+            this.$helperModel = new ppc.model();
             this.$helperModel["save-original"] = true;
             this.$helperModel.load("<data />");
         }
@@ -353,7 +353,7 @@ apf.Transaction = function(){
         this.$originalNode    = this.xmlRoot;
 
         //#ifdef __WITH_OFFLINE
-        if (typeof apf.offline != "undefined" && !apf.offline.canTransact())
+        if (typeof ppc.offline != "undefined" && !ppc.offline.canTransact())
             return false;
         //#endif
 
@@ -361,7 +361,7 @@ apf.Transaction = function(){
         function begin(){
             //#ifdef __DEBUG
             if (!this.$transactionNode) {
-                throw new Error(apf.formatErrorString(0, this, 
+                throw new Error(ppc.formatErrorString(0, this, 
                     "Starting transaction", 
                     "Missing transaction node. Cannot start transaction. \
                      This error is unrecoverable."));
@@ -369,7 +369,7 @@ apf.Transaction = function(){
             //#endif
 
             this.$inTransaction = -1;
-            this.$helperModel.data.appendChild(this.$transactionNode);//apf.xmldb.cleanNode());
+            this.$helperModel.data.appendChild(this.$transactionNode);//ppc.xmldb.cleanNode());
             this.load(this.$helperModel.data.firstChild);
             this.$inTransaction = true;
             
@@ -401,7 +401,7 @@ apf.Transaction = function(){
                     rule = actionRules.getRule("add", xmlNode);
                 else if (typeof xmlNode == "string") {
                     if (xmlNode.trim().charAt(0) == "<") {
-                        xmlNode = apf.getXml(xmlNode);
+                        xmlNode = ppc.getXml(xmlNode);
                         rule = actionRules.getRule("add", xmlNode)
                     }
                     else {
@@ -423,7 +423,7 @@ apf.Transaction = function(){
                 rule = null;
             
             //#ifdef __WITH_OFFLINE
-            if (typeof apf.offline != "undefined" && !apf.offline.onLine
+            if (typeof ppc.offline != "undefined" && !ppc.offline.onLine
               && !rule.get)
                 return false;
             //#endif
@@ -431,10 +431,10 @@ apf.Transaction = function(){
             //Run the add code (copy from multiselect) but don't add until commit
             var refNode  = this.$isTreeArch ? this.selected || this.xmlRoot : this.xmlRoot;
             var callback = function(addXmlNode, state, extra){
-                if (state != apf.SUCCESS) {
+                if (state != ppc.SUCCESS) {
                     var oError;
     
-                    oError = new Error(apf.formatErrorString(1032, dataParent,
+                    oError = new Error(ppc.formatErrorString(1032, dataParent,
                         "Loading xml data",
                         "Could not add data for control " + dataParent.name
                         + "[" + dataParent.tagName + "] \nUrl: " + extra.url
@@ -446,15 +446,15 @@ apf.Transaction = function(){
                     throw oError;
                 }
                 
-                /*if (apf.supportNamespaces && node.namespaceURI == apf.ns.xhtml) {
-                    node = apf.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
+                /*if (ppc.supportNamespaces && node.namespaceURI == ppc.ns.xhtml) {
+                    node = ppc.getXml(node.xml.replace(/xmlns\=\"[^"]*\"/g, ""));
                     //@todo import here for webkit?
                 }*/
 
                 if (typeof addXmlNode != "object")
-                    addXmlNode = apf.getXmlDom(addXmlNode).documentElement;
-                if (addXmlNode.getAttribute(apf.xmldb.xmlIdTag))
-                    addXmlNode.setAttribute(apf.xmldb.xmlIdTag, "");
+                    addXmlNode = ppc.getXmlDom(addXmlNode).documentElement;
+                if (addXmlNode.getAttribute(ppc.xmldb.xmlIdTag))
+                    addXmlNode.setAttribute(ppc.xmldb.xmlIdTag, "");
     
                 if (!dataParent.$startAction("add", addXmlNode, _self.rollback))
                     return false;
@@ -480,7 +480,7 @@ apf.Transaction = function(){
                 if (!_self.$addParent)
                     _self.$addParent = dataParent.xmlRoot || dataParent.getModel(true).data;
     
-                if (apf.isWebkit && _self.$addParent.ownerDocument != addXmlNode.ownerDocument)
+                if (ppc.isWebkit && _self.$addParent.ownerDocument != addXmlNode.ownerDocument)
                     addXmlNode = _self.$addParent.ownerDocument.importNode(addXmlNode, true); //Safari issue not auto importing nodes
     
                 _self.$transactionNode    = addXmlNode;
@@ -489,13 +489,13 @@ apf.Transaction = function(){
             }
 
             if (xmlNode)
-                return callback(xmlNode, apf.SUCCESS);
+                return callback(xmlNode, ppc.SUCCESS);
             else {
                 if (rule && rule.get)
-                    return apf.getData(rule.get, {xmlNode: refNode, callback: callback})
+                    return ppc.getData(rule.get, {xmlNode: refNode, callback: callback})
                 else {
                     //#ifdef __DEBUG
-                    throw new Error(apf.formatErrorString(0, this,
+                    throw new Error(ppc.formatErrorString(0, this,
                         "Starting transaction", 
                         "Missing add rule for transaction"));
                     //#endif
@@ -536,7 +536,7 @@ apf.Transaction = function(){
     this.addEventListener("beforeload", function(e){
         var xmlNode = e.xmlNode;
         
-        //@todo apf3.0 test if this can be enabled again
+        //@todo ppc3.0 test if this can be enabled again
         //if (this.$originalNode == xmlNode)
             //return false;
         
@@ -594,25 +594,25 @@ apf.Transaction = function(){
  * support for all its children.
  * 
  */
-apf.GuiElement.propHandlers["transaction"] = function(value){
-    if (!(this.transaction = apf.isTrue(value)))
+ppc.GuiElement.propHandlers["transaction"] = function(value){
+    if (!(this.transaction = ppc.isTrue(value)))
         return;
 
-    if (!this.hasFeature(apf.__DATABINDING__))
-        this.implement(apf.StandardBinding);
+    if (!this.hasFeature(ppc.__DATABINDING__))
+        this.implement(ppc.StandardBinding);
 
-    if (!this.hasFeature(apf.__DATAACTION__)) {
-        this.implement(apf.DataAction);
+    if (!this.hasFeature(ppc.__DATAACTION__)) {
+        this.implement(ppc.DataAction);
 
         if (this.actions)
             this.$propHandlers["actions"].call(this, this.actions, "actions");
     }
      
-    if (!this.hasFeature(apf.__TRANSACTION__)) {
-        this.implement(apf.Transaction);
+    if (!this.hasFeature(ppc.__TRANSACTION__)) {
+        this.implement(ppc.Transaction);
         
         if (!this.validgroup) {
-            this.$validgroup = new apf.ValidationGroup();
+            this.$validgroup = new ppc.ValidationGroup();
             this.$validgroup.register(this);
         }
         
@@ -621,7 +621,7 @@ apf.GuiElement.propHandlers["transaction"] = function(value){
         
         var attr = this.attributes.getNamedItem("model");
         if (!attr)  //@todo find a way to not have to add a model
-            this.attributes.push(attr = new apf.AmlAttr(this, "model", null));
+            this.attributes.push(attr = new ppc.AmlAttr(this, "model", null));
         attr.inheritedValue = "{" + this.id + ".root}";
                 
         if (typeof this.autoshow == "undefined" 

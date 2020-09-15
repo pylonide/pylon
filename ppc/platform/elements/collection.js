@@ -35,12 +35,12 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.collection = function(struct, tagName){
-    this.$init(tagName || "collection", apf.NODE_HIDDEN, struct);
+ppc.collection = function(struct, tagName){
+    this.$init(tagName || "collection", ppc.NODE_HIDDEN, struct);
 };
 
-apf.docklet = function(struct, tagName){
-    this.$init(tagName || "docklet", apf.NODE_HIDDEN, struct);
+ppc.docklet = function(struct, tagName){
+    this.$init(tagName || "docklet", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -52,7 +52,7 @@ apf.docklet = function(struct, tagName){
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         if (this.parentNode && this.parentNode.$int != this.$pHtmlNode)
-            this.$pHtmlNode = this.parentNode.$int; //@todo apf3.0 change this in the mutation events
+            this.$pHtmlNode = this.parentNode.$int; //@todo ppc3.0 change this in the mutation events
 
         //this.$ext = this.$pHtmlNode;
         this.$int = this.$pHtmlNode;
@@ -61,11 +61,11 @@ apf.docklet = function(struct, tagName){
 
         this.skinName = this.parentNode.skinName;
     });
-}).call(apf.collection.prototype = new apf.AmlElement());
+}).call(ppc.collection.prototype = new ppc.AmlElement());
 
-apf.docklet.prototype = apf.collection.prototype;
+ppc.docklet.prototype = ppc.collection.prototype;
 
-apf.aml.setElement("collection", apf.collection);
-apf.aml.setElement("docklet", apf.docklet);
+ppc.aml.setElement("collection", ppc.collection);
+ppc.aml.setElement("docklet", ppc.docklet);
 
 // #endif

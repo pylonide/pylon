@@ -32,9 +32,9 @@
  * @version     %I%, %G%
  * @since       3.0
  *
- * @inherits apf.StandardBinding
- * @inherits apf.DataAction
- * @inheritsElsewhere apf.XForms
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.DataAction
+ * @inheritsElsewhere ppc.XForms
  *
  * @attribute {Number}  latitude          geographical coordinate
  * @attribute {Number}  longitude         geographical coordinate
@@ -69,20 +69,20 @@
  *
  * @event loaded Fires after the the javascript libraries from Google have been loaded and the map is drawn
  */
-apf.map = function(struct, tagName){
-    this.$init(tagName || "map", apf.NODE_VISIBLE, struct);
+ppc.map = function(struct, tagName){
+    this.$init(tagName || "map", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         // #ifdef __WITH_DATABINDING
-        apf.StandardBinding
+        ppc.StandardBinding
         // #endif
         //#ifdef __WITH_DATAACTION
-        ,apf.DataAction
+        ,ppc.DataAction
         //#endif
         //#ifdef __WITH_XFORMS
-       // ,apf.XForms
+       // ,ppc.XForms
         //#endif
     );
     //Options
@@ -189,7 +189,7 @@ apf.map = function(struct, tagName){
     }
 
     this.$propHandlers["maptypecontrol"] = function(value) {
-        this.maptypecontrol  = !apf.isFalse(value);
+        this.maptypecontrol  = !ppc.isFalse(value);
         this.$mapTypeControl = {};
         if (!this.maptypecontrol) return;
         if (loaddone) {
@@ -219,7 +219,7 @@ apf.map = function(struct, tagName){
     };
 
     this.$propHandlers["navigationcontrol"] = function(value) {
-        this.navigationcontrol  = !apf.isFalse(value);
+        this.navigationcontrol  = !ppc.isFalse(value);
         this.$navigationControl = {};
         if (!this.navigationcontrol) return;
         if (loaddone) {
@@ -252,7 +252,7 @@ apf.map = function(struct, tagName){
     };
 
     this.$propHandlers["scalecontrol"] = function(value) {
-        this.scalecontrol  = !apf.isFalse(value);
+        this.scalecontrol  = !ppc.isFalse(value);
         this.$scaleControl = {};
         if (!this.scalecontrol) return;
         if (loaddone) {
@@ -415,7 +415,7 @@ apf.map = function(struct, tagName){
             sFunc = aName.pop();
         while (p[i = aName.shift()])
             p = p[i];
-        return p[sFunc] || apf.K;
+        return p[sFunc] || ppc.K;
     }
 
     function markerExists(lat, lon) {
@@ -451,7 +451,7 @@ apf.map = function(struct, tagName){
         }
 
         if (this["marker-icon"] && !this.$markerIcon)
-            this.$markerIcon = new apf.url(this["marker-icon"]).uri;
+            this.$markerIcon = new ppc.url(this["marker-icon"]).uri;
 
         var lat    = pos.lat(),
             lon    = pos.lng(),
@@ -555,7 +555,7 @@ apf.map = function(struct, tagName){
         function loaded() {
             loaddone = true;
 
-            if (apf.window.vManager.check(_self, "map", _self.$draw))
+            if (ppc.window.vManager.check(_self, "map", _self.$draw))
                 _self.$draw();
             
             try{
@@ -573,14 +573,14 @@ apf.map = function(struct, tagName){
             script.src  = "http://maps.google.com/maps/api/js?sensor=true&callback=google_maps_initialize";
 
             document.body.appendChild(script);
-            //apf.include("http://code.google.com/apis/gears/gears_init.js", false, null, null, loaded);
+            //ppc.include("http://code.google.com/apis/gears/gears_init.js", false, null, null, loaded);
         }
         else {
             loaded();
         }
     });
-}).call(apf.map.prototype = new apf.GuiElement());
+}).call(ppc.map.prototype = new ppc.GuiElement());
 
-apf.aml.setElement("map", apf.map);
+ppc.aml.setElement("map", ppc.map);
 
 // #endif

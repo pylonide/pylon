@@ -34,12 +34,12 @@
  * @since       3.0
  */
 
-apf.upload.html5 = function(oUpload) {
+ppc.upload.html5 = function(oUpload) {
     this.oUpload = oUpload;
 };
 
-apf.upload.html5.isSupported = function() {
-    return apf.hasXhrBinary;
+ppc.upload.html5.isSupported = function() {
+    return ppc.hasXhrBinary;
 };
 
 (function() {
@@ -132,7 +132,7 @@ apf.upload.html5.isSupported = function() {
 
     this.refresh = function() {
         var oBtn = this.oUpload.$button.$ext,
-            pos  = apf.getAbsolutePosition(oBtn, oCont.offsetParent);
+            pos  = ppc.getAbsolutePosition(oBtn, oCont.offsetParent);
 
         oCont.style.left   = pos[0] + "px",
         oCont.style.top    = pos[1] + "px",
@@ -150,7 +150,7 @@ apf.upload.html5.isSupported = function() {
         // Sends the binary blob to server and multipart encodes it if needed this code will
         // only be executed on Gecko since it's currently the only browser that supports direct file access
         function sendBinaryBlob(blob) {
-            var boundary      = "----apfbound".appendRandomNumber(5),
+            var boundary      = "----ppcbound".appendRandomNumber(5),
                 dashdash      = "--",
                 crlf          = "\r\n",
                 multipartBlob = "";
@@ -175,7 +175,7 @@ apf.upload.html5.isSupported = function() {
             }
             catch (ex) {
                 _self.oUpload.dispatchEvent("error", {
-                    code    : apf.upload.ERROR_CODES.HTTP_ERROR,
+                    code    : ppc.upload.ERROR_CODES.HTTP_ERROR,
                     message : ex.message,
                     file    : file
                 });
@@ -183,8 +183,8 @@ apf.upload.html5.isSupported = function() {
         }
 
         // File upload finished
-        if (file.status & apf.upload.DONE || file.status & apf.upload.FAILED
-          || this.oUpload.state & apf.upload.STOPPED) {
+        if (file.status & ppc.upload.DONE || file.status & ppc.upload.FAILED
+          || this.oUpload.state & ppc.upload.STOPPED) {
             return;
         }
 
@@ -208,7 +208,7 @@ apf.upload.html5.isSupported = function() {
             }
             var bError = (httpStatus >= 400 || httpStatus == 0);
 
-            file.status = bError ? apf.upload.FAILED : apf.upload.DONE;
+            file.status = bError ? ppc.upload.FAILED : ppc.upload.DONE;
             file.loaded = bError ? 0 : file.size;
             _self.oUpload.$progress(file);
             _self.oUpload.$fileDone(file, {
@@ -218,16 +218,16 @@ apf.upload.html5.isSupported = function() {
 
             // Is error status
             if (bError) {
-                apf.console.error("File upload failed " + httpStatus + " with message " + xhr.responseText);
+                ppc.console.error("File upload failed " + httpStatus + " with message " + xhr.responseText);
 
                 _self.oUpload.dispatchEvent("error", {
-                    code    : apf.upload.ERROR_CODES.HTTP_ERROR,
+                    code    : ppc.upload.ERROR_CODES.HTTP_ERROR,
                     message : "HTTP Error: " + xhr.responseText,
                     file    : file,
                     status  : httpStatus
                 });
             }
-            else if (apf.isGecko) {
+            else if (ppc.isGecko) {
                 // workaround for gecko bug that deletes input after a successful upload... or is it a feature?
                 _self.draw();
                 $setTimeout(function() {_self.refresh();});
@@ -250,5 +250,5 @@ apf.upload.html5.isSupported = function() {
         else
             xhr.send(nativeFile);
     };
-}).call(apf.upload.html5.prototype = new apf.Class());
+}).call(ppc.upload.html5.prototype = new ppc.Class());
 // #endif

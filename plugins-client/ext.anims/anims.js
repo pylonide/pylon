@@ -20,15 +20,15 @@ module.exports = ext.register("ext/anims/anims", {
     type    : ext.GENERAL,
 
     animateMultiple : function(tweens, finish) {
-        var shouldAnimate = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        var shouldAnimate = ppc.isTrue(settings.model.queryValue("general/@animateui"));
 
         if (shouldAnimate) {
             var duration = 0;
             tweens.forEach(function(options) {
                 var node = options.node;
                 Firmin.animate(node.$ext || node, options, options.duration || 0.2, function() {
-                    (node.$ext || node).style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                    //apf.layout.forceResize();
+                    (node.$ext || node).style[ppc.CSSPREFIX + "TransitionDuration"] = "";
+                    //ppc.layout.forceResize();
                 });
                 duration = Math.max(duration, options.duration || 0.2);
             });
@@ -45,11 +45,11 @@ module.exports = ext.register("ext/anims/anims", {
     },
 
     animate : function(aNode, options, finish){
-        var shouldAnimate = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        var shouldAnimate = ppc.isTrue(settings.model.queryValue("general/@animateui"));
 
         if (shouldAnimate) {
             Firmin.animate(aNode.$ext || aNode, options, options && options.duration || 0.2, function() {
-                (aNode.$ext || aNode).style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                (aNode.$ext || aNode).style[ppc.CSSPREFIX + "TransitionDuration"] = "";
                 finish && finish(); //setTimeout(finish, 30);
             });
         }
@@ -60,7 +60,7 @@ module.exports = ext.register("ext/anims/anims", {
     },
 
     animateSplitBoxNode : function(aNode, options, finish){
-        var shouldAnimate = apf.isTrue(settings.model.queryValue("general/@animateui"));
+        var shouldAnimate = ppc.isTrue(settings.model.queryValue("general/@animateui"));
 
         var pNode = aNode.parentNode;
         var firstChild = pNode.getFirstChild();
@@ -95,10 +95,10 @@ module.exports = ext.register("ext/anims/anims", {
             });
 
             Firmin.animate(aNode.$ext, options, options.duration || 0.2, function() {
-                aNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                aNode.$ext.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
             });
             Firmin.animate(oNode.$ext, to2, options.duration || 0.2, function() {
-                oNode.$ext.style[apf.CSSPREFIX + "TransitionDuration"] = "";
+                oNode.$ext.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
 
                 if (aNode.parentNode) {
                     if (pNode.$vbox)

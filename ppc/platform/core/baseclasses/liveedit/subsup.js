@@ -21,18 +21,18 @@
 
 // #ifdef __ENABLE_EDITOR_SUBSUP || __INC_ALL
 
-apf.LiveEdit.subSupCommand = function(sName) {
+ppc.LiveEdit.subSupCommand = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = sName == "sub" ? "ctrl+alt+s" : "ctrl+shift+s";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
 
     this.execute = function(editor) {
         var other = this.name == "sub" ? "Superscript" : "Subscript";
-        if (editor.$queryCommandState(other) == apf.ON)
+        if (editor.$queryCommandState(other) == ppc.ON)
             editor.$execCommand(other);
         editor.$execCommand(this.name == "sub" ? "Subscript" : "Superscript");
 
@@ -45,7 +45,7 @@ apf.LiveEdit.subSupCommand = function(sName) {
             : "Superscript");
     };
 }
-apf.LiveEdit.plugin("sub", apf.LiveEdit.subSupCommand);
-apf.LiveEdit.plugin("sup", apf.LiveEdit.subSupCommand);
+ppc.LiveEdit.plugin("sub", ppc.LiveEdit.subSupCommand);
+ppc.LiveEdit.plugin("sup", ppc.LiveEdit.subSupCommand);
 
 // #endif

@@ -26,16 +26,16 @@
  * contains information about a single event in the application. It can be undone,
  * and it knows how to synchronize the change to a (remote) data source.
  *
- * @class apf.UndoData
+ * @class ppc.UndoData
  * @default_private
  */
-apf.UndoData = function(settings, at){
+ppc.UndoData = function(settings, at){
     this.localName = "UndoData";
     this.extra     = {};
     //#ifdef __WITH_RDB
     this.rdbQueue  = {};
     //#endif
-    apf.extend(this, settings);
+    ppc.extend(this, settings);
 
     if (!this.timestamp)
         this.timestamp = (new Date()).getUTCTime();
@@ -87,13 +87,13 @@ apf.UndoData = function(settings, at){
         //this can be optimized
         var rdb = this.rdbModel
             ? this.rdbModel.rdb
-            : apf.remote;
+            : ppc.remote;
         //#endif
 
         //Record arguments
-        var sLookup = (typeof apf.offline != "undefined" && apf.offline.sLookup)
-            ? apf.offline.sLookup
-            : (apf.offline.sLookup = {});
+        var sLookup = (typeof ppc.offline != "undefined" && ppc.offline.sLookup)
+            ? ppc.offline.sLookup
+            : (ppc.offline.sLookup = {});
         if (!sLookup.count) sLookup.count = 0;
         var xmlNode, xmlId, args = this.args.slice();
 
@@ -101,8 +101,8 @@ apf.UndoData = function(settings, at){
             if (args[i] && args[i].nodeType) {
                 if (!serialState.argsModel) {
                     //#ifdef __WITH_NAMESERVER
-                    var model = apf.nameserver.get("model",
-                        apf.xmldb.getXmlDocId(args[i]));
+                    var model = ppc.nameserver.get("model",
+                        ppc.xmldb.getXmlDocId(args[i]));
 
                     if(model)
                         serialState.argsModel = model.name || model.$uniqueId;
@@ -126,7 +126,7 @@ apf.UndoData = function(settings, at){
 
         //#ifdef __DEBUG
         if (!serialState.argsModel)
-            apf.console.warn("Could not determine model for serialization \
+            ppc.console.warn("Could not determine model for serialization \
                 of undo state. Will not be able to undo the state when the \
                 server errors. This creates a potential risk of loosing \
                 all changes on sync!")
@@ -140,8 +140,8 @@ apf.UndoData = function(settings, at){
                 model we'll just record the xpath
             */
             if (xmlNode.nodeType == 2
-              || apf.isChildOf(model.data, xmlNode, true)) {
-                xmlId = xmlNode.getAttribute(apf.xmldb.xmlIdTag);
+              || ppc.isChildOf(model.data, xmlNode, true)) {
+                xmlId = xmlNode.getAttribute(ppc.xmldb.xmlIdTag);
                 return {
                     xpath  : rdb.xmlToXpath(xmlNode, model.data, true),
                     lookup : xmlId
@@ -153,10 +153,10 @@ apf.UndoData = function(settings, at){
                 while (contextNode.parentNode && contextNode.parentNode.nodeType == 1) //find topmost parent
                     contextNode = xmlNode.parentNode;
 
-                xmlId = contextNode.getAttribute(apf.xmldb.xmlIdTag);
+                xmlId = contextNode.getAttribute(ppc.xmldb.xmlIdTag);
                 if (!xmlId) {
                     xmlId = "serialize" + sLookup.count++;
-                    contextNode.setAttribute(apf.xmldb.xmlIdTag, xmlId);
+                    contextNode.setAttribute(ppc.xmldb.xmlIdTag, xmlId);
                 }
 
                 var obj = {
@@ -165,8 +165,8 @@ apf.UndoData = function(settings, at){
                 }
 
                 if (!sLookup[xmlId]) {
-                    contextNode.setAttribute(apf.xmldb.xmlDocTag,
-                        apf.xmldb.getXmlDocId(contextNode));
+                    contextNode.setAttribute(ppc.xmldb.xmlDocTag,
+                        ppc.xmldb.getXmlDocId(contextNode));
 
                     sLookup[xmlId] = contextNode;
                     obj.xml        = contextNode.xml || contextNode.serialize();
@@ -181,26 +181,26 @@ apf.UndoData = function(settings, at){
         //#ifdef __WITH_NAMESERVER
         //#ifdef __WITH_RDB
         if (this.rdbModel)
-            this.rdbModel = apf.nameserver.get("model", this.rdbModel);
+            this.rdbModel = ppc.nameserver.get("model", this.rdbModel);
         //#endif
         //#endif
 
         if (this.argsModel) {
             //#ifdef __WITH_NAMESERVER
-            var model = apf.nameserver.get("model", this.argsModel)
-                || apf.lookup(this.argsModel);
+            var model = ppc.nameserver.get("model", this.argsModel)
+                || ppc.lookup(this.argsModel);
 
             //Record arguments
-            var sLookup =  (typeof apf.offline != "undefined" && apf.offline.sLookup)
-                ? apf.offline.sLookup
-                : (apf.offline.sLookup = {});
+            var sLookup =  (typeof ppc.offline != "undefined" && ppc.offline.sLookup)
+                ? ppc.offline.sLookup
+                : (ppc.offline.sLookup = {});
             if (!sLookup.count) sLookup.count = 0;
 
             var args = this.args,
                 //#ifdef __WITH_RDB
                 rdb  = this.rdbModel
                     ? this.rdbModel.rdb
-                    : apf.remote,
+                    : ppc.remote,
                 //#endif
                 xmlNode, i, l, item, name;
 
@@ -228,7 +228,7 @@ apf.UndoData = function(settings, at){
         //#ifdef __WITH_LOCKING
         if (this.timestamp) {
             options.actionstart = this.timestamp;
-            options.headers     = {"X-APF-ActionStart": this.timestamp};
+            options.headers     = {"X-PPC-ActionStart": this.timestamp};
         }
         //#endif
 
@@ -236,8 +236,8 @@ apf.UndoData = function(settings, at){
 
         function unserializeNode(xmlSerial, model){
             if (xmlSerial.xml) {
-                xmlNode = apf.xmldb.getXml(xmlSerial.xml);
-                sLookup[xmlNode.getAttribute(apf.xmldb.xmlIdTag)] = xmlNode;
+                xmlNode = ppc.xmldb.getXml(xmlSerial.xml);
+                sLookup[xmlNode.getAttribute(ppc.xmldb.xmlIdTag)] = xmlNode;
             }
             else if (xmlSerial.lookup) {
                 xmlNode = sLookup[xmlSerial.lookup];
@@ -297,12 +297,12 @@ apf.UndoData = function(settings, at){
         this.state = undo ? "restoring" : "saving";
 
         if (!options.asyncs) { //Precall didnt contain any async calls
-            return at.$receive(null, apf.SUCCESS, {amlNode: this.amlNode},
+            return at.$receive(null, ppc.SUCCESS, {amlNode: this.amlNode},
                 this, callback);
         }
 
         options.ignoreOffline = true;
-        apf.saveData(dataInstruction, options);
+        ppc.saveData(dataInstruction, options);
     };
 
     this.preparse = function(undo, at, multicall, callback){
@@ -316,18 +316,18 @@ apf.UndoData = function(settings, at){
         if (!dataInstruction)
             return this;
 
-        options = apf.extend({
+        options = ppc.extend({
             xmlNode   : this.action == "multicall"
               ? this.args[0].xmlNode
               : this.selNode || this.xmlNode,
-            userdata  : apf.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
+            userdata  : ppc.isTrue(this.xmlActionNode.getAttribute("ignore-fail")),
             multicall : multicall,
             undo      : undo,
             precall   : true,
 
             //Callback is only for async calls
             callback  : function(data, state, extra){
-                if (options.asyncs) { //Set by apf.saveData
+                if (options.asyncs) { //Set by ppc.saveData
                     extra.amlNode = _self.amlNode;
                     return at.$receive(data, state, extra, _self, callback);
                 }
@@ -341,25 +341,25 @@ apf.UndoData = function(settings, at){
         }
         //#endif
 
-        apf.saveData(dataInstruction, options); //@todo please check if at the right time selNode is set
+        ppc.saveData(dataInstruction, options); //@todo please check if at the right time selNode is set
 
         return this;
     };
 };
 /* #elseif __WITH_DATAACTION
-apf.actiontracker = function(){
+ppc.actiontracker = function(){
     this.execute = function(){
         //Execute action
-        var UndoObj = new apf.UndoData();
+        var UndoObj = new ppc.UndoData();
         if (options.action)
-            apf.actiontracker.actions[options.action](UndoObj, false, this);
+            ppc.actiontracker.actions[options.action](UndoObj, false, this);
         return UndoObj;
     };
 
     this.reset = function(){}
 }
 
-apf.UndoData = function(){
+ppc.UndoData = function(){
     this.localName = "UndoData";
     this.extra   = {};
 }

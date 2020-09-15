@@ -26,8 +26,8 @@
  * @param {String} strCode the code to highlight.
  * @return {String} the highlighted string.
  */
-apf.highlightXml = 
-apf.highlightCode = function(strCode){
+ppc.highlightXml = 
+ppc.highlightCode = function(strCode){
     var lines = strCode.split(/\n\r?/);
     for (var min = 1000, i = 0, l = lines.length; i < l; i++){
         min = Math.min(min, lines[i].match(/^(\s+)?[^\s]/) && RegExp.$1.length || 1000);
@@ -45,7 +45,7 @@ apf.highlightCode = function(strCode){
             }
             else if (ptarget) {
                 return "<span style=\"color:orange\">&lt;?" + ptarget + "</span>" 
-                    + apf.highlightJs(pcontents, true) 
+                    + ppc.highlightJs(pcontents, true) 
                     + "<span style=\"color:orange\">?&gt;</span>";
             }
             else if (cdata) {
@@ -58,7 +58,7 @@ apf.highlightCode = function(strCode){
                             return "<span style=\"color:red\">" + w + "</span>";
                         }) + "<span style=\"color:#127ac6\">&gt;</span>"
                       : "&gt;</span>")
-                    + apf.highlightJs(scontent, true) 
+                    + ppc.highlightJs(scontent, true) 
                     + "<span style=\"color:#127ac6\">&lt;/" + sprefix + "script&gt;</span>";
             }
             else if (tagName) {
@@ -81,7 +81,7 @@ apf.highlightCode = function(strCode){
 /**
  * @private
  */
-apf.removeStartWhitespaces = function(strCode){
+ppc.removeStartWhitespaces = function(strCode){
     var lines = strCode.split(/\n\r?/);
     for (var min = 1000, i = 0, l = lines.length; i < l; i++){
         min = Math.min(min, lines[i].match(/^(\s+)?[^\s]/) && RegExp.$1.length || 1000);
@@ -94,8 +94,8 @@ apf.removeStartWhitespaces = function(strCode){
 /**
  * @private
  */
-apf.convertAmlToJson = function(strCode){
-    var xml = apf.getXml("<a:app xmlns:a='" + apf.ns.apf + "'>" + strCode + "</a:app>", null, true);
+ppc.convertAmlToJson = function(strCode){
+    var xml = ppc.getXml("<a:app xmlns:a='" + ppc.ns.ppc + "'>" + strCode + "</a:app>", null, true);
 
     var script = [], bool = {"true":1, "false":1};
     var x = (function recur(nodes, depth, paout){
@@ -115,7 +115,7 @@ apf.convertAmlToJson = function(strCode){
             }
             else if (node.nodeType != 1)
                 continue; //ignore
-            else if (node[apf.TAGNAME] == "script") {
+            else if (node[ppc.TAGNAME] == "script") {
                 var s = node.childNodes;
                 for (var j = 0, jl = s.length; j < jl; j++) {
                     if (s[j].nodeValue.trim() != "//")
@@ -126,7 +126,7 @@ apf.convertAmlToJson = function(strCode){
             
             var attr, childLength = node.childNodes.length + (attr = node.attributes).length;
             var max = 0, aout = [];
-            output.push(pre + "new apf." + node[apf.TAGNAME] + (childLength || !depth ? "({" : "()" + (depth == 0 ? ";" : (i == l - 1 ? "" : ","))));
+            output.push(pre + "new ppc." + node[ppc.TAGNAME] + (childLength || !depth ? "({" : "()" + (depth == 0 ? ";" : (i == l - 1 ? "" : ","))));
             if (!depth) {
                 aout.push("htmlNode", "document.body");
                 max = Math.max(8, max);
@@ -142,8 +142,8 @@ apf.convertAmlToJson = function(strCode){
             }
             
             var c = "";
-            if (node[apf.TAGNAME] == "model" && node.childNodes.length) {
-                aout.push("data", '"' + apf.serializeChildren(node).trim().replace(/"/g, "\\\"").replace(/\r?\n/g, "\\\n") + '"');
+            if (node[ppc.TAGNAME] == "model" && node.childNodes.length) {
+                aout.push("data", '"' + ppc.serializeChildren(node).trim().replace(/"/g, "\\\"").replace(/\r?\n/g, "\\\n") + '"');
             }
             else if (childLength)
                 var c = recur(node.childNodes, depth+2, aout);
@@ -153,12 +153,12 @@ apf.convertAmlToJson = function(strCode){
             max++;
             
             for (j = 0, jl = aout.length; j < jl; j+=2) {
-                output.push(pre + "  " + aout[j].pad(max, " ", apf.PAD_RIGHT) 
+                output.push(pre + "  " + aout[j].pad(max, " ", ppc.PAD_RIGHT) 
                     + ": " + aout[j+1] + (j != jl - 2 || c ? "," : ""));
             }
             
             if (c) {
-                output.push(pre + "  " + "childNodes".pad(max, " ", apf.PAD_RIGHT) + ": [");
+                output.push(pre + "  " + "childNodes".pad(max, " ", ppc.PAD_RIGHT) + ": [");
                 output.push(c.substr(0, c.length - 1));
                 output.push(pre + "  ]");
             }
@@ -173,7 +173,7 @@ apf.convertAmlToJson = function(strCode){
     return x + "\n\n";
 }
 
-apf.highlightJs = function(x, notrim){
+ppc.highlightJs = function(x, notrim){
     if (!notrim) {
         var lines = x.split(/\n\r?/);
         for (var min = 1000, i = 0, l = lines.length; i < l; i++){
@@ -183,7 +183,7 @@ apf.highlightJs = function(x, notrim){
         x = x.replace(new RegExp("^ {" + min + "}", "gm"), "");
     }
     
-    return x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/(\/\*[\s\S]+\*\/)|(\/\/.*)$|("(?:[^"\\]+|\\[\s\S])*")|('(?:[^'\\]+|\\[\s\S])*')|(\W)(apf|break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)|(\W)(\w+)(\s*\()/gm,
+    return x.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/(\/\*[\s\S]+\*\/)|(\/\/.*)$|("(?:[^"\\]+|\\[\s\S])*")|('(?:[^'\\]+|\\[\s\S])*')|(\W)(ppc|break|continue|do|for|import|new|this|void|case|default|else|function|in|return|typeof|while|comment|delete|export|if|label|switch|var|with|abstract|implements|protected|boolean|instanceOf|public|byte|int|short|char|interface|static|double|long|synchronized|false|native|throws|final|null|transient|float|package|true|goto|private|catch|enum|throw|class|extends|try|const|finally|debugger|super)(\W)|(\W)(\w+)(\s*\()/gm,
         function(m, colong, co, str1, str2, nw, kw, nw2, fW, f, fws) {
             if (f)
                 return fW + '<span style="color:#ff8000">' + f + '</span>' + fws;
@@ -201,7 +201,7 @@ apf.highlightJs = function(x, notrim){
  * @param {String} strCode the code to highlight.
  * @return {String} the highlighted string.
  */
-apf.highlightCode2 = function(strCode){
+ppc.highlightCode2 = function(strCode){
   var comment=[],str=[];
   return strCode
         .replace(/(\/\*[\s\S]*?\*\/|\/\/.*)/g, function(a){ comment.push(a); return '###n'+(comment.length-1)+'###';})   
@@ -225,7 +225,7 @@ apf.highlightCode2 = function(strCode){
  * @param {String} strJs the javascript to format.
  * @return {String} the formatted string.
  */
-apf.formatJS = function(strJs){
+ppc.formatJS = function(strJs){
     var d = 0, r = 0;
     var comment=[],str=[];
     return strJs

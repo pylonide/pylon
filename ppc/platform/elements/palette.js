@@ -30,8 +30,8 @@
  * @allowchild {smartbinding}
  *
  *
- * @inheritsElsewhere apf.XForms
- * @inherits apf.StandardBinding
+ * @inheritsElsewhere ppc.XForms
+ * @inherits ppc.StandardBinding
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -56,17 +56,17 @@
  *  <a:palette value="[mdlColor::@color]" />
  * </code>
  */
-apf.palette = function(struct, tagName){
-    this.$init(tagName || "palette", apf.NODE_VISIBLE, struct);
+ppc.palette = function(struct, tagName){
+    this.$init(tagName || "palette", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         //#ifdef __WITH_XFORMS
-        //,apf.XForms
+        //,ppc.XForms
         //#endif
     );
     // *** Properties and Attributes *** //
@@ -115,16 +115,16 @@ apf.palette = function(struct, tagName){
         var oItem = this.$getLayoutNode("item");
         
         if (oContainer == this.oCustom) {
-            oItem.setAttribute("onmousedown", "apf.lookup(" 
+            oItem.setAttribute("onmousedown", "ppc.lookup(" 
                 + this.$uniqueId + ").$doCustom(this, null, true)");
-            oItem.setAttribute("ondblclick", "apf.lookup(" 
+            oItem.setAttribute("ondblclick", "ppc.lookup(" 
                 + this.$uniqueId + ").$doCustom(this, true, true)");
         }
         else 
-            oItem.setAttribute("onmousedown", "apf.lookup(" + this.$uniqueId 
+            oItem.setAttribute("onmousedown", "ppc.lookup(" + this.$uniqueId 
                 + ").change(this.style.backgroundColor.replace(/^#/, ''))");
 
-        oItem = apf.insertHtmlNode(oItem, oContainer);
+        oItem = ppc.insertHtmlNode(oItem, oContainer);
         this.$getLayoutNode("item", "background", oItem).style.backgroundColor = "#"+clr;
     };
     
@@ -171,13 +171,13 @@ apf.palette = function(struct, tagName){
         for (i = 0; i < 9; i++) 
             this.$addColor("ffffff");
         
-        //this.oViewer.setAttribute("ondblclick", "apf.lookup(" + this.$uniqueId + ").openColorPicker()");
+        //this.oViewer.setAttribute("ondblclick", "ppc.lookup(" + this.$uniqueId + ").openColorPicker()");
     };
 // #ifdef __WITH_DATABINDING
-}).call(apf.palette.prototype = new apf.StandardBinding());
+}).call(ppc.palette.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.palette.prototype = new apf.Presentation());
+}).call(ppc.palette.prototype = new ppc.Presentation());
 #endif*/
 
-apf.aml.setElement("palette", apf.palette);
+ppc.aml.setElement("palette", ppc.palette);
 // #endif

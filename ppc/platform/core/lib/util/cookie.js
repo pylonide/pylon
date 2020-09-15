@@ -37,7 +37,7 @@
  *                            the cookie transmission will require a secure protocol (like HTTPS)
  * @return {String} Returns the cookie name.
  */
-apf.setcookie = function(name, value, expire, path, domain, secure) {
+ppc.setcookie = function(name, value, expire, path, domain, secure) {
     var ck = name + "=" + escape(value) + ";";
     if (expire) ck += "expires=" + new Date(expire
         + new Date().getTimezoneOffset() * 60).toGMTString() + ";";
@@ -55,7 +55,7 @@ apf.setcookie = function(name, value, expire, path, domain, secure) {
  * @param {String} name The name of the stored cookie.
  * @return {String} Returns a value of the cookie, or the empty string if it isn't found
  */
-apf.getcookie = function(name) {
+ppc.getcookie = function(name) {
   var aCookie = document.cookie.split("; ");
   for (var i = 0; i < aCookie.length; i++) {
       var aCrumb = aCookie[i].split("=");
@@ -72,7 +72,7 @@ apf.getcookie = function(name) {
  * @param {String} name     The name of the stored cookie
  * @param {String} domain   The name of the domain of stored cookie
  */
-apf.delcookie = function (name, domain){
+ppc.delcookie = function (name, domain){
     document.cookie = name + "=blah; expires=Fri, 31 Dec 1999 23:59:59 GMT;"
         + (domain ? 'domain='+domain : '');
 };

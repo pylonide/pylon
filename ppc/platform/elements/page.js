@@ -22,12 +22,12 @@
 // #ifdef __AMLPAGE || __INC_ALL
 
 /**
- * A page in a pageable element (_i.e._ a page in {@link apf.tab}).
+ * A page in a pageable element (_i.e._ a page in {@link ppc.tab}).
  *
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <!-- startcontent -->
  *  <a:window 
  *    visible = "true" 
@@ -54,10 +54,10 @@
  * </a:application>
  * ```
  * 
- * @class apf.page
+ * @class ppc.page
  * @define  page
  * @container
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  * @allowchild  {elements}, {anyaml}
  *
  *
@@ -65,8 +65,8 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.page = function(struct, tagName){
-    this.$init(tagName || "page", apf.NODE_VISIBLE, struct);
+ppc.page = function(struct, tagName){
+    this.$init(tagName || "page", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -148,14 +148,14 @@ apf.page = function(struct, tagName){
 
             if (elBtnClose) {
                // if(elBtnClose.nodeType == 1) {
-                apf.setStyleClass(this.$button, "btnclose");
+                ppc.setStyleClass(this.$button, "btnclose");
                 
                 elBtnClose.addEventListener("mousedown", function(e){
-                    apf.cancelBubble(e, apf.lookup(_self.$uniqueId));
+                    ppc.cancelBubble(e, ppc.lookup(_self.$uniqueId));
                 }, false);
                 
                 elBtnClose.addEventListener("click", function(e){
-                    var page = apf.lookup(_self.$uniqueId);
+                    var page = ppc.lookup(_self.$uniqueId);
                      page.parentNode.remove(page, e);
                 }, false);
 
@@ -163,7 +163,7 @@ apf.page = function(struct, tagName){
             }
             //#ifdef __DEBUG
             else {
-                apf.console.warn("Missing close button in tab skin");
+                ppc.console.warn("Missing close button in tab skin");
             }
             //#endif
         }
@@ -207,7 +207,7 @@ apf.page = function(struct, tagName){
             .$getLayoutNode("button", "icon", this.$button);
 
         if (node && node.nodeType == 1)
-            apf.skins.setIcon(node, value, this.parentNode.iconPath);
+            ppc.skins.setIcon(node, value, this.parentNode.iconPath);
     };
 
     this.$propHandlers["visible"] = function(value){
@@ -267,7 +267,7 @@ apf.page = function(struct, tagName){
      */
     this.$propHandlers["fake"] = function(value){
         if (this.$ext) {
-            apf.destroyHtmlNode(this.$ext);
+            ppc.destroyHtmlNode(this.$ext);
             this.$int = this.$ext = null;
         }
     };
@@ -437,8 +437,8 @@ apf.page = function(struct, tagName){
             }
             
             //#ifdef __WITH_LAYOUT
-            if (apf.layout && this.relPage)
-                apf.layout.forceResize(this.fake ? this.relPage.$int : this.$int);
+            if (ppc.layout && this.relPage)
+                ppc.layout.forceResize(this.fake ? this.relPage.$int : this.$int);
             //#endif
         }
 
@@ -448,7 +448,7 @@ apf.page = function(struct, tagName){
         // #endif
         
         if (!this.fake) {
-            if (apf.isIE) {
+            if (ppc.isIE) {
                 var cls = this.$ext.className;
                 this.$ext.className = "rnd" + Math.random();
                 this.$ext.className = cls;
@@ -537,25 +537,25 @@ apf.page = function(struct, tagName){
             
             this.$dragging = true;
             
-            var pos = apf.getAbsolutePosition(this.$button, this.parentNode.$ext);
+            var pos = ppc.getAbsolutePosition(this.$button, this.parentNode.$ext);
             var start = htmlEvent.clientX;
             var x = start - pos[0];
-            var t = apf.getAbsolutePosition(this.$button)[1];
+            var t = ppc.getAbsolutePosition(this.$button)[1];
             
             var div = oHtml.cloneNode(true);
             div.style.opacity = 0;
             
             oHtml.style.left = (oHtml.offsetLeft) + "px";
             oHtml.style.top = (oHtml.offsetTop) + "px";
-            oHtml.style.width = (oHtml.offsetWidth - apf.getWidthDiff(oHtml)) + "px";
+            oHtml.style.width = (oHtml.offsetWidth - ppc.getWidthDiff(oHtml)) + "px";
             oHtml.style.position = "absolute";
             
             this.$button.parentNode.insertBefore(div, this.$button);
             
-            var marginWidth = Math.abs(apf.getMargin(div)[0]);
+            var marginWidth = Math.abs(ppc.getMargin(div)[0]);
             
             var mUp, mMove, _self = this, started;
-            apf.addListener(document, "mousemove", mMove = function(e){
+            ppc.addListener(document, "mousemove", mMove = function(e){
                 if (!e) e = event;
                 
                 if (!started) {
@@ -569,7 +569,7 @@ apf.page = function(struct, tagName){
                 oHtml.style.left = "-2000px";
                 
                 var el = document.elementFromPoint(e.clientX, t + 1);
-                var aml = el && apf.findHost(el);
+                var aml = el && ppc.findHost(el);
                 
                 oHtml.style.left = (e.clientX - x) + "px";
                 
@@ -578,7 +578,7 @@ apf.page = function(struct, tagName){
 
                     var obj, onRight = div.offsetLeft > aml.$button.offsetLeft;
                     
-                    var pos = apf.getAbsolutePosition(aml.$button);
+                    var pos = ppc.getAbsolutePosition(aml.$button);
                     if (onRight && aml.$button.offsetWidth - e.clientX + pos[0] < marginWidth)
                         return;
                         
@@ -596,7 +596,7 @@ apf.page = function(struct, tagName){
                         : aml.$button.nextSibling;
                     _self.$lastLeft = aml.$button.offsetLeft;
                     
-                    apf.tween.single(aml.$button, {
+                    ppc.tween.single(aml.$button, {
                         steps   : 20,
                         interval: 10,
                         from    : 0,
@@ -604,7 +604,7 @@ apf.page = function(struct, tagName){
                             ? aml.$button.offsetWidth - marginWidth
                             : -1 * (aml.$button.offsetWidth - marginWidth),
                         type    : "left",
-                        anim    : apf.tween.easeInOutCubic,
+                        anim    : ppc.tween.easeInOutCubic,
                         control : _self.$btnControl[aml.$uniqueId],
                         onstop  : function(){
                             
@@ -625,21 +625,21 @@ apf.page = function(struct, tagName){
                 }
             });
 
-            apf.addListener(document, "mouseup", mUp = function(e){
+            ppc.addListener(document, "mouseup", mUp = function(e){
                 if (!e) e = event;
                 
                 var aml = _self.$lastPosition !== null
-                    ? apf.findHost(_self.$lastPosition || div.nextSibling)
+                    ? ppc.findHost(_self.$lastPosition || div.nextSibling)
                     : null;
                 if (started && aml != _self.nextSibling) {
-                    apf.tween.single(_self.$button, {
+                    ppc.tween.single(_self.$button, {
                         steps   : 20,
                         interval: 10,
                         from    : _self.$button.offsetLeft,
                         to      : _self.$lastLeft || div.offsetLeft,
                         type    : "left",
                         control : _self.$btnControl[_self.$uniqueId] = {},
-                        anim    : apf.tween.easeInOutCubic,
+                        anim    : ppc.tween.easeInOutCubic,
                         onstop  : function(){
                             
                         },
@@ -652,7 +652,7 @@ apf.page = function(struct, tagName){
                             
                             var reorder = _self.nextSibling != aml;
                             var lastNode;
-                            if (!(lastNode = apf.findHost(_self.$button.nextSibling)) || lastNode === _self.parentNode.lastChild)
+                            if (!(lastNode = ppc.findHost(_self.$button.nextSibling)) || lastNode === _self.parentNode.lastChild)
                                 _self.parentNode.appendChild(_self);
                             else
                                 _self.parentNode.insertBefore(_self, aml);
@@ -679,8 +679,8 @@ apf.page = function(struct, tagName){
                     div.parentNode.removeChild(div);
                 }
                 
-                apf.removeListener(document, "mouseup", mUp);
-                apf.removeListener(document, "mousemove", mMove);
+                ppc.removeListener(document, "mouseup", mUp);
+                ppc.removeListener(document, "mousemove", mMove);
             });
         }
         //#endif
@@ -716,7 +716,7 @@ apf.page = function(struct, tagName){
     this.$canLeechSkin = true;
     
     this.addEventListener("prop.class", function(e){
-        apf.setStyleClass(this.$button, e.value, this.$lastClassValueBtn ? [this.$lastClassValueBtn] : null);
+        ppc.setStyleClass(this.$button, e.value, this.$lastClassValueBtn ? [this.$lastClassValueBtn] : null);
         this.$lastClassValueBtn = e.value;
     });
     
@@ -735,30 +735,30 @@ apf.page = function(struct, tagName){
             this.parentNode.$getNewContext("button");
             var elBtn = this.parentNode.$getLayoutNode("button");
             elBtn.setAttribute(this.parentNode.$getOption("main", "select") || "onmousedown",
-                'apf.lookup(' + this.$uniqueId + ').$btnDown(this, event);');
+                'ppc.lookup(' + this.$uniqueId + ').$btnDown(this, event);');
             elBtn.setAttribute("onmouseup", 
-                'apf.lookup(' + this.$uniqueId + ').$btnUp(this)');
-            elBtn.setAttribute("onmouseover", 'var o = apf.lookup('
-                + this.$uniqueId + ').parentNode;if(apf.lookup(' + this.$uniqueId
+                'ppc.lookup(' + this.$uniqueId + ').$btnUp(this)');
+            elBtn.setAttribute("onmouseover", 'var o = ppc.lookup('
+                + this.$uniqueId + ').parentNode;if(ppc.lookup(' + this.$uniqueId
                 + ') != o.$activepage'  + (this.parentNode.overactivetab ? " || true" : "")  + ') o.$setStyleClass(this, "over", null, true);');
-            elBtn.setAttribute("onmouseout", 'var o = apf.lookup('
+            elBtn.setAttribute("onmouseout", 'var o = ppc.lookup('
                 + this.$uniqueId + ');o&&o.$btnOut(this, event);');
 
             //var cssClass = this.getAttribute("class");
             //if (cssClass) {
-            //    apf.setStyleClass(elBtn, cssClass);
+            //    ppc.setStyleClass(elBtn, cssClass);
             //    this.$lastClassValueBtn = cssClass;
             //}
 
-            this.$button = apf.insertHtmlNode(elBtn, this.parentNode.$buttons);
+            this.$button = ppc.insertHtmlNode(elBtn, this.parentNode.$buttons);
             
             var closebtn = this.closebtn = this.getAttribute("closebtn");
-            if ((apf.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !apf.isFalse(closebtn))))
+            if ((ppc.isTrue(closebtn) || ((this.parentNode.buttons || "").indexOf("close") > -1 && !ppc.isFalse(closebtn))))
                 this.$propHandlers["closebtn"].call(this, true);
             
             //#ifdef __ENABLE_TAB_SCALE
 //            if (this.parentNode.$scale) {
-//                var w = apf.getHtmlInnerWidth(this.parentNode.$buttons);
+//                var w = ppc.getHtmlInnerWidth(this.parentNode.$buttons);
 //                var l = this.parentNode.getPages().length;
 //                this.$button.style.width = Math.round(Math.min(w/l, this.parentNode.$maxBtnWidth)) + "px";
 //            }
@@ -815,8 +815,8 @@ apf.page = function(struct, tagName){
         return this.$activeElements;
     }
     //#endif
-}).call(apf.page.prototype = new apf.Presentation());
+}).call(ppc.page.prototype = new ppc.Presentation());
 
-apf.aml.setElement("page", apf.page);
+ppc.aml.setElement("page", ppc.page);
 
 // #endif

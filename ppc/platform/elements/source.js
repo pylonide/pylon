@@ -33,8 +33,8 @@
  * @version     %I%, %G%
  * @since       3.0
  */
-apf.source = function(struct, tagName){
-    this.$init(tagName || "source", apf.NODE_HIDDEN, struct);
+ppc.source = function(struct, tagName){
+    this.$init(tagName || "source", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -44,8 +44,8 @@ apf.source = function(struct, tagName){
         if (this.parentNode.$addSource)
             this.parentNode.$addSource(this);
     });
-}).call(apf.source.prototype = new apf.AmlElement());
+}).call(ppc.source.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("source", apf.source);
+ppc.aml.setElement("source", ppc.source);
 
 // #endif

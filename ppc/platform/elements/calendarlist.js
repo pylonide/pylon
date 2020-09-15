@@ -22,7 +22,7 @@
 // #ifdef __AMLCALENDARLIST || __INC_ALL
 /**
  *
- * @inherits apf.DataAction
+ * @inherits ppc.DataAction
  *
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
@@ -30,8 +30,8 @@
  *
  */
 
-apf.calendarlist      = function(struct, tagName){
-    this.$init(tagName || "calendarlist", apf.NODE_VISIBLE, struct);
+ppc.calendarlist      = function(struct, tagName){
+    this.$init(tagName || "calendarlist", ppc.NODE_VISIBLE, struct);
     
     this.date       = new Date();
     this.strDate    = "";
@@ -69,8 +69,8 @@ apf.calendarlist      = function(struct, tagName){
 
 (function() {
     // #ifdef __WITH_RENAME
-    if (!apf.isIphone)
-        this.implement(apf.Rename);
+    if (!ppc.isIphone)
+        this.implement(ppc.Rename);
     // #endif
     
     // #ifdef __WITH_RENAME
@@ -87,7 +87,7 @@ apf.calendarlist      = function(struct, tagName){
     
     // #ifdef __AMLSUBMITFORM || __INC_ALL
     this.addEventListener("afterselect", function(e) {
-        if (this.hasFeature(apf.__VALIDATION__)) 
+        if (this.hasFeature(ppc.__VALIDATION__)) 
             this.validate(true);
     });
     // #endif
@@ -103,7 +103,7 @@ apf.calendarlist      = function(struct, tagName){
     
     this.$propHandlers["day"] = function(value) {
         this.strDate = value;
-        this.date    = this.getStartDate(apf.date.getDateTime(value, this.dateFormat), this.range);
+        this.date    = this.getStartDate(ppc.date.getDateTime(value, this.dateFormat), this.range);
         this.$updateHours();
     };
     
@@ -130,7 +130,7 @@ apf.calendarlist      = function(struct, tagName){
     this.getStartDate = function(objDate, range) {
         switch(range) {
             case "day":
-                return apf.date.getDateTime(this.strDate, this.dateFormat);
+                return ppc.date.getDateTime(this.strDate, this.dateFormat);
             case "week":
                 return new Date(objDate.getFullYear(), objDate.getMonth(), objDate.getDate() - objDate.getDay(), 0, 0, 0);
             case "month":
@@ -160,22 +160,22 @@ apf.calendarlist      = function(struct, tagName){
         
         
         this.$container.setAttribute("onmousemove",
-            "var o = apf.lookup(" + this.$uniqueId 
+            "var o = ppc.lookup(" + this.$uniqueId 
             + "); if (o.mode == 'add')o.$showNoteField(event);");
         
         this.$oNoteField.setAttribute("onmousemove",
-            "var o = apf.lookup(" + this.$uniqueId 
+            "var o = ppc.lookup(" + this.$uniqueId 
             + "); if (o.mode == 'add')o.$showNoteField(event);");
             
         this.$oNoteField.setAttribute("onmouseout",
-            "var o = apf.lookup(" + this.$uniqueId 
+            "var o = ppc.lookup(" + this.$uniqueId 
             + "); o.$hideNoteField(event);");
         
         this.$oNoteField.setAttribute("onclick",
-            "var o = apf.lookup(" + this.$uniqueId 
+            "var o = ppc.lookup(" + this.$uniqueId 
             + "); if (o.mode == 'add')o.$editNoteField();");
         
-        if (apf.hasCssUpdateScrollbarBug && !this.mode)
+        if (ppc.hasCssUpdateScrollbarBug && !this.mode)
             this.$fixScrollBug();
         
         var _self = this;
@@ -201,11 +201,11 @@ apf.calendarlist      = function(struct, tagName){
         var interval       = this.getInterval("minutes");
         
         this.$oNoteField.style.display = "block";
-        this.$oNoteField.style.height = (intervalHeight * 2 - apf.getDiff(this.$oNoteField)[1]) + "px";
+        this.$oNoteField.style.height = (intervalHeight * 2 - ppc.getDiff(this.$oNoteField)[1]) + "px";
         this.$oNoteField.style.marginTop = -1 * intervalHeight + "px";
         
         var scrollPage = getScrollPage()[1];//333 px
-        var absPosE = apf.getAbsolutePosition(this.$ext)[1];//822
+        var absPosE = ppc.getAbsolutePosition(this.$ext)[1];//822
         var marginTop = parseInt(this.$oNoteField.style.marginTop);
 
         this.$oNoteField.style.top = (cy + scrollPage - absPosE + this.$ext.scrollTop + intervalHeight / 2) + "px";
@@ -277,8 +277,8 @@ apf.calendarlist      = function(struct, tagName){
     };
     
     this.$addModifier = function(xmlNode, oItem, htmlParentNode, beforeNode) {
-        apf.insertHtmlNodes([oItem], this.$container);
-        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
+        ppc.insertHtmlNodes([oItem], this.$container);
+        var htmlNode = ppc.xmldb.findHtmlNode(xmlNode, this);
         
         this.calendarEvents.push({
             xmlNode  : xmlNode, 
@@ -291,7 +291,7 @@ apf.calendarlist      = function(struct, tagName){
     };
     
     this.updateCalendarEvent = function(xmlNode, htmlNode) {
-        var date1          = apf.date.getDateTime(this.$applyBindRule("date", xmlNode), this.dateFormat),
+        var date1          = ppc.date.getDateTime(this.$applyBindRule("date", xmlNode), this.dateFormat),
             date2          = new Date(this.date.getFullYear(), this.date.getMonth(), this.date.getDate(), 0, 0, 0),
             duration       = parseInt(this.$applyBindRule("duration", xmlNode)),
             interval       = this.getInterval("minutes"),
@@ -302,7 +302,7 @@ apf.calendarlist      = function(struct, tagName){
         if (top >= 0 && top < max) {
             htmlNode.style.display = "block";
             htmlNode.style.top     = top + "px";
-            htmlNode.style.height  = ((duration / interval) * intervalHeight) - apf.getDiff(htmlNode)[1] - 1 + "px";
+            htmlNode.style.height  = ((duration / interval) * intervalHeight) - ppc.getDiff(htmlNode)[1] - 1 + "px";
         }
         else {
             htmlNode.style.display = "none";
@@ -376,7 +376,7 @@ apf.calendarlist      = function(struct, tagName){
                 
                 oCaption = this.$getLayoutNode("hour", "caption", oHour);
                 
-                apf.setNodeValue(oCaption, caption);
+                ppc.setNodeValue(oCaption, caption);
             }
             else {
                 this.$getNewContext("hour");
@@ -385,7 +385,7 @@ apf.calendarlist      = function(struct, tagName){
                 if (cssClass)
                     this.$setStyleClass(oHour, cssClass, []);
                 
-                apf.setNodeValue(this.$getLayoutNode("hour", "caption"), caption);
+                ppc.setNodeValue(this.$getLayoutNode("hour", "caption"), caption);
                 nodes.push(oHour);
             }
             
@@ -393,7 +393,7 @@ apf.calendarlist      = function(struct, tagName){
         }
 
         if (nodes.length)
-            apf.insertHtmlNodes(nodes, this.$oHours);
+            ppc.insertHtmlNodes(nodes, this.$oHours);
             
         //Hide unused nodes
         var existingNodes_len = existingNodes.length
@@ -410,11 +410,11 @@ apf.calendarlist      = function(struct, tagName){
     this.$destroy = function() {
         if (this.$ext)
             this.$ext.onclick = null;
-        apf.destroyHtmlNode(this.oDrag);
+        ppc.destroyHtmlNode(this.oDrag);
         this.oDrag = null;
     };
-}).call(apf.calendarlist.prototype = new apf.BaseList());
-apf.aml.setElement("calendarlist", apf.calendarlist);
-apf.aml.setElement("date",         apf.BindingRule);
-apf.aml.setElement("duration",     apf.BindingRule);
+}).call(ppc.calendarlist.prototype = new ppc.BaseList());
+ppc.aml.setElement("calendarlist", ppc.calendarlist);
+ppc.aml.setElement("date",         ppc.BindingRule);
+ppc.aml.setElement("duration",     ppc.BindingRule);
 // #endif

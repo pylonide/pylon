@@ -21,7 +21,7 @@ var Colors = {};
 
 var Regexes = require("ext/colorpicker/colorpicker_regex");
 
-var namedColors = apf.color.colorshex;
+var namedColors = ppc.color.colorshex;
 
 var css = require("text!ext/colorpicker/colorpicker.css");
 var markup = require("text!ext/colorpicker/colorpicker.xml");
@@ -88,13 +88,13 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 ["colorpicker", "false"]
             ]);
             _self.updateSetting();
-            if (apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker")))
+            if (ppc.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker")))
                 _self.setEvents();
         });
     },
 
     updateSetting : function(){
-        this.enabled = apf.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker"));
+        this.enabled = ppc.isTrue(settings.model.queryValue("editors/codewidget/@colorpicker"));
 
         if (this.enabled)
             this.setEvents();
@@ -107,7 +107,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
      * @type {void}
      */
     init: function() {
-        apf.document.documentElement.insertMarkup(markup);
+        ppc.document.documentElement.insertMarkup(markup);
         this.menu = mnuColorPicker;
         this.colorpicker = clrCodeTools;
         var divs = this.menu.$ext.getElementsByTagName("div");
@@ -123,7 +123,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         // add listeners for interaction with the colortools element. This element
         // is propagated with colors used inside a document, which can be selected.
-        apf.addListener(this.colortools, "mousemove", function(e) {
+        ppc.addListener(this.colortools, "mousemove", function(e) {
             var el = e.srcElement || e.target || e.element;
             if (!el || el.nodeType != 1 || el.className.indexOf("color") == -1)
                 return;
@@ -132,18 +132,18 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             for (var i = 0, l = spans.length; i < l; ++i) {
                 cls = spans[i].className;
                 if (spans[i] !== el)
-                    apf.setStyleClass(spans[i], null, ["color_hover"]);
+                    ppc.setStyleClass(spans[i], null, ["color_hover"]);
                 else if (cls.indexOf("color_hover") === -1 && spans[i] === el)
-                    apf.setStyleClass(spans[i], "color_hover", []);
+                    ppc.setStyleClass(spans[i], "color_hover", []);
             }
         });
 
-        apf.addListener(this.colortools, "mousedown", function(e) {
+        ppc.addListener(this.colortools, "mousedown", function(e) {
             var el = e.srcElement || e.target || e.element;
             if (el.nodeType != 1 || el.className.indexOf("color") == -1)
                 return;
 
-            var c = apf.color;
+            var c = ppc.color;
             var cp = _self.colorpicker;
             var hsb = c.hexToHSB(c.fixHex(el.getAttribute("data-color"), true));
             cp.setAttribute("hue", hsb.h);
@@ -165,7 +165,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             if (!e.value) {
                 var a = _self.$activeColor;
                 if (a) {
-                    apf.removeEventListener("keydown", a.listeners.onKeyDown);
+                    ppc.removeEventListener("keydown", a.listeners.onKeyDown);
                     a.editor.removeEventListener("mousewheel", a.listeners.onScroll);
                     a.editor.removeEventListener("mousedown", a.listeners.onScroll);
                     ide.removeEventListener("codetools.cursorchange", a.listeners.onCursorChange);
@@ -192,7 +192,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         this.hooked = true;
 
-        apf.importCssString(css || "");
+        ppc.importCssString(css || "");
 
         // detect and return a list of colors found on a line from an ACE document.
         function detectColors(pos, line) {
@@ -358,7 +358,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
             return;
         if (!exceptions && this.menu && this.menu.visible)
             this.menu.hide();
-        if (exceptions && !apf.isArray(exceptions))
+        if (exceptions && !ppc.isArray(exceptions))
             exceptions = [exceptions];
         var marker, session;
         for (var mid in Colors) {
@@ -385,29 +385,29 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         };
 
         if (typeof namedColors[color] != "undefined")
-            color = apf.color.fixHex(namedColors[color].toString(16));
+            color = ppc.color.fixHex(namedColors[color].toString(16));
         var rgb = color.match(Regexes.isRgb);
         var hsb = color.match(Regexes.isHsl);
         if (rgb && rgb.length >= 3) {
-            ret.rgb = apf.color.fixRGB({
+            ret.rgb = ppc.color.fixRGB({
                 r: rgb[1],
                 g: rgb[2],
                 b: rgb[3]
             });
-            ret.hex = apf.color.RGBToHex(rgb);
+            ret.hex = ppc.color.RGBToHex(rgb);
             ret.type = "rgb";
         }
         else if (hsb && hsb.length >= 3) {
-            ret.hsb = apf.color.fixHSB({
+            ret.hsb = ppc.color.fixHSB({
                 h: hsb[1],
                 s: hsb[2],
                 b: hsb[3]
             });
-            ret.hex = apf.color.HSBToHex(hsb);
+            ret.hex = ppc.color.HSBToHex(hsb);
             ret.type = "hsb";
         }
         else {
-            ret.hex = apf.color.fixHex(color.replace("#", ""), true);
+            ret.hex = ppc.color.fixHex(color.replace("#", ""), true);
             ret.type = "hex";
         }
 
@@ -437,7 +437,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         // hides.
         var onKeyDown, onScroll, onCursorChange;
         var _self = this;
-        apf.addEventListener("keydown", onKeyDown = function(e) {
+        ppc.addEventListener("keydown", onKeyDown = function(e) {
             var a = _self.$activeColor;
 
             if (!cp || !a || !cp.visible)
@@ -587,7 +587,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 + "\\s*,\\s*" + m[3] + "(\\s*,\\s*(?:1|0|0?\\.[0-9]{1,2})\\s*)?\\)", "i");
             if (!line.match(regex))
                 return;
-            var rgb = apf.color.hexToRGB(color);
+            var rgb = ppc.color.hexToRGB(color);
             newLine = line.replace(regex, function(m, prefix, suffix) {
                 return (newColor = prefix + "(" + rgb.r + ", " + rgb.g + ", " + rgb.b + (suffix || "") + ")");
             });
@@ -598,7 +598,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
                 + "\\s*,\\s*" + m[3] + "\\s*\\)", "i");
             if (!line.match(regex))
                 return;
-            var hsb = apf.color.hexToHSB(color);
+            var hsb = ppc.color.hexToHSB(color);
             newLine = line.replace(regex, function() {
                 return (newColor = "hsl(" + parseInt(hsb.h, 10) + ", "
                     + parseInt(hsb.s, 10) + "%, " + parseInt(hsb.b, 10) + "%)");
@@ -648,18 +648,18 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
         var origX, origY;
         var y = origY = coordsEnd.pageY - 24;
         var x = origX = coordsEnd.pageX + 30;
-        var pOverflow = apf.getOverflowParent(cp.$ext);
+        var pOverflow = ppc.getOverflowParent(cp.$ext);
         // we take a margin of 20px on each side of the window:
         var height = menu.$ext.offsetHeight + 10;
         var width = menu.$ext.offsetWidth + 10;
 
         var edgeY = (pOverflow == document.documentElement
-            ? (apf.isIE
+            ? (ppc.isIE
                 ? pOverflow.offsetHeight
                 : (window.innerHeight + window.pageYOffset)) + pOverflow.scrollTop
             : pOverflow.offsetHeight + pOverflow.scrollTop);
         var edgeX = (pOverflow == document.documentElement
-            ? (apf.isIE
+            ? (ppc.isIE
                 ? pOverflow.offsetWidth
                 : (window.innerWidth + window.pageXOffset)) + pOverflow.scrollLeft
             : pOverflow.offsetWidth + pOverflow.scrollLeft);
@@ -690,7 +690,7 @@ module.exports = ext.register("ext/colorpicker/colorpicker", {
 
         // position the arrow
         if (!origArrowTop)
-            origArrowTop = parseInt(apf.getStyle(this.arrow, "top"), 10);
+            origArrowTop = parseInt(ppc.getStyle(this.arrow, "top"), 10);
         if (y != origY)
             this.arrow.style.top = (origArrowTop + (origY - y)) + "px"
         else

@@ -80,11 +80,11 @@
  *   </a:window>
  *
  *   <a:button icon="us.gif"
- *     onclick="apf.language.$loadFrom(%[mdlLang::english]);">
+ *     onclick="ppc.language.$loadFrom(%[mdlLang::english]);">
  *        English
  *   </a:button>
  *   <a:button icon="fr.gif"
- *     onclick="apf.language.$loadFrom(%[mdlLang::french]);">
+ *     onclick="ppc.language.$loadFrom(%[mdlLang::french]);">
  *        French
  *   </a:button>
  * </code>
@@ -92,7 +92,7 @@
  * @default_private
  * @todo get appsettings to understand language
  */
-apf.language = {
+ppc.language = {
     /**
      * Boolean specifying whether read strings are tried to match themselves if no key
      * was gives.
@@ -123,7 +123,7 @@ apf.language = {
         
         if (typeof xmlNode == "string") {
             if (xmlNode.charAt(0) == "<")
-                xmlNode = apf.getXmlDom(xmlNode).documentElement;
+                xmlNode = ppc.getXmlDom(xmlNode).documentElement;
             else
                 return this.loadFrom(xmlNode); //assuming data instruction
         }
@@ -138,13 +138,13 @@ apf.language = {
      * @param {String} instruction  the {@link term.datainstruction data instruction} to load the symbol xml from.
      */
     loadFrom  : function(instruction) {
-        apf.getData(instruction, {callback: function(xmlNode){
+        ppc.getData(instruction, {callback: function(xmlNode){
             if (!xmlNode) 
                 return;
 
             //#ifdef __DEBUG
             if (!xmlNode) {
-                throw new Error(apf.formatErrorString(0, null,
+                throw new Error(ppc.formatErrorString(0, null,
                     "Loading language",
                     "Could not find language symbols using processing \
                      instruction: '" + instruction + "'"));
@@ -153,7 +153,7 @@ apf.language = {
             }
             //#endif
 
-            apf.language.load(xmlNode);
+            ppc.language.load(xmlNode);
         }});
     },
 
@@ -165,7 +165,7 @@ apf.language = {
             prefix += "/" + xmlNode.getAttribute("id");
             this.words[prefix] = xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "";
             
-/* @todo apf3.0 MIKE I think this is something you did
+/* @todo ppc3.0 MIKE I think this is something you did
          var val     = xmlNode.firstChild ? xmlNode.firstChild.nodeValue : "",
                 aliases = xmlNode.getAttribute("aliases");
             this.update(prefix + "/" + xmlNode.getAttribute("id"), val);
@@ -191,7 +191,7 @@ apf.language = {
     redraw : function(){
         var id, fParsed, prop, props, els = this.elements, amlNode;
         for (id in els) {
-            props = els[id], amlNode = apf.all[id];
+            props = els[id], amlNode = ppc.all[id];
             for (prop in props) {
                 fParsed = props[prop];
                 try {
@@ -205,7 +205,7 @@ apf.language = {
                     }
                 }
                 catch(e){
-                    apf.console.warn("[275] Could not execute language update for " 
+                    ppc.console.warn("[275] Could not execute language update for " 
                         + prop + "\n\n" + e.message);
                     continue;
                     //return;
@@ -217,7 +217,7 @@ apf.language = {
         
         var sel, amlNode, bds = this.bindings;
         for (id in bds) {
-            amlNode = apf.all[id];
+            amlNode = ppc.all[id];
             if (amlNode.selection) {
                 sel = amlNode.getSelection();
                 amlNode.reload();

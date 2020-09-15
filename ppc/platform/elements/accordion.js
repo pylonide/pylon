@@ -40,7 +40,7 @@
  *    multiexpand     = "true"
  *    expand          = "click"
  *    startexpanded   = "false"
- *    skin            = "accordion_apf_hor">
+ *    skin            = "accordion_ppc_hor">
  *      <a:bar title="Iron Maiden" expanded="true" icon="icon.png">
  *          <b>Discography</b>
  *          <ul>
@@ -78,7 +78,7 @@
  * #### Example
  *
  * Here, we create a vertical accordion component with two bars. Only one bar can be expanded
- * at a time. Both bars conatins APF components.
+ * at a time. Both bars conatins PPC components.
  * 
  * ```xml
  *  <a:accordion
@@ -116,9 +116,9 @@
  * @version     %I%, %G%
  * @since       2.2
  * @define accordion
- * @class apf.accordion
+ * @class ppc.accordion
  * @container
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  */
 /**
  * @attribute {String} animtype   Sets or gets an animation effect for slide in and slide out.
@@ -152,11 +152,11 @@
  * @attribute {Boolean} [startexpanded=false]   Sets or gets whether all the bars should expand on load. 
  * 
  */ 
-apf.accordion = function(struct, tagName){
-    this.$init(tagName || "accordion", apf.NODE_VISIBLE, struct);
+ppc.accordion = function(struct, tagName){
+    this.$init(tagName || "accordion", ppc.NODE_VISIBLE, struct);
     
-    this.$animtype1      = apf.tween.NORMAL;
-    this.$animtype2      = apf.tween.NORMAL;
+    this.$animtype1      = ppc.tween.NORMAL;
+    this.$animtype2      = ppc.tween.NORMAL;
     this.animdelay       = 10;
     this.hoverdelay      = 500;
     this.multiexpand     = true;
@@ -164,9 +164,9 @@ apf.accordion = function(struct, tagName){
     this.startexpanded   = true;
 
     this.$animStep = {};
-    this.$animStep[apf.tween.NORMAL]  = 5;
-    this.$animStep[apf.tween.EASEIN]  = 10;
-    this.$animStep[apf.tween.EASEOUT] = 10;
+    this.$animStep[ppc.tween.NORMAL]  = 5;
+    this.$animStep[ppc.tween.EASEIN]  = 10;
+    this.$animStep[ppc.tween.EASEOUT] = 10;
     
     /*
      * Keeps all bars
@@ -193,9 +193,9 @@ apf.accordion = function(struct, tagName){
     this.$focussable     = false;
     
     this.animType = {
-        "normal"  : apf.tween.NORMAL,
-        "easein"  : apf.tween.EASEIN,
-        "easeout" : apf.tween.EASEOUT,
+        "normal"  : ppc.tween.NORMAL,
+        "easein"  : ppc.tween.EASEIN,
+        "easeout" : ppc.tween.EASEOUT,
         "none"    : "none"
     }
     
@@ -335,7 +335,7 @@ apf.accordion = function(struct, tagName){
                 var bar2 = this.bars[id2];
                 this.$setStyleClass(bar2.htmlNode, "", ["active"]);
                 
-                apf.tween.multi(bar.htmlBody, {
+                ppc.tween.multi(bar.htmlBody, {
                     steps    : this.$animStep[this.$animtype1],
                     anim     : this.$animtype1,
                     interval : this.animdelay,
@@ -379,7 +379,7 @@ apf.accordion = function(struct, tagName){
             }
             else {
                 //var startSH = bar.htmlBody.scrollHeight;
-                apf.tween.single(bar.htmlBody, {
+                ppc.tween.single(bar.htmlBody, {
                     steps    : this.$animStep[this.$animtype1],
                     type     : this.$dir == "vertical" ? "scrollheight" : "scrollwidth",
                     from     : 0,
@@ -422,7 +422,7 @@ apf.accordion = function(struct, tagName){
 
         var bar = this.bars[id];
 
-        apf.setStyleClass(bar.htmlNode, "", ["active"]);
+        ppc.setStyleClass(bar.htmlNode, "", ["active"]);
 
         if (this.$animtype2 == "none") {
             bar.htmlBody.style.display = "none";
@@ -435,7 +435,7 @@ apf.accordion = function(struct, tagName){
         }
         else {
             var _self = this;
-            apf.tween.single(bar.htmlBody, {
+            ppc.tween.single(bar.htmlBody, {
                 steps    : this.$animStep[this.$animtype2],
                 type     : this.$dir == "vertical" 
                                ? "scrollheight" 
@@ -548,8 +548,8 @@ apf.accordion = function(struct, tagName){
                     if (!htmlTitle && !htmlBody) {
                         return;
                     }
-                    apf.setUniqueHtmlId(htmlTitle);
-                    apf.setUniqueHtmlId(htmlBody);
+                    ppc.setUniqueHtmlId(htmlTitle);
+                    ppc.setUniqueHtmlId(htmlBody);
 
                     //Set caption
                     var caption = amlNode.getAttribute("title");
@@ -645,7 +645,7 @@ apf.accordion = function(struct, tagName){
     this.$destroy = function() {
         
     };
-}).call(apf.accordion.prototype = new apf.Presentation());
+}).call(ppc.accordion.prototype = new ppc.Presentation());
 
-apf.aml.setElement("accordion", apf.accordion);
+ppc.aml.setElement("accordion", ppc.accordion);
 // #endif

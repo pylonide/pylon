@@ -28,7 +28,7 @@
  * @version     %I%, %G%
  * @since       3.0
  */
-apf.geolocation = (function() {
+ppc.geolocation = (function() {
     var bb_successCallback,
         bb_errorCallback,
         bb_blackberryTimeout_id = -1,
@@ -208,7 +208,7 @@ apf.geolocation = (function() {
         }
         catch (e){
             //#ifdef __DEBUG
-            apf.console.error("GeoLocation error: " + e.toString());
+            ppc.console.error("GeoLocation error: " + e.toString());
             //#endif
 
             // fallback to Google API:
@@ -216,7 +216,7 @@ apf.geolocation = (function() {
             pub.getCurrentPosition = function(successCallback, errorCallback, options) {
                 if (cache)
                     return successCallback(cache);
-                apf.include((document.location.protocol == "https:" ? "https:" : "http:")
+                ppc.include((document.location.protocol == "https:" ? "https:" : "http:")
                     + "//www.google.com/jsapi", false, null, null, function() {
                         if (typeof google == UNDEF
                           || typeof google.loader == UNDEF

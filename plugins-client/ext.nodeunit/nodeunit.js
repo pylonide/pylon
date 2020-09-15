@@ -42,13 +42,13 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
         var _self = this;
 
         this.nodes.push(
-            mnuFilter.insertBefore(new apf.item({
+            mnuFilter.insertBefore(new ppc.item({
                 type    : "radio",
                 value   : "nodeunit",
                 caption : "Node Unit Tests"
-            }), mnuFilter.getElementsByTagNameNS(apf.ns.aml, "divider")[1]),
+            }), mnuFilter.getElementsByTagNameNS(ppc.ns.aml, "divider")[1]),
 
-            mnuTestNew.appendChild(new apf.item({
+            mnuTestNew.appendChild(new ppc.item({
                 caption : "Node Unit Test",
                 onclick : function(){
                     _self.createAndOpenTest();
@@ -57,7 +57,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
         );
 
         filelist.getFileList(false, function(data, state){
-            if (state != apf.SUCCESS)
+            if (state != ppc.SUCCESS)
                 return;
 
             var tests = data.replace(/^\./gm, "").match (/^.*_test\.js$|^(node_modules\/[^\/]*\/)?\/test\/.*\.js$/gm);
@@ -104,9 +104,9 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             var path = node.getAttribute("path");
             var fileNode = mdlTests.queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
             if (!fileNode) {
-                fileNode = apf.xmldb.getCleanCopy(node);
+                fileNode = ppc.xmldb.getCleanCopy(node);
                 fileNode.setAttribute("type", "nodeunit");
-                apf.xmldb.appendChild(testpanel.findParent(path), fileNode);
+                ppc.xmldb.appendChild(testpanel.findParent(path), fileNode);
             }
         });
 
@@ -181,7 +181,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
             });
 
             function completed(){
-                var nodes = apf.queryNodes(fileNode, "test[@status=0 or error]");
+                var nodes = ppc.queryNodes(fileNode, "test[@status=0 or error]");
 
                 if (_self.stopping) {
                     testpanel.setError(fileNode, "Test Cancelled");
@@ -227,7 +227,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                             var doc  = fileNode.ownerDocument;
                             testNode = doc.createElement("test");
                             testNode.setAttribute("name", match[3]);
-                            apf.xmldb.appendChild(fileNode, testNode);
+                            ppc.xmldb.appendChild(fileNode, testNode);
                         }
                         //fileNode.addNode();
                         testpanel.setError(testNode, "Test Failed");
@@ -237,7 +237,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                         var errorNode = testNode.ownerDocument
                             .createElement("error");
                         errorNode.setAttribute("name", match[4]);
-                        apf.xmldb.appendChild(testNode, errorNode);
+                        ppc.xmldb.appendChild(testNode, errorNode);
 
                         if (match[2] == match[1])
                             completed();
@@ -254,7 +254,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                             var doc  = fileNode.ownerDocument;
                             testNode = doc.createElement("test");
                             testNode.setAttribute("name", match[3]);
-                            apf.xmldb.appendChild(fileNode, testNode);
+                            ppc.xmldb.appendChild(fileNode, testNode);
                         }
                         testpanel.setPass(testNode);
                         testpanel.setLog(fileNode, "completed test " + parseInt(match[2], 10) +
@@ -356,7 +356,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
 
     reloadTestFile : function(xmlNode) {
         fs.readFile(xmlNode.getAttribute("path"), function(data, state, extra){
-            if (state == apf.SUCCESS) {
+            if (state == ppc.SUCCESS) {
                 var node, found = [];
 
                 var ast = parser.parse(data);
@@ -374,7 +374,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                                 node = doc.createElement("test");
                                 node.setAttribute("name", name);
 
-                                apf.xmldb.appendChild(xmlNode, node);
+                                ppc.xmldb.appendChild(xmlNode, node);
                             }
 
                             found.push(node);
@@ -385,7 +385,7 @@ module.exports = ext.register("ext/nodeunit/nodeunit", {
                 var nodes = xmlNode.childNodes;
                 for (var i = nodes.length - 1; i >= 0; i--) {
                     if (found.indexOf(nodes[i]) == -1)
-                        apf.xmldb.removeNode(nodes[i]);
+                        ppc.xmldb.removeNode(nodes[i]);
                 }
             }
         });

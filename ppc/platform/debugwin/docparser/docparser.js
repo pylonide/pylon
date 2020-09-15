@@ -16,7 +16,7 @@ var docparser = {
     outputXmlSchema : false
 };
 
-//apf.onload = function() {
+//ppc.onload = function() {
     docparser.generate = function(srcString, outputPathObj) {
         if (!this.outputXml && !this.outputHtml && !this.outputNav && !this.outputPropedit && !this.outputXmlSchema) {
             alert("no output specified");
@@ -42,14 +42,14 @@ var docparser = {
             };
             
             // read .js file
-            var http = new apf.http();
+            var http = new ppc.http();
             
             // parse content of file
             //file:///C:/development/javeline/docparser/o3docs.js
-            //file:///C:/development/javeline/docparser/apf_genapi_debug.js
-            //file:///C:/development/javeline/docparser/apf_debug.js
+            //file:///C:/development/javeline/docparser/ppc_genapi_debug.js
+            //file:///C:/development/javeline/docparser/ppc_debug.js
             
-            var content = srcString || "file:///C:/development/javeline/docparser/apf_debug.js";
+            var content = srcString || "file:///C:/development/javeline/docparser/ppc_debug.js";
             http.get(content, {
                 callback: function(str){
                     // get parsed tree
@@ -69,7 +69,7 @@ var docparser = {
                         
                         // Methods, Classes, Baseclasses
                         // xx = function
-                        // apf.xx.prototype.xx = function(){
+                        // ppc.xx.prototype.xx = function(){
                         else if (t[i + 2] == "function" && t[i - 1] == "=") {
                             if (t[i-7].indexOf(".propHandlers") == -1)
                                 addFunc(t, i, docTree, docTree, t[i + 8]);
@@ -136,7 +136,7 @@ var docparser = {
                                 // xx = {}
                                 // xx.prototype = {}
                                 // xx.prototype.methodName = {}
-                                // apf.GuiElement.propHandlers = {}
+                                // ppc.GuiElement.propHandlers = {}
                                 else if (t[i + 5][j + 2] == "{") {
                                     // if prototype has ".prototype" in name
                                     if (t[i - 1].indexOf(".prototype") > -1) {
@@ -153,8 +153,8 @@ var docparser = {
                                         if (docTree.object[t[i-4]]) {
                                             updObj(t, i + 3, docTree.object[t[i-4]], t[i + 5]);
                                         }                            
-                                        else if (t[i-1] == "apf.GuiElement.propHandlers") {
-                                            o = docTree.baseclass["apf.GuiElement"];
+                                        else if (t[i-1] == "ppc.GuiElement.propHandlers") {
+                                            o = docTree.baseclass["ppc.GuiElement"];
                                             o.parseCode(t[i + 5]);
                                         }
                                         //else create new object
@@ -165,14 +165,14 @@ var docparser = {
                                 }
                             }
                             
-                            //xx = apf.extend({})
-                            else if (t[i + 5] == "apf.extend" && t[i + 6] == 2) {
+                            //xx = ppc.extend({})
+                            else if (t[i + 5] == "ppc.extend" && t[i + 6] == 2) {
                                 j = loopToNextChild(t[i + 8], 0);
                                 
                                 if (t[i + 8][j + 3] == 2) {
                                     o = addObj(t, i + 3, docTree, docTree, t[i + 8][j + 5]);
                                     
-                                    // xx = apf.extend({}, apf.xx);
+                                    // xx = ppc.extend({}, ppc.xx);
                                     if (t[i + 8][j + 9] && t[i + 8][j + 9] == 5) {
                                         var source = getContext(docTree, t[i + 8][j + 11]);
                                         
@@ -192,7 +192,7 @@ var docparser = {
                                 name = t[i - 1].substr(0, t[i - 1].length - ".prototype".length);
                                 o = getContext(docTree, name);
 
-                                // xxx.prototype = new apf.Class()
+                                // xxx.prototype = new ppc.Class()
                                 if (t[i + 6] == 5) {
                                     var prototypeName = (typeof t[i + 8] == "string") ? t[i + 8] : "";
 
@@ -200,7 +200,7 @@ var docparser = {
                                         if (o.type == "method") {
                                             o.moveTo("class");
                                         }
-                                        if (prototypeName.indexOf("apf.") > -1) 
+                                        if (prototypeName.indexOf("ppc.") > -1) 
                                             o.prototype = prototypeName;
                                     }
                                     else {
@@ -218,7 +218,7 @@ var docparser = {
                                 }
                             }
 
-                            // apf.xx.prototype.property = "xxx";
+                            // ppc.xx.prototype.property = "xxx";
                             else if (t[i - 1].indexOf(".prototype") > -1 && !ignorePar[t[i - 1].split(".")[0]] && t[i + 5].indexOf(".prototype") == -1) {
                                 name = (t[i - 6] == 2) ? t[i - 7] + t[i - 4][2] + t[i - 4][5] + t[i - 4][8] : t[i - 1];
                                 
@@ -251,7 +251,7 @@ var docparser = {
                                 o = docTree["class"][name] || docTree.baseclass[name];
                             }
 
-                            if (prototypeName.indexOf("apf.") > -1) 
+                            if (prototypeName.indexOf("ppc.") > -1) 
                                 o.prototype = prototypeName;
 
                             if (!o)
@@ -263,7 +263,7 @@ var docparser = {
                         }
                         
                         // set namespace
-                        //apf.setNamespace("http://ajax.org/2005/aml", apf.aml);
+                        //ppc.setNamespace("https://github.com/pylonide/pylon", ppc.aml);
                         else if (t[i + 2].indexOf("setNamespace") > -1){
                             if (t[i + 5][11]) {
                                 if (t[i + 5][11].indexOf(".") > -1)
@@ -278,7 +278,7 @@ var docparser = {
                         
                         // setElement()
                         else if (t[i + 2].indexOf(".setElement") > -1 && t[i + 3] == 2 && t[i + 5][2] == "(") {
-                            if(t[i + 2].substr(0, 7) != "apf.aml") continue;
+                            if(t[i + 2].substr(0, 7) != "ppc.aml") continue;
                             o = getContext(docTree, t[i + 5][11]);
 
                             name = (t[i + 5][5].charAt(0) == '"' && t[i + 5][5].charAt(t[i + 5][5].length - 1) == '"') ? t[i + 5][5].substr(1, t[i + 5][5].length - 2) : t[i + 5][5];
@@ -288,7 +288,7 @@ var docparser = {
                             // context found
                             if (o) {
                                 //var className = t[i + 2].substr(0, t[i + 2].length - ".setElement".length);
-                                //className = (className.substr(0, 4) == "apf.") ? className.substr(4) : className;
+                                //className = (className.substr(0, 4) == "ppc.") ? className.substr(4) : className;
                                 
                                 if (!o.elementNames) 
                                     o.elementNames = [];
@@ -361,7 +361,7 @@ var docparser = {
                     */
                     // doctree generated, nothing parsed yet
 
-                    apf.dispatchEvent("docgen_message", {message: "docTree generated..."});
+                    ppc.dispatchEvent("docgen_message", {message: "docTree generated..."});
                     
                     if (docparser.outputXml || docparser.outputHtml || docparser.outputNav)
                         parse_refguide_xml(docTree, outputPathObj);
@@ -371,7 +371,7 @@ var docparser = {
             });
         }
         else {
-            apf.dispatchEvent("docgen_message", {message: "Using previously generated docTree..."});
+            ppc.dispatchEvent("docgen_message", {message: "Using previously generated docTree..."});
 
             if (docparser.outputXml || docparser.outputHtml || docparser.outputNav)
                 parse_refguide_xml(docTree, outputPathObj);
@@ -381,7 +381,7 @@ var docparser = {
         }
 
         
-        //apf.dispatchEvent("docgen_complete");
+        //ppc.dispatchEvent("docgen_complete");
     };
 //};
 
@@ -430,17 +430,17 @@ function getContext(docTree, str) {
 };
 
 function getName(str, obj) {
-    // apf.xxx.xxx
+    // ppc.xxx.xxx
     var words = str.split(".");
 
-    // set apf namespace
-    var namespace = (words[0] == "apf") ? words.shift() : "";
+    // set ppc namespace
+    var namespace = (words[0] == "ppc") ? words.shift() : "";
 
     var name;
     
     // ends with ".prototype"
     if (words.indexOf("prototype") == words.length - 1) {
-        // @todo apf.AmlComment.prototype.serialize
+        // @todo ppc.AmlComment.prototype.serialize
         words.pop();
         name = words.pop();
     }
@@ -483,10 +483,10 @@ function getName(str, obj) {
 
 // add new function
 // class, baseclass, method
-function addFunc(t, i, docTree, context, code, apf) {
+function addFunc(t, i, docTree, context, code, ppc) {
     var o = new oFunc(t, i, context);
 
-    if (apf) o.namespace = "apf";
+    if (ppc) o.namespace = "ppc";
 
     // get name, clone object
     if (!o.process(t, i))
@@ -520,11 +520,11 @@ function addFunc(t, i, docTree, context, code, apf) {
 }
 
 // add new object
-// params: t: tree, i: tree line, docTree, parseTree: line to parse, apf: object of apf 
-function addObj(t, i, docTree, context, code, apf) {
+// params: t: tree, i: tree line, docTree, parseTree: line to parse, ppc: object of ppc 
+function addObj(t, i, docTree, context, code, ppc) {
     var o = new oObject(t, i, context);
 	
-    if (apf) o.namespace = "apf";
+    if (ppc) o.namespace = "ppc";
     
     // get name, clone object
     if (!o.process(t, i))
@@ -562,7 +562,7 @@ function addObj(t, i, docTree, context, code, apf) {
 }
 
 // update existing object
-// params: t: tree, i: tree line, docTree, parseTree: line to parse, apf: object of apf 
+// params: t: tree, i: tree line, docTree, parseTree: line to parse, ppc: object of ppc 
 function updObj(t, i, o, code) {
     // get name, clone object
     if (!o.process(t, i))

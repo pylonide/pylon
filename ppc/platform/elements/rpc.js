@@ -238,8 +238,8 @@
  * @since       0.4
  * @default_private
  */
-apf.rpc = function(struct, tagName){
-    this.$init(tagName || "rpc", apf.NODE_HIDDEN, struct);
+ppc.rpc = function(struct, tagName){
+    this.$init(tagName || "rpc", ppc.NODE_HIDDEN, struct);
 
     if (!this.supportMulticall)
         this.multicall = false;
@@ -252,7 +252,7 @@ apf.rpc = function(struct, tagName){
     this.useHTTP         = true;
     this.namedArguments  = false;
 
-    this["route-server"] = apf.host + "/cgi-bin/rpcproxy.cgi";
+    this["route-server"] = ppc.host + "/cgi-bin/rpcproxy.cgi";
     this.autoroute       = false;
 
     this.$auth           = false;
@@ -270,9 +270,9 @@ apf.rpc = function(struct, tagName){
         if (!value)
             return;
         
-        if (!apf[value]) {
+        if (!ppc[value]) {
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(1025, null, "Teleport baseclass",
+            throw new Error(ppc.formatErrorString(1025, null, "Teleport baseclass",
                 "Could not find Ajax.org Teleport RPC Component '" + value + "'", this));
             //#endif
             return;
@@ -280,7 +280,7 @@ apf.rpc = function(struct, tagName){
         var _self = this;
         // use a timeout, so that these protocols may override default methods
         // inherited from http.js and the like.
-        $setTimeout(function() {_self.implement(apf[value]);})
+        $setTimeout(function() {_self.implement(ppc[value]);})
     };
 
     this.$propHandlers["type"] = function(value) {
@@ -303,7 +303,7 @@ apf.rpc = function(struct, tagName){
     this.setCallback = function(name, func){
         // #ifdef __DEBUG
         if (!this.$methods[name])
-            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
+            throw new Error(ppc.formatErrorString(0, this, "Teleport RPC",
                 "Trying to set callback: method not found."));
         // #endif
             
@@ -324,7 +324,7 @@ apf.rpc = function(struct, tagName){
     this.setUrl = function(name, url) {
         // #ifdef __DEBUG
         if (!this.$methods[name])
-            throw new Error(apf.formatErrorString(0, this, "Teleport RPC",
+            throw new Error(ppc.formatErrorString(0, this, "Teleport RPC",
                 "Trying to set callback: method not found."));
         // #endif
 
@@ -345,17 +345,17 @@ apf.rpc = function(struct, tagName){
             value = nodes[i].value;
 
             if (value) {
-                value = apf.parseExpression(value);
+                value = ppc.parseExpression(value);
             }
             else {
                 value = args[j++];
 
-                if (apf.isNot(value) && nodes[i]["default"])
-                    value = apf.parseExpression(nodes[i]["default"]);
+                if (ppc.isNot(value) && nodes[i]["default"])
+                    value = ppc.parseExpression(nodes[i]["default"]);
             }
 
             //Encode string optionally
-            value = apf.isTrue(nodes[i].encoded)
+            value = ppc.isTrue(nodes[i].encoded)
                 ? encodeURIComponent(value)
                 : value;
 
@@ -377,7 +377,7 @@ apf.rpc = function(struct, tagName){
         else {
             f = node.callback;
         }
-        return f || apf.K;
+        return f || ppc.K;
     }
 
     this.call = function(name, args, options){
@@ -414,18 +414,18 @@ apf.rpc = function(struct, tagName){
         function pCallback(data, state, extra){
             extra.data = data;
 
-            if (state != apf.SUCCESS)
+            if (state != ppc.SUCCESS)
                 callback.call(_self, null, state, extra);
             else if (_self.isValid && !_self.isValid(extra))
-                callback.call(_self, null, apf.ERROR, extra);
+                callback.call(_self, null, ppc.ERROR, extra);
             else
                 callback.call(_self, _self.unserialize(extra.data), state, extra);
         }
 
         // Send the request
         var auth,
-            url  = apf.getAbsolutePath(this.baseurl || apf.config.baseurl, this.url),
-            o    = apf.extend({
+            url  = ppc.getAbsolutePath(this.baseurl || ppc.config.baseurl, this.url),
+            o    = ppc.extend({
                 callback        : pCallback,
                 async           : node.async,
                 userdata        : node.userdata,
@@ -464,14 +464,14 @@ apf.rpc = function(struct, tagName){
     this.purge = function(callback, userdata, async, extradata){
         //#ifdef __DEBUG
         if (!this.stack[this.url] || !this.stack[this.url].length) {
-            throw new Error(apf.formatErrorString(0, null, "Executing a multicall", 
+            throw new Error(ppc.formatErrorString(0, null, "Executing a multicall", 
                 "No RPC calls where executed before calling purge()."));
         }
         //#endif
 
         // Get Data
         var data = this.createMessage("multicall", [this.stack[this.url]]), //function of module
-            url  = apf.getAbsolutePath(this.baseurl || apf.config.baseurl, this.url);
+            url  = ppc.getAbsolutePath(this.baseurl || ppc.config.baseurl, this.url);
         if (extradata) {
             for (var vars = [], i = 0; i < extradata.length; i++) {
                 vars.push(encodeURIComponent(extradata[i][0]) + "="
@@ -512,7 +512,7 @@ apf.rpc = function(struct, tagName){
     this.$addMethod = function(amlNode){
         if (amlNode.localName != "method"){
             // #ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Parsing RPC Teleport node",
                 "Found element which is not a method", this));
             // #endif
@@ -584,7 +584,7 @@ apf.rpc = function(struct, tagName){
         //Set information later neeed
         //#ifdef __DEBUG
         if (!this[method])
-            throw new Error(apf.formatErrorString(0, null, "Saving/Loading data",
+            throw new Error(ppc.formatErrorString(0, null, "Saving/Loading data",
                 "Could not find RPC function by name '" + method + "' in data "
               + "instruction '" + options.instruction + "'"));
         //#endif
@@ -608,13 +608,13 @@ apf.rpc = function(struct, tagName){
         }
     
         //#ifdef __WITH_OFFLINE
-        if (typeof apf.offline != "undefined" && !apf.offline.onLine)
+        if (typeof ppc.offline != "undefined" && !ppc.offline.onLine)
             return;
         //#endif
     
         //Call callback for sync calls
         if (!this.multicall && !props.async && callback)
-            callback(retvalue, apf.SUCCESS, {tpModule: this});
+            callback(retvalue, ppc.SUCCESS, {tpModule: this});
     };
     // #endif
 
@@ -639,10 +639,10 @@ apf.rpc = function(struct, tagName){
          this['postform'].apply(this, args);
      };
      */
-}).call(apf.rpc.prototype = new apf.Teleport());
+}).call(ppc.rpc.prototype = new ppc.Teleport());
 
-apf.config.$inheritProperties["baseurl"] = 1;
+ppc.config.$inheritProperties["baseurl"] = 1;
 
-apf.aml.setElement("rpc", apf.rpc);
+ppc.aml.setElement("rpc", ppc.rpc);
 
 // #endif

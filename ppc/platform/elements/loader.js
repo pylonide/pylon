@@ -28,8 +28,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.loader = function(){
-    this.$init("loader", apf.NODE_HIDDEN);
+ppc.loader = function(){
+    this.$init("loader", ppc.NODE_HIDDEN);
     
     this.show = function(){
         this.$ext.style.display = "block";
@@ -44,21 +44,21 @@ apf.loader = function(){
         if (!(pHtmlNode = this.parentNode.$int)) 
             return;
 
-        this.$ext = apf.insertHtmlNode(null, pHtmlNode, null, (this.$aml 
+        this.$ext = ppc.insertHtmlNode(null, pHtmlNode, null, (this.$aml 
             ? (this.$aml.serialize ? this.$aml.serialize() : this.$aml.xml)
             : this.serialize()).replace(/^<[^>]*>\s*|\s*<[^>]*>$/g, ""));
         
-        if (!apf.loaded) {
+        if (!ppc.loaded) {
             var _self = this;
-            if(apf.config.loaderAnimIndicator)
+            if(ppc.config.loaderAnimIndicator)
                 _self.animateLoader(10);
-            apf.addEventListener("load", function(){
-                if (apf.isTrue(apf.config.autoHideLoading)) {
-                    apf.queue.empty();
+            ppc.addEventListener("load", function(){
+                if (ppc.isTrue(ppc.config.autoHideLoading)) {
+                    ppc.queue.empty();
                     _self.hide();
                 }
                 else {
-                    if(apf.config.loaderAnimIndicator)
+                    if(ppc.config.loaderAnimIndicator)
                         _self.animateLoader(20);
                 }
             });
@@ -75,29 +75,29 @@ apf.loader = function(){
      */
     this.animateLoader = function(step){      
         var _self    = this,
-            loaderEl = document.getElementById(apf.config.loaderAnimIndicator);
+            loaderEl = document.getElementById(ppc.config.loaderAnimIndicator);
         if(!loaderEl)
             return;
             
-        step = apf.config.loaderWidth * (step/100);
+        step = ppc.config.loaderWidth * (step/100);
 
         var fromStep = this.lastLoaderStep,
             toStep   = this.lastLoaderStep + step;
         
         this.lastLoaderStep = toStep;
 
-        if(toStep > apf.config.loaderWidth)
-            toStep = apf.config.loaderWidth;
+        if(toStep > ppc.config.loaderWidth)
+            toStep = ppc.config.loaderWidth;
 
-        apf.tween.single(document.getElementById('animatedLoader'), {
+        ppc.tween.single(document.getElementById('animatedLoader'), {
             steps    : 5,
-            anim     : apf.tween.EASEOUT,
+            anim     : ppc.tween.EASEOUT,
             type     : "width",
             from     : fromStep,
             to       : toStep,
             onfinish : function() {
-                if(toStep >= apf.config.loaderWidth) {
-                    apf.queue.empty();
+                if(toStep >= ppc.config.loaderWidth) {
+                    ppc.queue.empty();
                     _self.hide();
                 }
             }
@@ -105,8 +105,8 @@ apf.loader = function(){
     };
 };
 
-apf.loader.prototype = new apf.AmlElement();
+ppc.loader.prototype = new ppc.AmlElement();
 
-apf.aml.setElement("loader", apf.loader);
+ppc.aml.setElement("loader", ppc.loader);
 
 // #endif

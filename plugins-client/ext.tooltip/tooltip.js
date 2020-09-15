@@ -86,13 +86,13 @@ module.exports = ext.register("ext/tooltip/tooltip", {
         if (options.control)
             options.control.stop();
 
-        apf.setOpacity(this, 1);
+        ppc.setOpacity(this, 1);
     },
 
     $ttmouseout : function(e){
         var tooltip = require("ext/tooltip/tooltip");
 
-        //if (apf.isChildOf(this, e.target, true))
+        //if (ppc.isChildOf(this, e.target, true))
         //  return;
 
         tooltip.$mouseout.call(this.companion);
@@ -122,7 +122,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
             if (options.getPosition)
                 pos = options.getPosition();
             else {
-                var p = apf.getAbsolutePosition(_self);
+                var p = ppc.getAbsolutePosition(_self);
                 pos = [(p[0] - ((options.tooltip.offsetWidth - _self.offsetWidth)/2)),
                        (p[1])];
             }
@@ -133,12 +133,12 @@ module.exports = ext.register("ext/tooltip/tooltip", {
                 (options.tooltip.firstElementChild || options.tooltip).innerHTML = options.message;
 
             if (options.animate !== false) {
-                apf.tween.single(options.tooltip,
+                ppc.tween.single(options.tooltip,
                     {type: "fade", from: 0, to : 1, steps: 10, interval: 0,
                      control: options.control = {}});
             }
             else {
-                apf.setOpacity(options.tooltip, 1);
+                ppc.setOpacity(options.tooltip, 1);
             }
         }, options.timeout);
     },
@@ -157,7 +157,7 @@ module.exports = ext.register("ext/tooltip/tooltip", {
                 options.control.stop();
 
 //            if (options.animate !== false) {
-                apf.tween.single(options.tooltip, {
+                ppc.tween.single(options.tooltip, {
                      type: "fade", from: 1, to : 0, steps: 10, interval: 0,
                      control: options.control = {},
                      onfinish: function(){ options.tooltip.style.display = "none";}

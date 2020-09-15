@@ -28,12 +28,12 @@
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:model id="mdl">
  *         <data>
  *             <news name="Ajax" icon="note.png" count="54"></news>
- *             <news name="Ajax.org Platform" icon="note_b.png" count="3237">
+ *             <news name="Pylon Platform Code" icon="note_b.png" count="3237">
  *             </news>
  *             <news name="Android" icon="note.png" count="2"></news>
  *             <news name="Apple" icon="note.png" count="11"></news>
@@ -73,7 +73,7 @@
  * </a:application>
  * ```
  *
- * @class apf.datagrid
+ * @class ppc.datagrid
  * @define datagrid
  * @selection
  *
@@ -82,10 +82,10 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Cache
- * @inherits apf.StandardBinding
- * @inherits apf.Rename
- * @inherits apf.MultiselectBinding
+ * @inherits ppc.Cache
+ * @inherits ppc.StandardBinding
+ * @inherits ppc.Rename
+ * @inherits ppc.MultiselectBinding
  *
  */
 /**
@@ -94,8 +94,8 @@
 /**
  *  @binding description Determines the text that is displayed under the expanded row.
  */
-apf.datagrid = function(struct, tagName){
-    this.$init(tagName || "datagrid", apf.NODE_VISIBLE, struct);
+ppc.datagrid = function(struct, tagName){
+    this.$init(tagName || "datagrid", ppc.NODE_VISIBLE, struct);
     
     this.$headings       = [],
     this.$cssRules       = []; //@todo Needs to be reset;
@@ -113,7 +113,7 @@ apf.datagrid = function(struct, tagName){
 
     //#ifdef __WITH_DATAACTION
     this.implement(
-        apf.DataAction
+        ppc.DataAction
     );
     //#endif
 
@@ -154,8 +154,8 @@ apf.datagrid = function(struct, tagName){
     this.$mode = 0;
     this.$propHandlers["mode"] = function(value){
         if ("check|radio".indexOf(value) > -1) {
-            if (!this.hasFeature(apf.__MULTICHECK__))
-                this.implement(apf.MultiCheck);
+            if (!this.hasFeature(ppc.__MULTICHECK__))
+                this.implement(ppc.MultiCheck);
             
             this.addEventListener("afterrename", $afterRenameMode); //what does this do?
             
@@ -170,7 +170,7 @@ apf.datagrid = function(struct, tagName){
         }
     };
     
-    //@todo apf3.0 retest this completely
+    //@todo ppc3.0 retest this completely
     function $afterRenameMode(){
     }
     
@@ -294,10 +294,10 @@ apf.datagrid = function(struct, tagName){
                     return false;
                     
                 node = this.$tempsel 
-                    ? apf.xmldb.getNode(this.$tempsel) 
+                    ? ppc.xmldb.getNode(this.$tempsel) 
                     : selXml;
 
-                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin    = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 hasScroll = oInt.scrollHeight > oInt.offsetHeight;
                 items     = Math.floor((oInt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
@@ -309,12 +309,12 @@ apf.datagrid = function(struct, tagName){
                 else
                     return false;
 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop <= oInt.scrollTop) {
                     oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                       ? 0
                       : selHtml.offsetTop - margin[0])
-                        - parseInt(apf.getStyle(oInt, "paddingTop"));
+                        - parseInt(ppc.getStyle(oInt, "paddingTop"));
                 }
                 return false;
             case 40:
@@ -323,10 +323,10 @@ apf.datagrid = function(struct, tagName){
                     return false;
                     
                 node = this.$tempsel 
-                    ? apf.xmldb.getNode(this.$tempsel) 
+                    ? ppc.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
-                margin    = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin    = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 hasScroll = oInt.scrollHeight > oInt.offsetHeight;
                 items     = Math.floor((oInt.offsetWidth
                     - (hasScroll ? 15 : 0)) / (selHtml.offsetWidth
@@ -338,7 +338,7 @@ apf.datagrid = function(struct, tagName){
                 else
                     return false;
                 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oInt.scrollTop + oInt.offsetHeight) // - (hasScroll ? 10 : 0)
                     oInt.scrollTop = selHtml.offsetTop
@@ -352,10 +352,10 @@ apf.datagrid = function(struct, tagName){
                     return false;
                     
                 node = this.$tempsel 
-                    ? apf.xmldb.getNode(this.$tempsel) 
+                    ? ppc.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
-                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin     = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
                 hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
                 items      = Math.floor((oInt.offsetWidth
@@ -373,12 +373,12 @@ apf.datagrid = function(struct, tagName){
                 else
                     return false;
                 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop < oInt.scrollTop) {
                     oInt.scrollTop = (Array.prototype.indexOf.call(this.getTraverseNodes(), node) < items
                       ? 0
                       : selHtml.offsetTop - margin[0]) 
-                        - parseInt(apf.getStyle(oInt, "paddingTop"));
+                        - parseInt(ppc.getStyle(oInt, "paddingTop"));
                 }
                 return false;
             case 34:
@@ -387,10 +387,10 @@ apf.datagrid = function(struct, tagName){
                     return false;
 
                 node = this.$tempsel 
-                    ? apf.xmldb.getNode(this.$tempsel) 
+                    ? ppc.xmldb.getNode(this.$tempsel) 
                     : selXml;
                 
-                margin     = apf.getBox(apf.getStyle(selHtml, "margin"));
+                margin     = ppc.getBox(ppc.getStyle(selHtml, "margin"));
                 hasScrollY = oInt.scrollHeight > oInt.offsetHeight;
                 hasScrollX = oInt.scrollWidth > oInt.offsetWidth;
                 items      = Math.floor((oInt.offsetWidth - (hasScrollY ? 15 : 0))
@@ -406,7 +406,7 @@ apf.datagrid = function(struct, tagName){
                 else
                     return false;
                 
-                selHtml = apf.xmldb.findHtmlNode(node, this);
+                selHtml = ppc.xmldb.findHtmlNode(node, this);
                 if (selHtml.offsetTop + selHtml.offsetHeight
                   > oInt.scrollTop + oInt.offsetHeight) // - (hasScrollY ? 10 : 0)
                     oInt.scrollTop = selHtml.offsetTop
@@ -486,7 +486,7 @@ apf.datagrid = function(struct, tagName){
                 continue;
             }
             
-            h = apf.all[nodes[i].getAttribute("hid")];
+            h = ppc.all[nodes[i].getAttribute("hid")];
             if (h.tree || h.rename)
                 return this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", nodeIter) || nodeIter;
             
@@ -499,7 +499,7 @@ apf.datagrid = function(struct, tagName){
     // #endif 
     
     this.$focus = function(){
-        if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
+        if (!this.$ext || (ppc.isIE && this.$useiframe && this.cssfix)) //@todo fix this by fixing focussing for this component
             return;
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
@@ -510,7 +510,7 @@ apf.datagrid = function(struct, tagName){
 
     this.$blur = function(){
         //@todo fix this by fixing focussing for this component
-        if (!this.$ext || (apf.isIE && this.$useiframe && this.cssfix))
+        if (!this.$ext || (ppc.isIE && this.$useiframe && this.cssfix))
             return;
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
@@ -581,10 +581,10 @@ apf.datagrid = function(struct, tagName){
         this.$withContainer = e.bindings.description ? true : false;
 
         //Activate CSS Rules
-        apf.importStylesheet(this.$cssRules, window);
+        ppc.importStylesheet(this.$cssRules, window);
         
         if (this.$useiframe)
-            apf.importStylesheet(this.$cssRules, this.oWin);
+            ppc.importStylesheet(this.$cssRules, this.oWin);
     });
     
     this.$initNode = function(xmlNode, state, Lid, depth){
@@ -598,31 +598,31 @@ apf.datagrid = function(struct, tagName){
             + treeState[state] + " item" + this.$uniqueId);//"width:" + (totalWidth+40) + "px");
         this.$setStyleClass(this.$getLayoutNode("item", "container"), treeState[state])
         
-        oRow.setAttribute("ondblclick", 'var o = apf.lookup(' + this.$uniqueId + ');o.choose(null, true);'
+        oRow.setAttribute("ondblclick", 'var o = ppc.lookup(' + this.$uniqueId + ');o.choose(null, true);'
             + (this.$withContainer ? 'o.slideToggle(this, null, true);' : '')
             + (this.celledit && !this.namevalue ? 'o.startRename(null, null, true);' : ''));
         
-        if (this.hasFeature(apf.__DRAGDROP__)) {
+        if (this.hasFeature(ppc.__DRAGDROP__)) {
             oRow.setAttribute("onmouseout", 'this.hasPassedDown = false;');
-            oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
-                var xmlNode = apf.xmldb.findXmlNode(this);\
+            oRow.setAttribute("onmousedown", 'var o = ppc.lookup(' + this.$uniqueId + ');\
+                var xmlNode = ppc.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
                  this.hasPassedDown = true;\
-                 if (!o.hasFeature(apf.__DRAGDROP__) || !isSelected && !apf.getCtrlKey(event))\
-                     o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);'
+                 if (!o.hasFeature(ppc.__DRAGDROP__) || !isSelected && !ppc.getCtrlKey(event))\
+                     o.select(this, ppc.getCtrlKey(event), event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, isSelected);' : ''));
             
             oRow.setAttribute("onmouseup", 'if (!this.hasPassedDown) return;\
-                var o = apf.lookup(' + this.$uniqueId + ');\
-                 var xmlNode = apf.xmldb.findXmlNode(this);\
+                var o = ppc.lookup(' + this.$uniqueId + ');\
+                 var xmlNode = ppc.xmldb.findXmlNode(this);\
                  var isSelected = o.isSelected(xmlNode);\
-                 if (o.hasFeature(apf.__DRAGDROP__))\
-                     o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);');
+                 if (o.hasFeature(ppc.__DRAGDROP__))\
+                     o.select(this, ppc.getCtrlKey(event), event.shiftKey, -1);');
         } //@todo add DRAGDROP ifdefs
         else {
-            oRow.setAttribute("onmousedown", 'var o = apf.lookup(' + this.$uniqueId + ');\
+            oRow.setAttribute("onmousedown", 'var o = ppc.lookup(' + this.$uniqueId + ');\
                 var wasSelected = o.$selected == this;\
-                o.select(this, apf.getCtrlKey(event), event.shiftKey, -1);'
+                o.select(this, ppc.getCtrlKey(event), event.shiftKey, -1);'
                 + (this.cellselect || this.namevalue ? 'o.selectCell(event, this, wasSelected);' : ''));
         }
         
@@ -638,10 +638,10 @@ apf.datagrid = function(struct, tagName){
                 var oc = this.$getLayoutNode("treecheckcell", "openclose");
                 oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
                 oc.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    "var o = ppc.lookup(" + this.$uniqueId + ");\
                     o.slideToggle(this, null, null, true);\
                     event.cancelBubble = true;\
-                    apf.window.$mousedown(event);");
+                    ppc.window.$mousedown(event);");
             
                 oc.setAttribute("ondblclick", "event.cancelBubble = true");
             }
@@ -653,10 +653,10 @@ apf.datagrid = function(struct, tagName){
                 var oc = this.$getLayoutNode("treecell", "openclose");
                 oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
                 oc.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    "var o = ppc.lookup(" + this.$uniqueId + ");\
                     o.slideToggle(this, null, null, true);\
                     event.cancelBubble = true;\
-                    apf.window.$mousedown(event);");
+                    ppc.window.$mousedown(event);");
             
                 oc.setAttribute("ondblclick", "event.cancelBubble = true");
                 
@@ -679,10 +679,10 @@ apf.datagrid = function(struct, tagName){
                 var elCheck = this.$getLayoutNode(cellType, "check");
                 if (elCheck) {
                     elCheck.setAttribute("onmousedown",
-                        "var o = apf.lookup(" + this.$uniqueId + ");\
+                        "var o = ppc.lookup(" + this.$uniqueId + ");\
                         o.checkToggle(this, true);\o.$skipSelect = true;");
     
-                    if (apf.isTrue(this.$applyBindRule("checked", xmlNode))) {
+                    if (ppc.isTrue(this.$applyBindRule("checked", xmlNode))) {
                         this.$checkedList.push(xmlNode);
                         this.$setStyleClass(oRow, "checked");
                     }
@@ -691,7 +691,7 @@ apf.datagrid = function(struct, tagName){
                 }
                 else {
                     //#ifdef __DEBUG
-                    throw new Error(apf.formatErrorString(0, this,
+                    throw new Error(ppc.formatErrorString(0, this,
                         "Could not find check attribute",
                         'Maybe the attribute check is missing from your skin file:\
                             <a:item\
@@ -713,16 +713,16 @@ apf.datagrid = function(struct, tagName){
             }
             //#endif
             
-            apf.setStyleClass(cell, h.$className);
+            ppc.setStyleClass(cell, h.$className);
             
             if (h.css)
-                apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
+                ppc.setStyleClass(cell, (ppc.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
             
             if (h.icon) {
                 var node = this.$getLayoutNode(cellType, "caption", oRow.appendChild(cell));
                     node = (node.nodeType == 1 && node || node.parentNode);
                     node.setAttribute("style", "background-image:url(" 
-                        + apf.getAbsolutePath(this.iconPath, 
+                        + ppc.getAbsolutePath(this.iconPath, 
                             ((h.cicon || h.$compile("icon", {nostring: true}))(xmlNode) || ""))
                         + ");");
                     this.$setStyleClass(node, "iconCell", []);
@@ -746,12 +746,12 @@ apf.datagrid = function(struct, tagName){
                         "caption", oRow.appendChild(cell));
                     htmlEl.setAttribute("id", "placeholder_" + this.$uniqueId 
                         + "_" + ((q.column || (q.column = [])).push(xmlNode) - 1));
-                    apf.setNodeValue(htmlEl, '&nbsp');
+                    ppc.setNodeValue(htmlEl, '&nbsp');
                 }
                 else
                 //#endif
                 {
-                    apf.setNodeValue(this.$getLayoutNode(cellType, 
+                    ppc.setNodeValue(this.$getLayoutNode(cellType, 
                         "caption", oRow.appendChild(cell)),
                         h.cvalue2(xmlNode) || '&nbsp');
                 }
@@ -776,13 +776,13 @@ apf.datagrid = function(struct, tagName){
             var desc = this.$applyBindRule("description", xmlNode);
             this.$getNewContext("container");
             var oDesc = this.$getLayoutNode("container");
-            apf.setNodeValue(this.$getLayoutNode("container", "container",
+            ppc.setNodeValue(this.$getLayoutNode("container", "container",
                 oDesc), desc);
             oDesc.setAttribute("class", (oDesc.getAttribute("class") || "")
                 + " row" + this.$uniqueId);
             
             if (htmlParentNode)
-                apf.insertHtmlNode(oDesc, htmlParentNode, beforeNode);
+                ppc.insertHtmlNode(oDesc, htmlParentNode, beforeNode);
             else 
                 this.$nodes.push(oDesc);
         }*/
@@ -808,13 +808,13 @@ apf.datagrid = function(struct, tagName){
                 continue;
             }
             
-            h = apf.all[nodes[i].getAttribute("hid")];
+            h = ppc.all[nodes[i].getAttribute("hid")];
             
             //@todo fake optimization
             cell = this.$getLayoutNode(h.tree ? "treecell" : "cell", "caption", nodeIter) || nodeIter;//htmlNodes[i].firstChild || 
 
             if (h.css)
-                apf.setStyleClass(cell, (apf.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
+                ppc.setStyleClass(cell, (ppc.lm.compile(h.css))(xmlNode)); //@todo cashing of compiled function?
 
             if (h.tree) {
                 // #ifdef __WITH_MULTICHECK
@@ -824,7 +824,7 @@ apf.datagrid = function(struct, tagName){
                 /*var oc = this.$getLayoutNode("treecell", "openclose", cell);
                 oc.setAttribute("style", "margin-left:" + (((depth||0)) * 15 + 4) + "px;");
                 oc.setAttribute("onmousedown",
-                    "var o = apf.lookup(" + this.$uniqueId + ");\
+                    "var o = ppc.lookup(" + this.$uniqueId + ");\
                     o.slideToggle(this, null, null, true);");*/
             }
             
@@ -846,7 +846,7 @@ apf.datagrid = function(struct, tagName){
             
             if (h.icon) {
                 (cell.nodeType == 1 && cell || cell.parentNode).style.backgroundImage = 
-                    "url(" + apf.getAbsolutePath(this.iconPath, 
+                    "url(" + ppc.getAbsolutePath(this.iconPath, 
                         ((h.cicon || h.$compile("icon", {nostring: true}))(xmlNode) || ""))
                     + ")";
             }
@@ -880,7 +880,7 @@ apf.datagrid = function(struct, tagName){
     
     this.$dblclick = function(htmlNode){
         var _self = this, id, cell;
-        while (!(id = htmlNode.getAttribute(apf.xmldb.htmlIdTag)) || id.indexOf("|") == -1) {
+        while (!(id = htmlNode.getAttribute(ppc.xmldb.htmlIdTag)) || id.indexOf("|") == -1) {
             htmlNode = (cell = htmlNode).parentNode;
             if (!htmlNode || htmlNode.nodeType != 1)
                 return;
@@ -911,7 +911,7 @@ apf.datagrid = function(struct, tagName){
             }
         }*/
         
-        var xmlNode = apf.xmldb.getNode(htmlNode);
+        var xmlNode = ppc.xmldb.getNode(htmlNode);
         /*
             - editor (name of widget, lm function returning amlNode or lm template ref)
             - children being aml nodes
@@ -921,7 +921,7 @@ apf.datagrid = function(struct, tagName){
           : cell;
 
         var oEditor, editor = h.editor; 
-        var ceditor = apf.lm.compile(editor, {xpathmode: 2}); //@todo can this be more efficient?
+        var ceditor = ppc.lm.compile(editor, {xpathmode: 2}); //@todo can this be more efficient?
     
         var nodes = editParent.childNodes;
         for (var i = 0, l = nodes.length; i < l; i++) {
@@ -937,7 +937,7 @@ apf.datagrid = function(struct, tagName){
 
         if (ceditor.type == 2) {
             if (!this.$editors[h.$uniqueId + ":" + editor]) {
-                var constr = apf.namespaces[apf.ns.aml].elements[editor];
+                var constr = ppc.namespaces[ppc.ns.aml].elements[editor];
                 var info   = {
                     htmlNode : editParent,
                     style    : "position:relative;z-index:10000",
@@ -954,7 +954,7 @@ apf.datagrid = function(struct, tagName){
                 
                 //@todo copy all non-known properties of the prop element
 
-                if (constr.prototype.hasFeature(apf.__MULTISELECT__)) {
+                if (constr.prototype.hasFeature(ppc.__MULTISELECT__)) {
                     info.caption   = h.eachcaption || "[text()]";
                     info.eachvalue = h.eachvalue; // || "[@value]";
                     
@@ -982,7 +982,7 @@ apf.datagrid = function(struct, tagName){
 
                 oEditor = this.$editors[h.$uniqueId + ":" + editor] = new constr(info);
 
-                var box = apf.getBox(apf.getStyle(oEditor.$ext, "margin"));
+                var box = ppc.getBox(ppc.getStyle(oEditor.$ext, "margin"));
                 if (box[1] || box[3]) {
                     oEditor.setAttribute("width", "100%+2-" + (box[1] + box[3]));
                 }
@@ -1021,13 +1021,13 @@ apf.datagrid = function(struct, tagName){
             else {
                 oEditor = this.$editors[h.$uniqueId + ":" + editor];
                 
-                if (oEditor.hasFeature(apf.__MULTISELECT__) && !h.model) {
+                if (oEditor.hasFeature(ppc.__MULTISELECT__) && !h.model) {
                     //oEditor.setAttribute("model", "{" + this.id + ".selected}");
                     /*var each = h.each;
                     if (each.charAt(0) == "[")
                         each = each.substr(1, each.length - 2);
                     oEditor.setAttribute("each", "[{" + this.id + ".selected}::" + each + "]");*/
-                    /*apf.queue.empty();*/
+                    /*ppc.queue.empty();*/
                     oEditor.setAttribute("value", "[{" + this.id + ".selected}::" 
                         + (v = h.value).substr(1, v.length - 2) 
                         + "]");
@@ -1075,7 +1075,7 @@ apf.datagrid = function(struct, tagName){
     
     this.addEventListener("mousedown", function(e){
         if (this.$lastEditor 
-          && !apf.isChildOf(this.$lastEditor[1], 
+          && !ppc.isChildOf(this.$lastEditor[1], 
             e.htmlEvent.srcElement || e.htmlEvent.target, true))
                 hideEditor.call(this);
     });
@@ -1085,7 +1085,7 @@ apf.datagrid = function(struct, tagName){
             var ed = this.$lastEditor;
             this.$lastEditor = null;
 
-            if (ed[0].hasFeature(apf.__MULTISELECT__)) // && !ed[0].model
+            if (ed[0].hasFeature(ppc.__MULTISELECT__)) // && !ed[0].model
                 ed[0].$clearDynamicProperty("value");
 
             //this.$lastEditor[0].$blur();
@@ -1190,7 +1190,7 @@ apf.datagrid = function(struct, tagName){
 
         var widthdiff = this.$widthdiff = this.$getOption("main", "widthdiff") || 0;
         this.$defaultwidth = this.$getOption("main", "defaultwidth") || "100";
-        this.$useiframe    = apf.isIE && (apf.isTrue(this.$getOption("main", "iframe")) || this.iframe);
+        this.$useiframe    = ppc.isIE && (ppc.isTrue(this.$getOption("main", "iframe")) || this.iframe);
 
         //Initialize Iframe 
         if (this.$useiframe && !this.oIframe) {
@@ -1198,7 +1198,7 @@ apf.datagrid = function(struct, tagName){
             //var sInt = this.$container.outerHTML 
             var sClass   = this.$container.className;
             //this.$container.parentNode.removeChild(this.$container);
-            this.oIframe = this.$container.appendChild(document.createElement(apf.isIE 
+            this.oIframe = this.$container.appendChild(document.createElement(ppc.isIE 
                 ? "<iframe frameborder='0'></iframe>"
                 : "iframe"));
             this.oIframe.frameBorder = 0;
@@ -1207,9 +1207,9 @@ apf.datagrid = function(struct, tagName){
             this.oDoc.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\
                 <html xmlns="http://www.w3.org/1999/xhtml">\
                     <head><script>\
-                        apf = {\
+                        ppc = {\
                             lookup : function(uid){\
-                                return window.parent.apf.lookup(uid);\
+                                return window.parent.ppc.lookup(uid);\
                             },\
                             Init : {add:function(){},run:function(){}}\
                         };</script>\
@@ -1223,14 +1223,14 @@ apf.datagrid = function(struct, tagName){
             this.oDoc.documentElement.className = this.$ext.className;
             //this.oDoc.body.className = this.$ext.className;
 
-            apf.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
+            ppc.skins.loadCssInWindow(this.skinName, this.oWin, this.mediaPath, this.iconPath);
             
-            if (apf.isIE) //@todo this can be removed when focussing is fixed for this component
+            if (ppc.isIE) //@todo this can be removed when focussing is fixed for this component
                 this.$setStyleClass(this.oDoc.documentElement, this.$baseCSSname + "Focus");
             
-            apf.convertIframe(this.oIframe, true);
+            ppc.convertIframe(this.oIframe, true);
 
-            if (apf.getStyle(this.oDoc.documentElement, "overflowY") == "auto") {
+            if (ppc.getStyle(this.oDoc.documentElement, "overflowY") == "auto") {
                 //@todo ie only
                 this.oIframe.onresize = function(){
                     _self.$head.style.marginRight = 
@@ -1249,7 +1249,7 @@ apf.datagrid = function(struct, tagName){
                 };
         }
         else {
-            if (apf.getStyle(this.$container, "overflowY") == "auto") {
+            if (ppc.getStyle(this.$container, "overflowY") == "auto") {
                 this.$resize = function(){
                     _self.$head.style.marginRight = 
                       _self.$container.scrollHeight > _self.$container.offsetHeight 
@@ -1257,10 +1257,10 @@ apf.datagrid = function(struct, tagName){
                 }
                 
                 //#ifdef __WITH_LAYOUT
-                apf.layout.setRules(this.$ext, this.$uniqueId + "_datagrid",
-                    "var o = apf.all[" + this.$uniqueId + "];\
+                ppc.layout.setRules(this.$ext, this.$uniqueId + "_datagrid",
+                    "var o = ppc.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()");
-                apf.layout.queue(this.$ext);
+                ppc.layout.queue(this.$ext);
                 //#endif
                 
                 this.addEventListener("afterload", this.$resize);
@@ -1286,45 +1286,45 @@ apf.datagrid = function(struct, tagName){
         this.$ext.onclick = this.$container.onresize = null;
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.$container, "dg" + this.$uniqueId);
-        apf.layout.activateRules(this.$container);
+        ppc.layout.removeRule(this.$container, "dg" + this.$uniqueId);
+        ppc.layout.activateRules(this.$container);
         //#endif
     };
-}).call(apf.datagrid.prototype = new apf.BaseTree());
+}).call(ppc.datagrid.prototype = new ppc.BaseTree());
 
-apf.aml.setElement("datagrid",    apf.datagrid);
-//apf.aml.setElement("column",      apf.BindingRule);
-apf.aml.setElement("description", apf.BindingRule);
-apf.aml.setElement("color",       apf.BindingRule);
-apf.aml.setElement("contents",    apf.BindingRule);
+ppc.aml.setElement("datagrid",    ppc.datagrid);
+//ppc.aml.setElement("column",      ppc.BindingRule);
+ppc.aml.setElement("description", ppc.BindingRule);
+ppc.aml.setElement("color",       ppc.BindingRule);
+ppc.aml.setElement("contents",    ppc.BindingRule);
 
 //#endif
 
 // #ifdef __WITH_CONVERTIFRAME
-//@todo this is all broken. needs to be fixed before apf3.0
+//@todo this is all broken. needs to be fixed before ppc3.0
 /**
  * @private
  */
-apf.convertIframe = function(iframe, preventSelect){
+ppc.convertIframe = function(iframe, preventSelect){
     var win = iframe.contentWindow;
     var doc = win.document;
     var pos;
 
-    if (!apf.isIE)
-        apf.importClass(apf.runNonIe, true, win);
+    if (!ppc.isIE)
+        ppc.importClass(ppc.runNonIe, true, win);
         
     //Load Browser Specific Code
     // #ifdef __SUPPORT_WEBKIT
     if (this.isSafari) 
-        this.importClass(apf.runSafari, true, win);
+        this.importClass(ppc.runSafari, true, win);
     // #endif
     // #ifdef __SUPPORT_OPERA
     if (this.isOpera) 
-        this.importClass(apf.runOpera, true, win);
+        this.importClass(ppc.runOpera, true, win);
     // #endif
     // #ifdef __SUPPORT_GECKO
     if (this.isGecko || !this.isIE && !this.isSafari && !this.isOpera)
-        this.importClass(apf.runGecko, true, win);
+        this.importClass(ppc.runGecko, true, win);
     // #endif
     
     doc.onkeydown = function(e){
@@ -1339,7 +1339,7 @@ apf.convertIframe = function(iframe, preventSelect){
         if (!e) e = win.event;
 
         if (!pos)
-            pos = apf.getAbsolutePosition(iframe);
+            pos = ppc.getAbsolutePosition(iframe);
 
         var q = {
             offsetX       : e.offsetX,
@@ -1359,7 +1359,7 @@ apf.convertIframe = function(iframe, preventSelect){
         if (document.onmousedown)
             document.onmousedown(q);
         
-        if (preventSelect && !apf.isIE)
+        if (preventSelect && !ppc.isIE)
             return false;
     };
     
@@ -1389,7 +1389,7 @@ apf.convertIframe = function(iframe, preventSelect){
     doc.documentElement.oncontextmenu = function(e){
         if (!e) e = win.event;
         if (!pos)
-            pos = apf.getAbsolutePosition(iframe);
+            pos = ppc.getAbsolutePosition(iframe);
         
         var q = {
             offsetX       : e.offsetX,
@@ -1414,13 +1414,13 @@ apf.convertIframe = function(iframe, preventSelect){
     };
 
     doc.documentElement.onmouseover = function(e){
-        pos = apf.getAbsolutePosition(iframe);
+        pos = ppc.getAbsolutePosition(iframe);
     };
 
     doc.documentElement.onmousemove = function(e){
         if (!e) e = win.event;
         if (!pos)
-            pos = apf.getAbsolutePosition(iframe);
+            pos = ppc.getAbsolutePosition(iframe);
     
         var q = {
             offsetX       : e.offsetX,

@@ -47,7 +47,7 @@ var config = [
     // Client libraries
     "./../plugins-client/pylon.core",
     "./../plugins-client/lib.ace",
-    "./../plugins-client/lib.apf",
+    "./../plugins-client/lib.ppc",
     "./../plugins-client/lib.treehugger",
     "./../plugins-client/lib.v8debug",
     "./../plugins-client/lib.requirejs",
@@ -158,10 +158,10 @@ var config = [
             "ext/terminal/terminal"
         ]
     }, {
-        packagePath: "vfs-architect/local",
+        packagePath: "@pylonide/vfs-architect/local",
         root: "/"
     }, {
-        packagePath: "vfs-architect/http-adapter",
+        packagePath: "@pylonide/vfs-architect/http-adapter",
         mount: vfsUrl,
         httpRoot: "http://localhost:" + port + vfsUrl
     }, {
@@ -245,6 +245,8 @@ if (useAuth) {
         username: argv.username,
         password: argv.password
     });
+    // Client Side form-auth is only required if we use the server side component
+    //config.find(obj => obj.packagePath === "./pylon.core").clientPlugins.push("ext/form-auth/form-auth");
 }
 
 module.exports = config;

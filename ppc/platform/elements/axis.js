@@ -36,12 +36,12 @@
  * @since       0.4
  */
 
- apf.Axis     = function(struct, tagName){
-    this.$init(tagName || "axis", apf.NODE_VISIBLE, struct);
+ ppc.Axis     = function(struct, tagName){
+    this.$init(tagName || "axis", ppc.NODE_VISIBLE, struct);
     this.$subpos = {left:0,right:0,width:1,height:1};
 };
 
-apf.aml.setElement("axis", apf.Axis);
+ppc.aml.setElement("axis", ppc.Axis);
  
 (function(){
     this.$supportedProperties = [
@@ -53,7 +53,7 @@ apf.aml.setElement("axis", apf.Axis);
         "orbitxanim","orbityanim","orbitzanim"
     ];
 
-    //this.$attrExcludePropBind = apf.extend({
+    //this.$attrExcludePropBind = ppc.extend({
     //���style : 1
     //}, this.$attrExcludePropBind);
  
@@ -308,12 +308,12 @@ apf.aml.setElement("axis", apf.Axis);
 		if(this.$doinit){
             this.$doinit = false;
             this.$parentChart.$copyPos(this);
-			apf.draw.initLayer(this, this.$parentChart);
+			ppc.draw.initLayer(this, this.$parentChart);
 		}else if(doresize){
 			// resize layer
             this.$parentChart.$copyPos(this);
             if(this.$_style)this.$parentChart.$copyPos(this.$subpos, this.$_style.margin);
- 			apf.draw.resizeLayer(this, this.$parentChart);
+ 			ppc.draw.resizeLayer(this, this.$parentChart);
 		}
 		
         // check if we need to recompile
@@ -324,12 +324,12 @@ apf.aml.setElement("axis", apf.Axis);
 			var mode = 'axis'+this.mode;
             
             if(!this.$_style) this.$_style = 
-                apf.draw.parseStyle( apf.chart_draw['_'+mode], this.style+this.$styletag, err );
+                ppc.draw.parseStyle( ppc.chart_draw['_'+mode], this.style+this.$styletag, err );
             
             if(this.$_style)this.$parentChart.$copyPos(this.$subpos, this.$_style.margin);
             else this.$parentChart.$copyPos(this.$subpos);
             // recompile drawing code
-            this.$drawCode  = apf.chart_draw[mode]( this, this.$_style );
+            this.$drawCode  = ppc.chart_draw[mode]( this, this.$_style );
             
         }
         if(this.$drawCode){
@@ -347,11 +347,11 @@ apf.aml.setElement("axis", apf.Axis);
 
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.$parentChart = this.parentNode;
-		var n = this.getElementsByTagNameNS(apf.ns.apf, "style");
+		var n = this.getElementsByTagNameNS(ppc.ns.ppc, "style");
 		if(n.length>0)
 			this.$styletag = n[0].firstChild.nodeValue.trim().replace(/\t/g,' ');
 		
         this.$redraw();
      });
-}).call(apf.Axis.prototype = new apf.AmlElement());
+}).call(ppc.Axis.prototype = new ppc.AmlElement());
 // #endif

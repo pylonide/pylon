@@ -22,7 +22,7 @@
 // #ifdef __WITH_LAYOUT
 
 /**
- * @class apf.layout
+ * @class ppc.layout
  *
  * Takes care of the spatial order of elements within the display area
  * of the browser. Layouts can be saved to XML and loaded again. Window
@@ -83,11 +83,11 @@
  *    model          = "mdlLayouts"
  *    allowdeselect  = "false"
  *    onafterselect  = "
- *      if(!this.selected || apf.layout.isLoadedXml(this.selected))
+ *      if(!this.selected || ppc.layout.isLoadedXml(this.selected))
  *          return;
  *     
- *      apf.layout.saveXml();
- *      apf.layout.loadXml(this.selected);
+ *      ppc.layout.saveXml();
+ *      ppc.layout.loadXml(this.selected);
  *    "
  *    onbeforeremove = "return confirm('Do you want to delete this layout?')">
  *      <a:bindings>
@@ -105,11 +105,11 @@
  *      if (!lstLayouts.selected)
  *          return;
  *     
- *      var newLayout = apf.layout.getXml(document.body);
+ *      var newLayout = ppc.layout.getXml(document.body);
  *      newLayout.setAttribute('name', 'New');
- *      apf.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
+ *      ppc.xmldb.appendChild(lstLayouts.selected.parentNode, newLayout);
  *      lstLayouts.select(newLayout, null, null, null, null, true);
- *      apf.layout.loadXml(newLayout);
+ *      ppc.layout.loadXml(newLayout);
  *      lstLayouts.startRename();
  *    ">
  *    Add Layout
@@ -120,7 +120,7 @@
  */
  // @todo a __WITH_DOM_REPARENTING should be added which can remove many of the functions of this element.
 
-apf.layout = {
+ppc.layout = {
     compile : function(oHtml){
         var l = this.layouts[oHtml.getAttribute("id")];
         if (!l) return false;
@@ -152,7 +152,7 @@ apf.layout = {
         
         var id;
         if (!(id = this.getHtmlId(oHtml)))
-            id = apf.setUniqueHtmlId(oHtml);
+            id = ppc.setUniqueHtmlId(oHtml);
             
         if (q[id]) {
             if (obj)
@@ -165,8 +165,8 @@ apf.layout = {
         q[id] = [oHtml, compile, [obj]];
 
         if (!this.timer)
-            this.timer = apf.setZeroTimeout(function(){
-                apf.layout.processQueue();
+            this.timer = ppc.setZeroTimeout(function(){
+                ppc.layout.processQueue();
             });
     },
 
@@ -191,7 +191,7 @@ apf.layout = {
                 qItem = qlist[id];
     
                 if (qItem[1])
-                    apf.layout.compileAlignment(qItem[1]);
+                    ppc.layout.compileAlignment(qItem[1]);
     
                 list = qItem[2];
                 for (i = 0, l = list.length; i < l; i++) {
@@ -205,16 +205,16 @@ apf.layout = {
                     }
                 }
     
-                apf.layout.activateRules(qItem[0]);
+                ppc.layout.activateRules(qItem[0]);
             }
         } while (this.$hasQueue);
         
-        if (apf.hasSingleRszEvent)
-            apf.layout.forceResize();
+        if (ppc.hasSingleRszEvent)
+            ppc.layout.forceResize();
 
         this.dlist = [];
         
-        apf.setZeroTimeout.clearTimeout(this.timer);
+        ppc.setZeroTimeout.clearTimeout(this.timer);
         this.timer = null;
     },
     
@@ -235,7 +235,7 @@ apf.layout = {
      */
     setRules : function(oHtml, id, rules, overwrite){
         if (!this.getHtmlId(oHtml))
-            apf.setUniqueHtmlId(oHtml);
+            ppc.setUniqueHtmlId(oHtml);
         if (!this.rules[this.getHtmlId(oHtml)])
             this.rules[this.getHtmlId(oHtml)] = {};
 
@@ -278,7 +278,7 @@ apf.layout = {
         if (!prop)
             delete this.rules[htmlId]
 
-        if (apf.hasSingleRszEvent) {
+        if (ppc.hasSingleRszEvent) {
             if (this.onresize[htmlId])
                 this.onresize[htmlId] = null;
             else {
@@ -304,7 +304,7 @@ apf.layout = {
      * @param {Boolean} [no_exec]       
      */
     activateRules : function(oHtml, no_exec){
-        if (!oHtml) { //!apf.hasSingleRszEvent &&
+        if (!oHtml) { //!ppc.hasSingleRszEvent &&
             var prop, obj;
             for(prop in this.rules) {
                 obj = document.getElementById(prop);
@@ -313,13 +313,13 @@ apf.layout = {
                 this.activateRules(obj);
             }
 
-             if (apf.hasSingleRszEvent && apf.layout.$onresize)
-                apf.layout.$onresize();
+             if (ppc.hasSingleRszEvent && ppc.layout.$onresize)
+                ppc.layout.$onresize();
             return;
         }
 
         var rsz, id, rule, rules, strRules = [];
-        if (!apf.hasSingleRszEvent) {
+        if (!ppc.hasSingleRszEvent) {
             rules = this.rules[this.getHtmlId(oHtml)];
             if (!rules){
                 oHtml.onresize = null;
@@ -332,8 +332,8 @@ apf.layout = {
                 strRules.push(rules[id]);
             }
 
-            //apf.console.info(strRules.join("\n"));
-            rsz = apf.needsCssPx
+            //ppc.console.info(strRules.join("\n"));
+            rsz = ppc.needsCssPx
                 ? new Function(strRules.join("\n"))
                 : new Function(strRules.join("\n").replace(/ \+ 'px'|try\{\}catch\(e\)\{\}\n/g,""))
 
@@ -375,7 +375,7 @@ apf.layout = {
             if (!no_exec)
                 f();
 
-            if (!apf.layout.$onresize) {
+            if (!ppc.layout.$onresize) {
                 var rsz = function(f){
                     //@todo fix this
                     try{
@@ -395,9 +395,9 @@ apf.layout = {
                     }
                 }
                 
-                apf.addListener(window, "resize", apf.layout.$onresize = function(){
-                    if (apf.config.resize !== false) {
-                        rsz(apf.layout.onresize);
+                ppc.addListener(window, "resize", ppc.layout.$onresize = function(){
+                    if (ppc.config.resize !== false) {
+                        rsz(ppc.layout.onresize);
                     }
                 });
             }
@@ -409,11 +409,11 @@ apf.layout = {
      * @param {HTMLElement} oHtml  The element for which the rules are executed.
      */
     forceResize : function(oHtml){
-        if (apf.hasSingleRszEvent)
-            return apf.layout.$onresize && apf.layout.$onresize();
+        if (ppc.hasSingleRszEvent)
+            return ppc.layout.$onresize && ppc.layout.$onresize();
 
         /* @todo this should be done recursive, old way for now
-        apf.hasSingleRszEvent
+        ppc.hasSingleRszEvent
             ? this.onresize[this.getHtmlId(oHtml)]
             :
         */
@@ -437,7 +437,7 @@ apf.layout = {
      * @param {Function}    func   The resize code that is used temporarily for resize of the HTML element.
      */
     pause  : function(oHtml, replaceFunc){
-        if (apf.hasSingleRszEvent) {
+        if (ppc.hasSingleRszEvent) {
             var htmlId = this.getHtmlId(oHtml);
             this.paused[htmlId] = this.onresize[htmlId] || true;
 
@@ -469,7 +469,7 @@ apf.layout = {
         if (!this.paused[this.getHtmlId(oHtml)])
             return;
 
-        if (apf.hasSingleRszEvent) {
+        if (ppc.hasSingleRszEvent) {
             var htmlId = this.getHtmlId(oHtml);
             var oldFunc = this.paused[htmlId];
             if (typeof oldFunc == "function") {
@@ -479,8 +479,8 @@ apf.layout = {
             else
                 delete this.onresize[htmlId];
 
-            if (apf.layout.$onresize)
-                apf.layout.$onresize();
+            if (ppc.layout.$onresize)
+                ppc.layout.$onresize();
 
             this.paused[this.getHtmlId(oHtml)] = null;
         }
@@ -502,12 +502,12 @@ apf.layout = {
 /**
  * @private
  */
-apf.getWindowWidth = function(){
-    return apf.isIE ? document.documentElement.offsetWidth - apf.windowHorBorder : window.innerWidth;
+ppc.getWindowWidth = function(){
+    return ppc.isIE ? document.documentElement.offsetWidth - ppc.windowHorBorder : window.innerWidth;
 };
 /**
  * @private
  */
-apf.getWindowHeight = function(){
-    return apf.isIE ? document.documentElement.offsetHeight - apf.windowVerBorder : window.innerHeight;
+ppc.getWindowHeight = function(){
+    return ppc.isIE ? document.documentElement.offsetHeight - ppc.windowVerBorder : window.innerHeight;
 };

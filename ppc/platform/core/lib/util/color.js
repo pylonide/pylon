@@ -21,7 +21,7 @@
 
 //#ifdef __WITH_COLORS
 
-apf.color = {
+ppc.color = {
 /*
     colors: {
         aliceblue:"#f0f8ff",antiquewhite:"#faebd7",aqua:"#00ffff",

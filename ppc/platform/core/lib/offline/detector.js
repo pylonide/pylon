@@ -45,9 +45,9 @@
  *
  * @default_private
  */
-apf.offline.detector = {
+ppc.offline.detector = {
     //#ifndef __PACKED
-    detectUrl : apf.basePath + "core/lib/offline/network_check.txt",
+    detectUrl : ppc.basePath + "core/lib/offline/network_check.txt",
     /* #else
     detectUrl : "network_check.txt",
     #endif */
@@ -60,11 +60,11 @@ apf.offline.detector = {
                 this.detectUrl = aml.getAttribute("detect-url");
             /* #ifdef __PACKAGED
             else
-                this.detectUrl = (apf.config.resourcePath || apf.basePath)
+                this.detectUrl = (ppc.config.resourcePath || ppc.basePath)
                     + "resources/network_check.txt";
             #endif */
 
-            this.detection = apf.isTrue(aml.getAttribute("detection"))
+            this.detection = ppc.isTrue(aml.getAttribute("detection"))
                 ? "auto"
                 : aml.getAttribute("detection") || "auto";
 
@@ -73,16 +73,16 @@ apf.offline.detector = {
         }
 
         if ("error|auto".indexOf(this.detection) > -1) {
-            apf.addEventListener("error", function(e){
+            ppc.addEventListener("error", function(e){
                 //Timeout detected.. Network is probably gone
-                if (e.state == apf.TIMEOUT) {
+                if (e.state == ppc.TIMEOUT) {
                     //Let's try to go offline and return false to cancel the error
-                    return !apf.offline.goOffline();//callback //@todo callback???
+                    return !ppc.offline.goOffline();//callback //@todo callback???
                 }
             });
         }
 
-        this.oHttp = new apf.http();
+        this.oHttp = new ppc.http();
         this.oHttp.timeout = this.interval;
 
         //Check if we have connection right now
@@ -93,13 +93,13 @@ apf.offline.detector = {
     },
 
     isSiteAvailable : function(callback){
-        this.oHttp.get(apf.getNoCacheUrl(this.detectUrl), {
+        this.oHttp.get(ppc.getNoCacheUrl(this.detectUrl), {
             callback: function(data, state, extra){
-                if(state != apf.SUCCESS || !window.navigator.onLine){
-                    apf.offline.goOffline(callback); //retry here??
+                if(state != ppc.SUCCESS || !window.navigator.onLine){
+                    ppc.offline.goOffline(callback); //retry here??
                 }
                 else{
-                    apf.offline.goOnline(callback);
+                    ppc.offline.goOnline(callback);
                 }
             },
             ignoreOffline  : true,
@@ -114,7 +114,7 @@ apf.offline.detector = {
         clearInterval(this.timer);
 
         //#ifdef __DEBUG
-        apf.console.info("Automatic detection of network state is activated");
+        ppc.console.info("Automatic detection of network state is activated");
         //#endif
 
         var _self = this;
@@ -130,7 +130,7 @@ apf.offline.detector = {
         clearInterval(this.timer);
 
         //#ifdef __DEBUG
-        apf.console.info("Detection of network state is deactivated");
+        ppc.console.info("Detection of network state is deactivated");
         //#endif
     }
 };

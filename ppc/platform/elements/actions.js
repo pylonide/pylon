@@ -28,8 +28,8 @@
  * 
  * @allowchild {actions}
  *
- * @class apf.actions
- * @inherits apf.AmlElement
+ * @class ppc.actions
+ * @inherits ppc.AmlElement
  * @define actions
  * @logic
  *
@@ -39,10 +39,10 @@
  *
  * @default_private
  */
-apf.actions = function(struct, tagName){
-    this.$init(tagName || "actions", apf.NODE_HIDDEN, struct);
+ppc.actions = function(struct, tagName){
+    this.$init(tagName || "actions", ppc.NODE_HIDDEN, struct);
     
-    this.$actions      = new apf.ruleList();
+    this.$actions      = new ppc.ruleList();
     this.$amlNodes     = {};
 };
 
@@ -85,7 +85,7 @@ apf.actions = function(struct, tagName){
         
         this.register(this.parentNode);
     });
-}).call(apf.actions.prototype = new apf.AmlElement());
+}).call(ppc.actions.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("actions", apf.actions);
+ppc.aml.setElement("actions", ppc.actions);
 // #endif

@@ -3,9 +3,9 @@
  * specified document printers that use the generated parse tree to write 
  * documentation in several formats.
  */
-apf.process.handler.docgen = function(){
-    apf.makeClass(this);
-    this.inherit(apf.ProjectBase);
+ppc.process.handler.docgen = function(){
+    ppc.makeClass(this);
+    this.inherit(ppc.ProjectBase);
 	
     this.regexp = new RegExp("^" + this.name + "_(\\d{12})")
     this.data   = {};
@@ -19,15 +19,15 @@ apf.process.handler.docgen = function(){
             new String(dt.getMinutes()).pad(2, "0", PAD_LEFT)
     }
 
-    //apf.process.start = 54302;
-    //apf.process.stop  = 93534;
+    //ppc.process.start = 54302;
+    //ppc.process.stop  = 93534;
 
     this.parse = function(){
         //Get codefile
         jsString = fInput.data;
 
         if (!jsString)
-            apf.console.error("Could not load data from file: " + fInput.path);
+            ppc.console.error("Could not load data from file: " + fInput.path);
 
         //Preparse string
         //jsString = jsString.replace(/\/\*.*?\*\//g, "");
@@ -43,14 +43,14 @@ apf.process.handler.docgen = function(){
         };
 
         //Process lines
-        this.process(this.data.global, lines, apf.process.start || 0);
+        this.process(this.data.global, lines, ppc.process.start || 0);
 
         return true;
     };
 
     function getDepthCount(line){
         if (line.match(/\\$/m)) return 0;
-        var res = apf.JavascriptParser.parse(line, true);
+        var res = ppc.JavascriptParser.parse(line, true);
         return res.count[1];
     }
 
@@ -59,18 +59,18 @@ apf.process.handler.docgen = function(){
             depth = 0,
             first = i;
 
-        if (apf.verbose == 3)
-            apf.console.info("[" + i + "] Parsing in context '" + context.name + "'");
+        if (ppc.verbose == 3)
+            ppc.console.info("[" + i + "] Parsing in context '" + context.name + "'");
 
         for(i;i<lines.length;i++){
-            if (apf.process.stop && i > apf.process.stop)
+            if (ppc.process.stop && i > ppc.process.stop)
                 break;
 
             var line = lines[i]; this.log.push(line);
             //if (i == 22201) debugger;
             //if (i > 1044 && depth < 2) debugger;
-            if (apf.verbose == 2 && i % 1000 == 0)
-                apf.console.info("Line " + i + "\n");
+            if (ppc.verbose == 2 && i % 1000 == 0)
+                ppc.console.info("Line " + i + "\n");
 
             var depthCount = getDepthCount(line);
 
@@ -100,14 +100,14 @@ apf.process.handler.docgen = function(){
             if (!ignore && first != i){
                 //Function (usually a class, or a global function);
                 if ((line.match(/^\s*function\s*([\w_]*)\s*\((.*?)\)/) && RegExp.$1 != "extendXmlDb"
-                  || line.match(/^(apf\.[\$\w_\.]*)\s*=\s*\(?(?:apf\.(?:run\w+|component|subnode)\(\s*apf.[\w_]+\s*,\s*)?function\s*\((.*?)\)/)
+                  || line.match(/^(ppc\.[\$\w_\.]*)\s*=\s*\(?(?:ppc\.(?:run\w+|component|subnode)\(\s*ppc.[\w_]+\s*,\s*)?function\s*\((.*?)\)/)
                   || line.indexOf("(function") == 0)) {
                     if (this.lastCommentBlock.indexOf("@constructor") > -1
                       || line.indexOf("(function") > -1
-                      || line.indexOf("apf.component") > -1
-                      || line.indexOf("apf.subnode") > -1
-                      || line.indexOf("apf.editor") > -1
-                      || line.indexOf("apf.run") > -1
+                      || line.indexOf("ppc.component") > -1
+                      || line.indexOf("ppc.subnode") > -1
+                      || line.indexOf("ppc.editor") > -1
+                      || line.indexOf("ppc.run") > -1
                       || RegExp.$1.match(/^run/)) {
                         i = this.process(this.getContext(RegExp.$1, "Class", context.objects, i), lines, i);
                         continue;
@@ -120,8 +120,8 @@ apf.process.handler.docgen = function(){
                             temp_context = context;
                         name = name.replace(/[\"\']/g, "").replace("(", ".");
 
-                        if (apf.verbose == 3)
-                            apf.console.info("[" + i + "] Parsing local function " + name);
+                        if (ppc.verbose == 3)
+                            ppc.console.info("[" + i + "] Parsing local function " + name);
 
                         if (name.indexOf(".") > -1) {
                             names = name.split(".");
@@ -151,8 +151,8 @@ apf.process.handler.docgen = function(){
 
                 //Structs
                 if (depthCount
-                  && (line.match(/^(?:var)?\s*([\w_\.\[\]\"\']+)\s*[=\:]\s*(?:apf\.extend\()?\{/)
-                  || line.match(/((?:apf\.namespace|apf\.editor\.plugin)\([\w_\.\[\]\"\']+),/))) {
+                  && (line.match(/^(?:var)?\s*([\w_\.\[\]\"\']+)\s*[=\:]\s*(?:ppc\.extend\()?\{/)
+                  || line.match(/((?:ppc\.namespace|ppc\.editor\.plugin)\([\w_\.\[\]\"\']+),/))) {
                     //temp for props
                     //if (RegExp.$1.indexOf("this") != 0){
                     i = this.process(this.getContext(RegExp.$1.replace(/this\.|namespace|plugin|[\(\[\]\"\']/g, ""),
@@ -163,14 +163,14 @@ apf.process.handler.docgen = function(){
             }
 
             //Instance detection
-            if (line.match(/^\s*apf\.([\w_\.]*)\s*=\s*new\s*apf\.(.*)\(/) && line.indexOf("__") == -1) {
-                //apf.XMLDatabase = new apf.XMLDatabaseImplementation();
-                this.data.global.objects.apf.objects[RegExp.$1] = {
+            if (line.match(/^\s*ppc\.([\w_\.]*)\s*=\s*new\s*ppc\.(.*)\(/) && line.indexOf("__") == -1) {
+                //ppc.XMLDatabase = new ppc.XMLDatabaseImplementation();
+                this.data.global.objects.ppc.objects[RegExp.$1] = {
                     name: RegExp.$1,
                     line: i,
                     type: RegExp.$2}
-                if (apf.verbose == 3)
-                    apf.console.info("[" + i + "] Adding a new object '" + RegExp.$1 + "'");
+                if (ppc.verbose == 3)
+                    ppc.console.info("[" + i + "] Adding a new object '" + RegExp.$1 + "'");
                 continue;
             }
 
@@ -178,21 +178,21 @@ apf.process.handler.docgen = function(){
             if (context.name != "global" && !context.moved){
                 if (first == i && context.comment && context.comment.indexOf("@baseclass") > -1)
                     context.__moveTo(this.data.global.baseclasses);
-                else if (line.indexOf("apf.teleport.register(this)") > -1 || line.indexOf("this.TelePortModule ") > -1
+                else if (line.indexOf("ppc.teleport.register(this)") > -1 || line.indexOf("this.TelePortModule ") > -1
                   || context.comment && context.comment.indexOf("@addnode teleport") > -1)
                     context.__moveTo(this.data.global.teleport);
-                else if (line.indexOf("apf.register(this") > -1
-                  || line.indexOf("apf.component(") > -1
-                  || line.indexOf("apf.subnode(") > -1
-                  || line.indexOf("apf.JmlDom") > -1
+                else if (line.indexOf("ppc.register(this") > -1
+                  || line.indexOf("ppc.component(") > -1
+                  || line.indexOf("ppc.subnode(") > -1
+                  || line.indexOf("ppc.JmlDom") > -1
                   || context.comment && context.comment.indexOf("@define " + context.name) > -1){
-                    if (line.indexOf("apf.component(") > -1){
+                    if (line.indexOf("ppc.component(") > -1){
                         if (!context.metadata)
                             context.metadata = {inherits:[]};
                         if (!context.metadata.inherits)
                             context.metadata.inherits = [];
-                        context.metadata.inherits.pushUnique("apf.JmlElement");
-                        context.metadata.inherits.pushUnique("apf.Class");
+                        context.metadata.inherits.pushUnique("ppc.JmlElement");
+                        context.metadata.inherits.pushUnique("ppc.Class");
                     }
                     context.__moveTo(this.data.global.controls);
                 }
@@ -200,10 +200,10 @@ apf.process.handler.docgen = function(){
                     context.__remove();
                 else if (first == i && context.comment && context.comment.indexOf("@parser") > -1)
                     context.__moveTo(this.data.global.parsers);
-                //else if (first == i && context.comment && context.comment.indexOf("@apfclass") > -1)
-                    //context.__moveTo(this.data.global.objects.apf.classes);
+                //else if (first == i && context.comment && context.comment.indexOf("@ppcclass") > -1)
+                    //context.__moveTo(this.data.global.objects.ppc.classes);
                 //else if (first == i && context.name.indexOf("Server") > -1)
-                    //context.__moveTo(this.data.global.objects.apf.servers);
+                    //context.__moveTo(this.data.global.objects.ppc.servers);
                 else if (line.indexOf(".$regbase = ") > -1)
                     context.__moveTo(this.data.global.baseclasses);
             }
@@ -211,15 +211,15 @@ apf.process.handler.docgen = function(){
             //{} depth counting
             //depth += parseInt(line.count("{")); depth -= parseInt(line.count("}"));
             depth += depthCount; //Calculate Depth Count
-            //apf.console.info(depth + ":" + line);
+            //ppc.console.info(depth + ":" + line);
 
             //Return if depth 0 again (meanin end of function or struct)
             if (depth == 0 && context.name != "global"){
                 //Comment cleanup
                 this.parseComment(context);
 
-                if (apf.verbose == 3)
-                    apf.console.info("[" + i + "] Returning from context[1] '" + context.name + "'");
+                if (ppc.verbose == 3)
+                    ppc.console.info("[" + i + "] Returning from context[1] '" + context.name + "'");
 
                 return i; //doesn't work for }}}}}
             }
@@ -230,7 +230,7 @@ apf.process.handler.docgen = function(){
             if (line.match(/([\w_]+)\.prototype\.([\$\w_]+)\s*=\s*function\s*\((.*?)\)/)){
                 this.addMethod(this.findContext(RegExp.$1, i), RegExp.$2, RegExp.$3.split(","), i);
             }
-            else if (line.match(/^\s*(apf\.[\w_\.]+)\.([\w_]+)\s*=\s*function\s*\((.*?)\)/)) {
+            else if (line.match(/^\s*(ppc\.[\w_\.]+)\.([\w_]+)\s*=\s*function\s*\((.*?)\)/)) {
                 this.addMethod(this.findContext(RegExp.$1, i), RegExp.$2, RegExp.$3.split(","), i);
             }
             else if (line.match(/this\.([\$\w_]+)\s*=\s*function\s*\((.*?)\)/) 
@@ -297,18 +297,18 @@ apf.process.handler.docgen = function(){
             }
         }
 
-        if (apf.verbose == 3)
-            apf.console.info("[" + i + "] Returning from context[2] '" + context.name + "'");
+        if (ppc.verbose == 3)
+            ppc.console.info("[" + i + "] Returning from context[2] '" + context.name + "'");
 
         return i;
     };
 
     this.addMethod = function(context, name, args, line){
-        if (apf.verbose == 3)
-            apf.console.info("[" + line + "] Adding method " + name + " in context " + context.name);
+        if (ppc.verbose == 3)
+            ppc.console.info("[" + line + "] Adding method " + name + " in context " + context.name);
 
         if (context.name == "global"){
-            apf.console.error("Adding a method in global context on line: " + line + " with the name '" + name + "'");
+            ppc.console.error("Adding a method in global context on line: " + line + " with the name '" + name + "'");
         }
 
         if (this.lastCommentBlock.indexOf("@action") > -1){
@@ -384,8 +384,8 @@ apf.process.handler.docgen = function(){
             line += lines[++i];
             line = line.replace(/[\n\r]/g, "");
         }
-        if (apf.verbose == 3)
-            apf.console.info("Looped over string until line " + i);
+        if (ppc.verbose == 3)
+            ppc.console.info("Looped over string until line " + i);
         return {
             "line" : line,
             "i"    : i
@@ -405,8 +405,8 @@ apf.process.handler.docgen = function(){
             depth += getDepthCount(line);
             if (depth <= 0) break;
         }
-        if (apf.verbose == 3)
-            apf.console.info("Skipped until line " + (i+1) + ":" + lines[i+1]);
+        if (ppc.verbose == 3)
+            ppc.console.info("Skipped until line " + (i+1) + ":" + lines[i+1]);
         return i + 1;
     };
 	
@@ -543,12 +543,12 @@ apf.process.handler.docgen = function(){
                 };
 
                 //Might be better to really create the elements within each object and copy and then do cleanup
-                /*if (!this.data.global.objects.apf.metadata.define)
-                this.data.global.objects.apf.metadata.define = [];
-                this.data.global.objects.apf.metadata.define.push(context);*/
+                /*if (!this.data.global.objects.ppc.metadata.define)
+                this.data.global.objects.ppc.metadata.define = [];
+                this.data.global.objects.ppc.metadata.define.push(context);*/
 
                 addToMetaData(type == "term"
-                    ? this.data.global.objects.apf.metadata
+                    ? this.data.global.objects.ppc.metadata
                     : original_context.metadata, type, c, lasttype);
 
                 type = "description";
@@ -576,7 +576,7 @@ apf.process.handler.docgen = function(){
         }
 
         if (object.metadata)
-            apf.extend(object.metadata, metadata);
+            ppc.extend(object.metadata, metadata);
         else
             object.metadata = metadata;
 
@@ -596,18 +596,18 @@ apf.process.handler.docgen = function(){
     this.$loadPml = function(x){
         fInput = o3.fs.get(this.input);
         if (!fInput.exists)
-            apf.console.error("File not found: " + fInput.path);
+            ppc.console.error("File not found: " + fInput.path);
 
         this.name = fInput.name;
         var fCache = o3.fs.get(this.cache + "/docgen_cache_" + fInput.modifiedTime);
 
         if (fCache.exists) {
-            this.data = apf.unserialize(fCache.data);
+            this.data = ppc.unserialize(fCache.data);
         }
         else {
-            apf.console.info("Parsing javascript, generating parse tree...");
+            ppc.console.info("Parsing javascript, generating parse tree...");
             this.parse();
-            fCache.data = apf.serialize(this.data);
+            fCache.data = ppc.serialize(this.data);
         }
 
         var printer, nodes = x.childNodes;
@@ -615,7 +615,7 @@ apf.process.handler.docgen = function(){
             if (nodes[i].nodeType != 1)
                 continue;
 
-            printer = new apf.process.handler[nodes[i][apf.TAGNAME]](this);
+            printer = new ppc.process.handler[nodes[i][ppc.TAGNAME]](this);
             printer.loadPml(nodes[i]);
         }
     };

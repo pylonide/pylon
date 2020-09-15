@@ -57,9 +57,9 @@
  *
  * @addenum rpc[@protocol]:header
  *
- * @inherits apf.Teleport
- * @inherits apf.http
- * @inherits apf.rpc
+ * @inherits ppc.Teleport
+ * @inherits ppc.http
+ * @inherits ppc.rpc
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -67,7 +67,7 @@
  *
  * @default_private
  */
-apf.header = function(){
+ppc.header = function(){
     this.supportMulticall = false;
     this.method           = "GET";
     this.vartype          = "header";
@@ -85,7 +85,7 @@ apf.header = function(){
                 continue;
             
             // #ifdef __DEBUG
-            apf.console.info("<strong>" + args[i][0] + ":</strong> " + args[i][1]
+            ppc.console.info("<strong>" + args[i][0] + ":</strong> " + args[i][1]
                 + "<br />", "teleport");
             // #endif
             

@@ -23,25 +23,25 @@
 
 /**
  * Baseclass of an element that has one or two states and can be clicked on to
- * trigger an action (_i.e._ {@link apf.button} or {@link apf.checkbox}).
+ * trigger an action (_i.e._ {@link ppc.button} or {@link ppc.checkbox}).
  *
- * @class apf.BaseButton
+ * @class ppc.BaseButton
  * @baseclass
  * @author      Abe Ginner
  * @version     %I%, %G%
  * @since       0.8
- * @inherits apf.StandardBinding
+ * @inherits ppc.StandardBinding
  */
 /**
  * @event click Fires when the user presses a mouse button while over this element...and then lets the mousebutton go. 
  */
-apf.BaseButton = function(){
+ppc.BaseButton = function(){
     this.$init(true);
 };
 
 (function() {
     //#ifdef __WITH_CHILDVALUE
-    this.implement(apf.ChildValue);
+    this.implement(ppc.ChildValue);
     // #endif
     
     this.$refKeyDown   =        // Number of keys pressed.
@@ -77,7 +77,7 @@ apf.BaseButton = function(){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);
         // #ifdef __DEBUG
         if (!oNode)
-            return apf.console.warn("No background defined in the Button skin", "button");
+            return ppc.console.warn("No background defined in the Button skin", "button");
         /* #else
         if (!oNode) return;
         #endif */
@@ -156,7 +156,7 @@ apf.BaseButton = function(){
         }
 
         if (this.$refKeyDown > 0
-          || (this.$refMouseDown > 0 && (this.$mouseOver || (!apf.isIE && this.$ext === e.currentTarget)))
+          || (this.$refMouseDown > 0 && (this.$mouseOver || (!ppc.isIE && this.$ext === e.currentTarget)))
           || (this.isBoolean && this.value)) {
             this.$setState("Down", e, strEvent);
         }
@@ -185,11 +185,11 @@ apf.BaseButton = function(){
             if (_self.disabled)
                 return;
 
-            if (!apf.isIE) { // && (apf.isGecko || !_self.submenu) Causes a focus problem for menus
+            if (!ppc.isIE) { // && (ppc.isGecko || !_self.submenu) Causes a focus problem for menus
                 if (_self.value)
-                    apf.stopEvent(e);
+                    ppc.stopEvent(e);
                 else
-                    apf.cancelBubble(e);
+                    ppc.cancelBubble(e);
             }
             
             _self.$updateState(e, "mousedown");
@@ -198,7 +198,7 @@ apf.BaseButton = function(){
         this.$ext.onmouseup = function(e, force) {
             e = e || window.event;
             //if (e)  e.cancelBubble = true;
-            if (_self.disabled || !force && ((!_self.$mouseOver && (!apf.isIE && this !== e.currentTarget)) || !_self.$refMouseDown))
+            if (_self.disabled || !force && ((!_self.$mouseOver && (!ppc.isIE && this !== e.currentTarget)) || !_self.$refMouseDown))
                 return;
 
             _self.$refMouseDown = 0;
@@ -239,7 +239,7 @@ apf.BaseButton = function(){
 
             //Check if the mouse out is meant for us
             var tEl = e.explicitOriginalTarget || e.toElement;
-            if (apf.isChildOf(this, tEl)) //this == tEl ||
+            if (ppc.isChildOf(this, tEl)) //this == tEl ||
                 return;
 
             _self.$mouseOver    = false;
@@ -251,11 +251,11 @@ apf.BaseButton = function(){
         };
 
         // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone)
-            apf.iphone.linkEvents(this.$ext, true);
+        if (ppc.isIphone)
+            ppc.iphone.linkEvents(this.$ext, true);
         // #endif
 
-        if (apf.hasClickFastBug)
+        if (ppc.hasClickFastBug)
             this.$ext.ondblclick = this.$ext.onmouseup;
     };
 
@@ -320,9 +320,9 @@ apf.BaseButton = function(){
         }
     };
 // #ifdef __WITH_DATABINDING
-}).call(apf.BaseButton.prototype = new apf.StandardBinding());
+}).call(ppc.BaseButton.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.BaseButton.prototype = new apf.Presentation());
+}).call(ppc.BaseButton.prototype = new ppc.Presentation());
 #endif */
 
 // #endif

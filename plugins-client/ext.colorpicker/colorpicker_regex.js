@@ -1,6 +1,6 @@
 define(function(require, exports, module) {
-    // use the apf one, when apf is avaialble. Otherwise use some mocked one
-    var namedColors = typeof apf !== "undefined" ? apf.color.colorshex : { "black":0, "white":16777215 };
+    // use the ppc one, when ppc is avaialble. Otherwise use some mocked one
+    var namedColors = typeof ppc !== "undefined" ? ppc.color.colorshex : { "black":0, "white":16777215 };
     var namedPart = Object.keys(namedColors).join("|");
     
     var patterns = {

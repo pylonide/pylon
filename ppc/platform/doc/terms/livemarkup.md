@@ -1,14 +1,14 @@
 # Live Markup
 
-Live Markup is an extension to Javascript, and it allows APF to have
+Live Markup is an extension to Javascript, and it allows PPC to have
 a simple consistent syntax for all attribute values and templates.
 Live markup is used for templating, rpc, data binding,
 property binding, formatting and even events.
 
 Live Markup generates text-output via the default-output of statements,
-and APF maintains knowledge of all properties and data used to create
+and PPC maintains knowledge of all properties and data used to create
 this output allowing for a Live update when any of this information changes.
-Nearly all attributes in APF are processed as a live markup " " string
+Nearly all attributes in PPC are processed as a live markup " " string
 Some attributes (like events) and `<?lm ?>` blocks are processed as code.
 
 LiveMarkup features include:

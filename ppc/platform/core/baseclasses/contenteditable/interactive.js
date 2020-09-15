@@ -46,12 +46,12 @@
             div.style.position = "absolute";
             div.className = classes[i];
             div.style.zIndex = 1000000;
-            //@todo use apf.window.zManager.set("drag", div);
+            //@todo use ppc.window.zManager.set("drag", div);
             div.style.display = "none";
             div.host = false;
             eval("dragIndicator" + i + " = indicators[" + (i-1) + "] = div;"); //ahum...
         }
-        outline = dragOutline = document.getElementById("apf_outline");
+        outline = dragOutline = document.getElementById("ppc_outline");
         
         inited = true;
     }
@@ -65,12 +65,12 @@
         var pHtmlNode = amlNode.$int;
         var isBody = pHtmlNode.tagName == "BODY";
 
-        var pos1 = isBody ? [0,0] : apf.getAbsolutePosition(pHtmlNode);
-        pos1[2] = isBody ? apf.getWindowWidth() : pHtmlNode.offsetWidth;
-        pos1[3] = isBody ? apf.getWindowHeight() : pHtmlNode.offsetHeight;
+        var pos1 = isBody ? [0,0] : ppc.getAbsolutePosition(pHtmlNode);
+        pos1[2] = isBody ? ppc.getWindowWidth() : pHtmlNode.offsetWidth;
+        pos1[3] = isBody ? ppc.getWindowHeight() : pHtmlNode.offsetHeight;
         var lastPHtmlNode = lastReparent ? lastReparent.$int : el.$ext.parentNode;
         var pos2 = lastPHtmlNode.tagName == "BODY"
-            ? [0,0] : apf.getAbsolutePosition(lastPHtmlNode, null, true);
+            ? [0,0] : ppc.getAbsolutePosition(lastPHtmlNode, null, true);
 
         amlNode.$int.appendChild(htmlNode);
     
@@ -78,21 +78,21 @@
     
         dragIndicator5.style.left = pos1[0] + "px";
         dragIndicator5.style.top = pos1[1] + "px";
-        var diff = apf.getDiff(dragIndicator5);
+        var diff = ppc.getDiff(dragIndicator5);
         dragIndicator5.style.width = (pos1[2] - diff[0]) + "px";
         dragIndicator5.style.height = (pos1[3] - diff[1]) + "px";
         dragIndicator5.style.display = "block";
 
-        apf.tween.single(dragIndicator5, {
+        ppc.tween.single(dragIndicator5, {
             type  : "fade",
             from  : 0,
             to    : 1,
-            anim  : apf.tween.easeInSine,
+            anim  : ppc.tween.easeInSine,
             steps : 5
         });
 
-        htmlNode.style.left = (apf.getHtmlLeft(htmlNode) - (pos1[0] - pos2[0])) + "px";
-        htmlNode.style.top = (apf.getHtmlTop(htmlNode) - (pos1[1] - pos2[1])) + "px";
+        htmlNode.style.left = (ppc.getHtmlLeft(htmlNode) - (pos1[0] - pos2[0])) + "px";
+        htmlNode.style.top = (ppc.getHtmlTop(htmlNode) - (pos1[1] - pos2[1])) + "px";
 
         lastReparent = amlNode;
         //el.$ext.onmousedown(e, true);
@@ -105,10 +105,10 @@
         vbox : function(l, t, htmlNode, e){
             if (e) {
                 var prevTop = htmlNode.style.top;
-                var el = this, plane = apf.plane.get();
+                var el = this, plane = ppc.plane.get();
                 plane.plane.style.top = 
                 htmlNode.style.top = "-2000px";
-                var amlNode = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
+                var amlNode = ppc.findHost(document.elementFromPoint(e.clientX, e.clientY));
                 plane.plane.style.top = 0;
                 htmlNode.style.top = prevTop;
                 
@@ -116,7 +116,7 @@
                     var ext1 = amlNode.$altExt || amlNode.$ext;
                     var ext2 = el.$altExt || el.$ext;
                     var h = ext1.offsetHeight;
-                    var pos = apf.getAbsolutePosition(ext1);
+                    var pos = ppc.getAbsolutePosition(ext1);
                     if (pos[1] + (h/2) > e.clientY) {
                         if (ext1.previousSibling != ext2) {
                             //ext1.parentNode.insertBefore(ext2, ext1);
@@ -124,7 +124,7 @@
                             dragIndicator1.style.display = "block";
                             dragIndicator1.style.top = (pos[1] - dragIndicator1.offsetHeight) + "px";
                             dragIndicator1.style.left = (pos[0]) + "px";
-                            dragIndicator1.style.width = (ext1.offsetWidth - apf.getWidthDiff(dragIndicator1)) + "px";
+                            dragIndicator1.style.width = (ext1.offsetWidth - ppc.getWidthDiff(dragIndicator1)) + "px";
                             dragIndicator1.style.height = amlNode.parentNode.padding + "px";
                             movePosition = {where: "before", amlNode: amlNode}
                         }
@@ -140,7 +140,7 @@
                             dragIndicator1.style.display = "block";
                             dragIndicator1.style.top = (pos[1] + h) + "px";
                             dragIndicator1.style.left = (pos[0]) + "px";
-                            dragIndicator1.style.width = (ext1.offsetWidth - apf.getWidthDiff(dragIndicator1)) + "px";
+                            dragIndicator1.style.width = (ext1.offsetWidth - ppc.getWidthDiff(dragIndicator1)) + "px";
                             dragIndicator1.style.height = amlNode.parentNode.padding + "px";
                             movePosition = {where: "after", amlNode: amlNode}
                         }
@@ -158,10 +158,10 @@
         hbox : function(l, t, htmlNode, e){
             if (e) {
                 var prevTop = htmlNode.style.top;
-                var el = this, plane = apf.plane.get();
+                var el = this, plane = ppc.plane.get();
                 plane.plane.style.top = 
                 htmlNode.style.top = "-2000px";
-                var amlNode = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
+                var amlNode = ppc.findHost(document.elementFromPoint(e.clientX, e.clientY));
                 plane.plane.style.top = 0;
                 htmlNode.style.top = prevTop;
     
@@ -171,14 +171,14 @@
                     var ext1 = amlNode.$altExt || amlNode.$ext;
                     var ext2 = el.$altExt || el.$ext;
                     var h = ext1.offsetWidth;
-                    var pos = apf.getAbsolutePosition(ext1);
+                    var pos = ppc.getAbsolutePosition(ext1);
                     if (pos[0] + (h/2) > e.clientX) {
                         if (ext1.previousSibling != ext2) {
                             dragIndicator1.style.display = "block";
                             dragIndicator1.style.top = (pos[1]) + "px";
                             dragIndicator1.style.left = (pos[0] - dragIndicator1.offsetWidth) + "px";
                             dragIndicator1.style.width = amlNode.parentNode.padding + "px";
-                            dragIndicator1.style.height = (ext1.offsetHeight - apf.getHeightDiff(dragIndicator1)) + "px";
+                            dragIndicator1.style.height = (ext1.offsetHeight - ppc.getHeightDiff(dragIndicator1)) + "px";
                             movePosition = {where: "before", amlNode: amlNode}
                         }
                         else {
@@ -192,7 +192,7 @@
                             dragIndicator1.style.top = (pos[1]) + "px";
                             dragIndicator1.style.left = (pos[0] + h) + "px";
                             dragIndicator1.style.width = amlNode.parentNode.padding + "px";
-                            dragIndicator1.style.height = (ext1.offsetHeight - apf.getHeightDiff(dragIndicator1)) + "px";
+                            dragIndicator1.style.height = (ext1.offsetHeight - ppc.getHeightDiff(dragIndicator1)) + "px";
                             movePosition = {where: "after", amlNode: amlNode}
                         }
                         else {
@@ -210,12 +210,12 @@
         
         table : function(l, t, htmlNode, e){
             if (e) {
-                var prevTop = htmlNode.style.top, plane = apf.plane.get()
+                var prevTop = htmlNode.style.top, plane = ppc.plane.get()
                 var el = this;
                 dragIndicator1.style.top = 
                 plane.plane.style.top = 
                 htmlNode.style.top = "-2000px";
-                var amlNode = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
+                var amlNode = ppc.findHost(document.elementFromPoint(e.clientX, e.clientY));
                 plane.plane.style.top = 0;
                 htmlNode.style.top = prevTop;
                 
@@ -224,13 +224,13 @@
                 if (amlNode && amlNode != el && (amlNode.parentNode == (lastReparent || el.parentNode))) {
                     var ext1 = amlNode.$altExt || amlNode.$ext;
                     var ext2 = el.$altExt || el.$ext;
-                    var pos = apf.getAbsolutePosition(ext1);
+                    var pos = ppc.getAbsolutePosition(ext1);
                     if (ext1.previousSibling != ext2) {
                         dragIndicator1.style.display = "block";
                         dragIndicator1.style.top = pos[1] + "px";
                         dragIndicator1.style.left = pos[0] + "px";
-                        dragIndicator1.style.width = (amlNode.$ext.offsetWidth - apf.getWidthDiff(dragIndicator1)) + "px";
-                        dragIndicator1.style.height = (amlNode.$ext.offsetHeight - apf.getHeightDiff(dragIndicator1)) + "px";
+                        dragIndicator1.style.width = (amlNode.$ext.offsetWidth - ppc.getWidthDiff(dragIndicator1)) + "px";
+                        dragIndicator1.style.height = (amlNode.$ext.offsetHeight - ppc.getHeightDiff(dragIndicator1)) + "px";
                         movePosition = {where: "before", amlNode: amlNode}
                     }
                     else {
@@ -262,11 +262,11 @@
                 if (lastAmlNode)
                     clearTimeout(lastAmlNode[4]);
 
-                var plane = apf.plane.get()
+                var plane = ppc.plane.get()
                 if (el && amlNode != el && amlNode.$int 
                   && htmlNode.parentNode != amlNode.$int 
                   && (htmlNode.parentNode != plane.plane || amlNode.$int != document.body)
-                  && !apf.isChildOf(el.$ext, amlNode.$int, true)) {
+                  && !ppc.isChildOf(el.$ext, amlNode.$int, true)) {
                     var ev = {clientX: e.clientX, clientY: e.clientY, ctrlKey: e.ctrlKey}
                     lastAmlNode = [amlNode, new Date().getTime(), e.clientX, e.clientY,
                         setTimeout(function(){
@@ -285,11 +285,11 @@
             var oOutline = this.$ext;
             var prevTop = htmlNode.style.top;
             
-            var el = this, plane = apf.plane.get();
+            var el = this, plane = ppc.plane.get();
             dragIndicator1.style.top = 
             plane.plane.style.top = 
             htmlNode.style.top = "-2000px";
-            var amlNode = apf.findHost(document.elementFromPoint(e.clientX, e.clientY));
+            var amlNode = ppc.findHost(document.elementFromPoint(e.clientX, e.clientY));
             plane.plane.style.top = 0;
             htmlNode.style.top = prevTop;
     
@@ -299,10 +299,10 @@
             showDrag.common_resize.call(this, l, t, d.width, 
                 d.height, e, change, true, true, true, true, true);
             
-            apf.config.setProperty("x", change.l || (change.l === 0 ? 0 : apf.getHtmlLeft(oOutline)));
-            apf.config.setProperty("y", change.t || (change.t === 0 ? 0 : apf.getHtmlTop(oOutline)));
-            apf.config.setProperty("w", d.width);
-            apf.config.setProperty("h", d.height);
+            ppc.config.setProperty("x", change.l || (change.l === 0 ? 0 : ppc.getHtmlLeft(oOutline)));
+            ppc.config.setProperty("y", change.t || (change.t === 0 ? 0 : ppc.getHtmlTop(oOutline)));
+            ppc.config.setProperty("w", d.width);
+            ppc.config.setProperty("h", d.height);
         },
         
         //@todo temporarily disabled middle guides for resize
@@ -346,7 +346,7 @@
             }
             
             //Container
-            if (apf.config.snapcontainer) {
+            if (ppc.config.snapcontainer) {
                 var c = d.container;
 
                 //Left
@@ -545,8 +545,8 @@
             }
             
             //Grid
-            if (apf.config.snapgrid) {
-                var r, gs = apf.config.gridsize;
+            if (ppc.config.snapgrid) {
+                var r, gs = ppc.config.gridsize;
                 if (tpos === false)
                     change.t = t - (r = t % gs) + (r/gs > 0.5 ? gs : 0);
                 if (lpos === false)
@@ -659,7 +659,7 @@
 
     var dragInfo;
     function setDragInfo(el, pEl, isDrag) {
-        apf.setStyleClass(dragIndicator1, "indicate_common", 
+        ppc.setStyleClass(dragIndicator1, "indicate_common", 
             ["indicate_vbox", "indicate_hbox", "indicate_table", "indicate_common"]);
 
         if (pEl.localName == "html")
@@ -669,8 +669,8 @@
         var isBody    = pEl.$int.tagName == "BODY";
         var htmlEl = isDrag && el.dragOutline ? outline : el.$ext;
         var d = dragInfo = {
-            left   : apf.getHtmlLeft(htmlEl),
-            top    : apf.getHtmlTop(htmlEl),
+            left   : ppc.getHtmlLeft(htmlEl),
+            top    : ppc.getHtmlTop(htmlEl),
             width  : htmlEl.offsetWidth,
             height : htmlEl.offsetHeight
         }
@@ -678,11 +678,11 @@
         d.cheight = Math.round(d.height/2);
         
         //Container
-        d.container = isBody ? [0,0] : apf.getAbsolutePosition(container, null, true); //@todo should check for position relative..
-        if (isBody) var m = apf.getMargin(container);
+        d.container = isBody ? [0,0] : ppc.getAbsolutePosition(container, null, true); //@todo should check for position relative..
+        if (isBody) var m = ppc.getMargin(container);
         d.container.push(
-            (isBody ? apf.getWindowWidth() : apf.getHtmlInnerWidth(container)), 
-            (isBody ? apf.getWindowHeight() : apf.getHtmlInnerHeight(container)));
+            (isBody ? ppc.getWindowWidth() : ppc.getHtmlInnerWidth(container)), 
+            (isBody ? ppc.getWindowHeight() : ppc.getHtmlInnerHeight(container)));
     
         //Elements
         var els = pEl.getElementsByTagName("*", true); //Fetch all siblings incl me
@@ -691,7 +691,7 @@
         var xr  = d.xr = [], yr = d.yr = [], dels = d.els = []; 
         
         //Container element
-        if (apf.config.snapcontainer) {
+        if (ppc.config.snapcontainer) {
             xl.push(10);
             xr.push(d.container[2] - 10);
             yl.push(10);
@@ -700,10 +700,10 @@
             dels.push(d.container);
         }
         
-        if (apf.config.snapelement) {
-            var selected = apf.document.$getVisualSelect().getLastSelection();//apf.document.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
+        if (ppc.config.snapelement) {
+            var selected = ppc.document.$getVisualSelect().getLastSelection();//ppc.document.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
             
-            var q = apf.getBorderOffset(container);
+            var q = ppc.getBorderOffset(container);
             var bLeft = q[0];
             var bTop  = q[1];
             for (var l, t, h, w, i = 0, il = els.length; i < il; i++) {
@@ -733,7 +733,7 @@
         var s = el.$stick, d = dragInfo, t = el.$stuck || (el.$stuck = [false, false, false, false]);
         var setOpp = false;
 
-        if (!apf.config.snapcontainer)
+        if (!ppc.config.snapcontainer)
             return;
 
         if (isCoord(s.orpos) && !s.orEl.left) {
@@ -862,7 +862,7 @@
         }
     }
 
-    var control = {stop:apf.K};
+    var control = {stop:ppc.K};
     function hideIndicators(animate, exclude5){
         if (!dragIndicator1)
             return;
@@ -889,8 +889,8 @@
                 }
             }
             
-            apf.tween.multi(dragIndicator1, {
-                anim     : apf.tween.easeInQuad,
+            ppc.tween.multi(dragIndicator1, {
+                anim     : ppc.tween.easeInQuad,
                 tweens   : tweens,
                 steps    : 20,
                 control  : control,
@@ -913,10 +913,10 @@
     var lastPos;
     function beforedragstart(e){
         //Prevent dragging when this node isn't selected
-        var selection = apf.document.$getVisualSelect().getLastSelection();
+        var selection = ppc.document.$getVisualSelect().getLastSelection();
 
         outline = selection.length > 1 && !e.htmlEvent.ctrlKey
-            ? apf.document.$getVisualSelect().$getOutline()
+            ? ppc.document.$getVisualSelect().$getOutline()
             : dragOutline;
         
         this.$setOutline(outline);
@@ -925,20 +925,20 @@
     function beforedrag(e, reparent, add){
         var name, pEl;
 
-        var selection = apf.document.$getVisualSelect().getLastSelection();
+        var selection = ppc.document.$getVisualSelect().getLastSelection();
         if ((this.$multidrag = selection.length > 1) 
           && selection.indexOf(this) == -1)
             return false;
         
         if (outline != (selection.length > 1
-          ? apf.document.$getVisualSelect().$getOutline()
+          ? ppc.document.$getVisualSelect().$getOutline()
           : dragOutline))
             return false; //@todo this is a small hack to prevent dragging with the wrong outline. We should rethink the outline situation.
         
         control.stop();
         
         if (lastReparent && !add) {
-            pEl = lastReparent;//apf.findHost(el.$pHtmlDoc.getElementById("apf_outline").parentNode);
+            pEl = lastReparent;//ppc.findHost(el.$pHtmlDoc.getElementById("ppc_outline").parentNode);
             name = pEl.localName;
         }
         else {
@@ -947,12 +947,12 @@
         }
 
         if (!lastPos)
-            lastPos = apf.getAbsolutePosition(outline, pEl.localName == "table" ? pEl.$ext : outline.offsetParent);
+            lastPos = ppc.getAbsolutePosition(outline, pEl.localName == "table" ? pEl.$ext : outline.offsetParent);
 
         if ("vbox|hbox|table".indexOf(name) > -1) {
             this.realtime  = true;
             
-            apf.setStyleClass(dragIndicator1, "indicate_" + name, 
+            ppc.setStyleClass(dragIndicator1, "indicate_" + name, 
                 ["indicate_vbox", "indicate_hbox", "indicate_table", "indicate_common"]);
             
             dragIndicator1.style.borderWidth = "";
@@ -988,38 +988,38 @@
             //this.$ext = oOutline;
             selected   = [el];
             prevParent = 
-            pNode      = apf.findHost(htmlNode.parentNode);
+            pNode      = ppc.findHost(htmlNode.parentNode);
         }
         else {
-            selected   = apf.document.$getVisualSelect().getLastSelection();
+            selected   = ppc.document.$getVisualSelect().getLastSelection();
             prevParent = selected[0].parentNode;
-            pNode      = apf.findHost(htmlNode.parentNode);
+            pNode      = ppc.findHost(htmlNode.parentNode);
         }
 
         //Set the coordinates if not dropped into a layout node
         if (selected.length > 1 && lastPos
           && "vbox|hbox|table".indexOf(pNode.localName) == -1) {
-            var deltaX = apf.getHtmlLeft(htmlNode) - lastPos[0];
-            var deltaY = apf.getHtmlTop(htmlNode)  - lastPos[1];
+            var deltaX = ppc.getHtmlLeft(htmlNode) - lastPos[0];
+            var deltaY = ppc.getHtmlTop(htmlNode)  - lastPos[1];
             var pWidth = outline.parentNode.tagName == "BODY" 
-                ? apf.getWindowWidth() 
-                : apf.getHtmlInnerWidth(outline.parentNode);
+                ? ppc.getWindowWidth() 
+                : ppc.getHtmlInnerWidth(outline.parentNode);
             var pHeight = outline.parentNode.tagName == "BODY" 
-                ? apf.getWindowHeight() 
-                : apf.getHtmlInnerHeight(outline.parentNode);
+                ? ppc.getWindowHeight() 
+                : ppc.getHtmlInnerHeight(outline.parentNode);
 
             if (deltaX || deltaY
               || "vbox|hbox|table".indexOf(prevParent.localName) > -1) {
                 var isTable = prevParent.localName == "table";
                 for (var n, i = 0; i < selected.length; i++) {
                     n = selected[i];
-                    var diff = apf.getDiff(n.$ext);
+                    var diff = ppc.getDiff(n.$ext);
                     
                     if (isTable)
-                        var itemPos = apf.getAbsolutePosition(n.$ext, prevParent.$ext);
+                        var itemPos = ppc.getAbsolutePosition(n.$ext, prevParent.$ext);
                     n.$updateProperties(
-                        l = (isTable ? itemPos[0] : apf.getHtmlLeft(n.$ext)) + deltaX, 
-                        t = (isTable ? itemPos[1] : apf.getHtmlTop(n.$ext)) + deltaY, 
+                        l = (isTable ? itemPos[0] : ppc.getHtmlLeft(n.$ext)) + deltaX, 
+                        t = (isTable ? itemPos[1] : ppc.getHtmlTop(n.$ext)) + deltaY, 
                         (w = n.$ext.offsetWidth) - diff[0], 
                         (h = n.$ext.offsetHeight) - diff[1], diff[0], diff[1],
                         Math.max(0, pWidth - l - w),
@@ -1087,15 +1087,15 @@
             }
         }
         
-        apf.document.getSelection().$selectList(selected);
-        if (selected.indexOf(apf.document.activeElement) == -1)
+        ppc.document.getSelection().$selectList(selected);
+        if (selected.indexOf(ppc.document.activeElement) == -1)
             selected[0].focus();
 
         hideIndicators();
 
         this.ownerDocument.execCommand("commit");
 
-        apf.layout.processQueue();
+        ppc.layout.processQueue();
 
         //oOutline.style.display = "none";
         
@@ -1132,7 +1132,7 @@
                     this.setProperty("height", h);
                 if (w && (ea || we))
                     this.setProperty("width", w);
-                apf.layout.processQueue();
+                ppc.layout.processQueue();
             }
         }
         else if (name == "hbox") {
@@ -1149,7 +1149,7 @@
                 this.setProperty("width", w);
                 if (h)
                     this.setProperty("height", h);
-                apf.layout.processQueue();
+                ppc.layout.processQueue();
             }
         }
         else if (this.parentNode.editable && name != "table") {
@@ -1163,11 +1163,11 @@
             this.realtime = false;
         
         if ("hbox|vbox|table".indexOf(name) == -1
-          && apf.getStyle(this.$ext, "position") != "absolute") { //ignoring fixed for now...
-            this.$ext.style.width = (this.$ext.offsetWidth - apf.getWidthDiff(this.$ext)) + "px";
-            this.$ext.style.height = (this.$ext.offsetHeight - apf.getHeightDiff(this.$ext)) + "px";
-            /*this.$ext.style.left = apf.getHtmlLeft(this.$ext) + "px";
-            this.$ext.style.top = apf.getHtmlTop(this.$ext) + "px";
+          && ppc.getStyle(this.$ext, "position") != "absolute") { //ignoring fixed for now...
+            this.$ext.style.width = (this.$ext.offsetWidth - ppc.getWidthDiff(this.$ext)) + "px";
+            this.$ext.style.height = (this.$ext.offsetHeight - ppc.getHeightDiff(this.$ext)) + "px";
+            /*this.$ext.style.left = ppc.getHtmlLeft(this.$ext) + "px";
+            this.$ext.style.top = ppc.getHtmlTop(this.$ext) + "px";
             this.$ext.style.position = "absolute";*/
         }
 
@@ -1176,18 +1176,18 @@
         if (name == "vbox") {
             this.maxheight = Math.min(this.maxheight || 10000, 
               this.parentNode.$ext.offsetHeight 
-                - apf.getVerBorders(this.parentNode.$ext)
+                - ppc.getVerBorders(this.parentNode.$ext)
                 - (this.parentNode.$hasPerc ? this.parentNode.$totalPerc * 5 : 0) 
                 - this.parentNode.$totalFixed
                 + this.$ext.offsetHeight);
             
             if (this.margin)
-                m = apf.getBox(this.margin);
+                m = ppc.getBox(this.margin);
             if (this.parentNode.edge)
-                edge = apf.getBox(this.parentNode.edge);
+                edge = ppc.getBox(this.parentNode.edge);
             this.maxwidth = Math.min(this.maxwidth || 10000, 
               this.parentNode.$ext.offsetWidth
-                - apf.getHorBorders(this.parentNode.$ext)
+                - ppc.getHorBorders(this.parentNode.$ext)
                 - (edge ? edge[1] + edge[3] : 0)
                 - (m ? m[1] + m[3] : 0));
         }
@@ -1195,19 +1195,19 @@
             //if (this.parentNode.$hasPerc) {
                 this.maxwidth = Math.min(this.maxwidth || 10000, 
                   this.parentNode.$ext.offsetWidth
-                    - apf.getHorBorders(this.parentNode.$ext)
+                    - ppc.getHorBorders(this.parentNode.$ext)
                     - (this.parentNode.$hasPerc ? this.parentNode.$totalPerc * 5 : 0) 
                     - this.parentNode.$totalFixed
                     + this.$ext.offsetWidth);
             //}
 
             if (this.margin)
-                m = apf.getBox(this.margin);
+                m = ppc.getBox(this.margin);
             if (this.parentNode.edge)
-                edge = apf.getBox(this.parentNode.edge);
+                edge = ppc.getBox(this.parentNode.edge);
             this.maxheight = Math.min(this.maxheight || 10000, 
               this.parentNode.$ext.offsetHeight 
-                - apf.getVerBorders(this.parentNode.$ext)
+                - ppc.getVerBorders(this.parentNode.$ext)
                 - (edge ? edge[0] + edge[2] : 0)
                 - (m ? m[0] + m[2] : 0));
         }
@@ -1240,7 +1240,7 @@
 
         this.ownerDocument.execCommand("commit");
         
-        //apf.layout.processQueue();
+        //ppc.layout.processQueue();
         this.ownerDocument.$getVisualSelect().$finishResize();
     };
     
@@ -1252,15 +1252,15 @@
     }
     
     function keydown(e){
-        if (!apf.document.$getVisualSelect)
+        if (!ppc.document.$getVisualSelect)
             return;
         
-        var selected = apf.document.$getVisualSelect().getLastSelection();//apf.document.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
+        var selected = ppc.document.$getVisualSelect().getLastSelection();//ppc.document.getSelection().$getNodeList(); //@todo maybe optimize by requesting from visualselect
         if (!selected.length)
             return;
         
         //@todo this should be solved in the capturing phase
-        if (apf.document.queryCommandState("rename"))
+        if (ppc.document.queryCommandState("rename"))
             return;
             
         var name = selected[0].parentNode.localName;
@@ -1292,23 +1292,23 @@
         for (var i = 0, il = selected.length; i < il; i++) {
             n = selected[i];
             ext = n.$ext;
-            d = apf.getDiff(ext);
+            d = ppc.getDiff(ext);
         
             n.$updateProperties(
-                l = apf.getHtmlLeft(ext) + (dirX * (e.ctrlKey ? 10 : (e.shiftKey ? 30 : 1))), 
-                t = apf.getHtmlTop(ext) + (dirY * (e.ctrlKey ? 10 : (e.shiftKey ? 30 : 1))), 
+                l = ppc.getHtmlLeft(ext) + (dirX * (e.ctrlKey ? 10 : (e.shiftKey ? 30 : 1))), 
+                t = ppc.getHtmlTop(ext) + (dirY * (e.ctrlKey ? 10 : (e.shiftKey ? 30 : 1))), 
                 (w = ext.offsetWidth) - d[0], 
                 (h = ext.offsetHeight) - d[1], d[0], d[1]);
         }
         n.ownerDocument.execCommand("commit"); //@todo Use a system here to combine these commits as well as possible
         
-        apf.layout.processQueue();
+        ppc.layout.processQueue();
         n.ownerDocument.$getVisualSelect().updateGeo();
         
         if (selected.length > 1) {
             var vOutline = n.ownerDocument.$getVisualSelect().$getOutline();
-            l = apf.getHtmlLeft(vOutline);
-            t = apf.getHtmlTop(vOutline);
+            l = ppc.getHtmlLeft(vOutline);
+            t = ppc.getHtmlTop(vOutline);
             w = vOutline.offsetWidth;
             h = vOutline.offsetheight;
         }
@@ -1319,7 +1319,7 @@
         
         hideIndicators(true);
     }
-    apf.addEventListener("keydown", keydown);
+    ppc.addEventListener("keydown", keydown);
     
     function setDefaultStuck(amlNode){
         amlNode.$stuck = [
@@ -1332,7 +1332,7 @@
             amlNode.$stuck = [false, false, false, false];
     }
 
-    apf.ContentEditable.addInteraction    = function(amlNode){
+    ppc.ContentEditable.addInteraction    = function(amlNode){
         if (!inited)
             init();
         
@@ -1347,7 +1347,7 @@
         setDefaultStuck(amlNode);
     }
     
-    apf.ContentEditable.removeInteraction = function(amlNode){
+    ppc.ContentEditable.removeInteraction = function(amlNode){
         amlNode.removeEventListener("beforedragstart", beforedragstart);
         amlNode.removeEventListener("beforedrag",      beforedrag);
         amlNode.removeEventListener("beforeresize",    beforeresize);

@@ -38,7 +38,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     excludedTypes : {"xml":1, "html":1, "css":1, "txt":1, "png": 1, "jpg": 1, "gif": 1},
 
     nodes : [],
-    model : new apf.model(),
+    model : new ppc.model(),
     
     disableLut: {
         "terminal": true
@@ -86,7 +86,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         this.nodes.push(
 
-            this.mnuRunCfg = new apf.menu({
+            this.mnuRunCfg = new ppc.menu({
                 "id" : "mnuRunCfg",
                 "onprop.visible" : function(e){
                     if (e.value) {
@@ -105,18 +105,18 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 }
             }),
 
-            menus.$insertByIndex(barTools, new apf.splitbutton({
+            menus.$insertByIndex(barTools, new ppc.splitbutton({
                 id       : "btnRun",
                 checked  : "[{require('ext/settings/settings').model}::auto/configurations/@debug]",
                 icon     : "{this.checked ? 'run.png' : 'run.png'}",
-                caption  : "{apf.isTrue(this.checked) ? 'Debug' : 'Run'}",
+                caption  : "{ppc.isTrue(this.checked) ? 'Debug' : 'Run'}",
                 command  : "run",
                 visible  : "{!stProcessRunning.active and 1}",
                 disabled : "{!!!ide.onLine}",
                 submenu  : "mnuRunCfg"
             }), 100),
 
-            menus.$insertByIndex(barTools, new apf.button({
+            menus.$insertByIndex(barTools, new ppc.button({
                 id       : "btnStop",
                 icon     : "stop.png",
                 caption  : "stop",
@@ -128,15 +128,15 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 disabled : "{!!!ide.onLine}"
             }), 200),
 
-//            menus.$insertByIndex(barTools, new apf.divider({
+//            menus.$insertByIndex(barTools, new ppc.divider({
 //                skin : "c9-divider"
 //            }), 300),
 
-            this.model = new apf.model().load("<configurations />")
+            this.model = new ppc.model().load("<configurations />")
         );
 
-        apf.setStyleClass(btnRun.$ext, "btnRun");
-        apf.setStyleClass(btnStop.$ext, "btnStop");
+        ppc.setStyleClass(btnRun.$ext, "btnRun");
+        ppc.setStyleClass(btnStop.$ext, "btnStop");
 
         tooltip.add( btnRun.$button1, {
             message : "Run &amp; Debug your <span>Node.js</span> applications, or run your <span>PHP</span>, <span>Python</span>, or <span>Ruby</span> code.\
@@ -147,24 +147,24 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         });
 
         var c = 0;
-        menus.addItemToMenu(this.mnuRunCfg, new apf.item({
+        menus.addItemToMenu(this.mnuRunCfg, new ppc.item({
             caption  : "no run history",
             disabled : true
         }), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.item({
+        menus.addItemToMenu(this.mnuRunCfg, new ppc.divider(), c += 100);
+        menus.addItemToMenu(this.mnuRunCfg, new ppc.item({
             caption : "Configure....",
             onclick : function(){
                 _self.showRunConfigs(false);
             }
         }), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.divider(), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.item({
+        menus.addItemToMenu(this.mnuRunCfg, new ppc.divider(), c += 100);
+        menus.addItemToMenu(this.mnuRunCfg, new ppc.item({
             caption : "Run in debug mode",
             type    : "check",
             checked : "[{require('ext/settings/settings').model}::auto/configurations/@debug]"
         }), c += 100);
-        menus.addItemToMenu(this.mnuRunCfg, new apf.item({
+        menus.addItemToMenu(this.mnuRunCfg, new ppc.item({
             caption : "Auto show & hide debug tools",
             type    : "check",
             onclick : function(){
@@ -195,12 +195,12 @@ module.exports = ext.register("ext/runpanel/runpanel", {
                 if (!e.model.queryNode("auto/configurations/config[@last='true']")) {
                     var config = e.model.queryNode("auto/configurations/config")
                     if (config)
-                        apf.xmldb.setAttribute(config, "last", "true");
+                        ppc.xmldb.setAttribute(config, "last", "true");
                     else
                         setLast = true;
                 }
 
-                var cfg = apf.n("<config />")
+                var cfg = ppc.n("<config />")
                     .attr("name", " (active file)")
                     .attr("curfile", "1");
                 if (setLast)
@@ -319,14 +319,14 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             return;
         var _self = this;
 
-        apf.importCssString(cssString);
+        ppc.importCssString(cssString);
 
         this.panel = winRunPanel;
         this.nodes.push(winRunPanel);
 
         lstRunCfg.addEventListener("click", function(e){
             if (e.htmlEvent.target.tagName == "SPAN") {
-                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
+                var xmlNode = ppc.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
                 this.remove(xmlNode);
             }
         });
@@ -350,7 +350,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             return;
 
         var duplicate = config.cloneNode(true);
-        apf.b(config).after(duplicate);
+        ppc.b(config).after(duplicate);
         lstRunCfg.select(duplicate);
         winRunPanel.show();
     },
@@ -369,7 +369,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
             extension = name = path = "";
         }
 
-        var cfg = apf.n("<config />")
+        var cfg = ppc.n("<config />")
             .attr("path", path)
             .attr("name", name)
             .attr("extension", extension)
@@ -386,11 +386,11 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     },
 
     autoHidePanel : function(){
-        return apf.isTrue(settings.model.queryValue("auto/configurations/@autohide"));
+        return ppc.isTrue(settings.model.queryValue("auto/configurations/@autohide"));
     },
 
     shouldRunInDebugMode : function(){
-        return apf.isTrue(settings.model.queryValue('auto/configurations/@debug'));
+        return ppc.isTrue(settings.model.queryValue('auto/configurations/@debug'));
     },
 
     run : function(debug) {
@@ -426,7 +426,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
 
         var configs = this.model.queryNodes("config");
         if (!configs.length)
-            menu.insertBefore(new apf.item({disabled:true, caption: "No run history"}), divider);
+            menu.insertBefore(new ppc.item({disabled:true, caption: "No run history"}), divider);
         else {
             for (var i =  0, l = configs.length; i < l; i++) {
                 this.$addMenuItem(configs[i], divider);
@@ -443,7 +443,7 @@ module.exports = ext.register("ext/runpanel/runpanel", {
         if (!divider)
             divider = this.mnuRunCfg.getElementsByTagNameNS("", "divider")[0];
 
-        this.mnuRunCfg.insertBefore(new apf.item({
+        this.mnuRunCfg.insertBefore(new ppc.item({
             caption  : "[{this.node}::@name]",
             node     : cfg,
             type     : "radio",
@@ -459,17 +459,17 @@ module.exports = ext.register("ext/runpanel/runpanel", {
     runConfig : function(config, debug) {
         //ext.initExtension(this);
         var model = settings.model;
-        var saveallbeforerun = apf.isTrue(model.queryValue("general/@saveallbeforerun"));
+        var saveallbeforerun = ppc.isTrue(model.queryValue("general/@saveallbeforerun"));
         if (saveallbeforerun)
             save.saveall();
 
         if (debug === undefined)
             debug = config.parentNode.getAttribute("debug") == "1";
 
-        var lastNode = apf.queryNode(config, "../node()[@last]");
+        var lastNode = ppc.queryNode(config, "../node()[@last]");
         if (lastNode)
-            apf.xmldb.removeAttribute(lastNode, "last");
-        apf.xmldb.setAttribute(config, "last", "true");
+            ppc.xmldb.removeAttribute(lastNode, "last");
+        ppc.xmldb.setAttribute(config, "last", "true");
 
         self["txtCmdArgs"] && txtCmdArgs.blur(); // fix the args cache issue #2763
         // dispatch here instead of in the implementation because the implementations

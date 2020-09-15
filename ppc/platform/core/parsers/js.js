@@ -31,7 +31,7 @@
  * @version     %I%, %G%
  * @since       0.9
  */
-apf.JsParser = new (function(){
+ppc.JsParser = new (function(){
     var tok_lut = {
             '"': 4, '\'': 4, '[': 2, ']': 3, '{': 2, '}': 3, '(': 2, ')': 3,
             '\n': 6, '\r\n': 6, '//': 7, '/*': 7, '*/': 7, '/':8

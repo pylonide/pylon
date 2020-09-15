@@ -33,6 +33,6 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.xinclude = new apf.AmlNamespace();
-apf.setNamespace("http://www.w3.org/2001/XInclude", apf.xinclude);
+ppc.xinclude = new ppc.AmlNamespace();
+ppc.setNamespace("http://www.w3.org/2001/XInclude", ppc.xinclude);
 //#endif

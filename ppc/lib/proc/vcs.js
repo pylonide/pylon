@@ -5,8 +5,8 @@ var Path = require("path"),
 /**
  * Version Control System handler
  */
-apf.process.handler.vcs = function(x){
-    var s       = apf.settings,
+ppc.process.handler.vcs = function(x){
+    var s       = ppc.settings,
         type    = s.parseAttribute(x.getAttribute("type")),
         cmd     = s.parseAttribute(x.getAttribute("cmd")),
         repo    = Path.normalize(s.parseAttribute(x.getAttribute("repository"))),

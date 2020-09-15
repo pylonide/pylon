@@ -30,7 +30,7 @@
  * 
  * @private
  */
-apf.flash = (function(){
+ppc.flash = (function(){
     /**
      * Flash Player Version Detection, version 1.7
      * Detect Client Browser type
@@ -140,7 +140,7 @@ apf.flash = (function(){
         // older WebTV supports Flash 2
         else if (sAgent.indexOf("webtv") != -1)
             flashVer = 2;
-        else if (apf.isIE && !apf.isOpera)
+        else if (ppc.isIE && !ppc.isOpera)
             flashVer = getControlVersion();
 
         return flashVer;
@@ -161,7 +161,7 @@ apf.flash = (function(){
             return false;
         if (versionStr != 0) {
             var aVersions;
-            if (apf.isIE && !apf.isOpera) {
+            if (ppc.isIE && !ppc.isOpera) {
                 // Given "WIN 2,0,0,11"
                 var aTemp = versionStr.split(" "), // ["WIN", "2,0,0,11"]
                     sTemp = aTemp[1];              // "2,0,0,11"
@@ -203,7 +203,7 @@ apf.flash = (function(){
         if (stdout == "undefined")
             stdout = false;
         var i, str = [];
-        if (apf.isIE && !apf.isOpera) {
+        if (ppc.isIE && !ppc.isOpera) {
             str.push("<object ");
             for (i in objAttrs)
                 str.push(i, "=\"", objAttrs[i], "\" ");
@@ -265,7 +265,7 @@ apf.flash = (function(){
         
         var content = buildContent(options),
             // using timeouts INSIDE the callback, because I explicitly want to
-            // wait for APF to finish drawing the elements, i.e. wait for DOM
+            // wait for PPC to finish drawing the elements, i.e. wait for DOM
             // elements to be drawn.
             cb      = function() {
                 $setTimeout(function() {
@@ -295,7 +295,7 @@ apf.flash = (function(){
 
                         if (fail) {
                             // #ifdef __DEBUG
-                            apf.console.error(fail, "flash");
+                            ppc.console.error(fail, "flash");
                             // #endif
                             if (options.onError)
                                 options.onError({message: fail});
@@ -306,7 +306,7 @@ apf.flash = (function(){
                 }, 200);
             };
 
-        return apf.loaded ? cb() : apf.addEventListener("load", cb);
+        return ppc.loaded ? cb() : ppc.addEventListener("load", cb);
     }
 
     /**
@@ -319,7 +319,7 @@ apf.flash = (function(){
         var ret = AC_GetArgs(options,
             "movie", "clsid:d27cdb6e-ae6d-11cf-96b8-444553540000",
             "application/x-shockwave-flash"),
-            MMPlayerType  = (apf.isIE == true) ? "ActiveX" : "PlugIn",
+            MMPlayerType  = (ppc.isIE == true) ? "ActiveX" : "PlugIn",
             MMredirectURL = window.location;
         document.title    = document.title.slice(0, 47) + " - Flash Player Installation";
         var MMdoctitle    = document.title;
@@ -409,13 +409,13 @@ apf.flash = (function(){
 
         if (typeof id == "object")
             return id;
-        if (apf.isIE) {
+        if (ppc.isIE) {
             return self[id];
         }
         else {
             elem = document[id] ? document[id] : document.getElementById(id);
             if (!elem)
-                elem = apf.lookup(id);
+                elem = ppc.lookup(id);
             return elem;
         }
     }
@@ -457,12 +457,12 @@ apf.flash = (function(){
     function callMethod(id, methodName) {
         var player = hash[id];
         if (player == null)
-            throw new Error(apf.formatErrorString(0, this, "Player with id: " + id + " not found"));
+            throw new Error(ppc.formatErrorString(0, this, "Player with id: " + id + " not found"));
         if (player[methodName] == null)
-            throw new Error(apf.formatErrorString(0, this, "Method " + methodName + " Not found"));
+            throw new Error(ppc.formatErrorString(0, this, "Method " + methodName + " Not found"));
 
         // #ifdef __DEBUG
-        apf.console.info("[FLASH] received method call for player '" + id + "', '" + methodName + "'");
+        ppc.console.info("[FLASH] received method call for player '" + id + "', '" + methodName + "'");
         // #endif
 
         var args = [],

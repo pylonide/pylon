@@ -31,11 +31,11 @@
  * @version     %I%, %G%
  * @since       3.0
  *
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  */
 
-apf.gallery = function(struct, tagName){
-    this.$init(tagName || "gallery", apf.NODE_VISIBLE, struct);
+ppc.gallery = function(struct, tagName){
+    this.$init(tagName || "gallery", ppc.NODE_VISIBLE, struct);
     
     this.imageheight   = "auto";
     
@@ -63,11 +63,11 @@ apf.gallery = function(struct, tagName){
     this.tmrRefresh    = null;
     this.tmrSlide      = null;
     
-    this.stepShow      = apf.isIE ? 10 : 15;
-    this.stepShowFast  = apf.isIE ? 5 : 8;
-    this.stepSlide     = apf.isIE ? 25 : 30;
-    this.stepHide      = apf.isIE ? 5 : 7;
-    this.intSSlide     = apf.isIE ? 2 : 10;
+    this.stepShow      = ppc.isIE ? 10 : 15;
+    this.stepShowFast  = ppc.isIE ? 5 : 8;
+    this.stepSlide     = ppc.isIE ? 25 : 30;
+    this.stepHide      = ppc.isIE ? 5 : 7;
+    this.intSSlide     = ppc.isIE ? 2 : 10;
     
     this.imageStack = {};
     this.isOnStack = false;
@@ -132,7 +132,7 @@ apf.gallery = function(struct, tagName){
         var thumbBarSize = 0;
         for (var i = 0; i < nodes_len; i++) {
             if ((nodes[i].className || "").indexOf("thumbnail") > -1) {
-                thumbBarSize += nodes[i].offsetWidth + apf.getMargin(nodes[i])[0];
+                thumbBarSize += nodes[i].offsetWidth + ppc.getMargin(nodes[i])[0];
             }
         }
         
@@ -162,7 +162,7 @@ apf.gallery = function(struct, tagName){
         for (var i = 0; i < thumbs_len; i++) {
             if ((thumbs[i].className || "").indexOf("thumbnail") > -1) {
                 if (tHeight == null || tHeight <= 0)
-                    tHeight = (thumbs[i].offsetHeight || parseInt(thumbs[i].height)) - apf.getVerBorders(thumbs[i]);
+                    tHeight = (thumbs[i].offsetHeight || parseInt(thumbs[i].height)) - ppc.getVerBorders(thumbs[i]);
                 
                 thumbs[i].onmouseover = function(e) {
                     _self.$hoverThumb(e, this);
@@ -212,11 +212,11 @@ apf.gallery = function(struct, tagName){
         var from   = e.type == "mouseover" ? 0.7 : 1;
         var to     = e.type == "mouseover" ? 1   : 0.7;
 
-        if (apf.isChildOf(htmlElement, target, false)) {
+        if (ppc.isChildOf(htmlElement, target, false)) {
             if ((htmlElement.className || "").indexOf("selected") > -1)
                 return;
             
-            apf.tween.single(htmlElement, {
+            ppc.tween.single(htmlElement, {
                 steps : 10, 
                 type  : "fade",
                 from  : from,
@@ -288,10 +288,10 @@ apf.gallery = function(struct, tagName){
             _self.$oImage.style.display = "block";
            
             if (!_self.isOnStack) {
-                apf.tween.single(_self.$oImage, {
+                ppc.tween.single(_self.$oImage, {
                     steps : _self.stepShow,
                     type  : "fade",
-                    anim  : apf.tween.NORMAL,
+                    anim  : ppc.tween.NORMAL,
                     from  : 0,
                     to    : 1,
                     onfinish: function(){
@@ -300,7 +300,7 @@ apf.gallery = function(struct, tagName){
                 });
             }
             else {
-                if (apf.isIE){
+                if (ppc.isIE){
                     _self.$oImage.style.filter = "alpha(opacity=100)";
                 }
                 else {
@@ -332,10 +332,10 @@ apf.gallery = function(struct, tagName){
             
             if (!this.isOnStack) {
                 var _self = this;
-                apf.tween.single(this.$oMedia, {
+                ppc.tween.single(this.$oMedia, {
                     steps : _self.stepShow,
                     type  : "fade",
-                    anim  : apf.tween.NORMAL,
+                    anim  : ppc.tween.NORMAL,
                     from  : 0,
                     to    : 1,
                     onfinish: function(){
@@ -370,10 +370,10 @@ apf.gallery = function(struct, tagName){
                 return;
             
             if (!_self.isOnStack) {
-                apf.tween.single(_self.mediaType == "image" ? _self.$oMedia : _self.$oImage, {
+                ppc.tween.single(_self.mediaType == "image" ? _self.$oMedia : _self.$oImage, {
                     steps : _self.stepHide,
                     type  : "fade",
-                    anim  : apf.tween.NORMAL,
+                    anim  : ppc.tween.NORMAL,
                     from  : 1,
                     to    : 0,
                     onfinish: function() {
@@ -399,7 +399,7 @@ apf.gallery = function(struct, tagName){
                 }
             }
             
-        }, apf.isIE ? 80 : 100);
+        }, ppc.isIE ? 80 : 100);
     };
     
     this.setDescription = function(xmlNode) {
@@ -411,18 +411,18 @@ apf.gallery = function(struct, tagName){
                 break;
             case "number+text":
             case "text+number":
-                var part1 = (apf.language.getWord("sub/slideshow/image") || "Image")
+                var part1 = (ppc.language.getWord("sub/slideshow/image") || "Image")
                           + " " + (this.getPos() + 1) + " "
-                          + (apf.language.getWord("sub/slideshow/of") || "of") + " "
+                          + (ppc.language.getWord("sub/slideshow/of") || "of") + " "
                           + this.getTraverseNodes().length;
-                var part2 = title || this.defaulttitle || apf.language.getWord("sub/slideshow/defaulttitle") || "No description";
+                var part2 = title || this.defaulttitle || ppc.language.getWord("sub/slideshow/defaulttitle") || "No description";
 
                 var descr = "<b>" + part1 + "</b><br />" + part2;
                 break;
             default:
-                var descr = apf.language.getWord("sub/slideshow/image") || "Image"
+                var descr = ppc.language.getWord("sub/slideshow/image") || "Image"
                           + " " + (this.getPos() + 1) + " "
-                          + (apf.language.getWord("sub/slideshow/of") || "of") + " "
+                          + (ppc.language.getWord("sub/slideshow/of") || "of") + " "
                           + this.getTraverseNodes().length;
                 break;
         }
@@ -463,7 +463,7 @@ apf.gallery = function(struct, tagName){
     };
     
     this.centerThumbnail = function(xmlNode) {
-        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, this);
+        var htmlNode = ppc.xmldb.findHtmlNode(xmlNode, this);
         
         if (!htmlNode || this.noThumbArrows)
             return;
@@ -477,7 +477,7 @@ apf.gallery = function(struct, tagName){
         if (htmlNode == this.$oThumbs.firstChild && ocLeft == 0)
             return;
         
-        var tCenteredPos  = -1 * oLeft - parseInt((oWidth + apf.getMargin(htmlNode)[0]) / 2);
+        var tCenteredPos  = -1 * oLeft - parseInt((oWidth + ppc.getMargin(htmlNode)[0]) / 2);
         var vpCenteredPos = parseInt(this.$oThumbs.parentNode.offsetWidth / 2)
         
         var newLeft = tCenteredPos + this.maxLeft + vpCenteredPos;
@@ -488,10 +488,10 @@ apf.gallery = function(struct, tagName){
                 ? this.minLeft
                 : newLeft);
 
-        apf.tween.single(this.$oThumbs, {
+        ppc.tween.single(this.$oThumbs, {
             steps   : 15, 
             type    : "left", 
-            anim    : apf.tween.EASEOUT,
+            anim    : ppc.tween.EASEOUT,
             from    : ocLeft, 
             to      : newLeft,
             onfinish : function() {
@@ -509,7 +509,7 @@ apf.gallery = function(struct, tagName){
         this.isLoaderActive = true;
         
         this.$oLoader.style.display = "block";
-        apf.tween.single(this.$oLoader, {
+        ppc.tween.single(this.$oLoader, {
             steps    : 6, 
             type     : "fade",
             from     : 0,
@@ -608,11 +608,11 @@ apf.gallery = function(struct, tagName){
         
         this.$oMedia = this.$getLayoutNode("main", "media", this.$ext);
         
-        var rules = "var o = apf.all[" + this.$uniqueId + "];\
+        var rules = "var o = ppc.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()";
-        apf.layout.setRules(this.$pHtmlNode, this.$uniqueId + "_scaling",
+        ppc.layout.setRules(this.$pHtmlNode, this.$uniqueId + "_scaling",
                             rules, true);
-        apf.layout.queue(this.$pHtmlNode);
+        ppc.layout.queue(this.$pHtmlNode);
         
         //Events
         var _self = this;
@@ -677,10 +677,10 @@ apf.gallery = function(struct, tagName){
                 ? _self.maxLeft 
                 : oLeft + 200;
             
-            apf.tween.single(_self.$oThumbs, {
+            ppc.tween.single(_self.$oThumbs, {
                 steps   : _self.stepSlide, 
                 type    : "left", 
-                anim    : apf.tween.EASEOUT,
+                anim    : ppc.tween.EASEOUT,
                 from    : oLeft, 
                 to      : newLeft,
                 onfinish : function() {
@@ -699,10 +699,10 @@ apf.gallery = function(struct, tagName){
                 ? _self.minLeft 
                 : oLeft - 200;
             
-            apf.tween.single(_self.$oThumbs, {
+            ppc.tween.single(_self.$oThumbs, {
                 steps   : _self.stepSlide, 
                 type    : "left", 
-                anim    : apf.tween.EASEOUT,
+                anim    : ppc.tween.EASEOUT,
                 from    : oLeft, 
                 to      : newLeft,
                 onfinish : function() {
@@ -731,13 +731,13 @@ apf.gallery = function(struct, tagName){
             _self.$oNext.style.display = "block";
             _self.$oPrevious.style.display = "block";
             
-            apf.tween.multi(_self.$oNext, {
+            ppc.tween.multi(_self.$oNext, {
                 steps   : 15,
                 control : _self.arrowsVisible,
-                anim     : apf.tween.EASEOUT,
+                anim     : ppc.tween.EASEOUT,
                 tweens   : [
-                    {type: "fade", from: apf.getOpacity(_self.$oNext), to: 1},
-                    {type: "fade", from: apf.getOpacity(_self.$oPrevious), to: 1, oHtml : _self.$oPrevious}
+                    {type: "fade", from: ppc.getOpacity(_self.$oNext), to: 1},
+                    {type: "fade", from: ppc.getOpacity(_self.$oPrevious), to: 1, oHtml : _self.$oPrevious}
                 ],
                 onfinish : function() {
                     _self.$oNext.style.display     = "block";
@@ -761,7 +761,7 @@ apf.gallery = function(struct, tagName){
                     ? e.relatedTarget 
                     : null);
             
-            if (apf.isChildOf(_self.$oImageContainer, target, true))
+            if (ppc.isChildOf(_self.$oImageContainer, target, true))
                 return;
 
             _self.arrowsInvisible = {
@@ -773,13 +773,13 @@ apf.gallery = function(struct, tagName){
 
             _self.arrowsAreVisible = false;
 
-            apf.tween.multi(_self.$oNext, {
+            ppc.tween.multi(_self.$oNext, {
                 steps   : 15,
                 control : _self.arrowsInvisible,
-                anim     : apf.tween.EASEOUT,
+                anim     : ppc.tween.EASEOUT,
                 tweens   : [
-                    {type: "fade", from: apf.getOpacity(_self.$oNext), to: 0},
-                    {type: "fade", from: apf.getOpacity(_self.$oPrevious), to: 0, oHtml : _self.$oPrevious}
+                    {type: "fade", from: ppc.getOpacity(_self.$oNext), to: 0},
+                    {type: "fade", from: ppc.getOpacity(_self.$oPrevious), to: 0, oHtml : _self.$oPrevious}
                 ],
                 onfinish : function() {
                     _self.$oNext.style.display = "none";
@@ -788,13 +788,13 @@ apf.gallery = function(struct, tagName){
             });
         };
         
-        if (apf.window.vManager.check(this, "gallery", this.initiateThumbnailEvents))
+        if (ppc.window.vManager.check(this, "gallery", this.initiateThumbnailEvents))
             this.initiateThumbnailEvents();
     };
-}).call(apf.gallery.prototype = new apf.BaseList());
+}).call(ppc.gallery.prototype = new ppc.BaseList());
 
-apf.aml.setElement("gallery", apf.gallery);
+ppc.aml.setElement("gallery", ppc.gallery);
 
-apf.aml.setElement("url", apf.BindingRule);
-apf.aml.setElement("mediatype", apf.BindingRule);
+ppc.aml.setElement("url", ppc.BindingRule);
+ppc.aml.setElement("mediatype", ppc.BindingRule);
 //#endif

@@ -74,8 +74,8 @@
  * @version     %I%, %G%
  * @since       0.9
  *
- * @inherits apf.StandardBinding
- * @inheritsElsewhere apf.XForms
+ * @inherits ppc.StandardBinding
+ * @inheritsElsewhere ppc.XForms
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -107,21 +107,21 @@
  *    value = "[mdlSlider::@value]" />
  * </code>
  */
-apf.range  = function(struct, tagName){
-    this.$init(tagName || "range", apf.NODE_VISIBLE, struct);
+ppc.range  = function(struct, tagName){
+    this.$init(tagName || "range", ppc.NODE_VISIBLE, struct);
 };
 
-apf.slider = function(struct, tagName){
-    this.$init(tagName || "slider", apf.NODE_VISIBLE, struct);
+ppc.slider = function(struct, tagName){
+    this.$init(tagName || "slider", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         //#ifdef __WITH_XFORMS
-        //,apf.XForms
+        //,ppc.XForms
         //#endif
     );
 
@@ -187,7 +187,7 @@ apf.slider = function(struct, tagName){
             markers = this.oMarkers.childNodes;
         for (i = markers.length - 1; i >= 0; i--) {
             if (markers[i].tagName == "U" && markers[i].nodeType == 1) //small hack
-                apf.destroyHtmlNode(markers[i]);
+                ppc.destroyHtmlNode(markers[i]);
         }
 
         if (!this.step && this.$aml)
@@ -203,7 +203,7 @@ apf.slider = function(struct, tagName){
                 prop  = this.$dir == "horizontal" ? "left" : "top",
                 size  = this.$dir == "horizontal"
                     ? this.oSlider.offsetWidth - this.oKnob.offsetWidth 
-                      - apf.getWidthDiff(this.oSlider)
+                      - ppc.getWidthDiff(this.oSlider)
                     : this.oSlider.offsetHeight - this.oKnob.offsetHeight;
 
             for (i = 0; i < count + 1; i++) {
@@ -213,7 +213,7 @@ apf.slider = function(struct, tagName){
                 o.setAttribute("style", prop + ":" + Math.round(pos * size) + "px");
                 nodes.push(o);
             }
-            apf.insertHtmlNodes(nodes, this.oMarkers);
+            ppc.insertHtmlNodes(nodes, this.oMarkers);
         }
     };
     
@@ -227,7 +227,7 @@ apf.slider = function(struct, tagName){
             prop = this.$dir == "horizontal" ? "left" : "top",
             size = this.$dir == "horizontal"
                 ? this.oSlider.offsetWidth - this.oKnob.offsetWidth 
-                  - apf.getWidthDiff(this.oSlider)
+                  - ppc.getWidthDiff(this.oSlider)
                 : this.oSlider.offsetHeight - this.oKnob.offsetHeight,
             nodes = this.oMarkers.getElementsByTagName("U");//small hack
         for (i = nodes.length - 1; i >= 0; i--) {
@@ -279,7 +279,7 @@ apf.slider = function(struct, tagName){
     this.$propHandlers["progress"] = function(value){
         if (!this.oProgress) {
             this.oProgress =
-              apf.insertHtmlNode(this.$getLayoutNode("progress"),
+              ppc.insertHtmlNode(this.$getLayoutNode("progress"),
                 this.$getLayoutNode("main", "progress", this.$ext));
         }
 
@@ -294,8 +294,8 @@ apf.slider = function(struct, tagName){
         this.min = parseInt(value) || 0;
         if (this.markers)
             this.$propHandlers["markers"].call(this, this.markers);
-        if (this.value < this.min || this.value != this.$value) { //@todo apf3.0
-            this.value = -1; //@todo apf3.0
+        if (this.value < this.min || this.value != this.$value) { //@todo ppc3.0
+            this.value = -1; //@todo ppc3.0
             this.setProperty("value", this.$value);
         }
     };
@@ -308,8 +308,8 @@ apf.slider = function(struct, tagName){
         this.max = parseInt(value) || 1;
         if (this.markers)
             this.$propHandlers["markers"].call(this, this.markers);
-        if (this.value > this.min || this.value != this.$value) { //@todo apf3.0
-            this.value = -1; //@todo apf3.0
+        if (this.value > this.min || this.value != this.$value) { //@todo ppc3.0
+            this.value = -1; //@todo ppc3.0
             this.setProperty("value", this.$value);
         }
     };
@@ -354,21 +354,21 @@ apf.slider = function(struct, tagName){
 
         if (this.$dir == "horizontal") {
             max = (this.oSlider.offsetWidth
-                - apf.getWidthDiff(this.oSlider))
+                - ppc.getWidthDiff(this.oSlider))
                 - this.oKnob.offsetWidth;
-            min = parseInt(apf.getBox(
-                apf.getStyle(this.oSlider, "padding"))[3]);
+            min = parseInt(ppc.getBox(
+                ppc.getStyle(this.oSlider, "padding"))[3]);
 
             offset = Math.round(((max - min) * multiplier) + min);
             
             if (animate) {
-                apf.tween.single(this.oKnob, {
+                ppc.tween.single(this.oKnob, {
                     type    : 'left',
                     steps   : 5,
                     interval: 10,
                     from    : this.oKnob.offsetLeft,
                     to      : offset,
-                    anim    : apf.tween.NORMAL,
+                    anim    : ppc.tween.NORMAL,
                     oneach  : function(oNode) {
                         if (_self.oFill)
                             _self.oFill.style.width = (oNode.offsetLeft + 3) + "px";
@@ -383,21 +383,21 @@ apf.slider = function(struct, tagName){
         }
         else {
             max = (this.oSlider.offsetHeight
-                - apf.getHeightDiff(this.oSlider))
+                - ppc.getHeightDiff(this.oSlider))
                 - this.oKnob.offsetHeight;
-            min = parseInt(apf.getBox(
-                apf.getStyle(this.oSlider, "padding"))[0]);
+            min = parseInt(ppc.getBox(
+                ppc.getStyle(this.oSlider, "padding"))[0]);
 
             offset = (((max - min) * (1 - multiplier)) + min);
 
             if (animate) {
-                apf.tween.single(this.oKnob, {
+                ppc.tween.single(this.oKnob, {
                     type    : 'top',
                     steps   : 5,
                     interval: 10,
                     from    : this.oKnob.offsetTop,
                     to      : offset,
-                    anim    : apf.tween.NORMAL,
+                    anim    : ppc.tween.NORMAL,
                     oneach  : function(oNode) {
                         if (_self.oFill)
                             _self.oFill.style.height = (oNode.offsetTop + 3) + "px";
@@ -560,7 +560,7 @@ apf.slider = function(struct, tagName){
         this.isOpened = true;
 
         this.oSliderContainer.style.display = "block";
-        this.oSliderContainer.style[apf.supportOverflowComponent
+        this.oSliderContainer.style[ppc.supportOverflowComponent
             ? "overflowY"
             : "overflow"] = "hidden";
         
@@ -568,7 +568,7 @@ apf.slider = function(struct, tagName){
         var scWidth = this.oSliderContainer.offsetWidth;
         var scHeight = this.oSliderContainer.offsetHeight;
         var kWidth = this.oKnob.offsetWidth;
-        var diff = apf.getDiff(this.oSliderContainer);
+        var diff = ppc.getDiff(this.oSliderContainer);
         var right = scWidth - this.$ext.offsetWidth;
         this.$setLabelValue(this.oLabel.value);
         this.oSliderContainer.style.display = "none";
@@ -582,7 +582,7 @@ apf.slider = function(struct, tagName){
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Down");
 
         var _self = this;
-        apf.popup.show(this.$uniqueId, {
+        ppc.popup.show(this.$uniqueId, {
             x       : -1 * right,
             y       : this.$ext.offsetHeight,
             animate : true,
@@ -590,7 +590,7 @@ apf.slider = function(struct, tagName){
             width   : scWidth + 1,
             height  : scHeight - diff[1],
             callback: function(container) {
-                container.style[apf.supportOverflowComponent
+                container.style[ppc.supportOverflowComponent
                     ? "overflowY"
                     : "overflow"] = "hidden";
             }
@@ -603,12 +603,12 @@ apf.slider = function(struct, tagName){
 
         this.isOpened = false;
         if (this.selected) {
-            var htmlNode = apf.xmldb.findHtmlNode(this.selected, this);
+            var htmlNode = ppc.xmldb.findHtmlNode(this.selected, this);
             if (htmlNode) this.$setStyleClass(htmlNode, '', ["hover"]);
         }
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Down"]);
-        apf.popup.hide();
+        ppc.popup.hide();
         return false;
     };
     
@@ -646,7 +646,7 @@ apf.slider = function(struct, tagName){
             var oButton = this.$getLayoutNode("main", "button", oExt);
             if (oButton) {
                 oButton.setAttribute("onmousedown",
-                    'apf.lookup(' + this.$uniqueId + ').slideToggle(event, true);');
+                    'ppc.lookup(' + this.$uniqueId + ').slideToggle(event, true);');
             }
         });
         
@@ -672,7 +672,7 @@ apf.slider = function(struct, tagName){
             this.oSlider  = this.$getLayoutNode("container", "slider", this.oSliderContainer);
             
             //Set up the popup
-            this.$pHtmlDoc = apf.popup.setContent(this.$uniqueId, this.oSliderContainer, apf.skins.getCssString(this.skinName));
+            this.$pHtmlDoc = ppc.popup.setContent(this.$uniqueId, this.oSliderContainer, ppc.skins.getCssString(this.skinName));
             document.body.appendChild(this.oSliderContainer);
         }
         else {
@@ -683,8 +683,8 @@ apf.slider = function(struct, tagName){
 
         this.$dir = this.$getOption("main", "direction") || "horizontal";
 
-        this.oKnob.style.left = (parseInt(apf.getBox(
-            apf.getStyle(this.oSlider, "padding"))[3])) + "px";
+        this.oKnob.style.left = (parseInt(ppc.getBox(
+            ppc.getStyle(this.oSlider, "padding"))[3])) + "px";
 
         var _self = this;
         function prepareKnob(e) {
@@ -698,17 +698,17 @@ apf.slider = function(struct, tagName){
 
             if (_self.$dir == "horizontal") {
                 this.max = _self.oSlider.offsetWidth 
-                    - apf.getWidthDiff(_self.oSlider)
+                    - ppc.getWidthDiff(_self.oSlider)
                     - this.offsetWidth;
-                this.min = parseInt(apf.getBox(
-                    apf.getStyle(_self.oSlider, "padding"))[3]);
+                this.min = parseInt(ppc.getBox(
+                    ppc.getStyle(_self.oSlider, "padding"))[3]);
             }
             else {
                 this.max = _self.oSlider.offsetHeight
-                    - apf.getHeightDiff(_self.oSlider)
+                    - ppc.getHeightDiff(_self.oSlider)
                     - this.offsetHeight;
-                this.min = parseInt(apf.getBox(
-                    apf.getStyle(_self.oSlider, "padding"))[0]);
+                this.min = parseInt(ppc.getBox(
+                    ppc.getStyle(_self.oSlider, "padding"))[0]);
             }
         }
 
@@ -741,7 +741,7 @@ apf.slider = function(struct, tagName){
 
             _self.$setStyleClass(this, "btndown", ["btnover"]);
 
-            apf.dragMode = true;
+            ppc.dragMode = true;
 
             _self.$dragging = true;
             
@@ -757,13 +757,13 @@ apf.slider = function(struct, tagName){
                 e = e || window.event;
                 var o = this.dragNode;
                 if (!o) {
-                    apf.dragMode = document.onmousemove = document.onmouseup = null;
+                    ppc.dragMode = document.onmousemove = document.onmouseup = null;
                     return; //?
                 }
 
                 var knobValue = getKnobValue(o, e, _self.slideSnap);
                 if (_self.realtime) {
-                    //_self.value = -1; //reset value //@todo apf3.0 please fix this to be not needed. just set a flag to not do change detect
+                    //_self.value = -1; //reset value //@todo ppc3.0 please fix this to be not needed. just set a flag to not do change detect
                     if (_self.slideDiscreet) {
                         this.$onlySetXml = true;//blrgh..
                         var rValue = _self.change(Math.round((knobValue / _self.step)
@@ -822,7 +822,7 @@ apf.slider = function(struct, tagName){
                 if (rValue !== false && _self.slideDiscreet)
                     _self.$propHandlers["value"].call(_self, knobValue, "value", true);
 
-                apf.dragMode         = false;
+                ppc.dragMode         = false;
                 document.onmousemove = 
                 document.onmouseup   = null;
 
@@ -832,11 +832,11 @@ apf.slider = function(struct, tagName){
                         - _self.oKnob.offsetWidth)/2) + "px";
 
                     $setTimeout(function(){
-                        if (apf.isIE) {
+                        if (ppc.isIE) {
                             _self.oBalloon.style.display = "none";
                         }
                         else {
-                            apf.tween.single(_self.oBalloon, {
+                            ppc.tween.single(_self.oBalloon, {
                                 type : "fade",
                                 from : 1,
                                 to   : 0,
@@ -870,7 +870,7 @@ apf.slider = function(struct, tagName){
 
             var o = _self.oKnob;
             if ((e.srcElement || e.target) != o) {
-                var p = apf.getAbsolutePosition(o);
+                var p = ppc.getAbsolutePosition(o);
                 prepareKnob.call(o, {
                     x : p[0] + o.offsetWidth / 2,
                     y : p[1] + o.offsetHeight / 2
@@ -882,8 +882,8 @@ apf.slider = function(struct, tagName){
         };
 
         // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone)
-            apf.iphone.linkEvents(this.oKnob);
+        if (ppc.isIphone)
+            ppc.iphone.linkEvents(this.oKnob);
         // #endif
     };
 
@@ -895,9 +895,9 @@ apf.slider = function(struct, tagName){
         //@todo this goes wrong with skin switching. smartbindings is called again.
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.oSlider, "knob",
-            "apf.all[" + this.$uniqueId + "].$resize()", true);
-        apf.layout.queue(this.$ext);
+        ppc.layout.setRules(this.oSlider, "knob",
+            "ppc.all[" + this.$uniqueId + "].$resize()", true);
+        ppc.layout.queue(this.$ext);
         //#endif
     };
 
@@ -908,7 +908,7 @@ apf.slider = function(struct, tagName){
         this.oKnob.onmouseout  = null;
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.$ext, "knob");
+        ppc.layout.removeRule(this.$ext, "knob");
         //#endif
     };
     
@@ -927,13 +927,13 @@ apf.slider = function(struct, tagName){
     //#endif
 
 // #ifdef __WITH_DATABINDING
-}).call(apf.slider.prototype = new apf.StandardBinding());
+}).call(ppc.slider.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.slider.prototype = new apf.Presentation());
+}).call(ppc.slider.prototype = new ppc.Presentation());
 #endif*/
 
-apf.range.prototype = apf.slider.prototype;
+ppc.range.prototype = ppc.slider.prototype;
 
-apf.aml.setElement("range",  apf.range);
-apf.aml.setElement("slider", apf.slider);
+ppc.aml.setElement("range",  ppc.range);
+ppc.aml.setElement("slider", ppc.slider);
 // #endif

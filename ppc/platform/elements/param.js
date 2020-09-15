@@ -29,12 +29,12 @@
  *                                       no value is specified when this function
  *                                       is called, the default value is used.
  */
-apf.param = function(struct, tagName){
-    this.$init(tagName || "param", apf.NODE_HIDDEN, struct);
+ppc.param = function(struct, tagName){
+    this.$init(tagName || "param", ppc.NODE_HIDDEN, struct);
 };
 
-apf.param.prototype = new apf.AmlElement();
-apf.param.prototype.$parsePrio = "002";
-apf.aml.setElement("variable", apf.param); //backwards compatibility
-apf.aml.setElement("param", apf.param);
+ppc.param.prototype = new ppc.AmlElement();
+ppc.param.prototype.$parsePrio = "002";
+ppc.aml.setElement("variable", ppc.param); //backwards compatibility
+ppc.aml.setElement("param", ppc.param);
 // #endif

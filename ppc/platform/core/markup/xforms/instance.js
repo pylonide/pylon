@@ -29,13 +29,13 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.XformsInstanceElement = function(struct, tagName){
-    this.$init(tagName || "Instance", apf.NODE_VISIBLE, struct);
+ppc.XformsInstanceElement = function(struct, tagName){
+    this.$init(tagName || "Instance", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     
-}).call(apf.XformsInstanceElement.prototype = new apf.XformsElement());
+}).call(ppc.XformsInstanceElement.prototype = new ppc.XformsElement());
 
-apf.xforms.setElement("html", apf.XformsInstanceElement);
+ppc.xforms.setElement("html", ppc.XformsInstanceElement);
 // #endif

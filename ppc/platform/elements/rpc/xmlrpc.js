@@ -23,7 +23,7 @@
 
 /**
  * Implementation of the XML-RPC protocol as a module for the RPC
- * plugin of apf.teleport.
+ * plugin of ppc.teleport.
  * Example:
  * Ajax.org Markup Language
  * <code>
@@ -50,9 +50,9 @@
  *
  * @addenum rpc[@protocol]:xmlrpc
  *
- * @inherits apf.Teleport
- * @inherits apf.http
- * @inherits apf.rpc
+ * @inherits ppc.Teleport
+ * @inherits ppc.http
+ * @inherits ppc.rpc
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -60,7 +60,7 @@
  *
  * @default_private
  */
-apf.xmlrpc = function(){
+ppc.xmlrpc = function(){
     this.supportMulticall = true;
     this.multicall        = false;
     this.mcallname        = "system.multicall";
@@ -93,7 +93,7 @@ apf.xmlrpc = function(){
             //<![CDATA[***your text here***]]>
             //return "<string><![CDATA[" + s.replace(/\]\]\>/g, "")
             //    .replace(/\<\!\[\CDATA\[/g, "") + "]]></string>";
-            return "<string><![CDATA[" + apf.escapeXML(s) + "]]></string>";
+            return "<string><![CDATA[" + ppc.escapeXML(s) + "]]></string>";
             //var str = "<string>" + s.replace(/\&/g, "&amp;")
             //    .replace(/\</g, "&lt;").replace(/\>/g, "&gt;") + "</string>";
         },
@@ -138,7 +138,7 @@ apf.xmlrpc = function(){
             
             function doYear(year){
                 if (year > 9999 || year < 0) 
-                    XMLRPC.handleError(new Error(apf.formatErrorString(1085,
+                    XMLRPC.handleError(new Error(ppc.formatErrorString(1085,
                         null, "XMLRPC serialization", "Unsupported year: " + year)));
                 
                 year = String("0000" + year)
@@ -167,11 +167,11 @@ apf.xmlrpc = function(){
     
     this.doSerialize = function(args){
         if (typeof args == "function") {
-            throw new Error(apf.formatErrorString(1086, null, 
+            throw new Error(ppc.formatErrorString(1086, null, 
                 "XMLRPC serialization", "Cannot Parse functions"));
         }
         else 
-            if (apf.isNot(args)) 
+            if (ppc.isNot(args)) 
                 return createMessage["boolean"](false);
         
         return createMessage[args.dataType || 0](args);
@@ -194,7 +194,7 @@ apf.xmlrpc = function(){
         
         switch (data.tagName) {
             case "string":
-                if (apf.isGecko) {
+                if (ppc.isGecko) {
                     data = (new XMLSerializer()).serializeToString(data);
                     data = data.replace(/^\<string\>/, '');
                     data = data.replace(/\<\/string\>$/, '');
@@ -218,7 +218,7 @@ apf.xmlrpc = function(){
                  07-17-1998 14:08:55
                  19980717T14:08:55
                  */
-                var sn = apf.dateSeparator;
+                var sn = ppc.dateSeparator;
                 
                 if (/^(\d{4})(\d{2})(\d{2})T(\d{2}):(\d{2}):(\d{2})/
                   .test(data.firstChild.nodeValue)) {
@@ -238,21 +238,21 @@ apf.xmlrpc = function(){
                 
                 break;
             case "array":
-                data = apf.getNode(data, [0]);
+                data = ppc.getNode(data, [0]);
                 
                 if (data && data.tagName == "data") {
                     ret = new Array();
                     
                     var child;
                     i = 0;
-                    while (child = apf.getNode(data, [i++])) {
+                    while (child = ppc.getNode(data, [i++])) {
                         ret.push(this.unserialize(child));
                     }
                     
                     return ret;
                 }
                 else {
-                    this.handleError(new Error(apf.formatErrorString(1087, null, "", "Malformed XMLRPC Message")));
+                    this.handleError(new Error(ppc.formatErrorString(1087, null, "", "Malformed XMLRPC Message")));
                     return false;
                 }
                 break;
@@ -260,13 +260,13 @@ apf.xmlrpc = function(){
                 ret = {};
                 
                 i = 0;
-                while (child = apf.getNode(data, [i++])) {
+                while (child = ppc.getNode(data, [i++])) {
                     if (child.tagName == "member") {
-                        ret[apf.getNode(child, [0]).firstChild.nodeValue] =
-                            this.unserialize(apf.getNode(child, [1]));
+                        ret[ppc.getNode(child, [0]).firstChild.nodeValue] =
+                            this.unserialize(ppc.getNode(child, [1]));
                     }
                     else {
-                        this.handleError(new Error(apf.formatErrorString(1087, null, "", "Malformed XMLRPC Message2")));
+                        this.handleError(new Error(ppc.formatErrorString(1087, null, "", "Malformed XMLRPC Message2")));
                         return false;
                     }
                 }
@@ -278,16 +278,16 @@ apf.xmlrpc = function(){
                     : parseInt(data.firstChild.nodeValue))
                 break;
             case "base64":
-                return apf.crypt.Base64.decode(data.firstChild.nodeValue);
+                return ppc.crypt.Base64.decode(data.firstChild.nodeValue);
                 break;
             case "value":
-                child = apf.getNode(data, [0]);
+                child = ppc.getNode(data, [0]);
                 return (!child) ? ((data.firstChild)
                     ? new String(data.firstChild.nodeValue) : "")
                     : this.unserialize(child);
                 break;
             default:
-                throw new Error(apf.formatErrorString(1088, null, "", "Malformed XMLRPC Message: " + data.tagName));
+                throw new Error(ppc.formatErrorString(1088, null, "", "Malformed XMLRPC Message: " + data.tagName));
                 return false;
                 break;
         }
@@ -297,9 +297,9 @@ apf.xmlrpc = function(){
     this.isValid = function(extra){
         var data = extra.data;
         
-        if (apf.getNode(data, [0]).tagName == "fault") {
+        if (ppc.getNode(data, [0]).tagName == "fault") {
             var nr, msg;
-            if (!apf.isWebkit) {
+            if (!ppc.isWebkit) {
                 nr = data.selectSingleNode("//member[name/text()='faultCode']/value/int/text()").nodeValue;
                 msg = "\n" + data.selectSingleNode("//member[name/text()='faultString']/value/string/text()").nodeValue;
             }
@@ -312,7 +312,7 @@ apf.xmlrpc = function(){
             return false;
         }
         
-        extra.data = apf.getNode(data, [0, 0, 0]);
+        extra.data = ppc.getNode(data, [0, 0, 0]);
         
         return true;
     };

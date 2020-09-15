@@ -24,7 +24,7 @@
 /**
  * Element implementing XMPP IM protocol.
  * Depends on implementation of XMPP server supporting bosh or http-poll,
- * because apf.xmpp creates connections through the HTTP protocol via {@link teleport.http}.
+ * because ppc.xmpp creates connections through the HTTP protocol via {@link teleport.http}.
  * Example:
  * XMPP connector with new message notification
  * <code>
@@ -92,16 +92,16 @@
  * @since       1.0
  * @constructor
  *
- * @inherits apf.Class
- * @inherits apf.BaseComm
- * @inherits apf.http
+ * @inherits ppc.Class
+ * @inherits ppc.BaseComm
+ * @inherits ppc.http
  * 
  *
  * @default_private
  */
 
-apf.xmpp = function(struct, tagName){
-    this.$init(tagName || "xmpp", apf.NODE_HIDDEN, struct);
+ppc.xmpp = function(struct, tagName){
+    this.$init(tagName || "xmpp", ppc.NODE_HIDDEN, struct);
 
     this.$serverVars = {};
     this.$reqCount   = 0;
@@ -179,7 +179,7 @@ apf.xmpp = function(struct, tagName){
         MSG_HEADLINE  : "headline",
         MSG_NORMAL    : "normal"
     };
-    apf.extend(apf.xmpp, constants);
+    ppc.extend(ppc.xmpp, constants);
 
     this.$server     = null;
     this.timeout     = 10000;
@@ -316,7 +316,7 @@ apf.xmpp = function(struct, tagName){
     };
 
     this.$propHandlers["resource"] = function(value) {
-        this.resource = value || apf.config.name || "apf".appendRandomNumber(5);
+        this.resource = value || ppc.config.name || "ppc".appendRandomNumber(5);
     };
 
     // #ifdef __TP_XMPP_ROSTER
@@ -350,13 +350,13 @@ apf.xmpp = function(struct, tagName){
         if (!this.$canMuc) {
             this.$canMuc   = true;
             // magic!
-            this.implement(apf.xmpp_muc);
+            this.implement(ppc.xmpp_muc);
         }
     };
 
     this.$initMuc = function() {
         if (this.$canMuc) return;
-        this.setProperty("muc-model", "$apf_muc");
+        this.setProperty("muc-model", "$ppc_muc");
     };
     // #endif
 
@@ -367,7 +367,7 @@ apf.xmpp = function(struct, tagName){
         if (!this.$canRDB) {
             this.$canRDB   = true;
             // magic!
-            this.implement(apf.xmpp_rdb);
+            this.implement(ppc.xmpp_rdb);
         }
     };
 
@@ -378,7 +378,7 @@ apf.xmpp = function(struct, tagName){
 
     this.$initRDB = function() {
         if (this.$canRDB) return;
-        this.setProperty("rdb-model", "$apf_rdb");
+        this.setProperty("rdb-model", "$ppc_rdb");
     };
     // #endif
 
@@ -466,7 +466,7 @@ apf.xmpp = function(struct, tagName){
         var sTab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", //length: 62
             i, sCnonce = "";
         for (i = 0; i < size; i++)
-            sCnonce += sTab.charAt(apf.randomGenerator.generate(0, 61));
+            sCnonce += sTab.charAt(ppc.randomGenerator.generate(0, 61));
         return sCnonce;
     }
 
@@ -488,7 +488,7 @@ apf.xmpp = function(struct, tagName){
         var sOut = aOut.join("").replace(/,$/, "");
 
         return "<response xmlns='" + constants.NS.sasl + "'>"
-            + apf.crypto.Base64.encode(sOut) + "</response>";
+            + ppc.crypto.Base64.encode(sOut) + "</response>";
     }
 
     /*
@@ -538,7 +538,7 @@ apf.xmpp = function(struct, tagName){
         aOut.push(">");
 
         // show An XMPP complient status indicator. See the class constants
-        // apf.xmpp.STATUS_* for options
+        // ppc.xmpp.STATUS_* for options
         if (options.status)
             aOut.push("<show>", options.status, "</show>");
 
@@ -659,7 +659,7 @@ apf.xmpp = function(struct, tagName){
             req   = this.$reqStack.shift();
         if (!req) return null;
         //#ifdef __DEBUG
-        apf.console.log("sending request: " + req.body);
+        ppc.console.log("sending request: " + req.body);
         //#endif
 
         if (!sock)
@@ -673,12 +673,12 @@ apf.xmpp = function(struct, tagName){
                     _self.$doXmlRequest();
 
                 //#ifdef __DEBUG
-                apf.console.log("receiving data: " + data);
+                ppc.console.log("receiving data: " + data);
                 //#endif
 
                 if (_self.$isPoll) {
                     if (!data || data.replace(/^[\s\n\r]+|[\s\n\r]+$/g, "") == "") {
-                        //state = apf.ERROR;
+                        //state = ppc.ERROR;
                         //extra.message = (extra.message ? extra.message + "\n" : "")
                         //                + "Received an empty XML document (0 bytes)";
                     }
@@ -694,16 +694,16 @@ apf.xmpp = function(struct, tagName){
                             data = start + " xmlns:stream='" + constants.NS.stream + "'>" + data 
                                  + (data.indexOf(end) == -1 ? end : "");
                         }
-                        data = apf.getXmlDom(data);
-                        if (!apf.supportNamespaces)
+                        data = ppc.getXmlDom(data);
+                        if (!ppc.supportNamespaces)
                             data.setProperty("SelectionLanguage", "XPath");
                     }
                 }
 
-                if (state != apf.SUCCESS) {
+                if (state != ppc.SUCCESS) {
                     var oError;
                     
-                    oError = new Error(apf.formatErrorString(0, 
+                    oError = new Error(ppc.formatErrorString(0, 
                         _self, "XMPP Communication error", 
                         "Url: " + extra.url + "\nInfo: " + extra.message));
                     
@@ -739,9 +739,9 @@ apf.xmpp = function(struct, tagName){
      *             reached at the moment. We will cancel the authentication process and
      *             dispatch a 'connectionerror' event
      *
-     * @param {Number}  nType  Type of the error (apf.xmpp.ERROR_AUTH or apf.xmpp.ERROR_CONN)
+     * @param {Number}  nType  Type of the error (ppc.xmpp.ERROR_AUTH or ppc.xmpp.ERROR_CONN)
      * @param {String}  sMsg   Error message/ description. Optional.
-     * @param {Number}  nState State of the http connection. Optional, defaults to apf.ERROR.
+     * @param {Number}  nState State of the http connection. Optional, defaults to ppc.ERROR.
      * @type  {Boolean}
      * @private
      */
@@ -770,7 +770,7 @@ apf.xmpp = function(struct, tagName){
         }
 
         // #ifdef __DEBUG
-        apf.console.log("[XMPP-" + (bIsAuth
+        ppc.console.log("[XMPP-" + (bIsAuth
             ? "AUTH"
             : bIsConn ? "CONN" : "REG")
             + "] onError called.", "xmpp");
@@ -791,11 +791,11 @@ apf.xmpp = function(struct, tagName){
         cb = this.$serverVars["login_callback"];
         if (cb) {
             delete this.$serverVars["login_callback"];
-            return cb(null, nState || apf.ERROR, extra);
+            return cb(null, nState || ppc.ERROR, extra);
         }
 
         // #ifdef __DEBUG
-        //apf.console.error(extra.message + " (username: " + extra.username
+        //ppc.console.error(extra.message + " (username: " + extra.username
         //                  + ", server: " + extra.server + ")", "xmpp");
         // #endif
 
@@ -901,7 +901,7 @@ apf.xmpp = function(struct, tagName){
         else {
             this.reset();
             if (callback)
-                callback(null, apf.SUCCESS);
+                callback(null, ppc.SUCCESS);
         }
     };
 
@@ -944,7 +944,7 @@ apf.xmpp = function(struct, tagName){
      */
     function processDisconnect(oXml, state, extra) {
         // #ifdef __DEBUG
-        apf.console.dir(oXml);
+        ppc.console.dir(oXml);
         // #endif
         var cb = this.$serverVars["logout_callback"];
         this.reset();
@@ -986,7 +986,7 @@ apf.xmpp = function(struct, tagName){
         this.$serverVars["nc"]     = "00000001";
         this.setProperty(CONN, false);
         // #ifdef __TP_XMPP_ROSTER
-        this.$serverVars[ROSTER]   = new apf.xmpp_roster(this.model,
+        this.$serverVars[ROSTER]   = new ppc.xmpp_roster(this.model,
            this.$modelContent, this.resource);
         // #endif
         this.$serverVars["bind_count"] = 0;
@@ -1028,7 +1028,7 @@ apf.xmpp = function(struct, tagName){
      * @private
      */
     function processConnect(oXml, state, extra) {
-        if (state != apf.SUCCESS)
+        if (state != ppc.SUCCESS)
             return onError.call(this, constants.ERROR_AUTH, extra.message, state);
 
         // reset retry/ connection counter
@@ -1053,8 +1053,8 @@ apf.xmpp = function(struct, tagName){
         }
         var oMech  = oXml.getElementsByTagName("mechanisms")[0],
             sXmlns = oMech.getAttribute("xmlns");
-        // @todo apf3.0 hack for o3, remove when o3 is fixed
-        this.$serverVars["AUTH_SASL"] = apf.isO3 || (sXmlns && sXmlns == constants.NS.sasl);
+        // @todo ppc3.0 hack for o3, remove when o3 is fixed
+        this.$serverVars["AUTH_SASL"] = ppc.isO3 || (sXmlns && sXmlns == constants.NS.sasl);
 
         var aNodes = oXml.getElementsByTagName("mechanism"),
             i      = 0,
@@ -1071,7 +1071,7 @@ apf.xmpp = function(struct, tagName){
         // always fall back to anon authentication
         if (!found) {
             //#ifdef __DEBUG
-            apf.console.error("No supported authentication protocol found. \
+            ppc.console.error("No supported authentication protocol found. \
                                Falling back to anonymous authentication, but \
                                that could fail!", "xmpp");
             //#endif
@@ -1122,7 +1122,7 @@ apf.xmpp = function(struct, tagName){
                 }
                 //#ifdef __DEBUG
                 else if (!_self.$isPoll)
-                    onError.call(_self, constants.ERROR_REG, null, apf.OFFLINE);
+                    onError.call(_self, constants.ERROR_REG, null, ppc.OFFLINE);
                 //#endif
             }, _self.$isPoll
             ? createStreamElement.call(this, null, sIq)
@@ -1151,7 +1151,7 @@ apf.xmpp = function(struct, tagName){
             var sType = this.$serverVars["AUTH_TYPE"],
                 sAuth = "<auth xmlns='" + constants.NS.sasl + "' mechanism='"
                     + sType + (sType == "PLAIN" || sType == "ANONYMOUS"
-                        ? "'>" + apf.crypto.Base64.encode(sType == "ANONYMOUS"
+                        ? "'>" + ppc.crypto.Base64.encode(sType == "ANONYMOUS"
                             ? this.resource
                             : this.$serverVars["username"] + "@" + this.host
                                 + String.fromCharCode(0) + this.$serverVars["username"]
@@ -1206,7 +1206,7 @@ apf.xmpp = function(struct, tagName){
         if (oChallenge.length && (oChallenge = oChallenge[0])) {
             var i, l, aChunk,
                 b64_challenge = oChallenge.firstChild.nodeValue,
-                aParts        = apf.crypto.Base64.decode(b64_challenge).split(",");
+                aParts        = ppc.crypto.Base64.decode(b64_challenge).split(",");
 
             for (i = 0, l = aParts.length; i < l; i++) {
                 aChunk = aParts[i].split("=");
@@ -1214,7 +1214,7 @@ apf.xmpp = function(struct, tagName){
             }
 
             //#ifdef __DEBUG
-            apf.console.info("processChallenge: " + aParts.join("    "), "xmpp");
+            ppc.console.info("processChallenge: " + aParts.join("    "), "xmpp");
             //#endif
         }
 
@@ -1243,7 +1243,7 @@ apf.xmpp = function(struct, tagName){
                 return onError.call(this, constants.ERROR_AUTH);
 
             var sRealm = this.$serverVars["realm"],
-                md5    = apf.crypto.MD5;
+                md5    = ppc.crypto.MD5;
             if (!sRealm)
                 this.$serverVars["realm"] = sRealm = this.host; //DEV: option to provide realm with a default
 
@@ -1251,7 +1251,7 @@ apf.xmpp = function(struct, tagName){
                 this.$serverVars["digest-uri"] = "xmpp/" + sRealm;
 
             //#ifdef __DEBUG
-            apf.console.info("auth - digest-uri: " + this.$serverVars["digest-uri"], "xmpp");
+            ppc.console.info("auth - digest-uri: " + this.$serverVars["digest-uri"], "xmpp");
             //#endif
 
             // for the calculations of A1, A2 and sResp below, take a look at
@@ -1268,7 +1268,7 @@ apf.xmpp = function(struct, tagName){
                     + ":" + this.$serverVars["qop"] + ":" + md5.hex_md5(A2));
 
             //#ifdef __DEBUG
-            apf.console.info("response: " + sResp, "xmpp");
+            ppc.console.info("response: " + sResp, "xmpp");
             //#endif
 
             var sAuth = createAuthBlock({
@@ -1309,7 +1309,7 @@ apf.xmpp = function(struct, tagName){
                         + this.$serverVars["username"] + "</username><resource>"
                         + this.resource + "</resource>" + (bDigest
                             ? "<digest xmlns='" + constants.NS.auth + ">"
-                                + apf.crypto.SHA1(this.$serverVars["AUTH_ID"]
+                                + ppc.crypto.SHA1(this.$serverVars["AUTH_ID"]
                                 + this.$serverVars["password"]) + "</digest>"
                             : "<password xmlns='" + constants.NS.auth + "'>"
                                 + this.$serverVars["password"] + "</password>")
@@ -1326,7 +1326,7 @@ apf.xmpp = function(struct, tagName){
             }
             //#ifdef __DEBUG
             else if (!this.$isPoll)
-                onError.call(this, constants.ERROR_AUTH, null, apf.OFFLINE);
+                onError.call(this, constants.ERROR_AUTH, null, ppc.OFFLINE);
             //#endif
         }
     }
@@ -1393,7 +1393,7 @@ apf.xmpp = function(struct, tagName){
             }
             //#ifdef __DEBUG
             else if (!this.$isPoll)
-                onError.call(this, constants.ERROR_AUTH, null, apf.OFFLINE);
+                onError.call(this, constants.ERROR_AUTH, null, ppc.OFFLINE);
             //#endif
         }
 
@@ -1578,12 +1578,12 @@ apf.xmpp = function(struct, tagName){
             cb  = v["login_callback"],
             msg = v["previousMsg"];
         if (cb) {
-            cb(null, apf.SUCCESS, {
+            cb(null, ppc.SUCCESS, {
                 username : v["username"]
             });
             delete v["login_callback"];
         }
-        // @todo apf3.0 properly test the delayed messaging after reconnect
+        // @todo ppc3.0 properly test the delayed messaging after reconnect
         if (msg && msg.length) {
             for (var i = 0, l = msg.length; i < l; i++)
                 this.sendMessage.apply(this, msg[i]);
@@ -1613,7 +1613,7 @@ apf.xmpp = function(struct, tagName){
         this.$listening = true;
 
         //#ifdef __DEBUG
-        apf.console.info("XMPP: Listening for messages...", "xmpp");
+        ppc.console.info("XMPP: Listening for messages...", "xmpp");
         //#endif
 
         this.$doXmlRequest(processStream, this.$isPoll
@@ -1649,7 +1649,7 @@ apf.xmpp = function(struct, tagName){
 
         // parse incoming data AFTER connection is respawned - more stable!
         if (data || state) {
-            if (state != apf.SUCCESS)
+            if (state != ppc.SUCCESS)
                 return onError.call(this, constants.ERROR_CONN, extra.message, state);
             else
                 parseData.call(this, data);
@@ -1726,7 +1726,7 @@ apf.xmpp = function(struct, tagName){
         }
         //#ifdef __DEBUG
         else if (!this.$isPoll)
-            onError.call(this, constants.ERROR_CONN, null, apf.OFFLINE);
+            onError.call(this, constants.ERROR_CONN, null, ppc.OFFLINE);
         //#endif
     }
 
@@ -1788,7 +1788,7 @@ apf.xmpp = function(struct, tagName){
             i = 0,
             l = aMessages.length;
         //#ifdef __DEBUG
-        apf.console.info("parseMessagePackets: " + l, "xmpp");
+        ppc.console.info("parseMessagePackets: " + l, "xmpp");
         //#endif
 
         for (; i < l; i++) {
@@ -1837,7 +1837,7 @@ apf.xmpp = function(struct, tagName){
                 }
                 else if (sMsg && sThread == "rdb") {
                     //#ifdef __DEBUG
-                    apf.console.info("received the following from the server: "
+                    ppc.console.info("received the following from the server: "
                         + sMsg, "xmpp");
                     //#endif
                     this.$rdbSignal(oMsg, sMsg);
@@ -1861,7 +1861,7 @@ apf.xmpp = function(struct, tagName){
      */
     function parsePresencePackets(aPresence) {
         //#ifdef __DEBUG
-        apf.console.info("parsePresencePackets: " + aPresence.length, "xmpp");
+        ppc.console.info("parsePresencePackets: " + aPresence.length, "xmpp");
         //#endif
         // #ifdef __TP_XMPP_ROSTER
         var oP, sType, sJID, aX, bMuc, bRDB, o, k, l2, sRoom,
@@ -1880,7 +1880,7 @@ apf.xmpp = function(struct, tagName){
                     switch (aX[k].getAttribute("xmlns")) {
                         case constants.NS.muc_user:
                             if (this.$getStatusCode(aX[k], 201)) {
-                                this.$mucSignal(apf.xmpp_muc.ROOM_CREATE, sJID);
+                                this.$mucSignal(ppc.xmpp_muc.ROOM_CREATE, sJID);
                                 break;
                             }
                             // status code=110 means ME
@@ -1889,7 +1889,7 @@ apf.xmpp = function(struct, tagName){
                             o = aX[k].getElementsByTagName("item")[0];
                             if (!o) break;
                             sRoom = sJID.substring(0, sJID.indexOf("/"));
-                            this.$mucSignal(apf.xmpp_muc.ROOM_JOINED, sRoom, {
+                            this.$mucSignal(ppc.xmpp_muc.ROOM_JOINED, sRoom, {
                                 fullJID    : sJID,
                                 roomJID    : o.getAttribute("jid") || null,
                                 affiliation: o.getAttribute("affiliation"),
@@ -1934,7 +1934,7 @@ apf.xmpp = function(struct, tagName){
      */
     function parseIqPackets(aIQs) {
         //#ifdef __DEBUG
-        apf.console.info("parseIqPackets: " + aIQs.length, "xmpp");
+        ppc.console.info("parseIqPackets: " + aIQs.length, "xmpp");
         //#endif
 
         for (var i = 0, l = aIQs.length; i < l; i++) {
@@ -1981,7 +1981,7 @@ apf.xmpp = function(struct, tagName){
                         if (aErrors.length
                           && parseInt(aErrors[0].getAttribute("code")) == 404) {
                             // room not found, signal failure...
-                            this.$mucSignal(apf.xmpp_muc.ROOM_NOTFOUND, sFrom);
+                            this.$mucSignal(ppc.xmpp_muc.ROOM_NOTFOUND, sFrom);
                             break;
                         }
 
@@ -1990,7 +1990,7 @@ apf.xmpp = function(struct, tagName){
                         var oRoom = this.$addRoom(sFrom, sFrom.split("@")[0]),
                             sJID;
 
-                        this.$mucSignal(apf.xmpp_muc.ROOM_EXISTS, sFrom);
+                        this.$mucSignal(ppc.xmpp_muc.ROOM_EXISTS, sFrom);
 
                         // @todo: add support for paging (<set> element)
                         for (k = 0, l3 = aItems.length; k < l3; k++) {
@@ -2005,7 +2005,7 @@ apf.xmpp = function(struct, tagName){
                         // @todo implement;
                         break;
                     case constants.NS.muc_owner:
-                        this.$mucSignal(apf.xmpp_muc.ROOM_CREATE, sFrom);
+                        this.$mucSignal(ppc.xmpp_muc.ROOM_CREATE, sFrom);
                         break;
                     // #ifdef __WITH_RDB
                     case constants.NS.datastatus:
@@ -2023,7 +2023,7 @@ apf.xmpp = function(struct, tagName){
     /**
      * Provides the ability to change the presence of the user on the XMPP
      * network to any of the types in the following format:
-     * 'apf.xmpp.STATUS_*'
+     * 'ppc.xmpp.STATUS_*'
      *
      * @param {String} type   Status type according to the RFC
      * @param {String} status Message describing the status
@@ -2062,7 +2062,7 @@ apf.xmpp = function(struct, tagName){
         if (!from) return false;
 
         var sPresence, aPresence = [];
-        if (apf.isArray(from)) {
+        if (ppc.isArray(from)) {
             for (var i = 0, l = from.length; i < l; i++) {
                 aPresence.push(createPresenceBlock({
                     type: constants.TYPE_PROBE,
@@ -2132,7 +2132,7 @@ apf.xmpp = function(struct, tagName){
                 _self.$doXmlRequest(function(oXml) {
                         if (!oXml || !oXml.nodeType) {
                             return !_self.$isPoll
-                                ? onError.call(_self, constants.ERROR_CONN, null, apf.OFFLINE)
+                                ? onError.call(_self, constants.ERROR_CONN, null, ppc.OFFLINE)
                                 : null;
                         }
                         _self.$listen();
@@ -2286,7 +2286,7 @@ apf.xmpp = function(struct, tagName){
      * Provides the ability to send a (chat-)message to any node inside the user's
      * Roster. If the 'type' property is set, it must be one of the constants in
      * the following format:
-     * 'apf.xmpp.MSG_*'
+     * 'ppc.xmpp.MSG_*'
      *
      * @param {Object}   options    An object containing all the details for the
      *                              message to be sent:
@@ -2307,19 +2307,19 @@ apf.xmpp = function(struct, tagName){
             to only contacts. This can be more useful than using XMPP's server
             storage solution, because of the feedback to user.
         */
-        if (typeof apf.offline != "undefined" && !apf.offline.onLine) {
-            if (apf.offline.queue.enabled) {
+        if (typeof ppc.offline != "undefined" && !ppc.offline.onLine) {
+            if (ppc.offline.queue.enabled) {
                 //Let's record all the necesary information for future use (during sync)
                 var info = {
                     options  : options,
                     retry    : function(){
                         _self.sendMessage(this.options);
                     },
-                    $object : [this.name, "new apf.xmpp()"],
+                    $object : [this.name, "new ppc.xmpp()"],
                     $retry  : "this.object.sendMessage(this.options)"
                 };
 
-                apf.offline.queue.add(info);
+                ppc.offline.queue.add(info);
 
                 return true;
             }
@@ -2332,7 +2332,7 @@ apf.xmpp = function(struct, tagName){
             */
 
             //#ifdef __DEBUG
-            apf.console.warn("Trying to sent XMPP message even though \
+            ppc.console.warn("Trying to sent XMPP message even though \
                               application is offline.", "xmpp");
             //#endif
         }
@@ -2350,12 +2350,12 @@ apf.xmpp = function(struct, tagName){
 
         //#ifdef __DEBUG
         if (!oUser && !bRoom){
-            apf.console.error("XMPP sendMessage error: no valid 'to' address provided"
+            ppc.console.error("XMPP sendMessage error: no valid 'to' address provided"
                 + options.to + "\nMessage: " + options.message, "xmpp");
         }
         //#endif
 
-        var sMsg = createMessageBlock.call(this, apf.extend({
+        var sMsg = createMessageBlock.call(this, ppc.extend({
                 type       : constants.MSG_CHAT,
                 "xml:lang" : "en"
             }, options));
@@ -2393,23 +2393,23 @@ apf.xmpp = function(struct, tagName){
         var _self = this;
 
         //#ifdef __WITH_OFFLINE
-        if (typeof apf.offline != "undefined" && !apf.offline.onLine) {
-            if (apf.offline.queue.enabled) {
+        if (typeof ppc.offline != "undefined" && !ppc.offline.onLine) {
+            if (ppc.offline.queue.enabled) {
                 var info = {
                     options  : options,
                     retry    : function(){
                         _self.sendMessage(this.options);
                     },
-                    $object : [this.name, "new apf.xmpp()"],
+                    $object : [this.name, "new ppc.xmpp()"],
                     $retry  : "this.object.sendMessage(this.options)"
                 };
 
-                apf.offline.queue.add(info);
+                ppc.offline.queue.add(info);
 
                 return true;
             }
             //#ifdef __DEBUG
-            apf.console.warn("Trying to sent XMPP message even though \
+            ppc.console.warn("Trying to sent XMPP message even though \
                               application is offline.", "xmpp");
             //#endif
         }
@@ -2481,14 +2481,14 @@ apf.xmpp = function(struct, tagName){
 
     /**
      * Makes sure that a few header are sent along with all the requests to the
-     * XMPP server. This function overrides the abstract found in apf.http
+     * XMPP server. This function overrides the abstract found in ppc.http
      *
      * @see teleport.http
      * @param {Object} http
      * @type {void}
      */
     this.$headerHook = function(http) {
-        if (!apf.isWebkit)
+        if (!ppc.isWebkit)
             http.setRequestHeader("Host", this.$host);
         http.setRequestHeader("Content-Type", this.$isPoll
             ? "application/x-www-form-urlencoded"
@@ -2505,13 +2505,13 @@ apf.xmpp = function(struct, tagName){
         var v = this.$serverVars;
         if (v["MAXPAUSE"] && this.connected && this.auth.toLowerCase() != "anonymous") {
             delete v[ROSTER];
-            apf.setcookie(COOKIE, JSON.stringify(v) + "|" + (new Date()).valueOf()
+            ppc.setcookie(COOKIE, JSON.stringify(v) + "|" + (new Date()).valueOf()
                 + "|" + this.resource + "|" + this.$RID);
             this.pause();
         }
         else {
 
-            apf.delcookie(COOKIE);
+            ppc.delcookie(COOKIE);
         }
 
         //this.disconnect();
@@ -2525,9 +2525,9 @@ apf.xmpp = function(struct, tagName){
      */
     this.addEventListener("DOMNodeInsertedIntoDocument", function() {
         // retrieve cookie and check if we can simply restart the session
-        var c = apf.getcookie ? apf.getcookie(COOKIE) : null;
+        var c = ppc.getcookie ? ppc.getcookie(COOKIE) : null;
         if (c && (c = c.split("|")).length == 4) {
-            var v   = apf.unserialize(c[0]),
+            var v   = ppc.unserialize(c[0]),
                 max = v["MAXPAUSE"],
                 t   = parseInt(c[1]),
                 now = (new Date()).valueOf();
@@ -2539,7 +2539,7 @@ apf.xmpp = function(struct, tagName){
             this.$serverVars = v;
             this.$RID        = parseInt(c[3]);
             // #ifdef __TP_XMPP_ROSTER
-            this.$serverVars[ROSTER] = new apf.xmpp_roster(this.model,
+            this.$serverVars[ROSTER] = new ppc.xmpp_roster(this.model,
                this.$modelContent, this.resource);
             // #endif
             this.host = this.host || this.$host;
@@ -2584,7 +2584,7 @@ apf.xmpp = function(struct, tagName){
                 break;
             default:
                 //#ifdef __DEBUG
-                throw new Error(apf.formatErrorString(0, null, "Saving/Loading data", 
+                throw new Error(ppc.formatErrorString(0, null, "Saving/Loading data", 
                     "Invalid XMPP method '" + method + "'"));
                 //#endif
                 break;
@@ -2592,8 +2592,8 @@ apf.xmpp = function(struct, tagName){
     };
     
     // #endif
-}).call(apf.xmpp.prototype = new apf.Teleport());
+}).call(ppc.xmpp.prototype = new ppc.Teleport());
 
-apf.aml.setElement("xmpp", apf.xmpp);
+ppc.aml.setElement("xmpp", ppc.xmpp);
 
 // #endif

@@ -7,10 +7,15 @@
     <meta name="keywords" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
     <meta name="format-detection" content="telephone=no" />
     <link rel="icon" type="image/gif" href="[%staticUrl%]/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="[%staticUrl%]/ext/form-auth/static/style.css" />
+  <script>
+  document.addEventListener('touchmove', function(e) {
+    e.preventDefault();
+  }, { passive: false });
+  </script>
   </head>
   
   <body>

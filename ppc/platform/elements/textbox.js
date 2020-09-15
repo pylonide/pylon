@@ -35,13 +35,13 @@
  * By adding an 
  * autocomplete element as a child, the 
  * value for the textbox can be looked up as you type. By setting the 
- * {@link apf.textbox.mask mask attribute}, complex data input 
+ * {@link ppc.textbox.mask mask attribute}, complex data input 
  * validation is done while the user types.
  *
  * #### Example: Simple Boxes
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <a:table columns="150">
  *   <!-- startcontent -->
  *   <a:textbox value="Text"></a:textbox>
@@ -54,7 +54,7 @@
  * #### Example: Validation
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:label for="lbl2">Please enter a minimum of three characters</a:label>
  *   <a:textbox 
@@ -96,7 +96,7 @@
  * #### Example: A Regular Box
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *     <!-- startcontent -->
  *     <a:bar id="winGoToFile"
  *       width     = "500" 
@@ -120,13 +120,13 @@
  * </a:application>
  * ```
  * 
- * @class apf.textbox
+ * @class ppc.textbox
  * @define textbox
  * @allowchild autocomplete, {smartbinding}
  *
  * @form
- * @inherits apf.StandardBinding
- * @inheritsElsewhere apf.XForms
+ * @inherits ppc.StandardBinding
+ * @inheritsElsewhere ppc.XForms
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -175,40 +175,40 @@
 /**
  * @event clear     Fires when the content of this element is cleared. 
  */
-apf.input    = function(struct, tagName){
-    this.$init(tagName || "input", apf.NODE_VISIBLE, struct);
+ppc.input    = function(struct, tagName){
+    this.$init(tagName || "input", ppc.NODE_VISIBLE, struct);
 };
 
-apf.secret   = function(struct, tagName){
-    this.$init(tagName || "secret", apf.NODE_VISIBLE, struct);
+ppc.secret   = function(struct, tagName){
+    this.$init(tagName || "secret", ppc.NODE_VISIBLE, struct);
 };
 
-apf.password = function(struct, tagName){
-    this.$init(tagName || "password", apf.NODE_VISIBLE, struct);
+ppc.password = function(struct, tagName){
+    this.$init(tagName || "password", ppc.NODE_VISIBLE, struct);
 };
 
-apf.textarea = function(struct, tagName){
-    this.$init(tagName || "textarea", apf.NODE_VISIBLE, struct);
+ppc.textarea = function(struct, tagName){
+    this.$init(tagName || "textarea", ppc.NODE_VISIBLE, struct);
     
     this.multiline = true;
 };
 
 // HTML5 email element
-apf.email    = function(struct, tagName){
-    this.$init(tagName || "email", apf.NODE_VISIBLE, struct);
+ppc.email    = function(struct, tagName){
+    this.$init(tagName || "email", ppc.NODE_VISIBLE, struct);
 };
 
-apf.textbox  = function(struct, tagName){
-    this.$init(tagName || "textbox", apf.NODE_VISIBLE, struct);
+ppc.textbox  = function(struct, tagName){
+    this.$init(tagName || "textbox", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         //#ifdef __WITH_XFORMS
-        //,apf.XForms
+        //,ppc.XForms
         //#endif
     );
 
@@ -241,12 +241,12 @@ apf.textbox  = function(struct, tagName){
      * 
      */
     this.$propHandlers["value"] = function(value, prop, force, initial){
-    // @todo apf3.0 check use of this.$propHandlers["value"].call
+    // @todo ppc3.0 check use of this.$propHandlers["value"].call
         if (!this.$input || !initial && this.getValue() == value)
             return;
 
         // Set Value
-        if (!initial && !value && !this.hasFocus()) //@todo apf3.x research the use of clear
+        if (!initial && !value && !this.hasFocus()) //@todo ppc3.x research the use of clear
             return this.$clear();
         else if (this.isHTMLBox) {
             if (this.$input.innerHTML != value)
@@ -256,7 +256,7 @@ apf.textbox  = function(struct, tagName){
             this.$input.value = value;
         
         if (!initial)
-            apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
+            ppc.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
         
         if (this.$button)
             this.$button.style.display = value && !initial ? "block" : "none";
@@ -271,13 +271,13 @@ apf.textbox  = function(struct, tagName){
     });
     
     this.addEventListener("prop.editable", function(e){
-        if (apf.isIE)
+        if (ppc.isIE)
             this.$input.unselectable = e.value ? "On" : "Off";
         else {
             if (e.value) 
-                apf.addListener(this.$input, "mousedown", apf.preventDefault);
+                ppc.addListener(this.$input, "mousedown", ppc.preventDefault);
             else
-                apf.removeListener(this.$input, "mousedown", apf.preventDefault);
+                ppc.removeListener(this.$input, "mousedown", ppc.preventDefault);
         }
     });
 
@@ -354,7 +354,7 @@ apf.textbox  = function(struct, tagName){
      * ```
      */
     this.$propHandlers["mask"] = function(value){
-        if (this.mask.toLowerCase() == "password")// || !apf.hasMsRangeObject)
+        if (this.mask.toLowerCase() == "password")// || !ppc.hasMsRangeObject)
             return;
 
         if (!value) {
@@ -363,7 +363,7 @@ apf.textbox  = function(struct, tagName){
 
         if (!this.$masking) {
             this.$masking = true;
-            this.implement(apf.textbox.masking);
+            this.implement(ppc.textbox.masking);
             this.focusselect = false;
             //this.realtime    = false;
         }
@@ -384,7 +384,7 @@ apf.textbox  = function(struct, tagName){
     this.$propHandlers["initial-message"] = function(value){
         if (value) {
             //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug)
+            if (ppc.hasFocusBug)
                 this.$input.onblur();
             //#endif
             
@@ -396,7 +396,7 @@ apf.textbox  = function(struct, tagName){
             
         if (this.type == "password" && this.$inputInitFix) {
             this.$inputInitFix.innerHTML = value;
-            apf.setStyleClass(this.$inputInitFix, "initFxEnabled");
+            ppc.setStyleClass(this.$inputInitFix, "initFxEnabled");
         } 
     };
 
@@ -482,7 +482,7 @@ apf.textbox  = function(struct, tagName){
     //@todo cleanup and put initial-message behaviour in one location
     this.$clear = function(noEvent){
         if (this["initial-message"]) {
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
+            ppc.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
             this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
         }
         else {
@@ -505,7 +505,7 @@ apf.textbox  = function(struct, tagName){
                 v = this.$input.innerText;
             else {
                 //Chrome has a bug, innerText is cleared when display property is changed
-                v = apf.html_entity_decode(this.$input.innerHTML
+                v = ppc.html_entity_decode(this.$input.innerHTML
                     .replace(/<br\/?\>/g, "\n")
                     .replace(/<[^>]*>/g, ""));
             }
@@ -545,7 +545,7 @@ apf.textbox  = function(struct, tagName){
      * @private
      */
     this.insert = function(text){
-        if (apf.hasMsRangeObject) {
+        if (ppc.hasMsRangeObject) {
             try {
                 this.$input.focus();
             }
@@ -565,16 +565,16 @@ apf.textbox  = function(struct, tagName){
     this.addEventListener("$clear", function(){
         this.value = "";//@todo what about property binding?
         
-        if (this["initial-message"] && apf.document.activeElement != this) {
+        if (this["initial-message"] && ppc.document.activeElement != this) {
             this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
+            ppc.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
         else {
             this.$propHandlers["value"].call(this, "");
         }
         
         if (!this.$input.tagName.toLowerCase().match(/input|textarea/i)) {
-            if (apf.hasMsRangeObject) {
+            if (ppc.hasMsRangeObject) {
                 try {
                     var range = document.selection.createRange();
                     range.moveStart("sentence", -1);
@@ -585,7 +585,7 @@ apf.textbox  = function(struct, tagName){
             }
         }
         
-        this.dispatchEvent("clear"); //@todo apf3.0
+        this.dispatchEvent("clear"); //@todo ppc3.0
     });
 
     this.$keyHandler = function(key, ctrlKey, shiftKey, altKey, e){
@@ -615,7 +615,7 @@ apf.textbox  = function(struct, tagName){
                 return false;
 
         // @todo: revisit this IF statement - dead code?
-        if (false && apf.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
+        if (false && ppc.isIE && (key == 86 && ctrlKey || key == 45 && shiftKey)) {
             var text = window.clipboardData.getData("Text");
             if ((text = this.dispatchEvent("keydown", {
                 text : this.onpaste(text)}) === false))
@@ -649,7 +649,7 @@ apf.textbox  = function(struct, tagName){
         var value = this.getValue();
         if (this["initial-message"] && !value) {
             this.$propHandlers["value"].call(this, "", null, null, true);
-            apf.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
+            ppc.setStyleClass(this.$ext, "", [this.$baseCSSname + "Initial"]);
         }
         
         var _self = this;
@@ -672,7 +672,7 @@ apf.textbox  = function(struct, tagName){
                 _self.select();
         };
 
-        if ((!e || e.mouse) && apf.isIE) {
+        if ((!e || e.mouse) && ppc.isIE) {
             clearInterval(fTimer);
             fTimer = setInterval(delay, 1);
         }
@@ -695,24 +695,24 @@ apf.textbox  = function(struct, tagName){
         var value = this.getValue();
         if (this["initial-message"] && !value) {
             this.$propHandlers["value"].call(this, this["initial-message"], null, null, true);
-            apf.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
+            ppc.setStyleClass(this.$ext, this.$baseCSSname + "Initial");
         }
 
-        /*if (apf.hasMsRangeObject) {
+        /*if (ppc.hasMsRangeObject) {
             var r = this.$input.createTextRange();
             r.collapse();
             r.select();
         }*/
 
         try {
-            if (apf.isIE || !e || e.srcElement != apf.window)
+            if (ppc.isIE || !e || e.srcElement != ppc.window)
                 this.$input.blur();
         }
         catch(e) {}
 
         // check if we clicked on the oContainer. ifso dont hide it
         if (this.oContainer) {
-            $setTimeout("var o = apf.lookup(" + this.$uniqueId + ");\
+            $setTimeout("var o = ppc.lookup(" + this.$uniqueId + ");\
                 o.oContainer.style.display = 'none'", 100);
         }
         
@@ -767,7 +767,7 @@ apf.textbox  = function(struct, tagName){
         if (this.type == "password")
             this.$propHandlers["type"].call(this, "password");
 
-        if (!apf.hasContentEditable && "input|textarea".indexOf(this.$input.tagName.toLowerCase()) == -1) {
+        if (!ppc.hasContentEditable && "input|textarea".indexOf(this.$input.tagName.toLowerCase()) == -1) {
             var node  = this.$input;
             this.$input = node.parentNode.insertBefore(document.createElement("textarea"), node);
             node.parentNode.removeChild(node);
@@ -812,8 +812,8 @@ apf.textbox  = function(struct, tagName){
                 if (e.keyCode == 13 && value != _self.value)
                     _self.change(value);
             }
-            else if (apf.isWebkit && _self.xmlRoot && _self.getValue() != _self.value) //safari issue (only old??)
-                $setTimeout("var o = apf.lookup(" + _self.$uniqueId + ");\
+            else if (ppc.isWebkit && _self.xmlRoot && _self.getValue() != _self.value) //safari issue (only old??)
+                $setTimeout("var o = ppc.lookup(" + _self.$uniqueId + ");\
                     o.change(o.getValue())");
 
             if (_self.readonly || _self.multiline == "optional" && e.keyCode == 13 && !e.shiftKey
@@ -827,7 +827,7 @@ apf.textbox  = function(struct, tagName){
                 var hasClass = (_self.$ext.className.indexOf("capsLock") > -1),
                     capsKey  = (e.keyCode === 20);
                 if (capsKey) // caps off
-                    apf.setStyleClass(_self.$ext, hasClass ? null : "capsLock", hasClass ? ["capsLock"] : null);
+                    ppc.setStyleClass(_self.$ext, hasClass ? null : "capsLock", hasClass ? ["capsLock"] : null);
             }
 
             //Autocomplete
@@ -865,11 +865,11 @@ apf.textbox  = function(struct, tagName){
                     var v;
                     if (!_self.mask && (v = _self.getValue()) != _self.value)
                         _self.change(v); 
-                     if (apf.isIE) 
+                     if (ppc.isIE) 
                         _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
                 });
             }
-            else if (apf.isIE) {
+            else if (ppc.isIE) {
                 _self.dispatchEvent("keyup", {keyCode : keyCode});//@todo
             }
 
@@ -880,11 +880,11 @@ apf.textbox  = function(struct, tagName){
         };
 
         //#ifdef __WITH_WINDOW_FOCUS
-        if (apf.hasFocusBug)
-            apf.sanitizeTextbox(this.$input);
+        if (ppc.hasFocusBug)
+            ppc.sanitizeTextbox(this.$input);
         //#endif
 
-        if (apf.hasAutocompleteXulBug)
+        if (ppc.hasAutocompleteXulBug)
             this.$input.setAttribute("autocomplete", "off");
 
         if ("INPUT|TEXTAREA".indexOf(this.$input.tagName) == -1) {
@@ -895,7 +895,7 @@ apf.textbox  = function(struct, tagName){
             //this.$input.style.width     = "1px";
 
             this.$input.select = function(){
-                if (apf.hasMsRangeObject) {
+                if (ppc.hasMsRangeObject) {
                     var r = document.selection.createRange();
                     r.moveToElementText(this);
                     r.select();
@@ -915,7 +915,7 @@ apf.textbox  = function(struct, tagName){
             }
             
             this.$input.onpaste = function(e){
-                if (apf.hasMsRangeObject)
+                if (ppc.hasMsRangeObject)
                     return;
                 
                 if (e.clipboardData.types.indexOf("text/html") == -1)
@@ -949,9 +949,9 @@ apf.textbox  = function(struct, tagName){
         };
 
         var f;
-        apf.addListener(this.$input, "keypress", f = function(e) {
+        ppc.addListener(this.$input, "keypress", f = function(e) {
             if (_self.$input.getAttribute("type") != "password")
-                return apf.removeListener(_self.$input, "keypress", f);
+                return ppc.removeListener(_self.$input, "keypress", f);
             e = e || window.event;
             // get key pressed
             var which = -1;
@@ -970,10 +970,10 @@ apf.textbox  = function(struct, tagName){
             if (((which >= 65 && which <=  90) && !shift_status) ||
                 ((which >= 97 && which <= 122) && shift_status)) {
                 // uppercase, no shift key
-                apf.setStyleClass(_self.$ext, "capsLock");
+                ppc.setStyleClass(_self.$ext, "capsLock");
             }
             else {
-                apf.setStyleClass(_self.$ext, null, ["capsLock"]);
+                ppc.setStyleClass(_self.$ext, null, ["capsLock"]);
             }
             typedBefore = true;
         });
@@ -1002,23 +1002,23 @@ apf.textbox  = function(struct, tagName){
         }
     });
 // #ifdef __WITH_DATABINDING
-}).call(apf.textbox.prototype = new apf.StandardBinding());
+}).call(ppc.textbox.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.textbox.prototype = new apf.Presentation());
+}).call(ppc.textbox.prototype = new ppc.Presentation());
 #endif*/
 
-apf.config.$inheritProperties["initial-message"] = 1;
-apf.config.$inheritProperties["realtime"]        = 1;
+ppc.config.$inheritProperties["initial-message"] = 1;
+ppc.config.$inheritProperties["realtime"]        = 1;
 
-apf.input.prototype    =
-apf.secret.prototype   =
-apf.password.prototype =
-apf.textarea.prototype =
-apf.email.prototype    = apf.textbox.prototype;
+ppc.input.prototype    =
+ppc.secret.prototype   =
+ppc.password.prototype =
+ppc.textarea.prototype =
+ppc.email.prototype    = ppc.textbox.prototype;
 
-apf.aml.setElement("input",    apf.input);
-apf.aml.setElement("secret",   apf.secret);
-apf.aml.setElement("password", apf.password);
-apf.aml.setElement("textarea", apf.textarea);
-apf.aml.setElement("textbox",  apf.textbox);
+ppc.aml.setElement("input",    ppc.input);
+ppc.aml.setElement("secret",   ppc.secret);
+ppc.aml.setElement("password", ppc.password);
+ppc.aml.setElement("textarea", ppc.textarea);
+ppc.aml.setElement("textbox",  ppc.textbox);
 // #endif

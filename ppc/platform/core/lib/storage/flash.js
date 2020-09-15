@@ -26,7 +26,7 @@
 //        storage
 // description:
 
-apf.storage.modules.flash = {
+ppc.storage.modules.flash = {
     initialized   : false,
     asyncInit     : true,
 
@@ -39,7 +39,7 @@ apf.storage.modules.flash = {
 
     init: function(){
         this.name = "flashStorage";
-        this.id   = apf.flash.addPlayer(this);
+        this.id   = ppc.flash.addPlayer(this);
 
         // IE/Flash has an evil bug that shows up some time: if we load the
         // Flash and it isn't in the cache, ExternalInterface works fine --
@@ -48,16 +48,16 @@ apf.storage.modules.flash = {
         // simply invalidates the Flash object in the cache all the time to
         // keep it loading fresh. -- Brad Neuberg
         // #ifndef __PACKAGED
-        this.STORAGE_SWF = (apf.config.resourcePath || apf.basePath)
-            + "core/lib/storage/resources/apfStorage.swf?cachebust="
+        this.STORAGE_SWF = (ppc.config.resourcePath || ppc.basePath)
+            + "core/lib/storage/resources/ppcStorage.swf?cachebust="
             + new Date().getTime();
         /* #else
-        this.STORAGE_SWF = (apf.config.resourcePath || apf.basePath)
-            + "resources/apfStorage.swf?cachebust="
+        this.STORAGE_SWF = (ppc.config.resourcePath || ppc.basePath)
+            + "resources/ppcStorage.swf?cachebust="
             + new Date().getTime();
         #endif */
 
-        var flash = apf.flash.buildContent(
+        var flash = ppc.flash.buildContent(
             "src",              this.STORAGE_SWF,
             "width",            "215",
             "height",           "138",
@@ -75,7 +75,7 @@ apf.storage.modules.flash = {
 
         this.container = document.createElement('div');
         this.container.id           =  this.name + "_Container";
-        this.container.className    = "apfVideo";
+        this.container.className    = "ppcVideo";
         with (this.container.style) {
             width = height = "0px";
             overflow = "hidden";
@@ -84,7 +84,7 @@ apf.storage.modules.flash = {
         this.container.innerHTML    = flash;
 
         //this.container = document.getElementById(this.name + "_Container");
-        this.player    = apf.flash.getElement(this.name);
+        this.player    = ppc.flash.getElement(this.name);
 
         // get available namespaces
         this._allNamespaces = this.getNamespaces();
@@ -128,7 +128,7 @@ apf.storage.modules.flash = {
         }
         else {
             var args = [this.player, "callMethod"],
-                f    = apf.flash,
+                f    = ppc.flash,
                 i    = 0,
                 l    = arguments.length;
             for (; i < l; i++)
@@ -172,11 +172,11 @@ apf.storage.modules.flash = {
     },
 
     event: function(sEventName, oData) {
-        //apf.console.info('Event called: ' + sEventName + ', ' + oData);
+        //ppc.console.info('Event called: ' + sEventName + ', ' + oData);
         if (sEventName == "status") {
             // Called if the storage system needs to tell us about the status
             // of a put() request.
-            var ds  = apf.storage;
+            var ds  = ppc.storage;
 
             if (statusResult == ds.PENDING) {
                 //dfo.center();
@@ -213,7 +213,7 @@ apf.storage.modules.flash = {
     flush: function(namespace){
         //@fixme: is this test necessary?  Just use !namespace
         if (namespace == null || typeof namespace == "undefined") {
-            namespace = apf.storage.namespace;
+            namespace = ppc.storage.namespace;
         }
         this.callMethod('flush', namespace);
     },
@@ -222,13 +222,13 @@ apf.storage.modules.flash = {
      * @todo replace this with mikes flash detection code
      */
     isAvailable: function(){
-        return location.protocol != "file:" && apf.flash.isEightAvailable();
+        return location.protocol != "file:" && ppc.flash.isEightAvailable();
     },
 
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
@@ -237,7 +237,7 @@ apf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
 
@@ -249,7 +249,7 @@ apf.storage.modules.flash = {
         if (this.isValidKeyArray(keys) === false
                 || ! values instanceof Array
                 || keys.length != values.length){
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting multiple name/value pairs", "Invalid arguments: keys = ["
                 + keys + "], values = [" + values + "]"));
         }
@@ -260,14 +260,14 @@ apf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid namespace given: " + namespace));
+            throw new Error(ppc.formatErrorString(0, null, "Setting multiple name/value pairs", "Invalid namespace given: " + namespace));
         //#endif
 
         //    Convert the arguments on strings we can pass along to Flash
         var metaKey = keys.join(",");
         var lengths = [];
         for (var i = 0; i < values.length; i++) {
-            values[i]  = apf.unserialize(values[i]);
+            values[i]  = ppc.unserialize(values[i]);
             lengths[i] = values[i].length;
         }
         var metaValue   = values.join("");
@@ -278,7 +278,7 @@ apf.storage.modules.flash = {
     get: function(key, namespace){
        //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null, "Getting name/value pair", "Invalid key given: " + key));
+            throw new Error(ppc.formatErrorString(0, null, "Getting name/value pair", "Invalid key given: " + key));
         //#endif
 
         if (!namespace)
@@ -286,7 +286,7 @@ apf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting name/value pair", "Invalid namespace given: " + namespace));
         //#endif
 
@@ -294,13 +294,13 @@ apf.storage.modules.flash = {
         if (results == "")
             return null;
 
-        return apf.unserialize(apf.flash.decode(results));
+        return ppc.unserialize(ppc.flash.decode(results));
     },
 
     getMultiple: function(keys, namespace){
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting name/value pair", "Invalid key array given: " + keys));
         //#endif
 
@@ -309,7 +309,7 @@ apf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting multiple name/value pairs", "Invalid namespace given: "
                 + namespace));
         //#endif
@@ -323,7 +323,7 @@ apf.storage.modules.flash = {
 
         // destringify each entry back into a real JS object
         for (var i = 0; i < results.length; i++)
-            results[i] = (results[i] == "") ? null : apf.unserialize(apf.flash.decode(results[i]));
+            results[i] = (results[i] == "") ? null : ppc.unserialize(ppc.flash.decode(results[i]));
 
         return results;
     },
@@ -346,7 +346,7 @@ apf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, "Clearing storage",
+            throw new Error(ppc.formatErrorString(0, null, "Clearing storage",
                 "Invalid namespace given: " + namespace));
         //#endif
 
@@ -367,7 +367,7 @@ apf.storage.modules.flash = {
 
         // Flash incorrectly returns an empty string as "null"
         if (results == this || results == null || results == "null")
-            results = apf.storage.namespace || "default";
+            results = ppc.storage.namespace || "default";
 
         results = results.split(",");
         results.sort();
@@ -381,7 +381,7 @@ apf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, "Clearing storage",
+            throw new Error(ppc.formatErrorString(0, null, "Clearing storage",
                 "Invalid namespace given: " + namespace));
         //#endif
 
@@ -394,7 +394,7 @@ apf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, "Removing key",
+            throw new Error(ppc.formatErrorString(0, null, "Removing key",
                 "Invalid namespace given: " + namespace));
         //#endif
 
@@ -404,7 +404,7 @@ apf.storage.modules.flash = {
     removeMultiple: function(/*array*/ keys, /*string?*/ namespace){ /*Object*/
         //#ifdef __DEBUG
         if (this.isValidKeyArray(keys) === false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting name/value pair", "Invalid key array given: " + keys));
         //#endif
 
@@ -413,7 +413,7 @@ apf.storage.modules.flash = {
 
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Getting multiple name/value pairs", "Invalid namespace given: "
                 + namespace));
         //#endif
@@ -435,12 +435,12 @@ apf.storage.modules.flash = {
     },
 
     showSettingsUI: function(){
-        throw new Error(apf.formatErrorString(0, null, this.declaredClass
+        throw new Error(ppc.formatErrorString(0, null, this.declaredClass
             + " does not support a storage settings user-interface"));
     },
 
     hideSettingsUI: function(){
-        throw new Error(apf.formatErrorString(0, null, this.declaredClass
+        throw new Error(ppc.formatErrorString(0, null, this.declaredClass
             + " does not support a storage settings user-interface"));
     },
 

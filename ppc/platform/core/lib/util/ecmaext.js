@@ -30,21 +30,21 @@ if (typeof isFinite == "undefined") {
     }
 }
 
-apf.NUMBER   = 1;
-apf.BOOLEAN  = 2;
-apf.STRING   = 3;
-apf.ARRAY    = 4;
-apf.DATE     = 5;
-apf.REGEXP   = 6;
-apf.FUNCTION = 7;
+ppc.NUMBER   = 1;
+ppc.BOOLEAN  = 2;
+ppc.STRING   = 3;
+ppc.ARRAY    = 4;
+ppc.DATE     = 5;
+ppc.REGEXP   = 6;
+ppc.FUNCTION = 7;
 
-Array.prototype.dataType    = apf.ARRAY;
-Number.prototype.dataType   = apf.NUMBER;
-Date.prototype.dataType     = apf.DATE;
-Boolean.prototype.dataType  = apf.BOOLEAN;
-String.prototype.dataType   = apf.STRING;
-RegExp.prototype.dataType   = apf.REGEXP;
-Function.prototype.dataType = apf.FUNCTION;
+Array.prototype.dataType    = ppc.ARRAY;
+Number.prototype.dataType   = ppc.NUMBER;
+Date.prototype.dataType     = ppc.DATE;
+Boolean.prototype.dataType  = ppc.BOOLEAN;
+String.prototype.dataType   = ppc.STRING;
+RegExp.prototype.dataType   = ppc.REGEXP;
+Function.prototype.dataType = ppc.FUNCTION;
 
 /**
  * Converts a JavaScript object to a CGI string.
@@ -54,19 +54,19 @@ Function.prototype.dataType = apf.FUNCTION;
  * @param {Function} [mcallname] A name to append to the CGI string, prefixed with `func=`
  * @returns {Object} The converted object, joined with `"&"`
  *
- * @see apf.convertXml
+ * @see ppc.convertXml
  */
-apf.getCgiString = function(args, multicall, mcallname){
+ppc.getCgiString = function(args, multicall, mcallname){
     var prop, vars = [];
 
     function recur(o, stack) {
-        if (apf.isArray(o)) {
+        if (ppc.isArray(o)) {
             for (var j = 0; j < o.length; j++)
                 recur(o[j], stack + "%5B%5D");//" + j + "
         }
         else if (typeof o == "object") {
             for (prop in o) {
-                if (apf.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
+                if (ppc.isSafariOld && (!o[prop] || typeof o[prop] != "object"))
                     continue;
 
                 if (typeof o[prop] == "function")
@@ -85,7 +85,7 @@ apf.getCgiString = function(args, multicall, mcallname){
     }
     else {
         for (prop in args) {
-            if (apf.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
+            if (ppc.isSafariOld && (!args[prop] || typeof args[prop] == "function"))
                 continue;
 
             recur(args[prop], prop);
@@ -101,9 +101,9 @@ apf.getCgiString = function(args, multicall, mcallname){
  * @param {String} args The argument string to convert, separated by `"&"`
  * @returns {Object} The converted object
  *
- * @see apf.convertXml
+ * @see ppc.convertXml
  */
-apf.fromCgiString = function(args) {
+ppc.fromCgiString = function(args) {
     if (!args)
         return false;
 
@@ -152,23 +152,23 @@ Function.prototype.call = Function.prototype.call || function(obj, arg1, arg2, a
  *
  * @param {Mixed} obj1, obj2, obj3, etc.
  * @type Function
- * @see apf.extend
+ * @see ppc.extend
  */
 Function.prototype.extend = function() {
-    apf.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
+    ppc.extend.apply(this, [this].concat(Array.prototype.slice.call(arguments)));
     return this;
 };
 
 /*
- * Attach a Function object to an event as handler method. If apf.AbstractEvent
+ * Attach a Function object to an event as handler method. If ppc.AbstractEvent
  * is available, the active event is extended with convinience accessors as
- * declared in apf.AbstractEvent
+ * declared in ppc.AbstractEvent
  *
  * @param {Object} The context the execute the Function within
  * @param {Boolean} Whether the passed event object should be extended with AbstractEvent
  * @param {Mixed}  param1, param2, param3, etc.
  * @type Function
- * @see apf.AbstractEvent
+ * @see ppc.AbstractEvent
  */
 Function.prototype.bindWithEvent = function() {
     var __method = this,
@@ -180,7 +180,7 @@ Function.prototype.bindWithEvent = function() {
             event = window.event;
         // #ifdef __WITH_ABSTRACTEVENT
         if (ev === true)
-            event = new apf.AbstractEvent(event, window);
+            event = new ppc.AbstractEvent(event, window);
         // #endif
         return __method.apply(o, [event].concat(args)
             .concat(Array.prototype.slice.call(arguments)));
@@ -830,7 +830,7 @@ String.prototype.escape = function() {
  * @type {XMLElement}
  */
 String.prototype.toXml = function(){
-    var node = apf.getXml("<root>" + this + "</root>");
+    var node = ppc.getXml("<root>" + this + "</root>");
     if (node.childNodes.length == 1) {
         return node.childNodes[0];
     }
@@ -931,8 +931,8 @@ String.prototype.pad = function(len, pad, dir) {
         : (Array(len).join(pad) + this).slice(-len);
 };
 
-apf.PAD_LEFT  = false;
-apf.PAD_RIGHT = true;
+ppc.PAD_LEFT  = false;
+ppc.PAD_RIGHT = true;
 
 /*
  * Special String.split; optionally lowercase a string and trim all results from
@@ -958,7 +958,7 @@ String.prototype.splitSafe = function(separator, limit, bLowerCase) {
  */
 String.prototype.appendRandomNumber = function(length) {
     for (var arr = [], i = 1; i <= length; i++)
-        arr.push(apf.randomGenerator.generate(1, 9));
+        arr.push(ppc.randomGenerator.generate(1, 9));
     // Create a new string from the old one, don't just create a copy
     return this.toString() + arr.join("");
 };
@@ -972,7 +972,7 @@ String.prototype.appendRandomNumber = function(length) {
  */
 String.prototype.prependRandomNumber = function(length) {
     for (var arr = [], i = 1; i <= length; i++)
-        arr.push(apf.randomGenerator.generate(1, 9));
+        arr.push(ppc.randomGenerator.generate(1, 9));
     // Create a new string from the old one, don't just create a copy
     return arr.join("") + this.toString();
 };

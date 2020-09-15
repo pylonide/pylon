@@ -31,8 +31,8 @@
  * @version     %I%, %G%
  * @since       0.4
  */
-apf.junction = function(){
-    this.$init("junction", apf.NODE_HIDDEN);
+ppc.junction = function(){
+    this.$init("junction", ppc.NODE_HIDDEN);
 };
 
 (function(){
@@ -53,7 +53,7 @@ apf.junction = function(){
     
     function init(e){
         var _self = this;
-        if (apf.window.vManager.permanent(this.parentNode, function(){
+        if (ppc.window.vManager.permanent(this.parentNode, function(){
             //Show
             _self.$reparent();
         }, function(){
@@ -76,8 +76,8 @@ apf.junction = function(){
     }
     
     this.addEventListener("DOMNodeInsertedIntoDocument", init);
-}).call(apf.junction.prototype = new apf.AmlElement());
+}).call(ppc.junction.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("junction", apf.junction);
+ppc.aml.setElement("junction", ppc.junction);
 
 // #endif

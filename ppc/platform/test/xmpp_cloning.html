@@ -1,8 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns:a="http://ajax.org/2005/aml" xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns:a="https://github.com/pylonide/pylon" xmlns="http://www.w3.org/1999/xhtml">
     <head>
         <title>TEST BOT</title>
-        <script type="text/javascript" src="../apf.js"></script>
+        <script type="text/javascript" src="../ppc.js"></script>
     </head>
     <body>
         <a:skin src="../skins.xml" />
@@ -17,15 +17,15 @@
           initdelay           = "false"
           loading-message     = "Loading..."
           empty-message       = "Loading..."
-          baseurl             = "{apf.host ? apf.host + '/' : 'http://dev.worknets.com/'}">
+          baseurl             = "{ppc.host ? ppc.host + '/' : 'http://dev.worknets.com/'}">
         </a:appsettings>
 
         <a:xmpp id="myXMPP"
-            url        = "{apf.host ? apf.host : 'http://localhost'}:5280/http-bind"
+            url        = "{ppc.host ? ppc.host : 'http://localhost'}:5280/http-bind"
             host       = "worknets.com"
             rdb-bot    = "true"
             type       = "binding"
-            resource   = "{'apf_'.appendRandomNumber(5)}" />    
+            resource   = "{'ppc_'.appendRandomNumber(5)}" />    
     
         <a:remote transport="myXMPP" id="rmtFs" />
     
@@ -40,17 +40,17 @@
     	        var cMyXmpp = myXMPP.cloneNode(true);
     			cMyXmpp.setAttribute("id", "cMyXmpp" + prio);
     			cMyXmpp.setAttribute("priority", prio);
-    			apf.document.body.appendChild(cMyXmpp);
+    			ppc.document.body.appendChild(cMyXmpp);
     			var cRmtFs  = rmtFs.cloneNode(true);
     			cRmtFs.setAttribute("transport", "cMyXmpp" + prio);
-    			apf.document.body.appendChild(cRmtFs);
+    			ppc.document.body.appendChild(cRmtFs);
     
     			rmtFs.addEventListener("change", function(e) {
-    				apf.console.log("### INCOMING change: " + e.resource + "\n");
+    				ppc.console.log("### INCOMING change: " + e.resource + "\n");
     				//persist.updateModel(e.resource, e.model);
     			});
     			rmtFs.addEventListener("rdbinit", function(e) {
-    				apf.console.log("### RDBINIT called: " + e.resource + ", " + e.model);
+    				ppc.console.log("### RDBINIT called: " + e.resource + ", " + e.model);
     				e.model.load("<data><caption>" + user + ": 1</caption></data>");
     				model = e.model;
     			});

@@ -27,8 +27,8 @@
  * @constructor
  * @private
  */
-apf.scrollbar = function(struct, tagName){
-    this.$init(tagName || "scrollbar", apf.NODE_VISIBLE, struct);
+ppc.scrollbar = function(struct, tagName){
+    this.$init(tagName || "scrollbar", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -81,12 +81,12 @@ apf.scrollbar = function(struct, tagName){
             var amlNode = typeof value == "string" ? self[value] : value;
             if (!amlNode || !amlNode.$amlLoaded) {
                 var _self = this;
-                apf.queue.add("scrollbar" + this.$uniqueId, function(){
+                ppc.queue.add("scrollbar" + this.$uniqueId, function(){
                     if (!amlNode) {
                         amlNode = typeof value == "string" ? self[value] : value;
                         
                         if (!amlNode) {
-                            throw new Error(apf.formatErrorString(0, _self,
+                            throw new Error(ppc.formatErrorString(0, _self,
                                "Attaching scrollbar to element",
                                "Could not find element to attach scrollbar to: " + value));
                         }
@@ -108,14 +108,14 @@ apf.scrollbar = function(struct, tagName){
     this.attach = function(viewport){
         if (viewport.nodeFunc) {
             // #ifdef __WITH_VIRTUALVIEWPORT
-            if (viewport.hasFeature(apf.__VIRTUALVIEWPORT__))
+            if (viewport.hasFeature(ppc.__VIRTUALVIEWPORT__))
                 viewport = viewport.$viewport;
             else
             // #endif
-                viewport = new apf.ViewPortAml(viewport);
+                viewport = new ppc.ViewPortAml(viewport);
         }
         else if (viewport.style)
-            viewport = new apf.ViewPortHtml(viewport);
+            viewport = new ppc.ViewPortHtml(viewport);
         
         this.$attach(viewport);
     };
@@ -125,7 +125,7 @@ apf.scrollbar = function(struct, tagName){
      */
     this.$attach = function(viewport){
         if (!viewport)
-            return apf.console.warn("Scrollbar could not connect to viewport");
+            return ppc.console.warn("Scrollbar could not connect to viewport");
         
         var _self = this;
         
@@ -145,7 +145,7 @@ apf.scrollbar = function(struct, tagName){
                     if (_self.$hideOnScrollControl)
                         _self.$hideOnScrollControl.stop();
                     
-                    apf.setOpacity(_self.$ext, 1);
+                    ppc.setOpacity(_self.$ext, 1);
                     !_self.visible ? _self.show() : _self.$ext.style.display = "block";
                     _self.$update();
                     
@@ -240,14 +240,14 @@ apf.scrollbar = function(struct, tagName){
             
             //Set scroll size
             this.$caret.style[this.$size] = (Math.max(5, (vp / sz
-                * this.$slideMaxSize)) - apf[this.$getDiff](this.$caret)) + "px";
+                * this.$slideMaxSize)) - ppc[this.$getDiff](this.$caret)) + "px";
             //if (this.$caret.offsetHeight - 4 == this.$slideMaxSize) 
                 //this.$ext.style.display = "none";
 
             this.position = viewport.getScrollTop() / (sz - vp);
 
             var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
-            this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
+            this.$caret.style[this.$pos] = (bUpHeight + (ppc[this.$getInner](this.$caret.parentNode)
             - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.position) + "px";
         }
         
@@ -257,7 +257,7 @@ apf.scrollbar = function(struct, tagName){
     this.setScrollPosition = function(position, preventEvent) {
         if (position == NaN) {
             //#ifdef __DEBUG
-            apf.console.warn("Scrollbar is hidden while scrolling.");
+            ppc.console.warn("Scrollbar is hidden while scrolling.");
             //#endif
             return;
         }
@@ -271,7 +271,7 @@ apf.scrollbar = function(struct, tagName){
         
         // Set the caret position
         var bUpHeight = this.$btnUp ? this.$btnUp[this.$offsetSize] : 0;
-        this.$caret.style[this.$pos] = (bUpHeight + (apf[this.$getInner](this.$caret.parentNode)
+        this.$caret.style[this.$pos] = (bUpHeight + (ppc[this.$getInner](this.$caret.parentNode)
             - (bUpHeight * 2) - this.$caret[this.$offsetSize]) * this.position) + "px";
 
         // Don't signal anything when animating or when not visible
@@ -290,13 +290,13 @@ apf.scrollbar = function(struct, tagName){
             _self.$ext.style.display = "block";
             
             if (_self.$showOnScrollControl
-              && _self.$showOnScrollControl.state == apf.tween.RUNNING)
+              && _self.$showOnScrollControl.state == ppc.tween.RUNNING)
                 return;
             
             if (_self.$hideOnScrollControl)
                 _self.$hideOnScrollControl.stop();
 
-            apf.tween.single(_self.$ext, {
+            ppc.tween.single(_self.$ext, {
                 control : _self.$hideOnScrollControl = {},
                 type : "fade",
                 from : 0,
@@ -312,12 +312,12 @@ apf.scrollbar = function(struct, tagName){
         var _self = this;
         return setTimeout(function(){
             if (_self.$hideOnScrollControl
-              && _self.$hideOnScrollControl.state == apf.tween.RUNNING)
+              && _self.$hideOnScrollControl.state == ppc.tween.RUNNING)
                 return;
             
             if (_self.$showOnScrollControl)
                 _self.$showOnScrollControl.stop();
-            apf.tween.single(_self.$ext, {
+            ppc.tween.single(_self.$ext, {
                 control : _self.$hideOnScrollControl = {},
                 type : "fade",
                 from : 1,
@@ -325,7 +325,7 @@ apf.scrollbar = function(struct, tagName){
                 steps : 20,
                 onfinish : function(){
                     _self.$ext.style.display = "none";
-                    apf.setOpacity(_self.$ext, 1);
+                    ppc.setOpacity(_self.$ext, 1);
                     
                     cb && cb();
                 }
@@ -352,7 +352,7 @@ apf.scrollbar = function(struct, tagName){
         
         if (this.$slideFast) {
             this.$slideFast.style[this.$pos]    = (this.$caret[this.$offsetPos] + this.$caret[this.$offsetSize]) + "px";
-            this.$slideFast.style[this.$size] = Math.max(1, apf[this.$getInner](this.$caret.parentNode) - this.$slideFast[this.$offsetPos]
+            this.$slideFast.style[this.$size] = Math.max(1, ppc[this.$getInner](this.$caret.parentNode) - this.$slideFast[this.$offsetPos]
                 - this.$btnUp[this.$offsetSize]) + "px";
         }
     }
@@ -368,7 +368,7 @@ apf.scrollbar = function(struct, tagName){
         this.$btnUp       = this.$getLayoutNode("main", "btnup",     this.$ext)
         this.$btnDown     = this.$getLayoutNode("main", "btndown",   this.$ext);
 
-        this.horizontal   = apf.isTrue(this.$getOption("main", "horizontal"));
+        this.horizontal   = ppc.isTrue(this.$getOption("main", "horizontal"));
         
         this.$windowSize = this.horizontal ? "getWindowWidth" : "getWindowHeight";
         this.$offsetSize = this.horizontal ? "offsetWidth" : "offsetHeight";
@@ -380,8 +380,8 @@ apf.scrollbar = function(struct, tagName){
         this.$getDiff    = this.horizontal ? "getWidthDiff" : "getHeightDiff";
         this.$getInner   = this.horizontal ? "getHtmlInnerWidth" : "getHtmlInnerHeight"; 
         this.$eventDir   = this.horizontal 
-            ? (apf.isIE || apf.isWebkit ? "offsetX" : "layerX") 
-            : (apf.isIE || apf.isWebkit ? "offsetY" : "layerY");
+            ? (ppc.isIE || ppc.isWebkit ? "offsetX" : "layerX") 
+            : (ppc.isIE || ppc.isWebkit ? "offsetY" : "layerY");
         this.$clientDir  = this.horizontal ? "clientX" : "clientY";
         this.$posIndex   = this.horizontal ? 0 : 1;
         
@@ -403,9 +403,9 @@ apf.scrollbar = function(struct, tagName){
                 clearTimeout(_self.$timer);
                 
                 _self.setScrollPosition(_self.position - _self.$stepValue);
-                apf.stopPropagation(e);
+                ppc.stopPropagation(e);
                 
-                //apf.window.$mousedown(e);
+                //ppc.window.$mousedown(e);
                 
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
@@ -434,9 +434,9 @@ apf.scrollbar = function(struct, tagName){
                 clearTimeout(_self.$timer);
                 
                 _self.setScrollPosition(_self.position + _self.$stepValue)
-                apf.stopPropagation(e);
+                ppc.stopPropagation(e);
                 
-                //apf.window.$mousedown(e);
+                //ppc.window.$mousedown(e);
                 
                 _self.$timer = $setTimeout(function(){
                     _self.$timer = setInterval(function(){
@@ -487,12 +487,12 @@ apf.scrollbar = function(struct, tagName){
 
                 var bUpHeight = _self.$btnUp ? _self.$btnUp[_self.$offsetSize] : 0;
                 var next = bUpHeight + (e[_self.$clientDir] - _self.$startPos
-                    + (apf.isWebkit ? document.body : document.documentElement)[_self.$scrollPos]
-                    - apf.getAbsolutePosition(_self.$caret.parentNode)[_self.horizontal ? 0 : 1]); // - 2
+                    + (ppc.isWebkit ? document.body : document.documentElement)[_self.$scrollPos]
+                    - ppc.getAbsolutePosition(_self.$caret.parentNode)[_self.horizontal ? 0 : 1]); // - 2
                 var min = bUpHeight;
                 if (next < min) 
                     next = min;
-                var max = (apf[_self.$getInner](_self.$caret.parentNode)
+                var max = (ppc[_self.$getInner](_self.$caret.parentNode)
                     - bUpHeight - _self.$caret[_self.$offsetSize]);
                 if (next > max) 
                     next = max;
@@ -518,8 +518,8 @@ apf.scrollbar = function(struct, tagName){
                 document.onmousemove = null;
             };
     
-            apf.stopPropagation(e);
-            //apf.window.$mousedown(e);
+            ppc.stopPropagation(e);
+            //ppc.window.$mousedown(e);
             
             return false;
         };
@@ -538,7 +538,7 @@ apf.scrollbar = function(struct, tagName){
                     _self.$slideFast.style.display = "block";
                     _self.$slideFast.style[_self.$pos]     = (_self.$caret[_self.$offsetPos]
                         + _self.$caret[_self.$offsetSize]) + "px";
-                    _self.$slideFast.style[_self.$size]  = (apf[_self.$getInner](_self.$caret.parentNode) - _self.$slideFast[_self.$offsetPos]
+                    _self.$slideFast.style[_self.$size]  = (ppc[_self.$getInner](_self.$caret.parentNode) - _self.$slideFast[_self.$offsetPos]
                         - _self.$btnUp[_self.$offsetSize]) + "px";
                 }
                 
@@ -598,10 +598,10 @@ apf.scrollbar = function(struct, tagName){
         this.addEventListener("resize", this.$resize);
         this.$update();
     }
-}).call(apf.scrollbar.prototype = new apf.Presentation());
-apf.aml.setElement("scrollbar", apf.scrollbar);
+}).call(ppc.scrollbar.prototype = new ppc.Presentation());
+ppc.aml.setElement("scrollbar", ppc.scrollbar);
 
-apf.GuiElement.propHandlers["scrollbar"] = function(value) {
+ppc.GuiElement.propHandlers["scrollbar"] = function(value) {
     if (this.$sharedScrollbar == undefined) {
         var values = value.split(" ");
         var name = values[0];
@@ -613,23 +613,23 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
         this.$sharedScrollbar = self[name] || false;
         
         function hasOnScroll(){
-            return sb && apf.isTrue(sb.getAttribute("showonscroll"));
+            return sb && ppc.isTrue(sb.getAttribute("showonscroll"));
         }
         
         var oHtml = this.$container || this.$int || this.$ext, timer, sb;
         var mouseMove;
-        apf.addListener(oHtml, "mousemove", mouseMove = function(e){
+        ppc.addListener(oHtml, "mousemove", mouseMove = function(e){
             if (!_self.$sharedScrollbar)
                 _self.$sharedScrollbar = self[name];
             
             sb = _self.$sharedScrollbar;
             
             if (!sb.$addedMouseOut) {
-                apf.addListener(sb.$ext, "mouseout", function(e){
+                ppc.addListener(sb.$ext, "mouseout", function(e){
                     if (!hasOnScroll())
                         return;
 
-                    if (apf.findHost(e.fromElement) == sb && apf.findHost(e.toElement) != sb) {
+                    if (ppc.findHost(e.fromElement) == sb && ppc.findHost(e.toElement) != sb) {
                         clearTimeout(timer);
                         hideScrollbar();
                     }
@@ -641,7 +641,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                 var pNode = (_self.$ext == oHtml ? _self.$ext.parentNode : _self.$ext);
                 pNode.appendChild(sb.$ext);
                 
-                if (apf.getStyle(pNode, "position") == "static") 
+                if (ppc.getStyle(pNode, "position") == "static") 
                     pNode.style.position = "relative";
                     
                 sb.setProperty("showonscroll", true);
@@ -660,7 +660,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
             if (hasOnScroll() && e) {
                 clearTimeout(timer);
                 
-                var pos = apf.getAbsolutePosition(oHtml);
+                var pos = ppc.getAbsolutePosition(oHtml);
                 var rightPos = oHtml.offsetWidth - (e.clientX - pos[0]);
                 var show = rightPos < 25 && rightPos > right;
                 if (show && sb.$ext.style.display == "none" 
@@ -692,8 +692,8 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                     sb.setProperty("showonscroll", true);
                 });
             else
-                apf.addListener(document, "mouseup", function(e){
-                    var tgt = apf.findHost(e.target);
+                ppc.addListener(document, "mouseup", function(e){
+                    var tgt = ppc.findHost(e.target);
                     if (tgt == sb)
                         return;
                         
@@ -702,15 +702,15 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
                     else
                         hideScrollbar();
                     
-                    apf.removeListener(document, "mouseup", arguments.callee);
+                    ppc.removeListener(document, "mouseup", arguments.callee);
                 });
         }
         
-        apf.addListener(oHtml, "mouseout", function(e){
+        ppc.addListener(oHtml, "mouseout", function(e){
             if (!hasOnScroll())
                 return;
 
-            var el = apf.findHost(e.toElement || e.rangeParent);
+            var el = ppc.findHost(e.toElement || e.rangeParent);
             if (el != sb && el != sbShared.$viewport.amlNode) {
                 clearTimeout(timer);
                 hideScrollbar();
@@ -719,7 +719,7 @@ apf.GuiElement.propHandlers["scrollbar"] = function(value) {
     }
 };
 
-apf.ViewPortAml = function(amlNode){
+ppc.ViewPortAml = function(amlNode){
     this.amlNode = amlNode;
     
     var _self = this;
@@ -729,7 +729,7 @@ apf.ViewPortAml = function(amlNode){
     };
     
     amlNode.addEventListener("resize", update);
-    if (amlNode.hasFeature(apf.__DATABINDING__)) {
+    if (amlNode.hasFeature(ppc.__DATABINDING__)) {
         amlNode.addEventListener("afterload", update);
         amlNode.addEventListener("xmlupdate", update);
     }
@@ -746,7 +746,7 @@ apf.ViewPortAml = function(amlNode){
     });
     
     var htmlNode = _self.$getHtmlHost();
-    apf.addListener(htmlNode, "scroll", function(){
+    ppc.addListener(htmlNode, "scroll", function(){
         if (_self.scrollbar.animating || !_self.scrollbar.$visible) 
             return;
         
@@ -794,36 +794,36 @@ apf.ViewPortAml = function(amlNode){
     
     this.getScrollHeight = function(){
         var htmlNode = this.$getHtmlHost();
-        return (apf.isIE && htmlNode.lastChild 
+        return (ppc.isIE && htmlNode.lastChild 
             ? htmlNode.lastChild.offsetTop 
                 + htmlNode.lastChild.offsetHeight
-                + apf.getBox(apf.getStyle(htmlNode, "padding"))[2]
-                + (parseInt(apf.getStyle(htmlNode, "marginBottom")) || 0)
+                + ppc.getBox(ppc.getStyle(htmlNode, "padding"))[2]
+                + (parseInt(ppc.getStyle(htmlNode, "marginBottom")) || 0)
             : htmlNode.scrollHeight);
     }
     
     this.getScrollWidth = function(){
         var htmlNode = this.$getHtmlHost();
-        return (apf.isIE && htmlNode.lastChild 
+        return (ppc.isIE && htmlNode.lastChild 
             ? htmlNode.lastChild.offsetLeft 
                 + htmlNode.lastChild.offsetWidth
-                + apf.getBox(apf.getStyle(htmlNode, "padding"))[1]
-                + (parseInt(apf.getStyle(htmlNode, "marginRight")) || 0)
+                + ppc.getBox(ppc.getStyle(htmlNode, "padding"))[1]
+                + (parseInt(ppc.getStyle(htmlNode, "marginRight")) || 0)
             : htmlNode.scrollWidth);
     }
     
     this.getHeight = function(){
         var htmlNode = this.$getHtmlHost();
         return htmlNode.tagName == "HTML" || htmlNode.tagName == "BODY" 
-            ? apf.getWindowHeight() 
-            : apf.getHtmlInnerHeight(htmlNode);
+            ? ppc.getWindowHeight() 
+            : ppc.getHtmlInnerHeight(htmlNode);
     }
     
     this.getWidth = function(){
         var htmlNode = this.$getHtmlHost();
         return htmlNode.tagName == "HTML" || htmlNode.tagName == "BODY" 
-            ? apf.getWindowHeight() 
-            : apf.getHtmlInnerWidth(htmlNode);
+            ? ppc.getWindowHeight() 
+            : ppc.getHtmlInnerWidth(htmlNode);
     }
     
     this.setScrollTop = function(value, preventEvent, byUser){
@@ -859,7 +859,7 @@ apf.ViewPortAml = function(amlNode){
     this.$getHtmlHost = function(){
         var htmlNode = this.amlNode.$int || this.amlNode.$container;
         return (htmlNode.tagName == "BODY" || htmlNode.tagName == "HTML" 
-            ? (apf.isSafari || apf.isChrome ? document.body : htmlNode.parentNode) 
+            ? (ppc.isSafari || ppc.isChrome ? document.body : htmlNode.parentNode) 
             : htmlNode);
     }
 
@@ -893,9 +893,9 @@ apf.ViewPortAml = function(amlNode){
             e.preventDefault();
         }
     }
-}).call(apf.ViewPortAml.prototype);
+}).call(ppc.ViewPortAml.prototype);
 
-apf.ViewPortHtml = function(htmlNode){
+ppc.ViewPortHtml = function(htmlNode){
     // *** Private *** //
     
     this.$getHtmlHost = function(){
@@ -907,16 +907,16 @@ apf.ViewPortHtml = function(htmlNode){
     var _self = this;
     
     htmlNode = (htmlNode.tagName == "BODY" || htmlNode.tagName == "HTML" 
-        ? (apf.isSafari || apf.isChrome ? document.body : htmlNode.parentNode) 
+        ? (ppc.isSafari || ppc.isChrome ? document.body : htmlNode.parentNode) 
         : htmlNode);
 
-    apf.addEventListener("mousescroll", function(e){
+    ppc.addEventListener("mousescroll", function(e){
         if (htmlNode == e.target 
           || (htmlNode == document.documentElement && e.target == document.body))
             _self.$mousescroll(e);
     })
     
-    apf.addListener(htmlNode, "scroll", function(){
+    ppc.addListener(htmlNode, "scroll", function(){
         _self.setScrollTop(this.scrollTop);
     });
     
@@ -931,9 +931,9 @@ apf.ViewPortHtml = function(htmlNode){
         }, 100);
     }
     
-    this.amlNode = new apf.Class().$init();
+    this.amlNode = new ppc.Class().$init();
 }
 
-apf.ViewPortHtml.prototype = apf.ViewPortAml.prototype;
+ppc.ViewPortHtml.prototype = ppc.ViewPortAml.prototype;
 
 //#endif

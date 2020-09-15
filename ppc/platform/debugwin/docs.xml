@@ -5,9 +5,9 @@
   onsubmiterror   = "alert('Unable to submit your note, please try again later');form.enable();"
   onbeforesubmit  = "
     form.disable();
-    apf.createNodeFromXpath(this.data, 'page/text()').nodeValue = apf.lastloaded;
-    apf.setNodeValue(this.data.selectSingleNode('section'), 'comment');
-    apf.setNodeValue(this.data.selectSingleNode('date'), new Date().format('mmm dd, yyyy'));
+    ppc.createNodeFromXpath(this.data, 'page/text()').nodeValue = ppc.lastloaded;
+    ppc.setNodeValue(this.data.selectSingleNode('section'), 'comment');
+    ppc.setNodeValue(this.data.selectSingleNode('date'), new Date().format('mmm dd, yyyy'));
   ">
     <comment new="true">
         <section />
@@ -36,7 +36,7 @@
               initial-message = "Search API docs"
               skin            = "tbempty" 
               onclear         = "doDocSearch();"
-              onkeyup         = "if (apf.isCharacter(event.keyCode)) { doDocSearch(this.getValue()) }"
+              onkeyup         = "if (ppc.isCharacter(event.keyCode)) { doDocSearch(this.getValue()) }"
               onkeydown       = "
                 if (event.keyCode == 9){
                 }
@@ -61,11 +61,11 @@
             <a:dropdown
                 id    = "ddFilter"
                 width = "50"
-                value = "apf"
+                value = "ppc"
                 tabindex = "1"
                 onslideup = "if (txtFilter.value) { doDocSearch(txtFilter.value) }"
               >
-                 <a:item value="apf">APF</a:item>
+                 <a:item value="ppc">PPC</a:item>
                  <a:item value="o3">O3</a:item>
             </a:dropdown>
         </a:hbox>
@@ -92,7 +92,7 @@
             if (event.keyCode == 27) {
                 txtFilter.clear();
             }
-            else if (apf.isCharacter(event.keyCode)) {
+            else if (ppc.isCharacter(event.keyCode)) {
                 txtFilter.setValue(String.fromCharCode(event.keyCode));
                 txtFilter.focus();
                 txtFilter.$focus({mouse:true});
@@ -110,7 +110,7 @@
                     value="http://www.ajax.org/icns/[@icon|../@icon].png" />
                 <a:selectable match="[node()[not(local-name()='more')]]" />
                 <!--j:tooltip match="@description" /-->
-                <!--a:select match="{apf.isSafari ? '[.]' : &quot;[node()[not(local-name()='section') or node()[local-name()='method' or local-name()='event' or local-name()='binding' or local-name()='attribute' or local-name()='element' or local-name()='property']]]&quot;}" /-->
+                <!--a:select match="{ppc.isSafari ? '[.]' : &quot;[node()[not(local-name()='section') or node()[local-name()='method' or local-name()='event' or local-name()='binding' or local-name()='attribute' or local-name()='element' or local-name()='property']]]&quot;}" /-->
                 <a:each match="[node()[local-name()]]" /><!-- and (not(local-name()='binding')
                     and not(local-name()='event') and not(local-name()='method') and not(local-name()='attribute')
                     and not(local-name()='property'))]]" />-->
@@ -173,7 +173,7 @@
                                 [body].trim()
                                     .replace(/<code>([\s\S]*?)(?:<\/code>\s*\n?|$)|(\n)/g, function(m, m1, nl){
                                         if (nl) return <br />;
-                                        return <pre class="code">{apf.highlightCode(m1)}</pre>;
+                                        return <pre class="code">{ppc.highlightCode(m1)}</pre>;
                                     });
                             }</div>
                         }
@@ -247,7 +247,7 @@
                         .replace(/<p>|<\/p>/g, "")
                         .replace(/<code>([\s\S]*?)<\/code>\s*\n?|(\n)/g, function(m, m1, nl){
                             if (nl) return "<br />";
-                            return '<pre class="code">' + apf.highlightCode(m1) + '</pre>';
+                            return '<pre class="code">' + ppc.highlightCode(m1) + '</pre>';
                         });
                 }</div>
             ?></a:caption>
@@ -329,12 +329,12 @@ function initRefGuide() {
         var href = node.getAttribute("href");
         if (href.substr(0, 5) != "file:"     
           && (href.indexOf("javascript:") == 0
-          || (apf.isIE && !apf.isIE8
+          || (ppc.isIE && !ppc.isIE8
             ? !href.match(/http\:\/\/www\.ajax\.org\/[^\/]*$/)
             : href.indexOf("http:") == 0)))
               return;
 
-        app.gotoPage("docs/" + apf.getFilename(node.getAttribute("href")));
+        app.gotoPage("docs/" + ppc.getFilename(node.getAttribute("href")));
         return false;
     }
 
@@ -344,23 +344,23 @@ function initRefGuide() {
 function addNewComment(){
     var xmlNode;
     if (!mdlNote.data.parentNode) {
-        xmlNode = apf.xmldb.getCleanCopy(mdlNote.data);
-        apf.xmldb.appendChild(lstComments.xmlRoot, xmlNode, lstComments.xmlRoot.firstChild);
-        apf.xmldb.notifyQueued();
+        xmlNode = ppc.xmldb.getCleanCopy(mdlNote.data);
+        ppc.xmldb.appendChild(lstComments.xmlRoot, xmlNode, lstComments.xmlRoot.firstChild);
+        ppc.xmldb.notifyQueued();
     }
     else xmlNode = mdlNote.data;
 
-    var oHtml = apf.xmldb.findHTMLNode(xmlNode, lstComments);
-    apf.tween.css(oHtml, 'highlight', {anim: 0, steps: 5, interval: 10});
+    var oHtml = ppc.xmldb.findHTMLNode(xmlNode, lstComments);
+    ppc.tween.css(oHtml, 'highlight', {anim: 0, steps: 5, interval: 10});
 
-    apf.tween.single(barNote, {type: 'fade', anim: 0,
+    ppc.tween.single(barNote, {type: 'fade', anim: 0,
         steps: 5, interval: 10, from:1, to:0});
 
-    apf.tween.single(lstComments, {type: 'top', anim: 0, steps: 5, interval: 10,
+    ppc.tween.single(lstComments, {type: 'top', anim: 0, steps: 5, interval: 10,
         from:0, to: -1* barNote.getHeight() - 10,
         onfinish: function(){
             setTimeout(function(){
-                apf.tween.css(oHtml, 'highlight', {anim: 0, steps: 20, interval: 30,
+                ppc.tween.css(oHtml, 'highlight', {anim: 0, steps: 20, interval: 30,
                     onfinish: function(){
                         barNote.hide();
                         lstComments.$ext.style.top = "0";
@@ -379,20 +379,20 @@ function addNote(toggle, noAnim){
     vgNote.hideAllErrors();
 
     barNote.show();
-    apf.setOpacity(barNote.$ext, 0);
+    ppc.setOpacity(barNote.$ext, 0);
     var top = -1 * barNote.getHeight() - 10;
     lstComments.$ext.style.top = top + "px";
 
     if (noAnim) {
         lstComments.$ext.style.top = 0;
-        //apf.tween.fade(barNote.$ext, 1);
+        //ppc.tween.fade(barNote.$ext, 1);
         barNote.$ext.style.filter = "";
     }
     else {
-        apf.tween.single(lstComments, {type: 'top', anim: 0, steps: 20,
+        ppc.tween.single(lstComments, {type: 'top', anim: 0, steps: 20,
             interval: 10, from:top, to: 0,
             onfinish: function(){
-                apf.tween.single(barNote, {type: 'fade', anim: 0, steps: 15,
+                ppc.tween.single(barNote, {type: 'fade', anim: 0, steps: 15,
                   interval: 10, from:0, to:1, onfinish : function(){
                       barNote.$ext.style.filter = "";
                   }});
@@ -412,10 +412,10 @@ function cancelAdding(noanim){
         return;
     }
 
-    apf.tween.single(barNote, {type: 'fade', anim: 0, steps: 15,
+    ppc.tween.single(barNote, {type: 'fade', anim: 0, steps: 15,
         interval: 10, from:1, to:0,
         onfinish: function(){
-           apf.tween.single(lstComments, {type: 'top', anim: 0, steps: 20,
+           ppc.tween.single(lstComments, {type: 'top', anim: 0, steps: 20,
                 interval: 10, from:0, to: -1* barNote.getHeight() - 10,
                 onfinish: function(){
                     barNote.hide();
@@ -439,7 +439,7 @@ function loadFile(filename){
     if (app.cache[filename])
         return app.cache[filename];
 
-    var data = (new apf.http()).getXml(app.server + filename + ".xml", null, {async:false});
+    var data = (new ppc.http()).getXml(app.server + filename + ".xml", null, {async:false});
     app.cache[filename] = data;
     return data;
 }
@@ -566,7 +566,7 @@ function loadNewDoc(doc){
     app.lastloaded = name;
     function callback(d, state){
         clearTimeout(timer);
-        if (state == apf.SUCCESS) {
+        if (state == ppc.SUCCESS) {
             txtInfoDocs.setValue(d);
             app.docCache[name] = d;
             app.headNotes.style.display = "block";
@@ -581,7 +581,7 @@ function loadNewDoc(doc){
     }
 
     if (app.docCache[name])
-        return callback(app.docCache[name], apf.SUCCESS);
+        return callback(app.docCache[name], ppc.SUCCESS);
 
     var docPath = "http://www.ajax.org/refguide/3.0/html";//app.basepath;
     if (doc.substr(0, 15) == "getting_started" || doc.substr(0, 6) == "manual" || doc.substr(0, 21) == "configure_your_editor")
@@ -592,7 +592,7 @@ function loadNewDoc(doc){
 */
 
     if(doc.trim() != '.html') {
-        apf.getData(apf.getAbsolutePath(docPath, doc.trim().replace(/\s/g, '_')), {callback: callback});
+        ppc.getData(ppc.getAbsolutePath(docPath, doc.trim().replace(/\s/g, '_')), {callback: callback});
         if (self.pageTracker)
             pageTracker._trackPageview(doc.trim());
     }
@@ -632,7 +632,7 @@ function doDocSearch(value, force){
 function doRealSearch(testBeginning, cacheId, value) {
     var group, node;
     if (!trDocs.$isCached(cacheId)){ //Copy nodes
-        group = apf.xmldb.getCleanCopy(mdlSearchDocs.data);
+        group = ppc.xmldb.getCleanCopy(mdlSearchDocs.data);
 
         if (testBeginning) {
             nodes = group.selectNodes("//node()[not(local-name()='category' or local-name()='subcat' or starts-with(translate(@n, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "') or starts-with(translate(@p, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + value + "'))]");
@@ -645,12 +645,12 @@ function doRealSearch(testBeginning, cacheId, value) {
                 nodes[i].parentNode.removeChild(nodes[i]);
         }
 
-        // ignore apf or o3 based on dropdown selection
+        // ignore ppc or o3 based on dropdown selection
         var ignoreNode;
-        if (ddFilter.value == "apf")
+        if (ddFilter.value == "ppc")
             ignoreNode = group.selectSingleNode("category[@n='O3']")
         else if (ddFilter.value == "o3")
-            ignoreNode = group.selectSingleNode("category[@n='APF']")
+            ignoreNode = group.selectSingleNode("category[@n='PPC']")
         
         ignoreNode.parentNode.removeChild(ignoreNode);
         

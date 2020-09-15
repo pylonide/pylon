@@ -454,7 +454,7 @@
               order         = "descending">
                 <a:caption><?lm
                     <p class="date">{formatDate([@timestamp])}</p>
-                    <p class="author">[@authorname] {apf.htmlentities([@authoremail])}</p>
+                    <p class="author">[@authorname] {ppc.htmlentities([@authoremail])}</p>
                     <p class="hash">{[@hash].substr(0, 10)}</p>
                 ?></a:caption>
             </a:each>

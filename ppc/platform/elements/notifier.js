@@ -25,10 +25,10 @@
  * A notification element, which shows popups when events occur. Similar in concept
  * to [growl](http://growl.info/) on the OSX platform.
  * 
- * @class apf.notifier
+ * @class ppc.notifier
  * @define notifier
  * @media
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  * 
  * @version     %I%, %G% 
  * 
@@ -72,8 +72,8 @@
  *                                      on the notifier.
  * 
  */
-apf.notifier = function(struct, tagName){
-    this.$init(tagName || "notifier", apf.NODE_VISIBLE, struct);
+ppc.notifier = function(struct, tagName){
+    this.$init(tagName || "notifier", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
@@ -148,10 +148,10 @@ apf.notifier = function(struct, tagName){
 
         var _self = this,
             oNoti = this.$pHtmlNode.appendChild(this.$ext.cloneNode(true)),
-            ww    = apf.isIE
+            ww    = ppc.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth,
-            wh    = apf.isIE
+            wh    = ppc.isIE
                 ? document.documentElement.offsetHeight
                 : window.innerHeight,
         
@@ -177,7 +177,7 @@ apf.notifier = function(struct, tagName){
         oBody.insertAdjacentHTML("beforeend", message || "[No message]");
         oNoti.style.display = "block";
 
-        var margin = apf.getBox(this.margin || "0"),
+        var margin = ppc.getBox(this.margin || "0"),
             nh     = oNoti.offsetHeight,
             nw     = oNoti.offsetWidth,
             /* It's possible to set for example: position: top-right or right-top */
@@ -291,8 +291,8 @@ apf.notifier = function(struct, tagName){
 
         var isMouseOver = false;
 
-        apf.tween.css(oNoti, "fade", {
-            anim     : apf.tween.NORMAL,
+        ppc.tween.css(oNoti, "fade", {
+            anim     : ppc.tween.NORMAL,
             steps    : 10,
             interval : 10,
             onfinish : function(container) {
@@ -305,12 +305,12 @@ apf.notifier = function(struct, tagName){
             if (isMouseOver)
                 return;
 
-            apf.tween.css(oNoti, "notifier_hidden", {
-                anim    : apf.tween.NORMAL,
+            ppc.tween.css(oNoti, "notifier_hidden", {
+                anim    : ppc.tween.NORMAL,
                 steps   : 10,
                 interval: 20,
                 onfinish: function(container) {
-                    apf.setStyleClass(oNoti, "", ["notifier_hover"]);
+                    ppc.setStyleClass(oNoti, "", ["notifier_hover"]);
                     if (isMouseOver)
                         return;
 
@@ -333,13 +333,13 @@ apf.notifier = function(struct, tagName){
             var tEl = e.explicitOriginalTarget || e.toElement;
             if (isMouseOver)
                 return;
-            if (tEl == oNoti || apf.isChildOf(oNoti, tEl)) {
-                apf.tween.css(oNoti, "notifier_hover", {
-                    anim    : apf.tween.NORMAL,
+            if (tEl == oNoti || ppc.isChildOf(oNoti, tEl)) {
+                ppc.tween.css(oNoti, "notifier_hover", {
+                    anim    : ppc.tween.NORMAL,
                     steps   : 10,
                     interval: 20,
                     onfinish: function(container) {
-                        apf.setStyleClass(oNoti, "", ["notifier_shown"]);
+                        ppc.setStyleClass(oNoti, "", ["notifier_shown"]);
                     }
                 });
                 
@@ -354,8 +354,8 @@ apf.notifier = function(struct, tagName){
             if (!isMouseOver)
                 return;
 
-            if (apf.isChildOf(tEl, oNoti) ||
-               (!apf.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
+            if (ppc.isChildOf(tEl, oNoti) ||
+               (!ppc.isChildOf(oNoti, tEl) && oNoti !== tEl )) {
                 isMouseOver = false;
                 hideWindow();
             }
@@ -377,10 +377,10 @@ apf.notifier = function(struct, tagName){
         this.$ext = this.$getExternal("notification");
         this.$ext.style.display  = "none";
         this.$ext.style.position = "absolute";
-        apf.window.zManager.set("notifier", this.$ext);
+        ppc.window.zManager.set("notifier", this.$ext);
     };
-}).call(apf.notifier.prototype = new apf.Presentation());
+}).call(ppc.notifier.prototype = new ppc.Presentation());
 
-apf.aml.setElement("notifier", apf.notifier);
-apf.aml.setElement("event", apf.event);
+ppc.aml.setElement("notifier", ppc.notifier);
+ppc.aml.setElement("event", ppc.event);
 // #endif

@@ -35,7 +35,7 @@
  *   - [callback] ([[Function]]): The code that is executed when the call returns, either successfully or not
  *   {: #saveDataOptions}
  */
-apf.saveData = 
+ppc.saveData = 
 
 /**
  * Retrieves data using a {@link term.datainstruction data instruction}.
@@ -82,7 +82,7 @@ apf.saveData =
  *   - [callback] ([[Function]]): The code that is executed when the call returns, either successfully or not
  * @param {Function}    [callback]   The code that is executed when the call returns, either successfully or not
  */
-apf.getData = function(instruction, options){
+ppc.getData = function(instruction, options){
     if (!instruction) return false;
 
     //Instruction type detection
@@ -104,12 +104,12 @@ apf.getData = function(instruction, options){
     function(data, state, extra){
         var callback = options.callback
         
-        if (state != apf.SUCCESS)
+        if (state != ppc.SUCCESS)
             return callback(data, state, extra || {});
 
         //Change this to warning?
         /*if (!data) {
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Loading new data", "Could not load data. \n\
                 Data instruction: '" + instruction + "'"));
         }*/
@@ -119,7 +119,7 @@ apf.getData = function(instruction, options){
     
     if (!options) options = {}; //@todo optimize?
     var fParsed = options.fParsed || (instruction.indexOf("{") > -1 || instruction.indexOf("[") > -1
-        ? apf.lm.compile(instruction, {
+        ? ppc.lm.compile(instruction, {
             withopt     : true, 
             precall     : options.precall,
             alwayscb    : true, 
@@ -139,18 +139,18 @@ apf.getData = function(instruction, options){
             
             //@todo can this be async?
             if (model == "#" || xpath == "#") { //When there is a set model and not a generated xpath
-                var m = (apf.lm.compile(instruction, {
+                var m = (ppc.lm.compile(instruction, {
                     xpathmode: 5
                 }))();
                 
-                //@todo apf3 this needs to be fixed in live markup
+                //@todo ppc3 this needs to be fixed in live markup
                 if (typeof m != "string") {
                     model = m.model && m.model.$isModel && m.model;
                     if (model)
                         xpath = m.xpath;
                     else if (m.model) {
-                        model = apf.xmldb.findModel(m.model);
-                        xpath = apf.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
+                        model = ppc.xmldb.findModel(m.model);
+                        xpath = ppc.xmlToXpath(m.model, model.data) + (m.xpath ? "/" + m.xpath : ""); //@todo make this better
                     }
                     else {
                         //Model is not yet available. When it comes available we will be recalled (at least for prop binds)
@@ -161,29 +161,29 @@ apf.getData = function(instruction, options){
             }
             else {
                 //#ifdef __WITH_NAMESERVER
-                model = apf.nameserver.get("model", model)
+                model = ppc.nameserver.get("model", model)
                 //#endif
             }
             
             //#ifdef __DEBUG
             if (!model) {
-                throw new Error("Could not find model '" + model + "' in " + instruction); //@todo apf3.0 make proper error
+                throw new Error("Could not find model '" + model + "' in " + instruction); //@todo ppc3.0 make proper error
             }
             //#endif
         
-            return gCallback(model.data.selectSingleNode(xpath), apf.SUCCESS, {});
+            return gCallback(model.data.selectSingleNode(xpath), ppc.SUCCESS, {});
         }
         else {
             //#ifdef __DEBUG
             if (!options.xmlNode) {
-                return apf.console.error(apf.formatErrorString(0, null,
+                return ppc.console.error(ppc.formatErrorString(0, null,
                     "Loading data",
                     "Xpath found without model and no xmlNode specified" 
                     + instruction));
             }
             //#endif
             
-            return gCallback(options.xmlNode.data.selectSingleNode(fParsed.xpaths[1]), apf.SUCCESS, {});
+            return gCallback(options.xmlNode.data.selectSingleNode(fParsed.xpaths[1]), ppc.SUCCESS, {});
         }
     }
     
@@ -207,7 +207,7 @@ apf.getData = function(instruction, options){
                 if (options._pc === true)
                     return;
                 
-                if (state != apf.SUCCESS)
+                if (state != ppc.SUCCESS)
                     return callback2.apply(this, arguments);
 
                 var url = data.split(" "), method = "get";
@@ -218,7 +218,7 @@ apf.getData = function(instruction, options){
                 else url = data;
                 
                 callback = options.callback = callback2;
-                apf.oHttp.exec(method, [url], gCallback, options);
+                ppc.oHttp.exec(method, [url], gCallback, options);
             }
             fParsed(options.xmlNode, gCallback, options);
         }
@@ -235,15 +235,15 @@ apf.getData = function(instruction, options){
                 url = instruction;
             }
             
-            apf.oHttp.exec(method, [url.replace(/\\/g, "")], gCallback, options);
+            ppc.oHttp.exec(method, [url.replace(/\\/g, "")], gCallback, options);
         }
     }
     
     if (result) {
         if (callback)
-            gCallback(result, apf.SUCCESS, {});
+            gCallback(result, ppc.SUCCESS, {});
         else {
-            //apf.console.warn("Returning data directly in apf.getData(). \
+            //ppc.console.warn("Returning data directly in ppc.getData(). \
                 //This means that all callback communication ends in void!");
             return result;
         }
@@ -255,14 +255,14 @@ apf.getData = function(instruction, options){
  * Creates a model object based on a {@link term.datainstruction data instruction}.
  *
  * @param {String} instruction  The {@link term.datainstruction data instruction} to be used to retrieve the data for the model
- * @param {apf.AmlNode} amlNode     The element the model is added to
+ * @param {ppc.AmlNode} amlNode     The element the model is added to
  */
-apf.setModel = function(instruction, amlNode){
+ppc.setModel = function(instruction, amlNode){
     if (!instruction) return;
 
     //Find existing model
     var fParsed = instruction.indexOf("{") > -1 || instruction.indexOf("[") > -1
-        ? apf.lm.compile(instruction, {
+        ? ppc.lm.compile(instruction, {
             //precall  : false, 
             alwayscb : true
         })
@@ -273,7 +273,7 @@ apf.setModel = function(instruction, amlNode){
 
     if (instruction == "@default" || fParsed.type == 2) {
         //#ifdef __WITH_NAMESERVER
-        var model = apf.nameserver.get("model", instruction);
+        var model = ppc.nameserver.get("model", instruction);
         if (model)
             return model.register(amlNode);
         else
@@ -281,10 +281,10 @@ apf.setModel = function(instruction, amlNode){
             if (instruction == "@default")
             return;
         
-        //@todo apf3.0 check here if string is valid url (relative or absolute)
+        //@todo ppc3.0 check here if string is valid url (relative or absolute)
         if (instruction.indexOf(".") == -1 && instruction.indexOf("/") == -1) {
             //#ifdef __DEBUG
-            apf.console.warn("Could not find model '" + instruction + "'");
+            ppc.console.warn("Could not find model '" + instruction + "'");
             //#endif
             return;
         }
@@ -297,20 +297,20 @@ apf.setModel = function(instruction, amlNode){
             if (fParsed.xpaths.length == 2 && fParsed.xpaths[0] != '#' && fParsed.xpaths [1] != '#') {
                 //#ifdef __WITH_NAMESERVER
                 //#ifdef __DEBUG
-                if (!apf.nameserver.get("model", fParsed.xpaths[0])) {
-                    throw new Error("Could not find model '" + fParsed.xpaths[0] + "' in " + instruction); //@todo apf3.0 make proper error
+                if (!ppc.nameserver.get("model", fParsed.xpaths[0])) {
+                    throw new Error("Could not find model '" + fParsed.xpaths[0] + "' in " + instruction); //@todo ppc3.0 make proper error
                 }
                 //#endif
                 
-                apf.nameserver.get("model", fParsed.xpaths[0]).register(amlNode, fParsed.xpaths[1]);
+                ppc.nameserver.get("model", fParsed.xpaths[0]).register(amlNode, fParsed.xpaths[1]);
                 //#endif
                 return;
             }
         }
         //#ifdef __DEBUG
         else {
-            //throw new Error(apf.formatErrorString(0, amlNode,
-            apf.console.warn("Xpath found without model. This might fail if no\
+            //throw new Error(ppc.formatErrorString(0, amlNode,
+            ppc.console.warn("Xpath found without model. This might fail if no\
                 context is specified using local(): " + instruction);
         }
         //#endif
@@ -321,13 +321,13 @@ apf.setModel = function(instruction, amlNode){
 
     //Complex data fetch (possibly async) - data is loaded only once. 
     //Potential property binding has to take of the rest
-    apf.getData(instruction, {
+    ppc.getData(instruction, {
       parsed   : fParsed, 
       xmlNode  : amlNode && amlNode.xmlRoot,
       callback : function(data, state, extra){
-        //@todo apf3.0 call onerror on amlNode
-        if (state != apf.SUCCESS) {
-            throw new Error(apf.formatErrorString(0, null,
+        //@todo ppc3.0 call onerror on amlNode
+        if (state != ppc.SUCCESS) {
+            throw new Error(ppc.formatErrorString(0, null,
                 "Loading new data", "Could not load data into model. \
                 \nMessage: " + extra.message + "\
                 \nInstruction: '" + instruction + "'"));
@@ -338,13 +338,13 @@ apf.setModel = function(instruction, amlNode){
 
         if (typeof data == "string") {
             if (data.charAt(0) == "<")
-                data = apf.getXml(data);
+                data = ppc.getXml(data);
             else {
                 //Assuming web service returned url
                 if (data.indexOf("http://") == 0)
-                    return apf.setModel(data, amlNode);
+                    return ppc.setModel(data, amlNode);
                 else {
-                    throw new Error("Invalid data from server");//@todo apf3.0 make proper apf error handling. apf.onerror
+                    throw new Error("Invalid data from server");//@todo ppc3.0 make proper ppc error handling. ppc.onerror
                 }
             }
         }
@@ -354,11 +354,11 @@ apf.setModel = function(instruction, amlNode){
             return;
         }
         
-        var model = apf.xmldb.findModel(data); //See if data is already loaded into a model
+        var model = ppc.xmldb.findModel(data); //See if data is already loaded into a model
         if (model)
-            model.register(amlNode, apf.xmlToXpath(data, model.data)); //@todo move function to xml library
+            model.register(amlNode, ppc.xmlToXpath(data, model.data)); //@todo move function to xml library
         else
-            new apf.model().register(amlNode).load(data);
+            new ppc.model().register(amlNode).load(data);
     }});
 };
 //#endif

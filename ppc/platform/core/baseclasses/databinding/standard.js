@@ -24,21 +24,21 @@
 /**
  * The baseclass for all standard data binding rules.
  *
- * @class apf.StandardBinding
+ * @class ppc.StandardBinding
  * @private
  * @baseclass
- * @inherits apf.DataBinding
+ * @inherits ppc.DataBinding
  */
-apf.StandardBinding = function(){
+ppc.StandardBinding = function(){
     this.$init(true);
     
     //#ifdef __WITH_VALIDATION
-    if (apf.Validation)
-        this.implement(apf.Validation);
+    if (ppc.Validation)
+        this.implement(ppc.Validation);
     //#endif
     
     if (!this.setQueryValue)
-        this.implement(apf.DataBinding);
+        this.implement(ppc.DataBinding);
 
     if (!this.defaultValue) //@todo please use this in a sentence
         this.defaultValue = "";
@@ -49,7 +49,7 @@ apf.StandardBinding = function(){
      */
     this.$load = function(xmlNode){
         //Add listener to XMLRoot Node
-        apf.xmldb.addNodeListener(xmlNode, this);
+        ppc.xmldb.addNodeListener(xmlNode, this);
         //Set Properties
 
         //#ifdef __WITH_PROPERTY_BINDING
@@ -110,7 +110,7 @@ apf.StandardBinding = function(){
                 //RLD: Disabled because sometimes indeed components do not 
                 //have a model when their xmlRoot is removed.
                 if (!model) {
-                    throw new Error(apf.formatErrorString(0, this, 
+                    throw new Error(ppc.formatErrorString(0, this, 
                         "Setting change notifier on component", 
                         "Component without a model is listening for changes", 
                         this.$aml));
@@ -171,7 +171,7 @@ apf.StandardBinding = function(){
         });
     };
 
-    //@todo apf3.0 this is wrong
+    //@todo ppc3.0 this is wrong
     /**
      * @event $clear Clears the data loaded into this element resetting it's value.
      */
@@ -182,7 +182,7 @@ apf.StandardBinding = function(){
         }
     });
 };
-apf.StandardBinding.prototype = new apf.DataBinding();
+ppc.StandardBinding.prototype = new ppc.DataBinding();
 
-apf.Init.run("standardbinding");
+ppc.Init.run("standardbinding");
 // #endif

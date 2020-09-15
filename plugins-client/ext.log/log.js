@@ -20,14 +20,14 @@ module.exports = ext.register("ext/log/log", {
     type   : ext.GENERAL,
     markup : markup,
     desp   : [],
-    model  : new apf.model().load("<events />"),
+    model  : new ppc.model().load("<events />"),
 
     nodes : [],
 
     hook : function(){
         var _self = this;
         this.nodes.push(
-            menus.addItemByPath("Tools/Log...", new apf.item({
+            menus.addItemByPath("Tools/Log...", new ppc.item({
                 onclick : function(){
                     ext.initExtension(_self);
                     winLog.show();
@@ -46,8 +46,8 @@ module.exports = ext.register("ext/log/log", {
             _self.log(null, "websocket_receive", null, e.message);
         });
 
-        this.wrapHttp("apf.http", "http");
-        this.wrapHttp("apf.webdav", "webdav");
+        this.wrapHttp("ppc.http", "http");
+        this.wrapHttp("ppc.webdav", "webdav");
         this.wrapInstance("require('ext/filesystem/filesystem').webdav", "fswebdav");
     },
 
@@ -61,7 +61,7 @@ module.exports = ext.register("ext/log/log", {
             return oHttp;
         }
         eval(expr + " = func");
-        apf.extend(eval(expr), http);
+        ppc.extend(eval(expr), http);
     },
 
     wrapInstance : function(expr, type){
@@ -77,7 +77,7 @@ module.exports = ext.register("ext/log/log", {
         oHttp.get = function(url, options){
             var callback = options.callback;
             options.callback = function(data, state, extra){
-                apf.xmldb.setAttribute(xmlNode, "response",
+                ppc.xmldb.setAttribute(xmlNode, "response",
                     JSON.stringify({
                         state : state,
                         data : data
@@ -94,10 +94,10 @@ module.exports = ext.register("ext/log/log", {
 
     log : function(url, type, request, response){
         if (this.model.data.childNodes.length > 1000) {
-            apf.xmldb.removeNode(this.model.data.firstChild);
+            ppc.xmldb.removeNode(this.model.data.firstChild);
         }
 
-        var xmlNode = apf.n("<event/>")
+        var xmlNode = ppc.n("<event/>")
             .attr("time", new Date().getTime())
             .attr("url", url || "")
             .attr("type", type)
@@ -108,7 +108,7 @@ module.exports = ext.register("ext/log/log", {
             ? JSON.stringify(request).replace("]]>", "]] >")
             : ""));
 
-        return apf.xmldb.appendChild(this.model.data, xmlNode);
+        return ppc.xmldb.appendChild(this.model.data, xmlNode);
     }
 });
 

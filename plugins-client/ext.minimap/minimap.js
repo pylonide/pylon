@@ -32,7 +32,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
 
     hook : function() {
         var _self = this;
-        this.menuItem = new apf.item({
+        this.menuItem = new ppc.item({
             id      : "mnuItemShowMinimap",
             type    : "check",
             caption : "Show Minimap",
@@ -82,10 +82,10 @@ return module.exports = ext.register("ext/minimap/minimap", {
     init : function() {
         var _self = this;
 
-        apf.importCssString((this.css || ""));
+        ppc.importCssString((this.css || ""));
 
         this.editor = Code.amlEditor.$editor;
-        this.panel = Code.amlEditor.parentNode.appendChild(new apf.bar({
+        this.panel = Code.amlEditor.parentNode.appendChild(new ppc.bar({
             id : "minimapPanel",
             visible : false,
             top : 2,
@@ -106,7 +106,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
                 _self.map.resize(_self.map_width, Code.amlEditor.getHeight());
         });
 
-        if (apf.isTrue(this.map_enabled)) {
+        if (ppc.isTrue(this.map_enabled)) {
             setTimeout(function() {
                 _self.show();
             });
@@ -136,7 +136,7 @@ return module.exports = ext.register("ext/minimap/minimap", {
     },
 
     toggle : function() {
-        if (apf.isTrue(this.map_enabled))
+        if (ppc.isTrue(this.map_enabled))
             this.hide();
         else
             this.show();

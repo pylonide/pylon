@@ -23,8 +23,8 @@
 /**
  * Defines a list of acceptable values
  */
-apf.XsdEnumeration = function(struct, tagName){
-    this.$init(tagName || "enumeration", apf.NODE_HIDDEN, struct);
+ppc.XsdEnumeration = function(struct, tagName){
+    this.$init(tagName || "enumeration", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -47,7 +47,7 @@ apf.XsdEnumeration = function(struct, tagName){
         
         stack.push("if (!/^(?:" + re.join("|") + ")$/.test(value)) return false;");
     };
-}).call(apf.XsdEnumeration.prototype = new apf.XsdElement());
+}).call(ppc.XsdEnumeration.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("enumeration", apf.XsdEnumeration);
+ppc.xsd.setElement("enumeration", ppc.XsdEnumeration);
 //#endif

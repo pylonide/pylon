@@ -49,7 +49,7 @@ module.exports = {
             }
         });
         
-        var mnuItem = new apf.item({
+        var mnuItem = new ppc.item({
             command : "outline"
         });
 
@@ -134,7 +134,7 @@ module.exports = {
         this.showOutline(showNow, ignoreInputText);
         /* TODO: set loading message if file has changed
         treeOutline.$setClearMessage(treeOutline["loading-message"], "loading");
-        apf.setOpacity(winGoToFile.$ext, 1);
+        ppc.setOpacity(winGoToFile.$ext, 1);
         */
         this.worker.emit("outline", { data : { ignoreFilter: showNow } });
     },
@@ -242,7 +242,7 @@ module.exports = {
 
         var ace = editor.amlEditor.$editor;
         var selected = this.findCursorInOutline(outline, ace.getCursorPosition());
-        mdlOutline.load(apf.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
+        mdlOutline.load(ppc.getXml('<data>' + this.outlineJsonToXml(outline, selected, 'entries') + '</data>'));
         return selected;
     },
     
@@ -251,7 +251,7 @@ module.exports = {
         if (node) {
             this.ignoreSelectOnce = true;
             treeOutline.select(node);
-            var htmlNode = apf.xmldb.getHtmlNode(node, treeOutline);
+            var htmlNode = ppc.xmldb.getHtmlNode(node, treeOutline);
             htmlNode.scrollIntoView();
         }
         else {
@@ -303,7 +303,7 @@ module.exports = {
             if (this.$originalLine) {
                 var editor = editors.currentEditor;
                 var ace = editor.amlEditor.$editor;
-                ace.gotoLine(this.$originalLine, this.$originalColumn, apf.isTrue(settings.model.queryValue("editors/code/@animatedscroll")));
+                ace.gotoLine(this.$originalLine, this.$originalColumn, ppc.isTrue(settings.model.queryValue("editors/code/@animatedscroll")));
                 
                 delete this.$originalLine;
                 delete this.$originalColumn;

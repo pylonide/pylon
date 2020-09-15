@@ -22,12 +22,12 @@
 // #ifndef __PACKAGED
 //#ifdef __SUPPORT_O3
 
-apf.$loader
+ppc.$loader
     .setGlobalDefaults({
         AllowDuplicates : true
     })
 
-apf.$loader
+ppc.$loader
     .script(
         "core/class.js",
     
@@ -235,9 +235,9 @@ apf.$loader
         "elements/actiontracker/xmlactions.js"
     )
     
-    //Let's start APF
+    //Let's start PPC
     .wait(function(){
-        apf.dispatchEvent("domready");
+        ppc.dispatchEvent("domready");
     });
 
 //#endif

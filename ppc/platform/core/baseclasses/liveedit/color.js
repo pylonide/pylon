@@ -20,29 +20,29 @@
  */
 
 // #ifdef __ENABLE_EDITOR_COLOR || __INC_ALL
-apf.LiveEdit.colorPlugin = function(sName) {
+ppc.LiveEdit.colorPlugin = function(sName) {
     this.name        = sName;
     this.icon        = sName;
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.buttonNode  = null;
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
     this.colspan     = 18;
 
     var panelBody;
 
     var colorAtoms = ["00", "33", "66", "99", "CC", "FF"];
     function generatePalette() {
-        apf.LiveEdit.colorPlugin.palette = [];
+        ppc.LiveEdit.colorPlugin.palette = [];
         var r, g, b, iCol;
         for (r = 0; r < colorAtoms.length; r++) {
             for (g = 0; g < colorAtoms.length; g++) {
                 iCol = (r % 3) * 6 + g;
                 for (b = 0; b < colorAtoms.length; b++) {
-                    if (!apf.LiveEdit.colorPlugin.palette[iCol])
-                        apf.LiveEdit.colorPlugin.palette[iCol] = [];
-                    apf.LiveEdit.colorPlugin.palette[iCol][(r < 3 ? 0 : 6) + b] = {
+                    if (!ppc.LiveEdit.colorPlugin.palette[iCol])
+                        ppc.LiveEdit.colorPlugin.palette[iCol] = [];
+                    ppc.LiveEdit.colorPlugin.palette[iCol][(r < 3 ? 0 : 6) + b] = {
                         red  : colorAtoms[r],
                         green: colorAtoms[g],
                         blue : colorAtoms[b]
@@ -96,12 +96,12 @@ apf.LiveEdit.colorPlugin = function(sName) {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.$showPopup(this, this.$uniqueId, this.buttonNode, apf.isIE6 ? 296 : 292, 167);
+        this.editor.$showPopup(this, this.$uniqueId, this.buttonNode, ppc.isIE6 ? 296 : 292, 167);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -124,14 +124,14 @@ apf.LiveEdit.colorPlugin = function(sName) {
     this.queryState = function(editor) {
         var cmdName   = this.name == "forecolor"
             ? "ForeColor"
-            : apf.isIE ? "BackColor" : "HiliteColor";
+            : ppc.isIE ? "BackColor" : "HiliteColor";
         this.state    = editor.$queryCommandState(cmdName);
         var currValue = "";
         try {
             currValue = editor.$queryCommandValue(cmdName);
         }
         catch (ex) {}
-        if (apf.isIE)
+        if (ppc.isIE)
             currValue = "#" + RGBToBGRToRGB(int2Color(currValue));
         if (currValue != this.colorPreview.style.backgroundColor)
             this.colorPreview.style.backgroundColor = currValue;
@@ -143,20 +143,20 @@ apf.LiveEdit.colorPlugin = function(sName) {
             el = el.parentNode;
         var sColor = el.getAttribute("rel");
         if (sColor) {
-            apf.popup.forceHide();
-//            if (this.name == "backcolor" && apf.isGecko)
+            ppc.popup.forceHide();
+//            if (this.name == "backcolor" && ppc.isGecko)
 //                this.setStyleMethod(true);
             this.editor.$execCommand(this.name == "forecolor"
                 ? "ForeColor"
-                : apf.isIE ? "BackColor" : "HiliteColor",
+                : ppc.isIE ? "BackColor" : "HiliteColor",
                 "#" + sColor);
-//            if (this.name == "backcolor" && apf.isGecko)
+//            if (this.name == "backcolor" && ppc.isGecko)
 //                this.setStyleMethod(false);
         }
     };
 
     this.createPanelBody = function() {
-        if (!apf.LiveEdit.colorPlugin.palette)
+        if (!ppc.LiveEdit.colorPlugin.palette)
             generatePalette();
 
         panelBody = document.body.appendChild(document.createElement("div"));
@@ -164,7 +164,7 @@ apf.LiveEdit.colorPlugin = function(sName) {
         panelBody.style.display = "none";
         var aHtml = [];
 
-        var row, col, colorCode, palette = apf.LiveEdit.colorPlugin.palette;
+        var row, col, colorCode, palette = ppc.LiveEdit.colorPlugin.palette;
         for (row = 0; row < palette[0].length; row++) {
             aHtml.push('<div class="editor_panelrow">');
             for (col= 0; col < palette.length; col++) {
@@ -173,7 +173,7 @@ apf.LiveEdit.colorPlugin = function(sName) {
                     palette[col][row].blue;
                 aHtml.push('<a class="editor_smallcell editor_panelcell" style="background-color:#',
                     colorCode, ';" rel="', colorCode,
-                    '" href="javascript:;" onmousedown="apf.lookup(', this.$uniqueId,
+                    '" href="javascript:;" onmousedown="ppc.lookup(', this.$uniqueId,
                     ').submit(event);">\
                     &nbsp;</a>');
             }
@@ -190,9 +190,9 @@ apf.LiveEdit.colorPlugin = function(sName) {
         delete this.colorPreview;
     };
 };
-apf.LiveEdit.colorPlugin.palette = null;
+ppc.LiveEdit.colorPlugin.palette = null;
 
-apf.LiveEdit.plugin("forecolor", apf.LiveEdit.colorPlugin);
-apf.LiveEdit.plugin("backcolor", apf.LiveEdit.colorPlugin);
+ppc.LiveEdit.plugin("forecolor", ppc.LiveEdit.colorPlugin);
+ppc.LiveEdit.plugin("backcolor", ppc.LiveEdit.colorPlugin);
 
 // #endif

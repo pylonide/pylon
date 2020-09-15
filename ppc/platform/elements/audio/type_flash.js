@@ -34,26 +34,26 @@
  * @since       1.0
  */
 
-apf.audio.TypeFlash = function(oAudio, oNode, options) {
+ppc.audio.TypeFlash = function(oAudio, oNode, options) {
     this.oAudio              = oAudio;
-    this.isNine              = apf.flash.isAvailable('9.0.0');
+    this.isNine              = ppc.flash.isAvailable('9.0.0');
 
     // #ifndef __PACKAGED
-    this.DEFAULT_SWF_PATH    = (apf.config.resourcePath || apf.basePath) + "elements/audio/soundmanager2"
+    this.DEFAULT_SWF_PATH    = (ppc.config.resourcePath || ppc.basePath) + "elements/audio/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = (apf.config.resourcePath || apf.basePath) + "elements/audio/null.mp3";
+    this.NULL_MP3_PATH       = (ppc.config.resourcePath || ppc.basePath) + "elements/audio/null.mp3";
     /* #else
-    this.DEFAULT_SWF_PATH    = (apf.config.resourcePath || apf.basePath) + "resources/soundmanager2"
+    this.DEFAULT_SWF_PATH    = (ppc.config.resourcePath || ppc.basePath) + "resources/soundmanager2"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = (apf.config.resourcePath || apf.basePath) + "resources/null.mp3";
+    this.NULL_MP3_PATH       = (ppc.config.resourcePath || ppc.basePath) + "resources/null.mp3";
     #endif */
     /* #ifdef __WITH_CDN
-    this.DEFAULT_SWF_PATH    = apf.CDN + apf.VERSION + "/resources/audioplayer"
+    this.DEFAULT_SWF_PATH    = ppc.CDN + ppc.VERSION + "/resources/audioplayer"
                                 + (this.isNine ? "_flash9" : "") + ".swf";
-    this.NULL_MP3_PATH       = apf.CDN + apf.VERSION + "/resources/null.mp3";
+    this.NULL_MP3_PATH       = ppc.CDN + ppc.VERSION + "/resources/null.mp3";
     #endif */
 
-    this.id = apf.flash.addPlayer(this); // Manager manages multiple players
+    this.id = ppc.flash.addPlayer(this); // Manager manages multiple players
     this.inited = false;
 
     // Div name, flash name, and container name
@@ -67,7 +67,7 @@ apf.audio.TypeFlash = function(oAudio, oNode, options) {
 
     // Initialize player
     this.player = null;
-    apf.extend(this, apf.audio.TypeInterface);
+    ppc.extend(this, ppc.audio.TypeInterface);
 
     this.delayCalls = [];
 
@@ -85,11 +85,11 @@ apf.audio.TypeFlash = function(oAudio, oNode, options) {
     this.setOptions(options).createPlayer();
 }
 
-apf.audio.TypeFlash.isSupported = function() {
-    return apf.flash.isAvailable();
+ppc.audio.TypeFlash.isSupported = function() {
+    return ppc.flash.isAvailable();
 };
 
-apf.audio.TypeFlash.prototype = {
+ppc.audio.TypeFlash.prototype = {
     properties: ["volume", "autoPlay", "autoLoad", "playHeadTime",
                  "totalTime", "bufferTime", "playheadUpdateInterval"],
     /**
@@ -229,7 +229,7 @@ apf.audio.TypeFlash.prototype = {
         else {
             var args = Array.prototype.slice.call(arguments);
             args.unshift(this.player, "callMethod");
-            apf.flash.remote.apply(null, args);
+            ppc.flash.remote.apply(null, args);
         }
         return this;
     },
@@ -318,7 +318,7 @@ apf.audio.TypeFlash.prototype = {
                 this.inited = true;
                 this.makeDelayCalls();
                 this.player.callMethod("setPolling", true);
-                this.oAudio.$initHook(apf.extend(evtObj, apf.flash.getSandbox(evtObj.sandboxType)));
+                this.oAudio.$initHook(ppc.extend(evtObj, ppc.flash.getSandbox(evtObj.sandboxType)));
                 break;
             case "id3":
                 this.oAudio.$metadataHook({
@@ -327,7 +327,7 @@ apf.audio.TypeFlash.prototype = {
                 });
                 break;
             case "debug":
-                apf.console.log(">> SWF DBUG: " + evtObj.msg);
+                ppc.console.log(">> SWF DBUG: " + evtObj.msg);
                 break;
         }
     },
@@ -346,8 +346,8 @@ apf.audio.TypeFlash.prototype = {
         div.style.width    = "1px";
         div.style.height   = "1px";
         div.style.left     = "-2000px";
-        apf.flash.embed({
-            // apf.flash#embed properties
+        ppc.flash.embed({
+            // ppc.flash#embed properties
             context          : this,
             htmlNode         : div,
             property         : "player",

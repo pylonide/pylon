@@ -43,8 +43,8 @@
  * @version     %I%, %G%
  * @since       1.0
  *
- * @inheritsElsewhere apf.XForms
- * @inherits apf.StandardBinding
+ * @inheritsElsewhere ppc.XForms
+ * @inherits ppc.StandardBinding
  *
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
@@ -63,15 +63,15 @@
  *    value  = "[body/text()]" />
  * </code>
  */
-apf.editor = function(struct, tagName){
-    this.$init(tagName || "editor", apf.NODE_VISIBLE, struct);
+ppc.editor = function(struct, tagName){
+    this.$init(tagName || "editor", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
     this.implement(
-        apf.LiveEdit
+        ppc.LiveEdit
         //#ifdef __WITH_XFORMS
-        //,apf.XForms
+        //,ppc.XForms
         //#endif
     );
     
@@ -91,7 +91,7 @@ apf.editor = function(struct, tagName){
 
     this.$propHandlers["value"] = function(html){
         if (typeof html != "string")// || html == ""
-            html = "";//apf.isIE ? "<br />" :
+            html = "";//ppc.isIE ? "<br />" :
 
         // If the HTML string is the same as the contents of the iframe document,
         // don't do anything...
@@ -102,9 +102,9 @@ apf.editor = function(struct, tagName){
 
         // #ifdef __WITH_HTML_CLEANER
         html = html.replace(/<p[^>]*>/gi, "").replace(/<\/p>/gi, 
-            "<br _apf_marker='1' /><br _apf_marker='1' />");
+            "<br _ppc_marker='1' /><br _ppc_marker='1' />");
 
-        html = apf.htmlCleaner.prepare(html);
+        html = ppc.htmlCleaner.prepare(html);
         // #endif
 
         if (this.$pluginsActive == "code") {
@@ -148,7 +148,7 @@ apf.editor = function(struct, tagName){
     this.makeEditable = function() {
         var _self = this;
         
-        if (apf.isIE) {
+        if (ppc.isIE) {
             $setTimeout(function() {
                 _self.$activeDocument.body.contentEditable = true;
             });
@@ -156,7 +156,7 @@ apf.editor = function(struct, tagName){
         else {
             try {
                 this.$activeDocument.designMode = "on";
-                if (apf.isGecko) {
+                if (ppc.isGecko) {
                     // Tell Gecko (Firefox 1.5+) to enable or not live resizing of objects
                     this.$activeDocument.execCommand("enableObjectResizing",
                         false, this.imagehandles);
@@ -185,7 +185,7 @@ apf.editor = function(struct, tagName){
         if (!this.$activeDocument)
             return "";
 
-        return (this.$value = apf.htmlCleaner.parse(
+        return (this.$value = ppc.htmlCleaner.parse(
             this.$activeDocument.body.innerHTML, bStrict));
     };
 
@@ -225,7 +225,7 @@ apf.editor = function(struct, tagName){
      */
     function onClick(e) {
         clearTimeout(clickTimer);
-        if (this.$oBookmark && apf.isGecko) {
+        if (this.$oBookmark && ppc.isGecko) {
             var oNewBm = _self.$selection.getBookmark();
             if (typeof oNewBm.start == "undefined" && typeof oNewBm.end == "undefined") {
                 //this.$selection.moveToBookmark(this.$oBookmark);
@@ -239,7 +239,7 @@ apf.editor = function(struct, tagName){
         clickTimer = $setTimeout(function() {
             var rClick = ((which == 3) || (button == 2));
             //#ifdef __WITH_FOCUS
-            if (apf.document.activeElement != this) {
+            if (ppc.document.activeElement != this) {
                 //this.$visualFocus(true);
                 _self.focus({});
             }
@@ -249,7 +249,7 @@ apf.editor = function(struct, tagName){
                 _self.$focus({});
         });
 
-        //apf.stopEvent(e); // @todo why was here a stopEvent??
+        //ppc.stopEvent(e); // @todo why was here a stopEvent??
     }
 
     /**
@@ -260,8 +260,8 @@ apf.editor = function(struct, tagName){
      * @private
      */
     function onContextmenu(e) {
-        if (this.state == apf.DISABLED) return;
-        //if (apf.isIE)
+        if (this.state == ppc.DISABLED) return;
+        //if (ppc.isIE)
         //    this.$visualFocus(true);
         this.$notifyAllPlugins("context", e);
     }
@@ -269,7 +269,7 @@ apf.editor = function(struct, tagName){
     // *** Focus Handling *** //
 
     /**
-     * Fix for focus handling to mix 'n match nicely with other APF elements
+     * Fix for focus handling to mix 'n match nicely with other PPC elements
      *
      * @param {Event} e
      * 
@@ -280,8 +280,8 @@ apf.editor = function(struct, tagName){
         clearInterval(this.$fTimer);
 
         this.setProperty("state", (this.$pluginsActive == "code")
-            ? apf.DISABLED
-            : apf.OFF);
+            ? ppc.DISABLED
+            : ppc.OFF);
 
         this.$setStyleClass(this.$ext, this.$baseCSSname + "Focus");
 
@@ -310,11 +310,11 @@ apf.editor = function(struct, tagName){
      * @type  {Boolean}
      */
     this.$isTextInput = function(e){
-        return apf.isChildOf(this.$activeDocument, e.srcElement, true);
+        return ppc.isChildOf(this.$activeDocument, e.srcElement, true);
     };
 
     /**
-     * Fix for focus/ blur handling to mix 'n match nicely with other APF
+     * Fix for focus/ blur handling to mix 'n match nicely with other PPC
      * elements
      *
      * @param {Event} e
@@ -324,9 +324,9 @@ apf.editor = function(struct, tagName){
         if (!this.$ext)
             return;
 
-        var pParent = apf.popup.last && apf.lookup(apf.popup.last);
+        var pParent = ppc.popup.last && ppc.lookup(ppc.popup.last);
         if (pParent && pParent.editor == this)
-            apf.popup.forceHide();
+            ppc.popup.forceHide();
 
         this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Focus"]);
 
@@ -337,7 +337,7 @@ apf.editor = function(struct, tagName){
                 : this.getValue());
         }
 
-        this.setProperty("state", apf.DISABLED);
+        this.setProperty("state", ppc.DISABLED);
     };
 
     /**
@@ -347,46 +347,46 @@ apf.editor = function(struct, tagName){
      */
     this.$addListeners = function() {
         var _self = this;
-        apf.addListener(this.$activeDocument, "mouseup", onClick.bindWithEvent(this));
-        //apf.addListener(this.$activeDocument, 'select', onClick.bindWithEvent(this));
-        apf.addListener(this.$activeDocument, "keyup", function(e) {
+        ppc.addListener(this.$activeDocument, "mouseup", onClick.bindWithEvent(this));
+        //ppc.addListener(this.$activeDocument, 'select', onClick.bindWithEvent(this));
+        ppc.addListener(this.$activeDocument, "keyup", function(e) {
             e = e || window.event;
             if (_self.scalewithiframe)
                 rescale.call(_self);
-            apf.document.activeElement = _self;
+            ppc.document.activeElement = _self;
             //e.amlNode = _self;
-            apf.window.$keyup(e);
+            ppc.window.$keyup(e);
         });
-        apf.addListener(this.$activeDocument, "keydown", function(e) {
-            apf.document.activeElement = _self;
+        ppc.addListener(this.$activeDocument, "keydown", function(e) {
+            ppc.document.activeElement = _self;
             //e.amlNode = _self;
-            apf.window.$keydown(e);
+            ppc.window.$keydown(e);
         });
-        apf.addListener(this.$activeDocument, "mousedown", function(e){
+        ppc.addListener(this.$activeDocument, "mousedown", function(e){
             e = e || window.event;
             _self.$selection.cache();
             //#ifdef __WITH_POPUP
-            apf.popup.forceHide();
+            ppc.popup.forceHide();
             //#endif
-            apf.window.$mousedown(e);
+            ppc.window.$mousedown(e);
         });
 
         var scrollHandler = function(e){
             if (!e) e = event;
-            apf.window.$mousewheel.call(window, {target: _self.$ext, wheelDelta: e.wheelDelta, detail: e.detail});
+            ppc.window.$mousewheel.call(window, {target: _self.$ext, wheelDelta: e.wheelDelta, detail: e.detail});
         }
         if (this.$oWin && this.$oWin.document.addEventListener)
             this.$oWin.document.addEventListener("DOMMouseScroll", scrollHandler, false);
         window.onmousewheel = document.onmousewheel = scrollHandler;
 
-        apf.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this));
+        ppc.addListener(this.$activeDocument, "contextmenu", onContextmenu.bindWithEvent(this));
         //#ifdef __WITH_WINDOW_FOCUS
-        apf.addListener(this.$activeDocument, "focus", apf.window.$focusevent);
-        apf.addListener(this.$activeDocument, "blur", apf.window.$blurevent);
+        ppc.addListener(this.$activeDocument, "focus", ppc.window.$focusevent);
+        ppc.addListener(this.$activeDocument, "blur", ppc.window.$blurevent);
         //#endif
         this.$activeDocument.host = this;
 
-        apf.addListener(this.$activeDocument.body, "paste", function(e) {
+        ppc.addListener(this.$activeDocument.body, "paste", function(e) {
             e = e || window.event;
             _self.$paste(e);
             $setTimeout(function() {
@@ -407,7 +407,7 @@ apf.editor = function(struct, tagName){
      */
     this.$draw = function() {
         this.$editable(function() {
-            //this.plugins   = new apf.editor.plugins(this.$plugins, this);
+            //this.plugins   = new ppc.editor.plugins(this.$plugins, this);
             var oEditor = this.$getLayoutNode("main", "editor",  this.$ext),
                 _self   = this;
 
@@ -421,14 +421,14 @@ apf.editor = function(struct, tagName){
             this.$oWin = this.iframe.contentWindow;
             this.$activeDocument = this.$oWin.document;
 
-            this.$selection = new apf.selection(this.$oWin,
+            this.$selection = new ppc.selection(this.$oWin,
                 this.$activeDocument, this);
 
             // get the document style (CSS) from the skin:
-            // see: apf.presentation.getCssString(), where the following statement
+            // see: ppc.presentation.getCssString(), where the following statement
             // is derived from.
-            var sCss = apf.queryValue($xmlns(apf.skins.skins[
-                this.skinName.split(":")[0]].xml, "docstyle", apf.ns.aml)[0],
+            var sCss = ppc.queryValue($xmlns(ppc.skins.skins[
+                this.skinName.split(":")[0]].xml, "docstyle", ppc.ns.aml)[0],
                 "text()");
             if (!sCss) {
                 sCss = "\
@@ -472,7 +472,7 @@ apf.editor = function(struct, tagName){
                     }";
             }
             var c = this.getAttribute("characterset")
-                || this.getAttribute("charset") || apf.characterSet;
+                || this.getAttribute("charset") || ppc.characterSet;
             this.$activeDocument.open();
             this.$activeDocument.write('<?xml version="1.0" encoding="' + c + '"?>\
                 <html>\
@@ -486,16 +486,16 @@ apf.editor = function(struct, tagName){
             this.$activeDocument.close();
 
             //#ifdef __WITH_WINDOW_FOCUS
-            if (apf.hasFocusBug)
-                apf.sanitizeTextbox(this.$activeDocument.body);
+            if (ppc.hasFocusBug)
+                ppc.sanitizeTextbox(this.$activeDocument.body);
             //#endif
 
             //#ifdef __WITH_LAYOUT
             // setup layout rules:
             //@todo add this to $destroy
-            /*apf.layout.setRules(this.$ext, this.$uniqueId + "_editor",
-                "var o = apf.all[" + this.$uniqueId + "];if (o) o.$resize()");
-            apf.layout.queue(this.$ext);*/
+            /*ppc.layout.setRules(this.$ext, this.$uniqueId + "_editor",
+                "var o = ppc.all[" + this.$uniqueId + "];if (o) o.$resize()");
+            ppc.layout.queue(this.$ext);*/
             //#endif
             
             this.addEventListener("resize", this.$resize);
@@ -506,14 +506,14 @@ apf.editor = function(struct, tagName){
             this.makeEditable();
 
             $setTimeout(function() {
-                _self.setProperty("state", apf.DISABLED);
+                _self.setProperty("state", ppc.DISABLED);
             });
         });
     };
 
     /**
      * Takes care of setting the proper size of the editor after a resize event
-     * was fired through the APF layout manager
+     * was fired through the PPC layout manager
      * @see object.layout
      * 
      * @type {void}
@@ -553,7 +553,7 @@ apf.editor = function(struct, tagName){
     this.addEventListener("DOMNodeInsertedIntoDocument", function(){
         this.$container = this.$getLayoutNode("main", "container", this.$ext);
 
-        if (apf.isOnlyChild(this.firstChild, [3,4]))
+        if (ppc.isOnlyChild(this.firstChild, [3,4]))
             this.$handlePropSet("value", this.firstChild.nodeValue.trim());
 
         //if (typeof this.realtime == "undefined")
@@ -568,10 +568,10 @@ apf.editor = function(struct, tagName){
             this.$activeDocument = this.$oWin = this.iframe = null;
     };
 // #ifdef __WITH_DATABINDING
-}).call(apf.editor.prototype = new apf.StandardBinding());
+}).call(ppc.editor.prototype = new ppc.StandardBinding());
 /* #else
-}).call(apf.editor.prototype = new apf.Presentation());
+}).call(ppc.editor.prototype = new ppc.Presentation());
 #endif */
 
-apf.aml.setElement("editor", apf.editor);
+ppc.aml.setElement("editor", ppc.editor);
 // #endif

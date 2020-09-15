@@ -26,7 +26,7 @@
  * #### Example
  * 
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:menu id="menu1">
  *      <a:item>Tutorials</a:item>
@@ -41,20 +41,20 @@
  * </a:application>
  * ```
  * 
- * @class apf.item
+ * @class ppc.item
  * @selection
  * @define item
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  *
  */
 /**
  * @event click Fires when a user presses the mouse button while over this element.
  * @param {Object} e The standard event object. It contains the following properties:
  *  - xmlContext ([[XMLElement]]): The XML data node that was selected in the opener at the time of showing the context menu.
- *  - opener ([[apf.AmlElement]]): The element that was clicked upon when showing the context menu.
+ *  - opener ([[ppc.AmlElement]]): The element that was clicked upon when showing the context menu.
  */
-apf.item  = function(struct, tagName){
-    this.$init(tagName || "item", apf.NODE_VISIBLE, struct);
+ppc.item  = function(struct, tagName){
+    this.$init(tagName || "item", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -65,12 +65,12 @@ apf.item  = function(struct, tagName){
     this.checked  = false;
     this.selected = false;
 
-    this.implement(apf.ChildValue);
+    this.implement(ppc.ChildValue);
 
     // *** Properties and Attributes *** //
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         "match" : 1
     }, this.$attrExcludePropBind);
 
@@ -105,7 +105,7 @@ apf.item  = function(struct, tagName){
      * ```
      */
     this.$propHandlers["submenu"] = function(value){
-        apf.setStyleClass(this.$ext, "submenu");
+        ppc.setStyleClass(this.$ext, "submenu");
     }
     
     /**
@@ -194,15 +194,15 @@ apf.item  = function(struct, tagName){
         var group = typeof value == "string"
             ? 
             //#ifdef __WITH_NAMESERVER
-            apf.nameserver.get("group", value)
+            ppc.nameserver.get("group", value)
             /* #else
             {}
             #endif */
             : value;
         if (!group) {
             //#ifdef __WITH_NAMESERVER
-            group = apf.nameserver.register("group", value, 
-                new apf.$group());
+            group = ppc.nameserver.register("group", value, 
+                new ppc.$group());
             group.setAttribute("id", value);
             group.dispatchEvent("DOMNodeInsertedIntoDocument");
             group.parentNode = this;
@@ -231,28 +231,28 @@ apf.item  = function(struct, tagName){
             var _self = this;
             this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
                 if (_self.$hotkey && _self.hotkey)
-                    apf.setNodeValue(this.$hotkey, apf.isMac 
-                      ? apf.hotkeys.toMacNotation(_self.hotkey) : _self.hotkey);
+                    ppc.setNodeValue(this.$hotkey, ppc.isMac 
+                      ? ppc.hotkeys.toMacNotation(_self.hotkey) : _self.hotkey);
             });
         }
         else if (this.$hotkey)
-            apf.setNodeValue(this.$hotkey, apf.isMac ? apf.hotkeys.toMacNotation(value) : value);
+            ppc.setNodeValue(this.$hotkey, ppc.isMac ? ppc.hotkeys.toMacNotation(value) : value);
 
         if (this.$lastHotkey) {
-            apf.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
+            ppc.hotkeys.remove(this.$lastHotkey[0], this.$lastHotkey[1]);
             delete this.$lastHotkey[0];
         }
 
         if (value) {
             this.$lastHotkey = [value];
             var _self = this;
-            apf.hotkeys.register(value, this.$lastHotkey[1] = function(){
+            ppc.hotkeys.register(value, this.$lastHotkey[1] = function(){
                 if (_self.disabled || !_self.visible)
                     return;
                 
                 //hmm not very scalable...
                 if (_self.parentNode) {
-                    var buttons = apf.document.getElementsByTagNameNS(apf.ns.aml, "button");
+                    var buttons = ppc.document.getElementsByTagNameNS(ppc.ns.aml, "button");
                     for (var i = 0; i < buttons.length; i++) {
                         if (buttons[i].submenu == _self.parentNode.name) {
                             var btn = buttons[i];
@@ -280,7 +280,7 @@ apf.item  = function(struct, tagName){
      */
     this.$propHandlers["icon"] = function(value){
         if (this.$icon)
-            apf.skins.setIcon(this.$icon, value, this.parentNode.iconPath);
+            ppc.skins.setIcon(this.$icon, value, this.parentNode.iconPath);
     }
     
     /**
@@ -288,7 +288,7 @@ apf.item  = function(struct, tagName){
      */
     this.$propHandlers["caption"] = function(value){
         if (this.$caption)
-            apf.setNodeValue(this.$caption, value);
+            ppc.setNodeValue(this.$caption, value);
     }
     
     /**
@@ -300,7 +300,7 @@ apf.item  = function(struct, tagName){
      * - `"radio"`
      */
     this.$propHandlers["type"] = function(value){
-        apf.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
+        ppc.setStyleClass(this.$ext, value, ["item", "check", "radio"]);
     }
     
     this.$propHandlers["values"] = function(value){
@@ -323,7 +323,7 @@ apf.item  = function(struct, tagName){
                 && value.toString() == this.$values[0].toString());
         }
         else {
-            checked = apf.isTrue(value);
+            checked = ppc.isTrue(value);
         }
         
         if (checked != this.checked) {
@@ -339,10 +339,10 @@ apf.item  = function(struct, tagName){
         if (this.type != "check")
             return;
 
-        if (apf.isTrue(value))
-            apf.setStyleClass(this.$ext, "checked");
+        if (ppc.isTrue(value))
+            ppc.setStyleClass(this.$ext, "checked");
         else
-            apf.setStyleClass(this.$ext, "", ["checked"]);
+            ppc.setStyleClass(this.$ext, "", ["checked"]);
         
         if (!this.$values) {
             if (this.getAttribute("values"))
@@ -371,11 +371,11 @@ apf.item  = function(struct, tagName){
     }
     
     this.$check = function(){
-        apf.setStyleClass(this.$ext, "selected");
+        ppc.setStyleClass(this.$ext, "selected");
     }
     
     this.$uncheck = function(){
-        apf.setStyleClass(this.$ext, "", ["selected"]);
+        ppc.setStyleClass(this.$ext, "", ["selected"]);
     }
 
     /**
@@ -386,7 +386,7 @@ apf.item  = function(struct, tagName){
             return;
 
 
-        if (apf.isTrue(value)) {
+        if (ppc.isTrue(value)) {
             if (this.$group)
                 this.$group.setProperty("value", this.value);
             this.$check();
@@ -399,15 +399,15 @@ apf.item  = function(struct, tagName){
      * @attribute {Boolean} disabled Sets or gets whether the item is active.
      */
     this.$propHandlers["disabled"] = function(value){
-        if (apf.isTrue(value) || value == -1)
-            apf.setStyleClass(this.$ext, "disabled");
+        if (ppc.isTrue(value) || value == -1)
+            ppc.setStyleClass(this.$ext, "disabled");
         else
-            apf.setStyleClass(this.$ext, "", ["disabled"]);
+            ppc.setStyleClass(this.$ext, "", ["disabled"]);
     }
 
     // *** Dom Hooks *** //
 
-    //@todo apf3.0
+    //@todo ppc3.0
     this.addEventListener("AMLReparent", function(beforeNode, pNode, withinParent){
         if (!this.$amlLoaded)
             return;
@@ -465,17 +465,17 @@ apf.item  = function(struct, tagName){
 
     var timer;
     this.$out = function(e){
-        if (apf.isChildOf(this.$ext, e.toElement || e.explicitOriginalTarget)
-          || apf.isChildOf(this.$ext, e.srcElement || e.target))  //@todo test FF
+        if (ppc.isChildOf(this.$ext, e.toElement || e.explicitOriginalTarget)
+          || ppc.isChildOf(this.$ext, e.srcElement || e.target))  //@todo test FF
             return;
 
         clearTimeout(timer);
         if (!this.submenu || this.$submenu(true)) {
-            apf.setStyleClass(this.$ext, "", ['hover']);
+            ppc.setStyleClass(this.$ext, "", ['hover']);
 
             var sel = this.parentNode.$selected;
             if (sel && sel != this)
-                apf.setStyleClass(sel.$ext, "", ["hover"]);
+                ppc.setStyleClass(sel.$ext, "", ["hover"]);
 
             this.parentNode.$selected = null;
         }
@@ -486,13 +486,13 @@ apf.item  = function(struct, tagName){
             return;
 
         if (this.parentNode.$selected)
-            apf.setStyleClass(this.parentNode.$selected.$ext, "", ["hover"]);
+            ppc.setStyleClass(this.parentNode.$selected.$ext, "", ["hover"]);
 
-        apf.setStyleClass(this.$ext, "hover");
+        ppc.setStyleClass(this.$ext, "hover");
         this.parentNode.$selected = this;
 
-        if (!force && (apf.isChildOf(this.$ext, e.toElement || e.explicitOriginalTarget)
-          || apf.isChildOf(this.$ext, e.fromElement || e.target)))  //@todo test FF
+        if (!force && (ppc.isChildOf(this.$ext, e.toElement || e.explicitOriginalTarget)
+          || ppc.isChildOf(this.$ext, e.fromElement || e.target)))  //@todo test FF
             return;
 
         var _self = this, ps = this.parentNode.$showingSubMenu;
@@ -535,7 +535,7 @@ apf.item  = function(struct, tagName){
         var menu = self[this.submenu];
         if (!menu) {
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, this,
+            throw new Error(ppc.formatErrorString(0, this,
                 "Displaying submenu",
                 "Could not find submenu '" + this.submenu + "'", this.$aml));
             //#endif
@@ -549,7 +549,7 @@ apf.item  = function(struct, tagName){
 
             this.parentNode.$showingSubMenu = menu;
 
-            var pos = apf.getAbsolutePosition(this.$ext, this.parentNode.$ext.offsetParent);
+            var pos = ppc.getAbsolutePosition(this.$ext, this.parentNode.$ext.offsetParent);
             menu.display(pos[0] + this.$ext.offsetWidth - 3,
                 pos[1] + 3, true, this,
                 this.parentNode.xmlReference, this.parentNode.$uniqueId);
@@ -563,7 +563,7 @@ apf.item  = function(struct, tagName){
             if (this.parentNode.$showingSubMenu == menu)
                 this.parentNode.$showingSubMenu = null;
             
-            apf.setStyleClass(this.$ext, '', ['hover']);
+            ppc.setStyleClass(this.$ext, '', ['hover']);
             menu.hide();
             return true;
         }
@@ -576,12 +576,12 @@ apf.item  = function(struct, tagName){
         while (p.$canLeechSkin == "item")
             p = p.parentNode;
         
-        //@todo apf3.0 rename doesnt work yet.
-        //@todo apf3.0 implement DOM Mutation events for multiselect widgets
-        //@todo apf3.0 implement attribute change triggers for icon, image, value, caption to updateNode this.$container
-        //@todo apf3.x this should be rearchitected
-        //@todo apf3.x the functions dont need to be overloaded if selectNodes would work properly
-        if (p.hasFeature(apf.__MULTISELECT__)) {
+        //@todo ppc3.0 rename doesnt work yet.
+        //@todo ppc3.0 implement DOM Mutation events for multiselect widgets
+        //@todo ppc3.0 implement attribute change triggers for icon, image, value, caption to updateNode this.$container
+        //@todo ppc3.x this should be rearchitected
+        //@todo ppc3.x the functions dont need to be overloaded if selectNodes would work properly
+        if (p.hasFeature(ppc.__MULTISELECT__)) {
             var _self = this;
             
             //@todo DOMNodeInserted should reset this
@@ -589,7 +589,7 @@ apf.item  = function(struct, tagName){
             if (!this.$hasSetSkinListener) {
                 var f;
                 this.parentNode.addEventListener("$skinchange", f = function(){
-                    if (_self.$amlDestroyed) //@todo apf3.x
+                    if (_self.$amlDestroyed) //@todo ppc3.x
                         return;
                     
                     if (_self.$ext.parentNode)
@@ -597,7 +597,7 @@ apf.item  = function(struct, tagName){
     
                     var oInt = p == _self.parentNode ? p.$container : _self.parentNode.$container;
                     var node = oInt.lastChild;//@todo this should be more generic
-                    p.$add(_self, _self.getAttribute(apf.xmldb.xmlIdTag) + "|" + this.$uniqueId, 
+                    p.$add(_self, _self.getAttribute(ppc.xmldb.xmlIdTag) + "|" + this.$uniqueId, 
                         _self.parentNode, oInt != p.$container && oInt, null);
                     p.$fill();
                     
@@ -627,10 +627,10 @@ apf.item  = function(struct, tagName){
                 p.$itemInited = [p.getTraverseNodes, p.getFirstTraverseNode, p.getTraverseParent];
                 
                 p.getTraverseNodes = function(xmlNode){
-                    return (xmlNode || p).getElementsByTagNameNS(apf.ns.apf, "item");
+                    return (xmlNode || p).getElementsByTagNameNS(ppc.ns.ppc, "item");
                 }
                 p.getFirstTraverseNode = function(xmlNode){
-                    return (xmlNode || p).getElementsByTagNameNS(apf.ns.apf, "item")[0];
+                    return (xmlNode || p).getElementsByTagNameNS(ppc.ns.ppc, "item")[0];
                 }
                 p.getTraverseParent = function(xmlNode){
                     return xmlNode && xmlNode.parentNode;
@@ -638,7 +638,7 @@ apf.item  = function(struct, tagName){
                 p.each = (this.prefix ? this.prefix + ":" : "") + "item";
 
                 //@todo this is all an ugly hack (copied to baselist.js line 868)
-                p.$preventDataLoad = true;//@todo apf3.0 add remove for this
+                p.$preventDataLoad = true;//@todo ppc3.0 add remove for this
 
                 p.$initingModel = true;
                 p.$setDynamicProperty("icon", "[@icon]");
@@ -659,8 +659,8 @@ apf.item  = function(struct, tagName){
                 var oInt = p == this.parentNode ? p.$container : this.parentNode.$container;
                 var node = oInt.lastChild;//@todo this should be more generic
                 if (!p.documentId)
-                    p.documentId = apf.xmldb.getXmlDocId(this);
-                p.$add(this, apf.xmldb.nodeConnect(p.documentId, this, null, p), 
+                    p.documentId = ppc.xmldb.getXmlDocId(this);
+                p.$add(this, ppc.xmldb.nodeConnect(p.documentId, this, null, p), 
                     this.parentNode, oInt != p.$container && oInt, null);
                 p.$fill();
     
@@ -686,7 +686,7 @@ apf.item  = function(struct, tagName){
         this.$ext = this.$getExternal(this.$isLeechingSkin
           ? "item" //this.type 
           : "main", null, function($ext){
-            var o = 'var o = apf.lookup(' + this.$uniqueId + '); if (o.disabled) return; o';
+            var o = 'var o = ppc.lookup(' + this.$uniqueId + '); if (o.disabled) return; o';
             $ext.setAttribute("onmouseup",   o + '.$up(event)');
             $ext.setAttribute("onmousemove", o + '.$over(event)');
             $ext.setAttribute("onmouseout",  o + '.$out(event)');
@@ -695,12 +695,12 @@ apf.item  = function(struct, tagName){
         });
 
         var _self = this;
-        apf.addListener(this.$ext, "mouseover", function(e) {
+        ppc.addListener(this.$ext, "mouseover", function(e) {
             if (!_self.disabled)
                 _self.dispatchEvent("mouseover", {htmlEvent: e});
         });
         
-        apf.addListener(this.$ext, "mouseout", function(e) {
+        ppc.addListener(this.$ext, "mouseout", function(e) {
             if (!_self.disabled)
                 _self.dispatchEvent("mouseout", {htmlEvent: e});
         });
@@ -710,7 +710,7 @@ apf.item  = function(struct, tagName){
         
         //@todo if not elItem try using own skin
         
-        //this.$ext   = apf.insertHtmlNode(elItem, this.parentNode.$container);
+        //this.$ext   = ppc.insertHtmlNode(elItem, this.parentNode.$container);
         this.$caption = this.$getLayoutNode("item", "caption", this.$ext)
         this.$icon    = this.$getLayoutNode("item", "icon", this.$ext);
         this.$hotkey  = this.$getLayoutNode("item", "hotkey", this.$ext);
@@ -740,9 +740,9 @@ apf.item  = function(struct, tagName){
                 this.$handlePropSet("caption", this.caption);
         }
     });
-}).call(apf.item.prototype = new apf.Presentation());
+}).call(ppc.item.prototype = new ppc.Presentation());
 
-//apf.aml.setElement("radio", apf.radio);
-//apf.aml.setElement("check", apf.check);
-apf.aml.setElement("item",  apf.item);
+//ppc.aml.setElement("radio", ppc.radio);
+//ppc.aml.setElement("check", ppc.check);
+ppc.aml.setElement("item",  ppc.item);
 // #endif

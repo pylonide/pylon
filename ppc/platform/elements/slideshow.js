@@ -88,8 +88,8 @@
  * @attribute {Boolean} scalewidth     whether the width of the thumbnail is 
  *                                     scaled relative to its height.
  * 
- * @inherits apf.Cache
- * @inherits apf.MultiselectBinding
+ * @inherits ppc.Cache
+ * @inherits ppc.MultiselectBinding
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G% 
@@ -104,8 +104,8 @@
  * @binding title    Determines the image description text.
  * @binding thumb    Determines the url to thumbnail file.
  */
-apf.slideshow = function(struct, tagName){
-    this.$init(tagName || "slideshow", apf.NODE_VISIBLE, struct);
+ppc.slideshow = function(struct, tagName){
+    this.$init(tagName || "slideshow", ppc.NODE_VISIBLE, struct);
     
     this.title            = "number";
     this.thumbheight      = 50;
@@ -183,9 +183,9 @@ apf.slideshow = function(struct, tagName){
 (function() {
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
-        //,apf.Cache
+        //,ppc.Cache
     );
 
     this.$supportedProperties.push("model", "thumbheight", "title", "loadmsg",
@@ -251,7 +251,7 @@ apf.slideshow = function(struct, tagName){
        
         
         this.oLoading.innerHTML       = this.loadmsg 
-            || apf.language.getWord("sub.slideshow.loadmsg") 
+            || ppc.language.getWord("sub.slideshow.loadmsg") 
             || "Loading...";
 
         //This function will be called when selected image will be downloaded
@@ -271,10 +271,10 @@ apf.slideshow = function(struct, tagName){
             _self.oImageBase.style.display = "none";
             
             //Get browser window dimension
-            var windowWidth = apf.isIE
+            var windowWidth = ppc.isIE
                     ? document.documentElement.offsetWidth
                     : window.innerWidth;
-                windowHeight = apf.isIE
+                windowHeight = ppc.isIE
                     ? document.documentElement.offsetHeight
                     : window.innerHeight;
             
@@ -282,7 +282,7 @@ apf.slideshow = function(struct, tagName){
             var bottomPanel = _self.$getPanelSize();
 
             //Get body margins
-            var oBodyDiff = apf.getDiff(_self.oBody);
+            var oBodyDiff = ppc.getDiff(_self.oBody);
             
             //is the image resized ?
             var checkWH = [false, false];
@@ -309,13 +309,13 @@ apf.slideshow = function(struct, tagName){
             _self.viewPortWidth  = _imgWidth;
 
             //resize image body horizontaly
-            apf.tween.single(_self.oBody, {
-                steps    : apf.isGecko
+            ppc.tween.single(_self.oBody, {
+                steps    : ppc.isGecko
                     ? 20
                     : (Math.abs(imgWidth - _self.oBody.offsetWidth) > 40
                         ? 10
                         : 3),
-                anim     : apf.tween.EASEIN,
+                anim     : ppc.tween.EASEIN,
                 type     : "mwidth",
                 from     : _self.oBody.offsetWidth - oBodyDiff[0],
                 to       : _imgWidth,
@@ -325,13 +325,13 @@ apf.slideshow = function(struct, tagName){
             });
             
             //Resize image body verticaly
-            apf.tween.single(_self.oBody, {
-                steps     : apf.isGecko
+            ppc.tween.single(_self.oBody, {
+                steps     : ppc.isGecko
                     ? 20
                     : (Math.abs(imgHeight - _self.oBody.offsetHeight) > 40
                         ? 10
                         : 3),
-                anim     : apf.tween.EASEIN,
+                anim     : ppc.tween.EASEIN,
                 type     : "mheight",
                 margin   : -1 * (bottomPanel / 2 - 10),
                 from     : _self.oBody.offsetHeight - oBodyDiff[1],
@@ -367,14 +367,14 @@ apf.slideshow = function(struct, tagName){
                         _self.oThumbnails.style.display = "block";
                     }
 
-                    apf.tween.single(_self.oImage, {
+                    ppc.tween.single(_self.oImage, {
                         steps : 2,
                         type  : "fade",
                         from  : 0,
                         to    : 1
                     });
 
-                    apf.tween.single(_self.oTitle, {
+                    ppc.tween.single(_self.oTitle, {
                         steps : 10,
                         type  : "fade",
                         from  : 0,
@@ -407,16 +407,16 @@ apf.slideshow = function(struct, tagName){
             ? this.$applyBindRule("title", this.current)
             : (this.title == "number+text"
                 ? "<b>" 
-                    + (apf.language.getWord("sub.slideshow.image") || "Image")
+                    + (ppc.language.getWord("sub.slideshow.image") || "Image")
                     + " "
                     + (this.getPos() + 1) 
-                    + " " + (apf.language.getWord("sub.slideshow.of") || "of") + " "
+                    + " " + (ppc.language.getWord("sub.slideshow.of") || "of") + " "
                     + this.getTraverseNodes().length
                     + "</b><br />"
                     + (this.$applyBindRule("title", this.current)
                         || (this.defaulttitle 
                             ? this.defaulttitle 
-                            : (apf.language.getWord("sub.slideshow.defaulttitle") || "No description")))
+                            : (ppc.language.getWord("sub.slideshow.defaulttitle") || "No description")))
                 : "Image " + (this.getPos() + 1)
                     + " of " + this.getTraverseNodes().length);
     };
@@ -441,16 +441,16 @@ apf.slideshow = function(struct, tagName){
      *     -1   when thumbnails are scrolling in left
      */
     this.addSelection = function(move) {
-        var htmlElement = apf.xmldb.findHtmlNode(this.current, this),
-            ww          = apf.isIE
+        var htmlElement = ppc.xmldb.findHtmlNode(this.current, this),
+            ww          = ppc.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth,
                 
-            diffp       = apf.getDiff(this.otPrevious),
-            diffn       = apf.getDiff(this.otNext),
-            bp          = parseInt(apf.getStyle(this.otPrevious, "width")),
-            bn          = parseInt(apf.getStyle(this.otNext, "width")),
-            ew          = parseInt(apf.getStyle(htmlElement, "width"));
+            diffp       = ppc.getDiff(this.otPrevious),
+            diffn       = ppc.getDiff(this.otNext),
+            bp          = parseInt(ppc.getStyle(this.otPrevious, "width")),
+            bn          = parseInt(ppc.getStyle(this.otNext, "width")),
+            ew          = parseInt(ppc.getStyle(htmlElement, "width"));
 
         /* checking visiblity */
         if (htmlElement.offsetLeft + ew + 5 >
@@ -492,7 +492,7 @@ apf.slideshow = function(struct, tagName){
         this.$setSiblings();
         this.inuse = true;
 
-        apf.tween.single(this.oImage, {
+        ppc.tween.single(this.oImage, {
             steps : 5,
             type  : "fade",
             from  : 1,
@@ -502,7 +502,7 @@ apf.slideshow = function(struct, tagName){
         //Hack for Chrome
         this.oTitle.style.display = "block";
         
-        apf.tween.single(this.oTitle, {
+        ppc.tween.single(this.oTitle, {
             steps    : 3,
             type     : "fade",
             from     : 1,
@@ -518,15 +518,15 @@ apf.slideshow = function(struct, tagName){
                 _self.oImage.style.display = "none";
 
                 // Safari and Chrome fix for reloading current image
-                if (_self.oImage.src == _src_temp && apf.isWebkit) {
+                if (_self.oImage.src == _src_temp && ppc.isWebkit) {
                     _self.inuse = false;
-                    apf.tween.single(_self.oImage, {
+                    ppc.tween.single(_self.oImage, {
                         steps : 5,
                         type  : "fade",
                         from  : 0,
                         to    : 1
                     });
-                    apf.tween.single(_self.oTitle, {
+                    ppc.tween.single(_self.oTitle, {
                         steps : 3,
                         type  : "fade",
                         from  : 0,
@@ -538,16 +538,16 @@ apf.slideshow = function(struct, tagName){
                 _self.oContent.innerHTML = _self.title == "text"
                     ? _self.$applyBindRule("title", _self.current)
                     : (_self.title == "number+text"
-                        ? "<b>" + (apf.language.getWord("sub.slideshow.image") || "Image")
+                        ? "<b>" + (ppc.language.getWord("sub.slideshow.image") || "Image")
                             + " "
                             + (_self.getPos() + 1) 
-                            + " " + (apf.language.getWord("sub.slideshow.of") || "of") + " "
+                            + " " + (ppc.language.getWord("sub.slideshow.of") || "of") + " "
                             + _self.getTraverseNodes().length
                             + "</b><br />"
                             + (_self.$applyBindRule("title", _self.current)
                                || (_self.defaulttitle 
                                    ? _self.defaulttitle 
-                                   : apf.language.getWord("sub.slideshow.defaulttitle") || "No description" ))
+                                   : ppc.language.getWord("sub.slideshow.defaulttitle") || "No description" ))
                         : "Image " + (_self.getPos() + 1) + " of "
                             + _self.getTraverseNodes().length);
             }
@@ -593,14 +593,14 @@ apf.slideshow = function(struct, tagName){
         this.$int.style.display  = "block";
         this.$ext.style.display  = "block";
 
-        apf.tween.single(_self.oCurtain, {
+        ppc.tween.single(_self.oCurtain, {
             steps    : 10, 
             type     : "fade",
             from     : 0,
             to       : 0.7,
             onfinish : function() {
                 _self.oBeam.style.display = "block";
-                apf.tween.single(_self.oBeam, {
+                ppc.tween.single(_self.oBeam, {
                     steps    : 10, 
                     type     : "fade",
                     from     : 0,
@@ -611,13 +611,13 @@ apf.slideshow = function(struct, tagName){
                         _self.oBody.style.height     = "100px";
                         _self.oBody.style.marginLeft = "-50px";
                         _self.oBody.style.marginTop  = "-50px";
-                        apf.tween.single(_self.oBody, {
+                        ppc.tween.single(_self.oBody, {
                             steps    : 5, 
                             type     : "fade",
                             from     : 0,
                             to       : 1,
                             onfinish : function() {
-                                if (apf.isIE) {
+                                if (ppc.isIE) {
                                     _self.oBody.style.filter = "";
                                     _self.oBeam.style.filter = "";
                                 }
@@ -698,15 +698,15 @@ apf.slideshow = function(struct, tagName){
      * @param {HTMLElement}   oThumb   html representation of thumbnail element
      */
     this.$clickThumb = function(oThumb) {
-        this.current = apf.xmldb.getNode(oThumb);
+        this.current = ppc.xmldb.getNode(oThumb);
         this.addSelection();
         this.$refresh();
     };
     
     this.$getPanelSize = function() {
         var title_height = this.oTitle.offsetHeight 
-            || parseInt(apf.getStyle(this.oTitle, "height")) 
-            + apf.getDiff(this.oTitle)[1];
+            || parseInt(ppc.getStyle(this.oTitle, "height")) 
+            + ppc.getDiff(this.oTitle)[1];
         
         return Math.max(
             this.oBeam.offsetHeight, 
@@ -720,7 +720,7 @@ apf.slideshow = function(struct, tagName){
     
     this.$resize = function() {
         //because resize event is called 2 times in IE
-        if (apf.isIE) {
+        if (ppc.isIE) {
             this.$IEResizeCounter++;
         
             if (this.$IEResizeCounter == 2) {
@@ -733,16 +733,16 @@ apf.slideshow = function(struct, tagName){
 
         _self.oImage.style.display = "none";
         
-        var windowWidth = apf.isIE
+        var windowWidth = ppc.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth,
-            windowHeight = apf.isIE
+            windowHeight = ppc.isIE
                 ? document.documentElement.offsetHeight
                 : window.innerHeight;
 
         var imgWidth    = _self.oImageBase.offsetWidth || _self.oImageBase.width;
         var imgHeight   = _self.oImageBase.offsetHeight || _self.oImageBase.height;
-        var oBodyDiff   = apf.getDiff(this.oBody);
+        var oBodyDiff   = ppc.getDiff(this.oBody);
         var bottomPanel = this.$getPanelSize();
         
         //calculate viewport size
@@ -769,9 +769,9 @@ apf.slideshow = function(struct, tagName){
         var checkWH = [false, false];
         
         //resize image body horizontaly
-        apf.tween.single(_self.oBody, {
+        ppc.tween.single(_self.oBody, {
             steps    : 5,
-            anim     : apf.tween.EASEIN,
+            anim     : ppc.tween.EASEIN,
             type     : "mwidth",
             from     : _self.oBody.offsetWidth - oBodyDiff[0],
             to       : _imgWidth,
@@ -781,9 +781,9 @@ apf.slideshow = function(struct, tagName){
         });
         
         //Resize image body verticaly
-        apf.tween.single(_self.oBody, {
+        ppc.tween.single(_self.oBody, {
             steps    : 5,
-            anim     : apf.tween.EASEIN,
+            anim     : ppc.tween.EASEIN,
             type     : "mheight",
             margin   : -1 * (bottomPanel / 2 - 10),
             from     : _self.oBody.offsetHeight - oBodyDiff[1],
@@ -802,7 +802,7 @@ apf.slideshow = function(struct, tagName){
                 _self.oImage.style.width   = _imgWidth + "px";
                 _self.oImage.style.height  = _imgHeight + "px";
 
-                apf.tween.single(_self.oImage, {
+                ppc.tween.single(_self.oImage, {
                     steps : 2,
                     type  : "fade",
                     from  : 0,
@@ -845,11 +845,11 @@ apf.slideshow = function(struct, tagName){
         
         //#ifdef __WITH_LAYOUT
         //@todo add this to $destroy
-        var rules = "var o = apf.all[" + this.$uniqueId + "];\
+        var rules = "var o = ppc.all[" + this.$uniqueId + "];\
                      if (o) o.$resize()";
-        apf.layout.setRules(this.$pHtmlNode, this.$uniqueId + "_scaling",
+        ppc.layout.setRules(this.$pHtmlNode, this.$uniqueId + "_scaling",
                             rules, true);
-        apf.layout.queue(this.$pHtmlNode);
+        ppc.layout.queue(this.$pHtmlNode);
         //#endif
         
         this.oPrevious.onclick =
@@ -943,14 +943,14 @@ apf.slideshow = function(struct, tagName){
             var imgWidth  = _self.oImageBase.offsetWidth || _self.oImageBase.width;
             var imgHeight = _self.oImageBase.offsetHeight || _self.oImageBase.height;
             
-            var windowWidth = apf.isIE
+            var windowWidth = ppc.isIE
                 ? document.documentElement.offsetWidth
                 : window.innerWidth;
-            var windowHeight = apf.isIE
+            var windowHeight = ppc.isIE
                 ? document.documentElement.offsetHeight
                 : window.innerHeight;
 
-            var diff = apf.getDiff(_self.oBody);
+            var diff = ppc.getDiff(_self.oBody);
             var posX = _self.oBody.offsetLeft + diff[0] / 2;
             var posY = _self.oBody.offsetTop  + diff[1] / 2;
 
@@ -1004,7 +1004,7 @@ apf.slideshow = function(struct, tagName){
                         h     = parseInt(_self.oImage.style.height);
                     var l     = parseInt(_self.oImage.style.left);
                     var t     = parseInt(_self.oImage.style.top);
-                    var ratio = apf.isIE ? 0.03 : 0.01;
+                    var ratio = ppc.isIE ? 0.03 : 0.01;
                     
                     if (w < imgWidth) {
                         _self.oImage.style.width = (w + w * ratio) + "px";
@@ -1019,7 +1019,7 @@ apf.slideshow = function(struct, tagName){
                         clearInterval(_self.tmrZoom);
                         _self.$zooming = false;
                     }
-                }, apf.isIE ? 5 : 10);
+                }, ppc.isIE ? 5 : 10);
 
             }, 1000);
         };
@@ -1042,13 +1042,13 @@ apf.slideshow = function(struct, tagName){
         };
         
         var SafariChromeFix = false;
-        apf.addEventListener("mousescroll", function(e) {
+        ppc.addEventListener("mousescroll", function(e) {
             if (!_self.xmlRoot || _self.$ext.style.display == "none"
               || _self.disabled)
                 return;
             
             e = e || event;
-            if (apf.isWebkit) {
+            if (ppc.isWebkit) {
                 SafariChromeFix = SafariChromeFix ? false : true;
                 if (!SafariChromeFix)
                     return;
@@ -1077,7 +1077,7 @@ apf.slideshow = function(struct, tagName){
             return false;
         });
         
-        apf.addEventListener("onkeydown", function(e) {
+        ppc.addEventListener("onkeydown", function(e) {
             e = (e || event);
             
             if (_self.disabled)
@@ -1124,7 +1124,7 @@ apf.slideshow = function(struct, tagName){
 
         _self.$ext.style.display = "block";
 
-        apf.tween.single(_self.oBody, {
+        ppc.tween.single(_self.oBody, {
             steps    : 10, 
             type     : "fade",
             from     : 1,
@@ -1134,7 +1134,7 @@ apf.slideshow = function(struct, tagName){
             }
         });
         
-        apf.tween.single(_self.oBeam, {
+        ppc.tween.single(_self.oBeam, {
             steps    : 10, 
             type     : "fade",
             from     : 1,
@@ -1142,7 +1142,7 @@ apf.slideshow = function(struct, tagName){
             onfinish : function() {
                 _self.oBeam.style.display = "none";
                 
-                apf.tween.single(_self.oCurtain, {
+                ppc.tween.single(_self.oCurtain, {
                     steps    : 10, 
                     type     : "fade",
                     from     : 0.7,
@@ -1172,7 +1172,7 @@ apf.slideshow = function(struct, tagName){
                 htmlPicBox = picBoxes[i];
 
                 srcThumb = this.$applyBindRule("thumb", nodes[counter]);
-                boxDiff = apf.getDiff(htmlPicBox);
+                boxDiff = ppc.getDiff(htmlPicBox);
                 bh = this.thumbheight - 10 - boxDiff[1];
     
                 if (this.scalewidth) {
@@ -1196,15 +1196,15 @@ apf.slideshow = function(struct, tagName){
                 }
     
                 widthSum += w + boxDiff[0]
-                         + (parseInt(apf.getStyle(htmlPicBox, "marginLeft")))
-                         + (parseInt(apf.getStyle(htmlPicBox, "marginRight")));
+                         + (parseInt(ppc.getStyle(htmlPicBox, "marginLeft")))
+                         + (parseInt(ppc.getStyle(htmlPicBox, "marginRight")));
     
                 htmlPicBox.style.width = w + "px";
                 counter++;
             }
         }
 
-        var thumbDiff = apf.getDiff(this.otBody);
+        var thumbDiff = ppc.getDiff(this.otBody);
 
         this.otPrevious.style.visibility = this.otNext.style.visibility =
             widthSum < this.oThumbnails.offsetWidth - thumbDiff[0]
@@ -1213,7 +1213,7 @@ apf.slideshow = function(struct, tagName){
     };
 
     this.$load = function(xmlRoot) {
-        apf.xmldb.addNodeListener(xmlRoot, this);
+        ppc.xmldb.addNodeListener(xmlRoot, this);
         
         var nodes = this.getTraverseNodes();
         var nodes_len = nodes.length;
@@ -1228,7 +1228,7 @@ apf.slideshow = function(struct, tagName){
             htmlPicBox.style.backgroundImage = 'url(' + (srcThumb ? srcThumb : this.defaultthumb) +  ')';
             
             htmlPicBox.className = "ssPicBox";
-            boxDiff = apf.getDiff(htmlPicBox);
+            boxDiff = ppc.getDiff(htmlPicBox);
             
             bh = this.thumbheight - 10 - boxDiff[1];
             
@@ -1256,7 +1256,7 @@ apf.slideshow = function(struct, tagName){
             htmlPicBox.style.width     = w + "px";
             htmlPicBox.style.marginTop = htmlPicBox.style.marginBottom = "5px";
 
-            apf.xmldb.nodeConnect(this.documentId, nodes[i], htmlPicBox, this);
+            ppc.xmldb.nodeConnect(this.documentId, nodes[i], htmlPicBox, this);
 
             var _self = this;
             htmlPicBox.onclick = function(e) {
@@ -1293,21 +1293,21 @@ apf.slideshow = function(struct, tagName){
     };
 
     this.$setClearMessage = function(msg, className) {
-        var ww = apf.isIE
+        var ww = ppc.isIE
             ? document.documentElement.offsetWidth
             : window.innerWidth;
-        var bp = parseInt(apf.getStyle(this.otPrevious, "width"));
-        var bn = parseInt(apf.getStyle(this.otNext, "width"));
-        var ew = parseInt(apf.getStyle(this.oEmpty, "width"));
+        var bp = parseInt(ppc.getStyle(this.otPrevious, "width"));
+        var bn = parseInt(ppc.getStyle(this.otNext, "width"));
+        var ew = parseInt(ppc.getStyle(this.oEmpty, "width"));
         
         this.$oEmpty = this.oCurtain.appendChild(this.oEmpty.cloneNode(true));
 
-        apf.setNodeValue(this.$oEmpty, msg || "");
+        ppc.setNodeValue(this.$oEmpty, msg || "");
 
         this.$oEmpty.setAttribute("id", "empty" + this.$uniqueId);
         this.$oEmpty.style.display = "block";
         this.$oEmpty.style.left = ((ww - ew) / 2 - bp - bn) + "px";
-        apf.setStyleClass(this.$oEmpty, className, ["ssloading", "ssempty", "offline"]);
+        ppc.setStyleClass(this.$oEmpty, className, ["ssloading", "ssempty", "offline"]);
     };
 
     this.$removeClearMessage = function() {
@@ -1322,7 +1322,7 @@ apf.slideshow = function(struct, tagName){
 
         this.dataset = fragment.dataset;
 
-        if (!apf.window.hasFocus(this))
+        if (!ppc.window.hasFocus(this))
             this.blur();
     };
 
@@ -1338,14 +1338,14 @@ apf.slideshow = function(struct, tagName){
     };
 
 // #ifdef __WITH_DATABINDING
-}).call(apf.slideshow.prototype = new apf.MultiselectBinding());
+}).call(ppc.slideshow.prototype = new ppc.MultiselectBinding());
 /* #else
-}).call(apf.slideshow.prototype = new apf.Presentation());
+}).call(ppc.slideshow.prototype = new ppc.Presentation());
 #endif*/
 
-apf.aml.setElement("slideshow", apf.slideshow);
+ppc.aml.setElement("slideshow", ppc.slideshow);
 
-apf.aml.setElement("src",   apf.BindingRule);
-apf.aml.setElement("title", apf.BindingRule);
-apf.aml.setElement("thumb", apf.BindingRule);
+ppc.aml.setElement("src",   ppc.BindingRule);
+ppc.aml.setElement("title", ppc.BindingRule);
+ppc.aml.setElement("thumb", ppc.BindingRule);
 // #endif

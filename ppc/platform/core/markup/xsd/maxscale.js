@@ -20,8 +20,8 @@
  */
 
 //#ifdef __WITH_XSDMAXSCALE
-apf.XsdMaxScale = function(struct, tagName){
-    this.$init(tagName || "maxscale", apf.NODE_HIDDEN, struct);
+ppc.XsdMaxScale = function(struct, tagName){
+    this.$init(tagName || "maxscale", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -31,7 +31,7 @@ apf.XsdMaxScale = function(struct, tagName){
     
     //@todo http://www.w3.org/TR/2006/WD-xmlschema11-2-20060217/datatypes.html#element-maxScale
     this.$compile = function(stack){};
-}).call(apf.XsdMaxScale.prototype = new apf.XsdElement());
+}).call(ppc.XsdMaxScale.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("maxscale", apf.XsdMaxScale);
+ppc.xsd.setElement("maxscale", ppc.XsdMaxScale);
 //#endif

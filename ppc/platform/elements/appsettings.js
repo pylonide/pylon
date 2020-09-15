@@ -22,12 +22,12 @@
 //#ifdef __WITH_APPSETTINGS
 
 /**
- * This element specifies the settings of the APF application.
+ * This element specifies the settings of the PPC application.
  * 
- * @class apf.appsettings
+ * @class ppc.appsettings
  * @define appsettings
  * @logic
- * @inherits apf.AmlElement
+ * @inherits ppc.AmlElement
  * @allowchild auth, authentication, offline, printer, defaults
  * 
  */
@@ -41,7 +41,7 @@
  */
 /**
  * @attribute {Boolean} disable-right-click     Sets or gets whether a user can get the browser's contextmenu when the right mouse button is clicked.
- * @see apf.contextmenu
+ * @see ppc.contextmenu
  */
 /**
  * @attribute {Boolean} allow-select            Sets or gets whether general text in the application can be selected.
@@ -65,7 +65,7 @@
  * The following code shows how this can be done:
  *
  * ```javascript
- *  apf.document.getElementsByTagName("a:loader")[0].hide()
+ *  ppc.document.getElementsByTagName("a:loader")[0].hide()
  *  //or
  *  loaderId.hide()
  * ```
@@ -78,23 +78,23 @@
  */
 /**
  * @attribute {String}  default-page            Sets or gets the name of the default page if none is specified using the `#`. Defaults to `"home"`.
- * @see apf.history
+ * @see ppc.history
  */
 /**
  * @attribute {Boolean} undokeys                Sets or gets whether the undo and redo keyboard bindings are enabled.
- * @see apf.actiontracker
+ * @see ppc.actiontracker
  */
 /**
  * @attribute {String | Boolean} outline         Sets or gets whether an outline of an element is shown while dragging or resizing.
- * @see apf.Interactive
+ * @see ppc.Interactive
  */
 /**
  * @attribute {String | Boolean} drag-outline    Sets or gets whether an outline of an element is shown while dragging.
- * @see apf.Interactive
+ * @see ppc.Interactive
  */
 /**
  * @attribute {String | Boolean} resize-outline  Sets or gets whether an outline of an element is shown while resizing.
- * @see apf.Interactive
+ * @see ppc.Interactive
  */
 /**
  * @attribute {String}  baseurl                 Sets or gets the basepath for any relative url used throughout your application. This included teleport definitions and {@link term.datainstruction data instructions}.
@@ -102,19 +102,19 @@
  */
 /**
  * @attribute {String}  loading-message         Sets or gets the global value for the loading message of elements during a loading state.
- * @see apf.DataBinding.loading-message
+ * @see ppc.DataBinding.loading-message
  */
 /**
  * @attribute {String}  offline-message         Sets or gets the global value for the offline message of elements not able to display content while offline.
- * @see apf.DataBinding.offline-message
+ * @see ppc.DataBinding.offline-message
  */
 /**
  * @attribute {String}  empty-message           Sets or gets the global value for the empty message of elements containing no contents.
- * @see apf.DataBinding.empty-message
+ * @see ppc.DataBinding.empty-message
  */
 /**
  * @attribute {String}  model                   Sets or gets the default model for this application.
- * @see apf.model
+ * @see ppc.model
  */
 /**
  * @attribute {String}  realtime                Sets or gets the global value whether bound values are updated realtime. When set to `false`, elements do not update until they lose focus.
@@ -122,7 +122,7 @@
  */
 /**
  * @attribute {String}  skinset                 Sets or gets the skin set used by the application.
- * @see apf.Presentation.skinset
+ * @see ppc.Presentation.skinset
  */
 /**
  * @attribute {String}  storage                 Sets or gets the storage provider to be used for key/value storage.
@@ -161,8 +161,8 @@
 /**
  * @attribute {Boolean} iphone-fixed-viewport   Sets or gets whether the viewport of the application is fixed and whether the zoom should be enabled. Default is `true`.
  */
-apf.appsettings = function(struct, tagName){
-    this.$init(tagName || "appsettings", apf.NODE_HIDDEN, struct);
+ppc.appsettings = function(struct, tagName){
+    this.$init(tagName || "appsettings", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -219,24 +219,24 @@ apf.appsettings = function(struct, tagName){
     
     this.$handlePropSet = function(prop, value, force){
         if (this.$booleanProperties[prop])
-            value = apf.isTrue(value);
+            value = ppc.isTrue(value);
 
         this[prop] = value;
 
-        apf.config.setProperty(prop, value);
+        ppc.config.setProperty(prop, value);
     };
     
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         // #ifdef __SUPPORT_IPHONE
-        if (apf.isIphone && apf.runIphone) {
-            //@todo apf3.0 mike please error check all the settings
+        if (ppc.isIphone && ppc.runIphone) {
+            //@todo ppc3.0 mike please error check all the settings
             
-            apf.runIphone();
-            delete apf.runIphone;
+            ppc.runIphone();
+            delete ppc.runIphone;
         }
         // #endif
     });
-}).call(apf.appsettings.prototype = new apf.AmlElement());
+}).call(ppc.appsettings.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("appsettings", apf.appsettings);
+ppc.aml.setElement("appsettings", ppc.appsettings);
 //#endif

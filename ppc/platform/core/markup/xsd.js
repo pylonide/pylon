@@ -33,10 +33,10 @@
  * @version     %I%, %G%
  * @since       0.8
  */
-apf.xsd = new apf.AmlNamespace();
-apf.setNamespace("http://www.w3.org/2001/XMLSchema", apf.xsd);
+ppc.xsd = new ppc.AmlNamespace();
+ppc.setNamespace("http://www.w3.org/2001/XMLSchema", ppc.xsd);
 
-apf.xsd.typeHandlers = {
+ppc.xsd.typeHandlers = {
     "http://www.w3.org/2001/XMLSchema" : {
         //XSD datetypes [L10n potential]
         "dateTime": function(value){
@@ -269,8 +269,8 @@ apf.xsd.typeHandlers = {
     },
     //#endif
     
-    "http://ajax.org/2005/aml" : {
-        //Ajax.org Platform datatypes
+    "https://github.com/pylonide/pylon" : {
+        //Pylon Platform Code datatypes
         "url": function(value){
             //@todo please make this better
             return /\b(https?|ftp):\/\/([\-A-Z0-9.]+)(\/[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?(\?[\-A-Z0-9+&@#\/%=~_|!:,.;]*)?/i.test(value.trim());
@@ -286,7 +286,7 @@ apf.xsd.typeHandlers = {
         },
         "creditcard": function(value){
             value = value.replace(/ /g, "");
-            value = value.pad(21, "0", apf.PAD_LEFT);
+            value = value.pad(21, "0", ppc.PAD_LEFT);
             for (var total = 0, r, i = value.length; i >= 0; i--) {
                 r = value.substr(i, 1) * (i % 2 + 1);
                 total += r > 9 ? r - 9 : r;
@@ -321,18 +321,18 @@ apf.xsd.typeHandlers = {
     }
 };
 
-apf.xsd.custumTypeHandlers = {};
+ppc.xsd.custumTypeHandlers = {};
 
-apf.xsd.matchType = function(value, type){
+ppc.xsd.matchType = function(value, type){
     var split  = type.split(":"),
         prefix = split[0],
-        doc    = apf.document,
+        doc    = ppc.document,
         ns     = doc.$prefixes[prefix];
     type = split[1];
     if (prefix == "xsd")
         ns = "http://www.w3.org/2001/XMLSchema";
     if (!ns) 
-        ns = doc.namespaceURI || apf.ns.xhtml;
+        ns = doc.namespaceURI || ppc.ns.xhtml;
     
     var c = this.typeHandlers[ns];
     
@@ -340,27 +340,27 @@ apf.xsd.matchType = function(value, type){
     if (c && c[type])
         return c[type](value);
     
-    throw new Error(apf.formatErrorString(0, null, 
+    throw new Error(ppc.formatErrorString(0, null, 
         "Validating XSD Type", "Could not find type: " + type));
        
     return true;
 };
 
-apf.xsd.checkType = function(type, xmlNode){
+ppc.xsd.checkType = function(type, xmlNode){
     var value = typeof xmlNode == "object"
-        ? apf.queryValue(xmlNode)
+        ? ppc.queryValue(xmlNode)
         : xmlNode;
     
     if (type.indexOf(":") > -1) {
         var split  = type.split(":"),
             prefix = split[0],
             name   = split[1],
-            doc    = apf.document,
+            doc    = ppc.document,
             ns     = doc.$prefixes[prefix];
         if (prefix == "xsd")
             ns = "http://www.w3.org/2001/XMLSchema";
         if (!ns) 
-            ns = doc.namespaceURI || apf.ns.xhtml;
+            ns = doc.namespaceURI || ppc.ns.xhtml;
         
         var c = this.typeHandlers[ns];
         if (c && c[name])

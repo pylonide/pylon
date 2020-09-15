@@ -20,15 +20,15 @@
  */
 
 //#ifdef __WITH_XSDSIMPLETYPE
-apf.XsdSimpleType = function(struct, tagName){
-    this.$init(tagName || "simpletype", apf.NODE_HIDDEN, struct);
+ppc.XsdSimpleType = function(struct, tagName){
+    this.$init(tagName || "simpletype", ppc.NODE_HIDDEN, struct);
     
     var lastName;
     this.$propHandlers["name"] = function(value){
         if (lastName) {
-            apf.xsd.custumTypeHandlers[value] = 
-                apf.xsd.custumTypeHandlers[lastName]
-            apf.xsd.custumTypeHandlers[lastName] = null;
+            ppc.xsd.custumTypeHandlers[value] = 
+                ppc.xsd.custumTypeHandlers[lastName]
+            ppc.xsd.custumTypeHandlers[lastName] = null;
         }
         
         lastName = value;
@@ -46,7 +46,7 @@ apf.XsdSimpleType = function(struct, tagName){
                 (node = nodes[i]).$compile && node.$compile(stack);
     
             stack.push("return true;");
-            apf.xsd.custumTypeHandlers[this.name] =
+            ppc.xsd.custumTypeHandlers[this.name] =
                 new Function('value', stack.join("\n"));
         }
         else {
@@ -55,7 +55,7 @@ apf.XsdSimpleType = function(struct, tagName){
                 (node = nodes[i]).$compile && node.$compile(stack);
         }
     };
-}).call(apf.XsdSimpleType.prototype = new apf.XsdElement());
+}).call(ppc.XsdSimpleType.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("simpletype", apf.XsdSimpleType);
+ppc.xsd.setElement("simpletype", ppc.XsdSimpleType);
 //#endif

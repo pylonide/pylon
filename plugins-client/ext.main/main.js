@@ -15,9 +15,9 @@ var skin = require("text!ext/main/style/skins.xml");
 document.documentElement.style.display = "block";
 document.body.style.display = "block"; //might wanna make this variable based on layout loading...
 
-//Start APF
-apf.config.resize = cloud9config.debug ? true : false;
-apf.initialize('<a:application xmlns:a="https://github.com/pylonide/pylon" />');
+//Start PPC
+ppc.config.resize = cloud9config.debug ? true : false;
+ppc.initialize('<a:application xmlns:a="https://github.com/pylonide/pylon" />');
 
 // OVerscroll is a complex problem. This doesn't solve it. Preferences remain unscrollable
 document.body.addEventListener('touchmove',function(e) {
@@ -40,8 +40,8 @@ module.exports = ext.register("ext/main/main", {
 
     init : function(){
         ide.addEventListener("extload", function(){
-            apf.config.resize = true;
-            apf.layout.$onresize();
+            ppc.config.resize = true;
+            ppc.layout.$onresize();
         });
         
         window.splitterPanelLeft = hboxMain.$handle; //Intended to be global

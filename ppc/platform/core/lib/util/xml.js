@@ -28,7 +28,7 @@
  * @param {Boolean} [orItself] Whether the method also returns `true` when `pNode` is the `childnode`.
  * @return {Boolean} `false` if the second argument is not a child of the first.
  */
-apf.isChildOf = function(pNode, childnode, orItself){
+ppc.isChildOf = function(pNode, childnode, orItself){
     if (!pNode || !childnode)
         return false;
 
@@ -48,7 +48,7 @@ apf.isChildOf = function(pNode, childnode, orItself){
     return false;
 };
 
-apf.xmlEntityMap = {
+ppc.xmlEntityMap = {
     "quot": "34", "amp": "38", "apos": "39", "lt": "60", "gt": "62",
     "nbsp": "160", "iexcl": "161", "cent": "162", "pound": "163", "curren": "164",
     "yen": "165", "brvbar": "166", "sect": "167", "uml": "168", "copy": "169",
@@ -106,15 +106,15 @@ apf.xmlEntityMap = {
  * @param {Boolean} strictMode By default, this function attempts to NOT double-escape XML entities. This flag turns that behavior off when set to `true`.
  * @return {String} The escaped string
  */
-apf.escapeXML = function(str, strictMode) {
+ppc.escapeXML = function(str, strictMode) {
     if (typeof str != "string")
         return str;
     if (strictMode)
         str = (str || "").replace(/&/g, "&#38;");
     else
         str = (str || "").replace(/&(?!#[0-9]{2,5};|[a-zA-Z]{2,};)/g, "&#38;");
-    var map = apf.xmlEntityMap;
-    var isArray = apf.isArray;
+    var map = ppc.xmlEntityMap;
+    var isArray = ppc.isArray;
     return str
         .replace(/"/g, "&#34;")
         .replace(/</g, "&#60;")
@@ -136,14 +136,14 @@ apf.escapeXML = function(str, strictMode) {
  * @param {String} str The XML string to unescape
  * @return {String} The unescaped string
  */
-apf.unescapeXML = function(str) {
+ppc.unescapeXML = function(str) {
     if (typeof str != "string")
         return str;
-    var map = apf.xmlEntityMapReverse;
-    var isArray = apf.isArray;
+    var map = ppc.xmlEntityMapReverse;
+    var isArray = ppc.isArray;
     if (!map) {
-        map = apf.xmlEntityMapReverse = {};
-        var origMap = apf.xmlEntityMap;
+        map = ppc.xmlEntityMapReverse = {};
+        var origMap = ppc.xmlEntityMap;
         var keys = Object.keys(origMap);
         for (var val, j, l2, i = 0, l = keys.length; i < l; ++i) {
             val = origMap[keys[i]];
@@ -175,7 +175,7 @@ apf.unescapeXML = function(str) {
  * @param {Array}   nodeType List of the node types that this child can be.
  * @returns {Boolean} Whether the node is the only child and of one of the specified node types.
  */
-apf.isOnlyChild = function(node, nodeType){
+ppc.isOnlyChild = function(node, nodeType){
     if (!node || !node.parentNode || nodeType && nodeType.indexOf(node.nodeType) == -1)
         return false;
 
@@ -198,7 +198,7 @@ apf.isOnlyChild = function(node, nodeType){
  * @param {DOMNode} node The node for which the child position is being determined.
  * @return {Number} The child position of the node.
  */
-apf.getChildNumber = function(node, fromList){
+ppc.getChildNumber = function(node, fromList){
     if (!node) return -1;
 
     var p = node.parentNode, j = 0;
@@ -236,18 +236,18 @@ apf.getChildNumber = function(node, fromList){
  *   - [marker] ([[XMLElement]]): This feature is used for the virtual viewport. More information will follow.
  * @return  {XMLNode}  The created xml node
  */
-apf.mergeXml = function(XMLRoot, parentNode, options){
+ppc.mergeXml = function(XMLRoot, parentNode, options){
     if (typeof parentNode != "object")
-        parentNode = apf.xmldb.getElementById(parentNode);
+        parentNode = ppc.xmldb.getElementById(parentNode);
 
     if (options && options.clearContents) {
         //Signal listening elements
         var node, j, i,
-            nodes = parentNode.selectNodes("descendant::node()[@" + apf.xmldb.xmlListenTag + "]");
+            nodes = parentNode.selectNodes("descendant::node()[@" + ppc.xmldb.xmlListenTag + "]");
         for (i = nodes.length - 1; i >= 0; i--) {
-            var s = nodes[i].getAttribute(apf.xmldb.xmlListenTag).split(";");
+            var s = nodes[i].getAttribute(ppc.xmldb.xmlListenTag).split(";");
             for (j = s.length - 1; j >= 0; j--) {
-                node = apf.all[s[j]];
+                node = ppc.all[s[j]];
                 if (!node) continue;
                 if (node.dataParent && node.dataParent.xpath)
                     node.dataParent.parent.signalXmlUpdate[node.$uniqueId] = true;
@@ -301,20 +301,20 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
             doc = parentNode.ownerDocument;
             for (i = 0, l = nodes.length; i < l; i++) {
                 parentNode.insertBefore(doc.importNode(nodes[i], true), beforeNode)
-                  .setAttribute(apf.xmldb.xmlIdTag, options.documentId + "|" + (reserved + i));
+                  .setAttribute(ppc.xmldb.xmlIdTag, options.documentId + "|" + (reserved + i));
             }
         }
         else {
             for (i = nodes.length - 1; i >= 0; i--) {
                 parentNode.insertBefore(nodes[0], beforeNode)
-                  .setAttribute(apf.xmldb.xmlIdTag, options.documentId + "|" + (reserved + i));
+                  .setAttribute(ppc.xmldb.xmlIdTag, options.documentId + "|" + (reserved + i));
             }
         }
     }
     else
     // #endif
     {
-        beforeNode = options && options.beforeNode ? options.beforeNode : apf.getNode(parentNode, [0]);
+        beforeNode = options && options.beforeNode ? options.beforeNode : ppc.getNode(parentNode, [0]);
         nodes      = XMLRoot.childNodes;
         
         if (options.filter)
@@ -333,7 +333,7 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
     if (options && options.copyAttributes) {
         var attr = XMLRoot.attributes;
         for (i = 0; i < attr.length; i++)
-            if (attr[i].nodeName != apf.xmldb.xmlIdTag)
+            if (attr[i].nodeName != ppc.xmldb.xmlIdTag)
                 parentNode.setAttribute(attr[i].nodeName, attr[i].nodeValue);
     }
 
@@ -347,9 +347,9 @@ apf.mergeXml = function(XMLRoot, parentNode, options){
  *                                   When an element node is passed the first text node is set.
  * @param {String}     nodeValue     The value to set.
  * @param {Boolean}    applyChanges  Whether the changes are propagated to the databound elements.
- * @param {apf.UndoData}    undoObj       The undo object that is responsible for archiving the changes.
+ * @param {ppc.UndoData}    undoObj       The undo object that is responsible for archiving the changes.
  */
-apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
+ppc.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
     if (!xmlNode)
         return;
 
@@ -361,11 +361,11 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
 
         undoObj.extra.oldValue = options.forceNew
             ? ""
-            : apf.queryValue(xmlNode, xpath);
+            : ppc.queryValue(xmlNode, xpath);
 
         undoObj.xmlNode        = xmlNode;
         if (xpath) {
-            xmlNode = apf.createNodeFromXpath(xmlNode, xpath, newNodes, options.forceNew);
+            xmlNode = ppc.createNodeFromXpath(xmlNode, xpath, newNodes, options.forceNew);
         }
 
         undoObj.extra.appliedNode = xmlNode;
@@ -375,14 +375,14 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
         if (!xmlNode.firstChild)
             xmlNode.appendChild(xmlNode.ownerDocument.createTextNode(""));
 
-        xmlNode.firstChild.nodeValue = apf.isNot(nodeValue) ? "" : nodeValue;
+        xmlNode.firstChild.nodeValue = ppc.isNot(nodeValue) ? "" : nodeValue;
 
         if (applyChanges)
-            apf.xmldb.applyChanges("text", xmlNode, undoObj);
+            ppc.xmldb.applyChanges("text", xmlNode, undoObj);
     }
     else {
         // @todo: this should be fixed in libxml
-        if (apf.isO3 && xmlNode.nodeType == 2)
+        if (ppc.isO3 && xmlNode.nodeType == 2)
             nodeValue = nodeValue.replace(/&/g, "&amp;");
 
         var oldValue      = xmlNode.nodeValue;
@@ -398,7 +398,7 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
             xmlNode.$triggerUpdate(null, oldValue);
 
         if (applyChanges) {
-            apf.xmldb.applyChanges(xmlNode.nodeType == 2 ? "attribute" : "text", xmlNode.parentNode ||
+            ppc.xmldb.applyChanges(xmlNode.nodeType == 2 ? "attribute" : "text", xmlNode.parentNode ||
                 xmlNode.ownerElement || xmlNode.selectSingleNode(".."), undoObj);
         }
     }
@@ -416,7 +416,7 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
         else
             node = xmlNode;
 
-        apf.xmldb.applyRDB(["setValueByXpath", node, nodeValue, xpath,
+        ppc.xmldb.applyRDB(["setValueByXpath", node, nodeValue, xpath,
             options && options.forceNew],
             undoObj || {xmlNode: xmlNode}
         );
@@ -433,13 +433,13 @@ apf.setNodeValue = function(xmlNode, nodeValue, applyChanges, options){
  * @param  {Boolean}  local  Whether the call updates databound UI.
  * @return  {XMLNode}  The changed XML node
  */
-apf.setQueryValue = function(xmlNode, xpath, value, local){
-    var node = apf.createNodeFromXpath(xmlNode, xpath);
+ppc.setQueryValue = function(xmlNode, xpath, value, local){
+    var node = ppc.createNodeFromXpath(xmlNode, xpath);
     if (!node)
         return null;
 
-    apf.setNodeValue(node, value, !local);
-    //apf.xmldb.setTextNode(node, value);
+    ppc.setNodeValue(node, value, !local);
+    //ppc.xmldb.setTextNode(node, value);
     return node;
 };
 
@@ -450,15 +450,15 @@ apf.setQueryValue = function(xmlNode, xpath, value, local){
  * @param  {String}  xpath  The xpath used to select a XML node.
  * @return  {XMLNode}  The changed XML node
  */
-apf.removeQueryNode = function(xmlNode, xpath, local){
-    var node = apf.queryNode(xmlNode, xpath);
+ppc.removeQueryNode = function(xmlNode, xpath, local){
+    var node = ppc.queryNode(xmlNode, xpath);
     if (!node)
         return false;
 
     if (local)
         node.parentNode.removeChild(node);
     else
-        apf.xmldb.removeNode(node);
+        ppc.xmldb.removeNode(node);
 
     return node;
 };
@@ -469,7 +469,7 @@ apf.removeQueryNode = function(xmlNode, xpath, local){
  * @param {String}     xpath   The xpath query
  * @return {String} The value of the query result or empty string
  */
-apf.queryValue = function (xmlNode, xpath){
+ppc.queryValue = function (xmlNode, xpath){
     if (!xmlNode)
         return "";
     if (xmlNode.nodeType == 2)
@@ -491,7 +491,7 @@ apf.queryValue = function (xmlNode, xpath){
  * @param {String}     xpath   The xpath query
  * @return {Array} A list of values resulting from the query
  */
-apf.queryValues = function(xmlNode, xpath){
+ppc.queryValues = function(xmlNode, xpath){
     var out = [];
     if (!xmlNode) return out;
 
@@ -516,13 +516,13 @@ apf.queryValues = function(xmlNode, xpath){
  * @param {String}  sExpr        The xpath expression
  * @returns {Array} A list of found XML nodes. The list can be empty
  */
-apf.queryNodes = function(contextNode, sExpr){
-    if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
+ppc.queryNodes = function(contextNode, sExpr){
+    if (contextNode && (ppc.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
         return contextNode.selectNodes(sExpr); //IE55
     //if (contextNode.ownerDocument != document)
     //    return contextNode.selectNodes(sExpr);
 
-    return apf.XPath.selectNodes(sExpr, contextNode);
+    return ppc.XPath.selectNodes(sExpr, contextNode);
 };
 
 /**
@@ -535,14 +535,14 @@ apf.queryNodes = function(contextNode, sExpr){
  * @param {String}  sExpr        The xpath expression.
  * @returns {XMLNode} The DOM node, or `null` if none was found.
  */
-apf.queryNode = function(contextNode, sExpr){
-    if (contextNode && (apf.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
+ppc.queryNode = function(contextNode, sExpr){
+    if (contextNode && (ppc.hasXPathHtmlSupport && contextNode.selectSingleNode || !contextNode.style))
         return contextNode.selectSingleNode(sExpr); //IE55
     //if (contextNode.ownerDocument != document)
     //    return contextNode.selectSingleNode(sExpr);
 
-    var nodeList = apf.queryNodes(contextNode ? contextNode : null,
-        sExpr + (apf.isIE ? "" : "[1]"));
+    var nodeList = ppc.queryNodes(contextNode ? contextNode : null,
+        sExpr + (ppc.isIE ? "" : "[1]"));
     return nodeList.length > 0 ? nodeList[0] : null;
 };
 
@@ -556,7 +556,7 @@ apf.queryNode = function(contextNode, sExpr){
  * @param {Function}   [func] A callback that is run for every node that is searched.
  * @return {String} The found value, or empty string if none was found.
  */
-apf.getInheritedAttribute = function(xml, attr, func){
+ppc.getInheritedAttribute = function(xml, attr, func){
     var result, avalue;
 
     //@todo optimize this and below
@@ -571,8 +571,8 @@ apf.getInheritedAttribute = function(xml, attr, func){
     if (avalue === "")
         return "";
 
-    return !result && attr && apf.config
-        ? apf.config[attr]
+    return !result && attr && ppc.config
+        ? ppc.config[attr]
         : result;
 };
 
@@ -586,7 +586,7 @@ apf.getInheritedAttribute = function(xml, attr, func){
  * @param {Boolean} [forceNew]   Defines whether a new node is always created
  * @return {DOMNode} The last element found
  */
-apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
+ppc.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
     // @todo generalize this to include attributes in if format []
     var xmlNode, foundpath = "", paths = xPath.replace(/('.*?')|(".*?")|\|/g, function(m, m1, m2){
         if (m1 || m2) return m1 || m2;
@@ -619,12 +619,12 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
         var isAddId = paths[i].match(/(\w+)\[@([\w-]+)=(\w+)\]/);
         // #ifdef __DEBUG
         if (!isAddId && paths[i].match(/\@|\[.*\]|\(.*\)/)) {
-            throw new Error(apf.formatErrorString(1041, this,
+            throw new Error(ppc.formatErrorString(1041, this,
                 "Select via xPath",
                 "Could not use xPath to create xmlNode: " + xPath));
         }
         if (!isAddId && paths[i].match(/\/\//)) {
-            throw new Error(apf.formatErrorString(1041, this,
+            throw new Error(ppc.formatErrorString(1041, this,
                 "Select via xPath",
                 "Could not use xPath to create xmlNode: " + xPath));
         }
@@ -684,9 +684,9 @@ apf.createNodeFromXpath = function(contextNode, xPath, addedNodes, forceNew){
 
 /*
  * @private
- * @class apf.convertMethods
+ * @class ppc.convertMethods
  */
-apf.convertMethods = {
+ppc.convertMethods = {
     /**
      * Gets a JSON object containing all the name/value pairs of the elements
      * using this element as it's validation group.
@@ -694,7 +694,7 @@ apf.convertMethods = {
      * @return  {String}  the string representation of a the json object
      */
     "json": function(xml){
-        return JSON.stringify(apf.xml2json(xml));
+        return JSON.stringify(ppc.xml2json(xml));
         /*
         var result = {}, filled = false, nodes = xml.childNodes;
         for (var i = 0; i < nodes.length; i++) {
@@ -716,7 +716,7 @@ apf.convertMethods = {
                 result[name] = this.json(sameNodes[j], result);
         }
 
-        return filled ? result : apf.queryValue(xml, "text()");*/
+        return filled ? result : ppc.queryValue(xml, "text()");*/
     },
 
     "cgivars": function(xml, basename){
@@ -767,7 +767,7 @@ apf.convertMethods = {
         if (str.length)
             return str.join("&");
 
-        value = apf.queryValue(xml, "text()");
+        value = ppc.queryValue(xml, "text()");
         if (basename && value)
             return basename + "=" + escape(value);
 
@@ -869,8 +869,8 @@ apf.convertMethods = {
  *   - `"cgiobjects"`: converts to cgi object
  * @return {String} The result of the conversion.
  */
-apf.convertXml = function(xml, to){
-    return apf.convertMethods[to](xml);
+ppc.convertXml = function(xml, to){
+    return ppc.convertMethods[to](xml);
 };
 
 /**
@@ -879,7 +879,7 @@ apf.convertXml = function(xml, to){
  * @param {XMLElement} x The XML node to search.
  * @return {XMLNode} The found XML node, or `null`.
  */
-apf.getTextNode = function(x){
+ppc.getTextNode = function(x){
     for (var i = 0, l = x.childNodes.length; i < l; ++i) {
         if (x.childNodes[i].nodeType == 3 || x.childNodes[i].nodeType == 4)
             return x.childNodes[i];
@@ -890,19 +890,19 @@ apf.getTextNode = function(x){
 /**
  * @private
  */
-apf.getBoundValue = function(amlNode, xmlRoot, applyChanges){
+ppc.getBoundValue = function(amlNode, xmlRoot, applyChanges){
     if (!xmlRoot && !amlNode.xmlRoot)
         return "";
 
     var xmlNode = amlNode.$getDataNode("value", amlNode.xmlRoot);
 
-    return xmlNode ? apf.queryValue(xmlNode) : "";
+    return xmlNode ? ppc.queryValue(xmlNode) : "";
 };
 
 /**
  * @private
  */
-apf.getArrayFromNodelist = function(nodelist){
+ppc.getArrayFromNodelist = function(nodelist){
     for (var nodes = [], j = 0, l = nodelist.length; j < l; ++j)
         nodes.push(nodelist[j]);
     return nodes;
@@ -914,7 +914,7 @@ apf.getArrayFromNodelist = function(nodelist){
  * @param {XMLElement} xmlNode The XML node to serialize.
  * @return {String} The children as a string
  */
-apf.serializeChildren = function(xmlNode){
+ppc.serializeChildren = function(xmlNode){
     var node,
         s     = [],
         nodes = xmlNode.childNodes,
@@ -934,8 +934,8 @@ apf.serializeChildren = function(xmlNode){
  * @param {XMLElement} xmlNode The {@link term.datanode data node} to serialize.
  * @return {String} The serialized version of the {@link term.datanode data node}.
  */
-apf.getXmlString = function(xmlNode){
-    var xml = apf.xmldb.cleanNode(xmlNode.cloneNode(true));
+ppc.getXmlString = function(xmlNode){
+    var xml = ppc.xmldb.cleanNode(xmlNode.cloneNode(true));
     return xml.xml || xml.serialize();
 };
 
@@ -949,8 +949,8 @@ apf.getXmlString = function(xmlNode){
  *                                        XML elements should be preserved
  * @return {XMLNode} The created XML node
  */
-apf.getXml = function(strXml, noError, preserveWhiteSpace){
-    return apf.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
+ppc.getXml = function(strXml, noError, preserveWhiteSpace){
+    return ppc.getXmlDom(strXml, noError, preserveWhiteSpace).documentElement;
 };
 
 /**
@@ -958,7 +958,7 @@ apf.getXml = function(strXml, noError, preserveWhiteSpace){
  * @param {String} strXml The XML string to format.
  * @return {String} The formatted string.
  */
-apf.formatXml = function(strXml){
+ppc.formatXml = function(strXml){
     strXml = strXml.trim();
 
     var lines = strXml.split("\n"),
@@ -984,16 +984,16 @@ apf.formatXml = function(strXml){
 
 //@todo this function needs to be 100% proof, it's the core of the system
 //for RDB: xmlNode --> Xpath statement
-apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
-    if (!xmlNode) //@todo apf3.0
+ppc.xmlToXpath = function(xmlNode, xmlContext, useAID){
+    if (!xmlNode) //@todo ppc3.0
         return "";
 
-    if (useAID === true && xmlNode.nodeType == 1 && xmlNode.getAttribute(apf.xmldb.xmlIdTag)) {
-        return "//node()[@" + apf.xmldb.xmlIdTag + "='"
-            + xmlNode.getAttribute(apf.xmldb.xmlIdTag) + "']";
+    if (useAID === true && xmlNode.nodeType == 1 && xmlNode.getAttribute(ppc.xmldb.xmlIdTag)) {
+        return "//node()[@" + ppc.xmldb.xmlIdTag + "='"
+            + xmlNode.getAttribute(ppc.xmldb.xmlIdTag) + "']";
     }
 
-    if (apf != this && this.lookup && this.select) {
+    if (ppc != this && this.lookup && this.select) {
         var unique, def = this.lookup[xmlNode.tagName];
         if (def) {
             //unique should not have ' in it... -- can be fixed...
@@ -1015,7 +1015,7 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 
     if (xmlNode.nodeType != 2 && !xmlNode.parentNode && !xmlNode.ownerElement) {
         //#ifdef __DEBUG
-        throw new Error(apf.formatErrorString(0, null,
+        throw new Error(ppc.formatErrorString(0, null,
             "Converting XML to Xpath",
             "Error xml node without parent and non matching context cannot\
              be converted to xml.", xmlNode));
@@ -1037,9 +1037,9 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
             break;
         }
         str.unshift((lNode.nodeType == 1 ? lNode.tagName : "text()") +
-            "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(apf.xmldb.xmlIdTag))
-                ? "@" + apf.xmldb.xmlIdTag + "='" + id + "'"
-                : (apf.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1)) +
+            "[" + (useAID && (id = lNode.nodeType == 1 && lNode.getAttribute(ppc.xmldb.xmlIdTag))
+                ? "@" + ppc.xmldb.xmlIdTag + "='" + id + "'"
+                : (ppc.getChildNumber(lNode, lNode.parentNode.selectNodes(lNode.nodeType == 1 ? lNode.tagName : "text()")) + 1)) +
             "]");
         lNode = lNode.parentNode;
     };
@@ -1048,10 +1048,10 @@ apf.xmlToXpath = function(xmlNode, xmlContext, useAID){
 };
 
 //for RDB: Xpath statement --> xmlNode
-apf.xpathToXml = function(xpath, xmlNode){
+ppc.xpathToXml = function(xpath, xmlNode){
     if (!xmlNode) {
         //#ifdef __DEBUG
-        throw new Error(apf.formatErrorString(0, null,
+        throw new Error(ppc.formatErrorString(0, null,
             "Converting Xpath to XML",
             "Error context xml node is empty, thus xml node cannot \
              be found for '" + xpath + "'"));
@@ -1064,16 +1064,16 @@ apf.xpathToXml = function(xpath, xmlNode){
 };
 
 // #ifdef __WITH_XML_JQUERY_API
-apf.n = function(xml, xpath){
-    return new apf.xmlset(xml, xpath, true);
+ppc.n = function(xml, xpath){
+    return new ppc.xmlset(xml, xpath, true);
 };
 
-apf.b = function(xml, xpath){
-    return new apf.xmlset(xml, xpath);
+ppc.b = function(xml, xpath){
+    return new ppc.xmlset(xml, xpath);
 };
 
-apf.b.$queue = [];
-apf.b.$state = 0;
+ppc.b.$queue = [];
+ppc.b.$state = 0;
 
 /*
  * Naive jQuery like set implementation
@@ -1081,13 +1081,13 @@ apf.b.$state = 0;
  * @todo add query queue
  * @todo rewrite to use arrays
  */
-apf.xmlset = function(xml, xpath, local, previous){
+ppc.xmlset = function(xml, xpath, local, previous){
     if (typeof xml == "string")
-        xml = apf.getXml(xml);
+        xml = ppc.getXml(xml);
 
     this.$xml = xml;
     if (xml)
-        this.$nodes = xml.dataType == apf.ARRAY ? xml : (xpath ? xml.selectNodes(xpath) : [xml]);
+        this.$nodes = xml.dataType == ppc.ARRAY ? xml : (xpath ? xml.selectNodes(xpath) : [xml]);
     this.$xpath = xpath || ".";
     this.$local = local;
     this.$previous = previous;
@@ -1097,12 +1097,12 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.add = function(){}; //@todo not implemented
 
     this.begin = function(){
-        apf.b.$state = 1;
+        ppc.b.$state = 1;
         return this;
     };
 
     this.commit = function(at, rmt, uri){
-        if (apf.b.$queue.length) {
+        if (ppc.b.$queue.length) {
             if (rmt) {
                 var _self = this;
                 rmt.addEventListener("rdbsend", function(e){
@@ -1115,21 +1115,21 @@ apf.xmlset = function(xml, xpath, local, previous){
 
             at.execute({
                 action : 'multicall',
-                args   : apf.b.$queue
+                args   : ppc.b.$queue
             });
 
             if (rmt)
                 rmt.$processQueue(rmt);
         }
 
-        apf.b.$queue = [];
-        apf.b.$state = 0;
+        ppc.b.$queue = [];
+        ppc.b.$state = 0;
         return this;
     };
 
     this.rollback = function(){
-        apf.b.$queue = [];
-        apf.b.$state = 0;
+        ppc.b.$queue = [];
+        ppc.b.$state = 0;
         return this;
     };
 
@@ -1145,7 +1145,7 @@ apf.xmlset = function(xml, xpath, local, previous){
             if (this.$local)
                 node.parentNode.insertBefore(el, node);
             else
-                apf.xmldb.appendChild(node.parentNode, el, node);
+                ppc.xmldb.appendChild(node.parentNode, el, node);
         }
         return this;
     };
@@ -1158,7 +1158,7 @@ apf.xmlset = function(xml, xpath, local, previous){
             if (this.$local)
                 node.parentNode.insertBefore(el, node.nextSibling);
             else
-                apf.xmldb.appendChild(node.parentNode, el, node.nextSibling);
+                ppc.xmldb.appendChild(node.parentNode, el, node.nextSibling);
         }
 
         return this;
@@ -1171,15 +1171,15 @@ apf.xmlset = function(xml, xpath, local, previous){
             node = this.$nodes[i];
             child = typeof el == "function" ? el(i, node) : el;
 
-            if (apf.b.$state)
-                apf.b.$queue.push({
+            if (ppc.b.$state)
+                ppc.b.$queue.push({
                     action : 'appendChild',
                     args   : [node, child]
                 });
             else if (this.$local)
                 node.appendChild(child);
             else
-                apf.xmldb.appendChild(node, child);
+                ppc.xmldb.appendChild(node, child);
 
         }
 
@@ -1215,15 +1215,15 @@ apf.xmlset = function(xml, xpath, local, previous){
         }
         else {
             for (var i = 0, l = this.$nodes.length; i < l; i++) {
-                if (apf.b.$state)
-                    apf.b.$queue.push({
+                if (ppc.b.$state)
+                    ppc.b.$queue.push({
                         action : 'setAttribute',
                         args   : [this.$nodes[i], attrName, value]
                     });
                 else if (this.$local)
                     this.$nodes[i].setAttribute(attrName, value);
                 else
-                    apf.xmldb.setAttribute(this.$nodes[i], attrName, value);
+                    ppc.xmldb.setAttribute(this.$nodes[i], attrName, value);
             }
         }
 
@@ -1232,15 +1232,15 @@ apf.xmlset = function(xml, xpath, local, previous){
 
     this.removeAttr = function(attrName){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
-            if (apf.b.$state)
-                apf.b.$queue.push({
+            if (ppc.b.$state)
+                ppc.b.$queue.push({
                     action : 'removeAttribute',
                     args   : [this.$nodes[i], attrName]
                 });
             else if (this.$local)
                 this.$nodes[i].removeAttribute(attrName);
             else
-                apf.xmldb.removeAttribute(this.$nodes[i], attrName);
+                ppc.xmldb.removeAttribute(this.$nodes[i], attrName);
         }
 
         return this;
@@ -1257,7 +1257,7 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.get   =
     this.index = function(idx){
         idx = idx || 0;
-        return apf.getChildNumber(this.$nodes[idx], this.$nodes[idx].parentNode.getElementsByTagName("*"))
+        return ppc.getChildNumber(this.$nodes[idx], this.$nodes[idx].parentNode.getElementsByTagName("*"))
     };
 
     this.eq    = function(index){
@@ -1276,14 +1276,14 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.next = function(selector){
         if (!selector)
             selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
+        return new ppc.xmlset(this.$xml, "((following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
             ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     };
 
     this.nextAll = function(selector){
         if (!selector)
             selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
+        return new ppc.xmlset(this.$xml, "(following-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
             ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     };
 
@@ -1292,21 +1292,21 @@ apf.xmlset = function(xml, xpath, local, previous){
     this.prev = function(selector){
         if (!selector)
             selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
+        return new ppc.xmlset(this.$xml, "((preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
             ")[1])[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     };
 
     this.prevAll = function(selector){
         if (!selector)
             selector = "node()[local-name()]";
-        return new apf.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
+        return new ppc.xmlset(this.$xml, "(preceding-sibling::" + (this.$xpath == "." ? "node()" : this.$xpath) +
             ")[self::" + selector.split("|").join("|self::") + "]", this.$local, this);
     };
 
     this.not = function(){};
 
     this.parent = function(selector){
-        return new apf.xmlset(this.$xml.parentNode, this.$local, this);
+        return new ppc.xmlset(this.$xml.parentNode, this.$local, this);
     };
 
     this.parents = function(selector){};
@@ -1317,15 +1317,15 @@ apf.xmlset = function(xml, xpath, local, previous){
             node = this.$nodes[i];
             child = typeof el == "function" ? el(i, node) : el;
 
-            if (apf.b.$state)
-                apf.b.$queue.push({
+            if (ppc.b.$state)
+                ppc.b.$queue.push({
                     action : 'replaceNode',
                     args   : [child, node]
                 });
             else if (this.$local)
                 node.parentNode.replaceChild(child, node);
             else
-                apf.xmldb.replaceNode(child, node);
+                ppc.xmldb.replaceNode(child, node);
 
         }
 
@@ -1334,7 +1334,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
     this.siblings = function(selector){
         //preceding-sibling::
-        //return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]");
+        //return new ppc.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" + selector.split("|").join("|self::") + "]");
     };
 
     this.text = function(){
@@ -1357,20 +1357,20 @@ apf.xmlset = function(xml, xpath, local, previous){
             if (!node.selectSingleNode("self::node()[" + selector + "]"))
                 continue;
 
-            if (apf.b.$state)
-                apf.b.$queue.push({
+            if (ppc.b.$state)
+                ppc.b.$queue.push({
                     action : 'removeNode',
                     args   : [node]
                 });
             else if (this.$local)
                 node.parentNode.removeChild(node);
             else
-                apf.xmldb.removeNode(node);
+                ppc.xmldb.removeNode(node);
 
             items.push(node);
         }
 
-        return new apf.xmlset(items, "", this.$local, this);
+        return new ppc.xmlset(items, "", this.$local, this);
     };
 
     this.remove = function(selector){
@@ -1379,15 +1379,15 @@ apf.xmlset = function(xml, xpath, local, previous){
             if (selector && !node.selectSingleNode("self::node()[" + selector + "]"))
                 continue;
 
-            if (apf.b.$state)
-                apf.b.$queue.push({
+            if (ppc.b.$state)
+                ppc.b.$queue.push({
                     action : 'removeNode',
                     args   : [node]
                 });
             else if (this.$local)
                 node.parentNode.removeChild(node);
             else
-                apf.xmldb.removeNode(node);
+                ppc.xmldb.removeNode(node);
         }
 
         return this;
@@ -1401,22 +1401,22 @@ apf.xmlset = function(xml, xpath, local, previous){
                 nodes.push(list[j]);
             }
         }
-        return new apf.xmlset(nodes, null, this.$local, this);
+        return new ppc.xmlset(nodes, null, this.$local, this);
     };
 
     this.children2 = function(selector){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" +
+        return new ppc.xmlset(this.$xml, "(" + this.$xpath + ")/node()[self::" +
             selector.split("|").join("|self::") + "]", this.$local, this);
     };
 
     this.has  =
     this.find = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")//" +
+        return new ppc.xmlset(this.$xml, "(" + this.$xpath + ")//" +
             path.split("|").join("|self::"), this.$local, this);
     };
 
     this.query = function(path){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")/" +
+        return new ppc.xmlset(this.$xml, "(" + this.$xpath + ")/" +
             path.split("|").join("|(" + this.$xpath + ")/"), this.$local, this);
     };
 
@@ -1426,7 +1426,7 @@ apf.xmlset = function(xml, xpath, local, previous){
             if (this.$nodes[i].selectSingleNode("self::node()[" + filter + "]"))
                 newList.push(this.$nodes[i]);
         }
-        return new apf.xmlset(newList, null, this.$local, this);
+        return new ppc.xmlset(newList, null, this.$local, this);
     };
 
     this.end = function(){
@@ -1447,35 +1447,35 @@ apf.xmlset = function(xml, xpath, local, previous){
 
     this.val = function(value){
         if (arguments.length) {
-            apf.setQueryValue(this.$xml, this.$xpath, value);
+            ppc.setQueryValue(this.$xml, this.$xpath, value);
             return this;
         }
         else
-            return apf.queryValue(this.$xml, this.$xpath);
+            return ppc.queryValue(this.$xml, this.$xpath);
     };
 
     this.vals = function(){
-        return apf.queryValues(this.$xml, this.$xpath);
+        return ppc.queryValues(this.$xml, this.$xpath);
     };
 
     this.node = function(){
-        return apf.queryNode(this.$xml, this.$xpath);
+        return ppc.queryNode(this.$xml, this.$xpath);
     };
 
     this.nodes = function(){
-        return apf.queryNodes(this.$xml, this.$xpath);
+        return ppc.queryNodes(this.$xml, this.$xpath);
     };
 
     this.clone = function(deep){
         if (this.$nodes.length == 1)
-            return new apf.xmlset(this.$nodes[0].cloneNode(true), "", this.$local, this);
+            return new ppc.xmlset(this.$nodes[0].cloneNode(true), "", this.$local, this);
 
         var nodes = [];
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             nodes.push(this.$nodes[i].cloneNode(deep == undefined ? true : deep));
         }
 
-        return new apf.xmlset(nodes, "", this.$local, this);
+        return new ppc.xmlset(nodes, "", this.$local, this);
     };
 
     this.context = function(){
@@ -1484,7 +1484,7 @@ apf.xmlset = function(xml, xpath, local, previous){
 
     this.data = function(data){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
-            apf.setQueryValue(this.$nodes[i], ".", data);
+            ppc.setQueryValue(this.$nodes[i], ".", data);
         }
         return this;
     };
@@ -1508,7 +1508,7 @@ apf.xmlset = function(xml, xpath, local, previous){
         for (var i = 0, l = this.$nodes.length; i < l; i++) {
             values.push(callback(this.$nodes[i]));
         }
-        return new apf.xmlset(values, "", this.$local, this); //blrghhh
+        return new ppc.xmlset(values, "", this.$local, this); //blrghhh
     };
 
     this.empty  = function(){
@@ -1517,13 +1517,13 @@ apf.xmlset = function(xml, xpath, local, previous){
     };
 
     this.first = function(){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[1]", this.$local, this);
+        return new ppc.xmlset(this.$xml, "(" + this.$xpath + ")[1]", this.$local, this);
     };
 
     this.last = function(){
-        return new apf.xmlset(this.$xml, "(" + this.$xpath + ")[last()]", this.$local, this);
+        return new ppc.xmlset(this.$xml, "(" + this.$xpath + ")[last()]", this.$local, this);
     };
-}).call(apf.xmlset.prototype);
+}).call(ppc.xmlset.prototype);
 
 // #endif
 

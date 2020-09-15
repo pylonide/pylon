@@ -188,8 +188,8 @@ module.exports = {
         this.$onChange = this.onChange.bind(this);
         
         ext.nodes.push(
-            menus.addItemByPath("Edit/~", new apf.divider(), 2000),
-            menus.addItemByPath("Edit/Show Autocomplete", new apf.item({
+            menus.addItemByPath("Edit/~", new ppc.divider(), 2000),
+            menus.addItemByPath("Edit/Show Autocomplete", new ppc.item({
                 command : "complete"
             }), 2100)
         );
@@ -199,7 +199,7 @@ module.exports = {
             hint: "code complete",
             bindKey: {mac: "Ctrl-Space|Alt-Space", win: "Ctrl-Space|Alt-Space"},
             isAvailable : function(editor){
-                return apf.activeElement.localName == "codeeditor";
+                return ppc.activeElement.localName == "codeeditor";
             },
             exec: function(editor) {
                 _self.invoke();
@@ -239,7 +239,7 @@ module.exports = {
         ace.container.addEventListener("DOMMouseScroll", this.closeCompletionBox);
         ace.container.addEventListener("mousewheel", this.closeCompletionBox);
         
-        apf.popup.setContent("completionBox", barCompleterCont.$ext);
+        ppc.popup.setContent("completionBox", barCompleterCont.$ext);
         var boxLength = this.matches.length || 1;
         var completionBoxHeight = 11 + Math.min(10 * this.lineHeight, boxLength * (this.lineHeight));
         var cursorLayer = ace.renderer.$cursorLayer;
@@ -250,7 +250,7 @@ module.exports = {
         
         ignoreMouseOnce = !isPopupVisible();
         
-        apf.popup.show("completionBox", {
+        ppc.popup.show("completionBox", {
             x        : (prefix.length * -_self.cursorConfig.characterWidth) - 11,
             y        : _self.cursorConfig.lineHeight,
             height   : completionBoxHeight,

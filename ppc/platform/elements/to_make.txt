@@ -1,4 +1,4 @@
-//@todo apf3.0
+//@todo ppc3.0
 {
 
     /**
@@ -8,9 +8,9 @@
     "presentation" : function(q){
         var name = "skin" + Math.round(Math.random() * 100000);
         q.parentNode.setAttribute("skin", name);
-        apf.skins.skins[name] = {name:name,templates:{}}
-        var t    = q.parentNode[apf.TAGNAME];
+        ppc.skins.skins[name] = {name:name,templates:{}}
+        var t    = q.parentNode[ppc.TAGNAME];
         var skin = q.ownerDocument.createElement("skin"); skin.appendChild(q);
-        apf.skins.skins[name].templates[t] = skin;
+        ppc.skins.skins[name].templates[t] = skin;
     }
 }

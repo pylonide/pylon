@@ -27,12 +27,12 @@
  *        The WHAT WG storage API is documented at 
  *        http://www.whatwg.org/specs/web-apps/current-work/#scs-client-side
  */
-apf.storage.modules.html5 = {
+ppc.storage.modules.html5 = {
     domain     : (location.hostname == "localhost")
                     ? "localhost.localdomain"
                     : location.hostname,
     initialized: true,
-    storage : apf.isIE
+    storage : ppc.isIE
                 ? self.localStorage
                 : self.globalStorage,
     
@@ -51,7 +51,7 @@ apf.storage.modules.html5 = {
     put: function(key, value, namespace){
         //#ifdef __DEBUG
         if(this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
@@ -69,7 +69,7 @@ apf.storage.modules.html5 = {
         catch(e) {
             // indicate we failed
             //#ifdef __DEBUG
-            throw new Error(apf.formatErrorString(0, null, "Setting name/value pair",
+            throw new Error(ppc.formatErrorString(0, null, "Setting name/value pair",
                 "Could not set name/value pair"));
         //#endif
         }
@@ -78,7 +78,7 @@ apf.storage.modules.html5 = {
     get: function(key, namespace){
         //#ifdef __DEBUG
         if (this.isValidKey(key) == false)
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Setting name/value pair", "Invalid key given: " + key));
         //#endif
 
@@ -98,7 +98,7 @@ apf.storage.modules.html5 = {
         if (results == null || results == "")
             return null;
         
-        return apf.unserialize(results);
+        return ppc.unserialize(results);
     },
     
     getNamespaces: function(){
@@ -130,7 +130,7 @@ apf.storage.modules.html5 = {
 		    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, "Getting keys",
+            throw new Error(ppc.formatErrorString(0, null, "Getting keys",
                 "Invalid namespace given: " + namespace));
         //#endif
         
@@ -163,7 +163,7 @@ apf.storage.modules.html5 = {
 	    
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
+            throw new Error(ppc.formatErrorString(0, null, "Clearing storage", "Invalid namespace given: " + namespace));
         //#endif
         
         // create a regular expression to test the beginning
@@ -203,12 +203,12 @@ apf.storage.modules.html5 = {
     },
     
     showSettingsUI: function(){
-        throw new Error(apf.formatErrorString(0, null, this.declaredClass
+        throw new Error(ppc.formatErrorString(0, null, this.declaredClass
             + " does not support a storage settings user-interface"));
     },
     
     hideSettingsUI: function(){
-        throw new Error(apf.formatErrorString(0, null, this.declaredClass
+        throw new Error(ppc.formatErrorString(0, null, this.declaredClass
             + " does not support a storage settings user-interface"));
     },
     
@@ -218,7 +218,7 @@ apf.storage.modules.html5 = {
         
         //#ifdef __DEBUG
         if (this.isValidKey(namespace) == false)
-            throw new Error(apf.formatErrorString(0, null, "Clearing storage",
+            throw new Error(ppc.formatErrorString(0, null, "Clearing storage",
                 "Invalid namespace given: " + namespace));
         //#endif
         

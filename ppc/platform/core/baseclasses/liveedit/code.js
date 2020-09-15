@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CODE || __INC_ALL
 
-apf.LiveEdit.plugin("code", function() {
+ppc.LiveEdit.plugin("code", function() {
     this.name        = "code";
     this.icon        = "code";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARBUTTON;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARBUTTON;
     this.hook        = "ontoolbar";
     this.keyBinding  = "ctrl+shift+h";
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
     this.noDisable   = true;
     this.regex       = null;
 
@@ -48,7 +48,7 @@ apf.LiveEdit.plugin("code", function() {
 
             editor.$pluginsActive = this.name;
             // disable the editor...
-            editor.setProperty("state", apf.DISABLED);
+            editor.setProperty("state", ppc.DISABLED);
 
             // show the textarea and position it correctly...
             this.setSize(editor);
@@ -60,7 +60,7 @@ apf.LiveEdit.plugin("code", function() {
             editor.$pluginsActive = null;
             
             oCont.style.display = "none";
-            editor.setProperty("state", apf.OFF);
+            editor.setProperty("state", ppc.OFF);
             
             propagateChange();
             
@@ -81,7 +81,7 @@ apf.LiveEdit.plugin("code", function() {
         }
         // update the contents of the (hidden) textarea
         oPreview.value = format.call(this, sHtml 
-            ? apf.htmlCleaner.parse(sHtml)
+            ? ppc.htmlCleaner.parse(sHtml)
             : (lastLoaded = editor.getValue()));
     };
 
@@ -91,12 +91,12 @@ apf.LiveEdit.plugin("code", function() {
 
     function propagateChange() {
         //if (lastLoaded == oPreview.value) return false;
-        var html = apf.htmlCleaner.parse(oPreview.value
+        var html = ppc.htmlCleaner.parse(oPreview.value
             .replace(/<\/p>/gi, "</p><p></p>")
             .replace(/\n/g, ""));
 
         try{
-            apf.getXml("<source>" + html.replace(/&.{3,5};/g, "") + "</source>");
+            ppc.getXml("<source>" + html.replace(/&.{3,5};/g, "") + "</source>");
         }
         catch(e){
             if (confirm("Er zit een fout in de html. Klik op OK om deze \
@@ -150,7 +150,7 @@ apf.LiveEdit.plugin("code", function() {
         oToolbar = oCont.getElementsByTagName("div")[0];
         //oToolbar.className = "";
         this.editor.$drawToolbars(oToolbar, "codetoolbar",
-            "apf.all[" + this.$uniqueId + "].$buttonClick(event, this);", true);
+            "ppc.all[" + this.$uniqueId + "].$buttonClick(event, this);", true);
         // @todo make this hack disappear...
         oToolbar.innerHTML = oToolbar.innerHTML;
         var btns = oToolbar.getElementsByTagName("div");
@@ -159,14 +159,14 @@ apf.LiveEdit.plugin("code", function() {
             if (!item) continue;
 
             oButtons[item] = btns[i];
-            apf.setStyleClass(btns[i], "editor_enabled",
+            ppc.setStyleClass(btns[i], "editor_enabled",
                 ["editor_selected", "editor_disabled"]);
             btns[i].disabled = false;
         }
 
         oPreview = oCont.getElementsByTagName("textarea")[0];//oCont.appendChild(document.createElement("textarea"));
         // make selections in IE possible.
-        if (apf.isIE)
+        if (ppc.isIE)
             oPreview.onselectstart = function(e) {
                 e = e || window.event;
                 e.cancelBubble = true;
@@ -177,7 +177,7 @@ apf.LiveEdit.plugin("code", function() {
         oCont.style.display  = "none";
         
         //#ifdef __WITH_WINDOW_FOCUS
-        apf.sanitizeTextbox(oPreview);
+        ppc.sanitizeTextbox(oPreview);
         // #endif
     }
 
@@ -189,9 +189,9 @@ apf.LiveEdit.plugin("code", function() {
         oCont.style.top       = editor.$toolbar.offsetHeight + "px";
         oCont.style.width     = 
         oToolbar.style.width  = w + "px";
-        oPreview.style.width  = w - (apf.isIE ? 2 : 0) + "px";
-        oCont.style.height    = h + (apf.isIE ? 2 : 3) + "px";
-        oPreview.style.height = h - (apf.isIE ? 26 : 24) + "px";
+        oPreview.style.width  = w - (ppc.isIE ? 2 : 0) + "px";
+        oCont.style.height    = h + (ppc.isIE ? 2 : 3) + "px";
+        oPreview.style.height = h - (ppc.isIE ? 26 : 24) + "px";
     };
 
     var elements = {
@@ -204,7 +204,7 @@ apf.LiveEdit.plugin("code", function() {
     };
 
     this.$buttonClick = function(e, oButton) {
-        apf.setStyleClass(oButton, "active");
+        ppc.setStyleClass(oButton, "active");
         var item = oButton.getAttribute("type");
         if (elements[item])
             insertElement.apply(this, elements[item]);
@@ -212,7 +212,7 @@ apf.LiveEdit.plugin("code", function() {
         this.editor.$visualFocus();
         oPreview.focus();
 
-        apf.setStyleClass(oButton, "", ["active"]);
+        ppc.setStyleClass(oButton, "", ["active"]);
     }
 
     function insertElement(sStart, sEnd) {
@@ -220,13 +220,13 @@ apf.LiveEdit.plugin("code", function() {
         var range, val, end;
         if (!sEnd) {
             // no end tag provided, so insert sStart at the current caret position
-            if (apf.hasMsRangeObject) {
+            if (ppc.hasMsRangeObject) {
                 range = document.selection.createRange();
                 range.collapse();
                 range.text = sStart;
                 range.moveEnd("character", sStart.length);
                 range.collapse();
-                if (apf.document.activeElement == this.editor)
+                if (ppc.document.activeElement == this.editor)
                     range.select();
             }
             else {
@@ -242,13 +242,13 @@ apf.LiveEdit.plugin("code", function() {
         else {
             // end tag provided, so we need to encapsulate the selection with
             // sStart and sEnd
-            if (apf.hasMsRangeObject) {
+            if (ppc.hasMsRangeObject) {
                 range = document.selection.createRange();
                 val   = range.text;
                 range.text = sStart + val + sEnd;
                 range.moveStart("character", -(val.length + sEnd.length));
                 range.moveEnd("character", -sEnd.length);
-                if (apf.document.activeElement == this.editor)
+                if (ppc.document.activeElement == this.editor)
                     range.select();
             }
             else {
@@ -264,7 +264,7 @@ apf.LiveEdit.plugin("code", function() {
     }
 
     function protect(outer, opener, data, closer) {
-        return opener + "apf.___APFpd___" + protectedData.push(data) + closer;
+        return opener + "ppc.___PPCpd___" + protectedData.push(data) + closer;
     }
 
     function format(sHtml) {
@@ -297,7 +297,7 @@ apf.LiveEdit.plugin("code", function() {
 
         // Now we put back the protected data.
         for (i = 0, j = protectedData.length; i < j; i++) {
-            var oRegex = new RegExp("apf.___JPFpd___" + i);
+            var oRegex = new RegExp("ppc.___JPFpd___" + i);
             sFmt = sFmt.replace(oRegex, protectedData[i].replace(/\$/g, "$$$$"));
         }
 
@@ -322,8 +322,8 @@ apf.LiveEdit.plugin("code", function() {
 
     this.queryState = function(editor) {
         if (editor.$pluginsActive == this.name)
-            return apf.SELECTED;
-        return apf.OFF;
+            return ppc.SELECTED;
+        return ppc.OFF;
     };
 
     this.destroy = function() {

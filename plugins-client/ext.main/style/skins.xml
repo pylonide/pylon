@@ -1066,7 +1066,7 @@
             background-repeat   : no-repeat;
         }
     ]]></a:style>
-    <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+    <a:style condition="ppc.isSafari || ppc.isChrome"><![CDATA[
         .btn .lbl {
             margin  : 0;
             height  : 22px;
@@ -1077,7 +1077,7 @@
             overflow : hidden;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE"><![CDATA[
+    <a:style condition="ppc.isIE"><![CDATA[
         .btn .lbl {
             line-height : 19px;
         }
@@ -1155,7 +1155,7 @@
                 text-align:center;
             }
         ]]></a:style>
-        <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+        <a:style condition="ppc.isSafari || ppc.isChrome"><![CDATA[
             .hbox > .github-button {
                 height:26px;
             }
@@ -1165,7 +1165,7 @@
                 padding : 4px 0 0 0;
             }
         ]]></a:style>
-        <a:style condition="apf.isIE"><![CDATA[
+        <a:style condition="ppc.isIE"><![CDATA[
             .github-button {
                 height  : 21px;
                 padding : 1px 0 0 23px;
@@ -3092,7 +3092,7 @@
             color : #bebebe;
         }
     ]]></a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
+    <a:style condition="ppc.isWebkit"><![CDATA[
         .cbcontainer span {
             top : -2px;
         }
@@ -3468,7 +3468,7 @@
             color: #ababab;
         }
     ]]></a:style>
-    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+    <a:style condition="ppc.isChrome || ppc.isSafari"><![CDATA[
         .vbox > .db-checkbox {
             height  : 16px;
             overflow: visible;
@@ -4077,7 +4077,7 @@
 
 
     ]]></a:style>
-    <a:style condition="apf.isIE &amp;&amp; !apf.isIE8"><![CDATA[
+    <a:style condition="ppc.isIE &amp;&amp; !ppc.isIE8"><![CDATA[
         .datagrid .headings div{
             float : left;
         }
@@ -4086,7 +4086,7 @@
             float : left;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko &amp;&amp; apf.versionGecko &lt; 3"><![CDATA[
+    <a:style condition="ppc.isGecko &amp;&amp; ppc.versionGecko &lt; 3"><![CDATA[
         .datagrid .headings{
             padding-top : 2px;
             height : 15px;
@@ -4107,12 +4107,12 @@
             position : relative;
         }
     ]]></a:style>
-    <a:style condition="apf.isWin">
+    <a:style condition="ppc.isWin">
     	.datagrid .headings{
             margin : -20px 17px 0 0;
         }
     </a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
+    <a:style condition="ppc.isWebkit"><![CDATA[
         .datagrid {
             position: relative;
             border: 1px solid #c3c3c3;
@@ -4607,7 +4607,7 @@
             background-position : 0 -0px;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE &amp;&amp; !apf.isIE8"><![CDATA[
+    <a:style condition="ppc.isIE &amp;&amp; !ppc.isIE8"><![CDATA[
         .dgcheck .headings div{
             float : left;
         }
@@ -4616,7 +4616,7 @@
             float : left;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko &amp;&amp; apf.versionGecko &lt; 3"><![CDATA[
+    <a:style condition="ppc.isGecko &amp;&amp; ppc.versionGecko &lt; 3"><![CDATA[
         .dgcheck .headings{
             padding-top : 2px;
             height : 15px;
@@ -4803,7 +4803,7 @@
             border-top    : 1px dotted #040404;
         }
     ]]></a:style>
-    <a:style condition="apf.isGecko">
+    <a:style condition="ppc.isGecko">
         .divider-debugpanel div div {
             position : relative;
             left : -1px;
@@ -5521,22 +5521,22 @@
             position : relative;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE6">
+    <a:style condition="ppc.isIE6">
         .frame {
     	    height: 1%;
     	}
     </a:style>
-    <a:style condition="!apf.isIE">
+    <a:style condition="!ppc.isIE">
     	.frame .legend{
     	    margin : 5px 0 2px -3px;
     	}
     </a:style>
-    <a:style condition="apf.isWebkit">
+    <a:style condition="ppc.isWebkit">
     	.frame .legend{
     	    height:15px
     	}
     </a:style>
-    <a:style condition="apf.isIE &gt; 7">
+    <a:style condition="ppc.isIE &gt; 7">
         .frame {
             padding-top : 10px;
         }
@@ -5544,7 +5544,7 @@
     	    margin : -15px 0 2px -3px;
     	}
     </a:style>
-    <a:style condition="apf.isChrome"><![CDATA[
+    <a:style condition="ppc.isChrome"><![CDATA[
         .frame {
             padding-top:4px;
         }
@@ -6472,7 +6472,7 @@
             width: 11px;
         }
     ]]></a:style>
-    <a:style condition="apf.isChrome"><![CDATA[
+    <a:style condition="ppc.isChrome"><![CDATA[
         .dockwin_runbtns {
             margin-top: 4px;
         }
@@ -6480,7 +6480,7 @@
     <a:presentation>
         <a:main container=".">
             <div class="dockwin_runbtns">
-                <div class="dockwin_runbtns-bg" onmousedown="apf.findHost(this).hide()">
+                <div class="dockwin_runbtns-bg" onmousedown="ppc.findHost(this).hide()">
                     <div class="dockwin_runbtns-icon"> </div>
                 </div>
             </div>
@@ -6680,7 +6680,7 @@
             left                : 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isWebkit">
+    <a:style condition="ppc.isWebkit">
         .sbios{
             display : -webkit-box;
         }
@@ -7084,7 +7084,7 @@
             margin      : 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isChrome"><![CDATA[
+    <a:style condition="ppc.isChrome"><![CDATA[
         .winadv .wn_cp_border_t .wn_cp_title {
             height      : 25px;
             padding     : 17px 0 0 6px;
@@ -7931,7 +7931,7 @@
             margin : -3px 0 0 -4px;
         }
     ]]></a:style>
-    <a:style condition="apf.isIE &gt; 7"><![CDATA[
+    <a:style condition="ppc.isIE &gt; 7"><![CDATA[
         .scrollbar .btnup div, .scrollbar .btndown div, .scrollbar .indicator div{
             border: 2px outset white;
         }
@@ -8053,7 +8053,7 @@
             background-position : -18px bottom;
         }
     ]]></a:style>
-    <a:style condition="apf.isWebkit">
+    <a:style condition="ppc.isWebkit">
         .console_scrollbar{
             display : -webkit-box;
         }
@@ -8312,7 +8312,7 @@
             border-right        : 0;
         }
     ]]></a:style>
-    <a:style condition="apf.isOpera"><![CDATA[
+    <a:style condition="ppc.isOpera"><![CDATA[
         .spinner .divfix {
             right : 20px;
         }
@@ -8642,7 +8642,7 @@
             box-shadow: 0 1px 0 0 rgba(0,0,0,.15) inset;
         }
     ]]></a:style>
-    <a:style condition="apf.isSafari || apf.isChrome"><![CDATA[
+    <a:style condition="ppc.isSafari || ppc.isChrome"><![CDATA[
         .c9-dropdown-btn .c9-label {
             padding : 1px 3px 0 7px;
         }
@@ -9475,7 +9475,7 @@
         display : block;
     }
 ]]></a:style>
-<a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+<a:style condition="ppc.isChrome || ppc.isSafari"><![CDATA[
     .tab_console .btncontainer .btntab {
         padding      : 4px 20px 1px 20px;
     }
@@ -9484,7 +9484,7 @@
         padding      : 3px 20px 1px 20px;
     }
 ]]></a:style>
-<a:style condition="apf.isGecko"><![CDATA[
+<a:style condition="ppc.isGecko"><![CDATA[
     .tab_console .btncontainer .btntab {
         float: left;
         min-width: 70px;
@@ -10257,7 +10257,7 @@
         /*background: #F0F0F0 none;*/
     }
 ]]></a:style>
-<a:style condition="apf.isGecko">
+<a:style condition="ppc.isGecko">
     .editor_tab.hidetabs .session_btn:not(.curbtn) {
         top: 0px;
     }
@@ -10282,7 +10282,7 @@
         max-width : 190px;
     }
 </a:style>
-<a:style condition="apf.isWebkit">
+<a:style condition="ppc.isWebkit">
 	/* ------------------------------------------------------------------------------------------
      * Tab shape
      * --------------------------------------------------------------------------------------- */
@@ -10768,7 +10768,7 @@
             display : block;
         }
     ]]></a:style>
-    <a:style condition="apf.isWebkit"><![CDATA[
+    <a:style condition="ppc.isWebkit"><![CDATA[
 
     ]]></a:style>
     <a:presentation>
@@ -11055,7 +11055,7 @@
         }
 
     ]]></a:style>
-    <a:style condition="apf.isWebkit">
+    <a:style condition="ppc.isWebkit">
         .docktab .btncontainer .btntab {
             padding : 2px 2px 3px 2px;
         }
@@ -11127,14 +11127,14 @@
             line-height: 18px;
         }
 
-        .apf_console{
+        .ppc_console{
             border : 1px solid #c3c3c3;
             border-width : 0 1px 0 0;
             font-size : 11px;
             font-family : Monaco,"Courier New",monospace;
         }
 
-        .apf_console .item{
+        .ppc_console .item{
             min-height : 13px;
             padding : 2px 2px 2px 2px;
             line-height : 13px;
@@ -11142,38 +11142,38 @@
             word-wrap : break-word;
         }
 
-        .apf_console .console_time{
+        .ppc_console .console_time{
             background : url(resources/time.png) no-repeat 2px 2px;
         }
 
-        .apf_console .console_log{
+        .ppc_console .console_log{
             color : #eeeeee;
             background : url(resources/bullet_green.png) no-repeat 2px 2px;
         }
 
-        .apf_console .console_custom{
+        .ppc_console .console_custom{
             background : url(resources/bullet_green.png) no-repeat 2px 2px;
         }
 
-        .apf_console .console_warn{
+        .ppc_console .console_warn{
             background : url(resources/error.png) no-repeat 2px 2px;
             color      : green;
         }
 
-        .apf_console .console_error{
+        .ppc_console .console_error{
             background : url(resources/exclamation.png) no-repeat 2px 2px;
             color      : #c93a40;
         }
 
-        .apf_console .console_repeat{
+        .ppc_console .console_repeat{
             background : url(resources/bullet_green.png) no-repeat 2px 2px;
             color      : #909090;
         }
 
-        .apf_console .item a{
+        .ppc_console .item a{
             text-decoration : none;
         }
-        .apf_console .item a:hover{
+        .ppc_console .item a:hover{
             text-decoration : underline;
         }
     ]]></a:style>
@@ -11713,7 +11713,7 @@
             color : #CCC;
         }
     ]]></a:style>
-    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+    <a:style condition="ppc.isChrome || ppc.isSafari"><![CDATA[
         .textbox-modal .sbtb_middle {
             padding: 1px 5px 3px;
         }
@@ -12259,7 +12259,7 @@
             opacity : 0.5;
         }
     ]]></a:style>
-    <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+    <a:style condition="ppc.isChrome || ppc.isSafari"><![CDATA[
         .filemgr-tree .item LABEL .caption {
             height:16px;
         }

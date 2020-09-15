@@ -109,7 +109,7 @@
                 text-shadow : rgba(255, 255, 255, 1) 0px 1px 0px;
             }
         ]]></a:style>
-        <a:style condition="apf.isChrome || apf.isSafari"><![CDATA[
+        <a:style condition="ppc.isChrome || ppc.isSafari"><![CDATA[
             .list-uploadactivity .item .uploadactivity-caption {
                 height  : 17px;
                 padding : 4px 30px 0 0;
@@ -178,7 +178,7 @@
                 color : #bebebe;
             }
         ]]></a:style>
-        <a:style condition="apf.isWebkit"><![CDATA[
+        <a:style condition="ppc.isWebkit"><![CDATA[
             .uploadactivity-switch span {
                 top : -2px;
             }

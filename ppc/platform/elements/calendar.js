@@ -60,15 +60,15 @@
  * @binding value  Determines the way the value for the element is retrieved 
  * from the bound data.
  *
- * @inherits apf.DataAction
+ * @inherits ppc.DataAction
  * 
  * @author      Lukasz Lipinski
  * @version     %I%, %G%
  * @since       1.0
  *
  */
-apf.calendar = function(struct, tagName){
-    this.$init(tagName || "calendar", apf.NODE_VISIBLE, struct);
+ppc.calendar = function(struct, tagName){
+    this.$init(tagName || "calendar", ppc.NODE_VISIBLE, struct);
     
     // *** Properties and Attributes *** //
     this.$calVars = {
@@ -117,10 +117,10 @@ apf.calendar = function(struct, tagName){
 (function() {
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         //#ifdef __WITH_XFORMS
-        //,apf.XForms
+        //,ppc.XForms
         //#endif
     );
 
@@ -174,12 +174,12 @@ apf.calendar = function(struct, tagName){
             return;
         }
 
-        var date = apf.date.getDateTime(value, this.outputFormat);
+        var date = ppc.date.getDateTime(value, this.outputFormat);
 
         //#ifdef __DEBUG
         if (!date || isNaN(date)) {
             return;
-            /*throw new Error(apf.formErrorString(this, "Parsing date",
+            /*throw new Error(ppc.formErrorString(this, "Parsing date",
                 "Invalid date: " + value));*/
         }
         //#endif
@@ -310,22 +310,22 @@ apf.calendar = function(struct, tagName){
     
     this.$getMargin = function(oHtml) {
         return [
-            (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "marginLeft")) || 0),
-            (parseInt(apf.getStyle(oHtml, "marginTop")) || 0)
-            + (parseInt(apf.getStyle(oHtml, "marginBottom")) || 0)
+            (parseInt(ppc.getStyle(oHtml, "marginLeft")) || 0)
+            + (parseInt(ppc.getStyle(oHtml, "marginLeft")) || 0),
+            (parseInt(ppc.getStyle(oHtml, "marginTop")) || 0)
+            + (parseInt(ppc.getStyle(oHtml, "marginBottom")) || 0)
         ];
     };
     
     this.$getFontSize = function(oHtml) {
-        return parseInt(apf.getStyle(oHtml, "fontSize"));
+        return parseInt(ppc.getStyle(oHtml, "fontSize"));
     };
     
     this.$getPadding = function(oHtml) {
-        return [parseInt(apf.getStyle(oHtml, "paddingLeft"))
-            + parseInt(apf.getStyle(oHtml, "paddingRight")),
-            parseInt(apf.getStyle(oHtml, "paddingTop"))
-            + parseInt(apf.getStyle(oHtml, "paddingBottom"))];
+        return [parseInt(ppc.getStyle(oHtml, "paddingLeft"))
+            + parseInt(ppc.getStyle(oHtml, "paddingRight")),
+            parseInt(ppc.getStyle(oHtml, "paddingTop"))
+            + parseInt(ppc.getStyle(oHtml, "paddingBottom"))];
     };
 
     this.$resize = function() {
@@ -363,9 +363,9 @@ apf.calendar = function(struct, tagName){
 
             nextMonthDays = 1,
 
-            ctDiff        = apf.getDiff(this.$ext),
+            ctDiff        = ppc.getDiff(this.$ext),
             _width        = parseInt(this.$ext.offsetWidth || this.$ext.style.width
-                            || apf.getStyle(this.$ext, "width")) - ctDiff[0],
+                            || ppc.getStyle(this.$ext, "width")) - ctDiff[0],
             /* Navigation buttons */
             navi          = this.oNavigation.childNodes;
 
@@ -398,7 +398,7 @@ apf.calendar = function(struct, tagName){
             
         for (var i = 0, z = 0, y = 0; i < rows.length; i++) {
             if ((rows[i].className || "").indexOf("row") > -1) {
-                var rDiff = !c.inited ? apf.getDiff(rows[i]) : c.startDiffs[0];
+                var rDiff = !c.inited ? ppc.getDiff(rows[i]) : c.startDiffs[0];
                 var rDiff2 = !c.inited ? this.$getMargin(rows[i]) : c.startDiffs[1];
                 var rWidth = _width - rDiff[0] - rDiff2[0];
                 
@@ -411,7 +411,7 @@ apf.calendar = function(struct, tagName){
                 var cells = rows[i].childNodes;
                 for (var j = 0, disabledRow = 0; j < cells.length; j++) {
                     if ((cells[j].className || "").indexOf("cell") > -1) {
-                        var cDiff = !c.inited ? apf.getDiff(cells[j]) : c.startDiffs[2],
+                        var cDiff = !c.inited ? ppc.getDiff(cells[j]) : c.startDiffs[2],
                             cDiff2 = !c.inited ? this.$getMargin(cells[j]) : c.startDiffs[3];
 
                         if (!c.inited) {
@@ -532,11 +532,11 @@ apf.calendar = function(struct, tagName){
                         c.days[dayIndex].substr(0, cWidthf < 12
                             ? 1 : (cWidthf < 30 ? 2
                             : 3));
-                    apf.setStyleClass(daysofweek[i], c.days[dayIndex], c.days, true);
+                    ppc.setStyleClass(daysofweek[i], c.days[dayIndex], c.days, true);
                 }
                 else {
                     daysofweek[i].innerHTML = "W";
-                    apf.setStyleClass(daysofweek[i], "weeknumber_column", null, true);
+                    ppc.setStyleClass(daysofweek[i], "weeknumber_column", null, true);
                 }
                 z++;
             }
@@ -663,13 +663,13 @@ apf.calendar = function(struct, tagName){
                         oCell.setAttribute("onmouseover",
                             "if (this.className.indexOf('disabled') > -1 "
                             + "|| this.className.indexOf('active') > -1) "
-                            + "return; apf.lookup(" + this.$uniqueId 
+                            + "return; ppc.lookup(" + this.$uniqueId 
                             + ").$setStyleClass(this, 'hover', null, true);");
                         oCell.setAttribute("onmouseout", 
-                            "var o = apf.lookup(" + this.$uniqueId 
+                            "var o = ppc.lookup(" + this.$uniqueId 
                             + ").$setStyleClass(this, '', ['hover'], true);");
                         oCell.setAttribute("onmousedown", 
-                            "var o = apf.lookup(" + this.$uniqueId + ");"
+                            "var o = ppc.lookup(" + this.$uniqueId + ");"
                             + " if (this.className.indexOf('prev') > -1) { "
                             + "o.selectDay(this, 'prev', true);}"
                             + " else if (this.className.indexOf('next') > -1) {"
@@ -690,12 +690,12 @@ apf.calendar = function(struct, tagName){
                     var btn = oNavigation.appendChild(this.$getLayoutNode("button"));
                     this.$setStyleClass(btn, buttons[i]);
                     if (buttons[i] !== "status")
-                        btn.setAttribute("onmousedown", 'var o = apf.lookup('
+                        btn.setAttribute("onmousedown", 'var o = ppc.lookup('
                                          + this.$uniqueId + '); \
                                             if (!o.disabled) \
                                                 o.' + buttons[i] + '();\
-                                                apf.setStyleClass(this, "down");');
-                        btn.setAttribute("onmouseup", 'apf.setStyleClass(this, "", ["down"]);');
+                                                ppc.setStyleClass(this, "down");');
+                        btn.setAttribute("onmouseup", 'ppc.setStyleClass(this, "", ["down"]);');
                 }
             }
 
@@ -713,9 +713,9 @@ apf.calendar = function(struct, tagName){
         
         
         //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.$ext, "resize", "var o = apf.all[" + this.$uniqueId + "];\
+        ppc.layout.setRules(this.$ext, "resize", "var o = ppc.all[" + this.$uniqueId + "];\
         if (o) o.$resize()", true);
-        apf.layout.queue(this.$ext);
+        ppc.layout.queue(this.$ext);
         //#endif
     };
 
@@ -732,7 +732,7 @@ apf.calendar = function(struct, tagName){
         }
         else {
             var c    = this.$calVars,
-                date = apf.date.getDateTime(c.temp || this.value, this.outputFormat);
+                date = ppc.date.getDateTime(c.temp || this.value, this.outputFormat);
             c.day   = date.getDate();
             c.month = date.getMonth();
             c.year  = date.getFullYear();
@@ -746,8 +746,8 @@ apf.calendar = function(struct, tagName){
     };
     
     this.$destroy = function() {
-        apf.popup.removeContent(this.$uniqueId);
-        apf.destroyHtmlNode(this.$ext);
+        ppc.popup.removeContent(this.$uniqueId);
+        ppc.destroyHtmlNode(this.$ext);
         this.oCalendar = null;
     };
     
@@ -786,7 +786,7 @@ apf.calendar = function(struct, tagName){
         return this.$activeElements;
     }
     //#endif
-}).call(apf.calendar.prototype = new apf.StandardBinding());
+}).call(ppc.calendar.prototype = new ppc.StandardBinding());
 
-apf.aml.setElement("calendar", apf.calendar);
+ppc.aml.setElement("calendar", ppc.calendar);
 // #endif

@@ -7,7 +7,7 @@
       initdelay                 = "false"
       autoHideLoading           = "false"
       storage                   = "cookie"
-      baseurl                   = "{apf.host ? apf.host : ''}"
+      baseurl                   = "{ppc.host ? ppc.host : ''}"
       requested-with-getparam   = "xhr"
       csrf-header                = "{window.cloud9config._csrf}"/>
 

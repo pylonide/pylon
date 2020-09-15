@@ -58,8 +58,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var _self = this;
         ide.addEventListener("init.ext/tree/tree", function(){
             _self.nodes.push(
-                menus.addItemByPath("File/~", new apf.divider(), 350),
-                menus.addItemByPath("File/Upload Local Files...", new apf.item({
+                menus.addItemByPath("File/~", new ppc.divider(), 350),
+                menus.addItemByPath("File/Upload Local Files...", new ppc.item({
                     onclick : function(){
                         ext.initExtension(_self);
                         winUploadFiles.show();
@@ -69,7 +69,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
             mnuCtxTree.addEventListener("afterrender", function(){
                 _self.nodes.push(
-                    mnuCtxTree.insertBefore(new apf.item({
+                    mnuCtxTree.insertBefore(new ppc.item({
                         id : "mnuCtxTreeUpload",
                         match : "[folder]",
                         visible : "{trFiles.selected.getAttribute('type')=='folder'}",
@@ -80,7 +80,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                             winUploadFiles.show();
                         }
                     }), itemCtxTreeNewFile),
-                    mnuCtxTree.insertBefore(new apf.divider({
+                    mnuCtxTree.insertBefore(new ppc.divider({
                         visible : "{mnuCtxTreeUpload.visible}"
                     }), itemCtxTreeNewFile)
                 );
@@ -88,7 +88,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
             if (window.cloud9config.hosted) {
                 _self.nodes.push(
-                    menus.addItemByPath("File/Download Project", new apf.item({
+                    menus.addItemByPath("File/Download Project", new ppc.item({
                         onclick : function(){
                             window.open(ide.apiPrefix + "/project/download");
                         }
@@ -100,7 +100,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
     init : function(){
         var _self = this;
-        apf.importCssString(_self.css);
+        ppc.importCssString(_self.css);
 
         // disabled download project since it doesn't work anymore due to runvm changes
 
@@ -109,11 +109,11 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             this.filebrowser.addEventListener("change", handleFileSelect, false);
 
             // enable webkit folder upload
-            if (apf.isWebkit) {
+            if (ppc.isWebkit) {
                 hboxUploadNoFolders.hide();
                 hboxUploadWithFolders.show();
 
-                apf.setStyleClass(fileUploadSelectBtn.$ext, "uploadWithFolders");
+                ppc.setStyleClass(fileUploadSelectBtn.$ext, "uploadWithFolders");
 
                 this.folderbrowser = folderUploadSelect.$ext;
                 this.folderbrowser.style.display = "block";
@@ -134,13 +134,13 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var list = lstUploadActivity;
         list.$ext.addEventListener("mouseover", function(e) {
             _self.lockHideQueue = true;
-            if (!apf.isChildOf(this, e.relatedTarget)) {
+            if (!ppc.isChildOf(this, e.relatedTarget)) {
                 _self.lockHideQueue = true;
             }
         });
 
         list.$ext.addEventListener("mouseout", function(e) {
-            if (apf.isChildOf(this, e.relatedTarget))
+            if (ppc.isChildOf(this, e.relatedTarget))
                 return;
 
             _self.lockHideQueue = false;
@@ -262,7 +262,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             winNoFolderSupport.show();
 
             // only in Chrome display button to upload dialog with select folder
-            if (!apf.isWebkit)
+            if (!ppc.isWebkit)
                 btnNoFolderSupportOpenDialog.hide();
 
             return false;
@@ -412,25 +412,25 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
     // add file to file tree
     addToFileTree: function(file) {
-        var filename = apf.escapeXML(file.name);
-        var path = apf.escapeXML(file.path) + "/" + filename;
+        var filename = ppc.escapeXML(file.name);
+        var path = ppc.escapeXML(file.path) + "/" + filename;
 
         var treeNode = trFiles.getModel().queryNode("//file[@path=" + util.escapeXpathString(path) + "]");
         if (treeNode)
-            apf.xmldb.removeNode(treeNode);
+            ppc.xmldb.removeNode(treeNode);
 
-        var xmlNode = apf.n("<file />")
+        var xmlNode = ppc.n("<file />")
             .attr("type", "fileupload")
             .attr("name", filename)
             .attr("path", path)
             .node();
 
-        file.treeNode = apf.xmldb.appendChild(file.targetFolder, xmlNode);
+        file.treeNode = ppc.xmldb.appendChild(file.targetFolder, xmlNode);
     },
 
     //add file to upload activity list
     addToQueueList: function(file) {
-        file.queueNode = mdlUploadActivity.appendXml(apf.n("<file />").attr("name", file.name).node());
+        file.queueNode = mdlUploadActivity.appendXml(ppc.n("<file />").attr("name", file.name).node());
     },
 
     removeFromQueue: function(name) {
@@ -439,7 +439,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
             file = this.uploadQueue[i];
             if (file.name == name) {
                 this.uploadQueue.splice(i, 1);
-                apf.xmldb.removeNode(file.queueNode);
+                ppc.xmldb.removeNode(file.queueNode);
                 uploadactivityNumFiles.$ext.innerHTML = "(" + --this.totalNumUploads + ")";
                 break;
             }
@@ -448,8 +448,8 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
     removeCurrentUploadFile: function() {
         var file = this.currentFile;
-        apf.xmldb.removeNode(file.queueNode);
-        //apf.xmldb.removeNode(file.treeNode);
+        ppc.xmldb.removeNode(file.queueNode);
+        //ppc.xmldb.removeNode(file.treeNode);
         if (!mdlUploadActivity.data.childNodes.length) {
             boxUploadActivity.hide();
         }
@@ -460,11 +460,11 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
     clearCompletedUploads: function() {
         var _self = this;
         var completedUploads = mdlUploadActivity.queryNodes("file[@progress='100']");
-        apf.asyncForEach(completedUploads, function(item, next) {
+        ppc.asyncForEach(completedUploads, function(item, next) {
             if (_self.lockHideQueue)
                 return;
             setTimeout(function() {
-                apf.xmldb.removeNode(item);
+                ppc.xmldb.removeNode(item);
                 next();
             }, 200);
         }, function() {
@@ -517,7 +517,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                                 btnUploadOverwriteAll.hide();
                                 btnUploadSkipAll.hide();
                             }
-                            uploadFileExistsMsg.$ext.innerHTML = "\"" + apf.escapeXML(file.name) +
+                            uploadFileExistsMsg.$ext.innerHTML = "\"" + ppc.escapeXML(file.name) +
                                 "\" already exists, do you want to replace it? Replacing it will overwrite its current contents.";
                         }
                     }
@@ -540,7 +540,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                             var currentPath = targetPath;
 
                             var folders = filepath.split("/");
-                            apf.asyncForEach(folders, function(folder, next) {
+                            ppc.asyncForEach(folders, function(folder, next) {
                                 currentPath += "/" + folder;
                                 subfolder = trFiles.getModel().data.selectSingleNode("//folder[@path=" + util.escapeXpathString(currentPath) + "]");
 
@@ -586,7 +586,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                         _self.addToFileTree(file);
 
                         var node = file.queueNode;
-                        apf.xmldb.setAttribute(node, "progress", 0);
+                        ppc.xmldb.setAttribute(node, "progress", 0);
 
                         if (!_self.worker)
                             _self.initWorker();
@@ -612,7 +612,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
                     upload();
                 */
 
-                fs.exists(apf.escapeXML(targetPath + (filepath ? "/" + filepath : "")) + "/" + file.name, checkFileExists);
+                fs.exists(ppc.escapeXML(targetPath + (filepath ? "/" + filepath : "")) + "/" + file.name, checkFileExists);
             }
         }
         // no files in queue, upload completed
@@ -651,7 +651,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var filename = file.name;
         var treeNode = trFiles.getModel().queryNode("//file[@path=" + util.escapeXpathString(path + "/" + filename) + "]");
         if (treeNode)
-            apf.xmldb.removeNode(treeNode);
+            ppc.xmldb.removeNode(treeNode);
 
         fs.remove(treeNode, this.upload);
     },
@@ -669,7 +669,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var total = Math.floor(perc * 100);
         var node = this.currentFile.queueNode;
         var curPerc = node.getAttribute("progress");
-        apf.xmldb.setAttribute(node, "progress", Math.max(total, curPerc));
+        ppc.xmldb.setAttribute(node, "progress", Math.max(total, curPerc));
     },
 
     onComplete: function() {
@@ -680,9 +680,9 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
         var file = this.currentFile;
         //var path = file.targetFolder.getAttribute("path");
         this.totalNumUploads--;
-        apf.xmldb.setAttribute(file.queueNode, "progress", "100");
+        ppc.xmldb.setAttribute(file.queueNode, "progress", "100");
 
-        apf.xmldb.setAttribute(file.treeNode, "type", "file");
+        ppc.xmldb.setAttribute(file.treeNode, "type", "file");
 
         if (_self.openOnUpload) {
             if (file.size < MAX_OPENFILE_SIZE)
@@ -691,7 +691,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
         setTimeout(function() {
             if (!_self.lockHideQueue && file.queueNode)
-                apf.xmldb.removeNode(file.queueNode);
+                ppc.xmldb.removeNode(file.queueNode);
             else
                 _self.lockHideQueueItems.push(file);
         }, 1000);
@@ -735,7 +735,7 @@ module.exports = ext.register("ext/uploadfiles/uploadfiles", {
 
         (davProject.realWebdav || davProject).setAttribute("showhidden", settings.model.queryValue("auto/projecttree/@showhidden"));
         if (this.currentFile.treeNode)
-            apf.xmldb.removeNode(this.currentFile.treeNode);
+            ppc.xmldb.removeNode(this.currentFile.treeNode);
     },
 
     uploadCanceled: function() {

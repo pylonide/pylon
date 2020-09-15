@@ -69,7 +69,7 @@ module.exports = ext.register("ext/formatjson/formatjson", {
         });
         
         this.nodes.push(
-            menus.addItemByPath("Tools/Format JSON", new apf.item({
+            menus.addItemByPath("Tools/Format JSON", new ppc.item({
                 command : "formatjson"
             }), 500)
         );

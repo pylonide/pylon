@@ -35,8 +35,8 @@
  *  icon-path  = "http://icons.example.com" />
  * ```
  *  
- * @class apf.skin
- * @inherits apf.AmlElement
+ * @class ppc.skin
+ * @inherits ppc.AmlElement
  * @define skin
  * @layout
  * @allowchild  style, presentation
@@ -58,10 +58,10 @@
 /**
  * @attribute {String} icon-path  Sets or gets the basepath for the icons used in the elements using this skinset.
  */
-apf.skin = function(struct, tagName){
-    this.$init(tagName || "skin", apf.NODE_HIDDEN, struct);
+ppc.skin = function(struct, tagName){
+    this.$init(tagName || "skin", ppc.NODE_HIDDEN, struct);
 };
-apf.aml.setElement("skin", apf.skin);
+ppc.aml.setElement("skin", ppc.skin);
 
 (function(){
     this.$parsePrio = "002";
@@ -69,17 +69,17 @@ apf.aml.setElement("skin", apf.skin);
     
     this.$propHandlers["src"] = function(value){
         if (value.trim().charAt(0) == "<") {
-            apf.skins.Init(apf.getXml(value), this, this.$path);
+            ppc.skins.Init(ppc.getXml(value), this, this.$path);
             return;
         }
         
-        this.$path = apf.getAbsolutePath(apf.hostPath, value)
+        this.$path = ppc.getAbsolutePath(ppc.hostPath, value)
         getSkin.call(this, this.$path);
     }
     
     this.$propHandlers["name"] = function(value){
         if (!this.src && !this.attributes.getNamedItem("src")) {
-            this.$path = apf.getAbsolutePath(apf.hostPath, value) + "/index.xml";
+            this.$path = ppc.getAbsolutePath(ppc.hostPath, value) + "/index.xml";
             getSkin.call(this, this.$path);
         }
     };
@@ -93,7 +93,7 @@ apf.aml.setElement("skin", apf.skin);
 
         var nodes = xmlNode.ownerDocument.documentElement.attributes;
         for (var found = false, i=0; i<nodes.length; i++) {
-            if (nodes[i].nodeValue == apf.ns.aml) {
+            if (nodes[i].nodeValue == ppc.ns.aml) {
                 found = true;
                 break;
             }
@@ -101,9 +101,9 @@ apf.aml.setElement("skin", apf.skin);
 
         //#ifdef __DEBUG
         if (!found) {
-            throw new Error(apf.formatErrorString(0, null,
+            throw new Error(ppc.formatErrorString(0, null,
                 "Checking for the aml namespace",
-                "The Ajax.org Platform xml namespace was not found in "
+                "The Pylon Platform Code xml namespace was not found in "
                 + (xmlNode.getAttribute("filename")
                     ? "in '" + xmlNode.getAttribute("filename") + "'"
                     : "")));
@@ -116,23 +116,23 @@ apf.aml.setElement("skin", apf.skin);
     function getSkin(path){
         var domParser = this.ownerDocument.$domParser;
         
-        if (!apf.skins.$first)
-            apf.skins.$first = this;
+        if (!ppc.skins.$first)
+            ppc.skins.$first = this;
         
         var defer = this.attributes.getNamedItem("defer");
-        if (!defer || !apf.isTrue(defer.nodeValue)) {
+        if (!defer || !ppc.isTrue(defer.nodeValue)) {
             domParser.$pauseParsing.apply(domParser, 
                 this.$parseContext = domParser.$parseContext || [this.ownerDocument.documentElement]);
         }
         
-        //var basePath = apf.hostPath;//only for recursion: apf.getDirname(xmlNode.getAttribute("filename")) || 
+        //var basePath = ppc.hostPath;//only for recursion: ppc.getDirname(xmlNode.getAttribute("filename")) || 
         loadSkinFile.call(this, path);
         
     }
     
     function finish(xmlNode){
         if (xmlNode)
-            apf.skins.Init(xmlNode, this, this.$path);
+            ppc.skins.Init(xmlNode, this, this.$path);
 
         if (!this.defer) {// && this.$parseContext
             var domParser = this.ownerDocument.$domParser;
@@ -145,39 +145,39 @@ apf.aml.setElement("skin", apf.skin);
         var _self = this;
 
         //#ifdef __DEBUG
-        apf.console.info("Loading include file: " + apf.getAbsolutePath(path, includeNode.getAttribute("src")));
+        ppc.console.info("Loading include file: " + ppc.getAbsolutePath(path, includeNode.getAttribute("src")));
         //#endif
 
         //#ifdef __WITH_DATA
-        apf.getData(
+        ppc.getData(
         /*#else
-        apf.oHttp.get(
+        ppc.oHttp.get(
         #endif */
-          apf.getAbsolutePath(path, includeNode.getAttribute("src")), {
+          ppc.getAbsolutePath(path, includeNode.getAttribute("src")), {
           callback: function(xmlString, state, extra){
-            if (state != apf.SUCCESS) {
-                throw new Error(apf.formatErrorString(0, _self,
+            if (state != ppc.SUCCESS) {
+                throw new Error(ppc.formatErrorString(0, _self,
                     "Loading skin includes",
                     "Could not load skin include: " + extra.url));
             }
 
-            var newPart = apf.getXml(xmlString.substr(0, 8) == "<a:skin "
+            var newPart = ppc.getXml(xmlString.substr(0, 8) == "<a:skin "
                 ? xmlString
                 : '<a:skin xmlns:a="https://github.com/pylonide/pylon">' + xmlString + '</a:skin>');
-            apf.mergeXml(newPart, xmlNode, {beforeNode: includeNode});
+            ppc.mergeXml(newPart, xmlNode, {beforeNode: includeNode});
             includeNode.parentNode.removeChild(includeNode);
             
-            var includeNodes = $xmlns(newPart, "include", apf.ns.aml);
+            var includeNodes = $xmlns(newPart, "include", ppc.ns.aml);
             _self.$includesRemaining += includeNodes.length;
             if (includeNodes.length) {
-                var path = apf.getDirname(extra.url);
+                var path = ppc.getDirname(extra.url);
                 for (var i = 0; i < includeNodes.length; i++) {
                     loadSkinInclude.call(_self, includeNodes[i], xmlNode, path);
                 }
             }
             else if (--_self.$includesRemaining == 0) {
                 // #ifdef __DEBUG
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
+                ppc.console.info("Loading of " + xmlNode[ppc.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
                 // #endif
 
                 finish.call(_self, xmlNode);
@@ -189,22 +189,22 @@ apf.aml.setElement("skin", apf.skin);
     
     function loadSkinFile(path){
         //#ifdef __DEBUG
-        apf.console.info("Loading include file: " + path);
+        ppc.console.info("Loading include file: " + path);
         //#endif
 
         var _self = this;
         //#ifdef __WITH_DATA
-        apf.getData(
+        ppc.getData(
         /*#else
-        apf.oHttp.get(
+        ppc.oHttp.get(
         #endif */
           path, {
           //#ifdef __DEBUG
           type : "skin",
           //#endif
           callback: function(xmlString, state, extra){
-             if (state != apf.SUCCESS) {
-                var oError = new Error(apf.formatErrorString(1007,
+             if (state != ppc.SUCCESS) {
+                var oError = new Error(ppc.formatErrorString(1007,
                     _self, "Loading skin file", "Could not load skin file '"
                     + (path || _self.src)
                     + "'\nReason: " + extra.message));
@@ -214,7 +214,7 @@ apf.aml.setElement("skin", apf.skin);
 
                 //#ifdef __WITH_SKIN_AUTOLOAD
                 if (this.autoload) {
-                    apf.console.warn("Could not autload skin.");
+                    ppc.console.warn("Could not autload skin.");
                     return finish.call(_self);
                 }
                 //#endif
@@ -222,25 +222,25 @@ apf.aml.setElement("skin", apf.skin);
                 throw oError;
             }
 
-            //if (!apf.supportNamespaces)
+            //if (!ppc.supportNamespaces)
             xmlString = xmlString.replace(/\<\!DOCTYPE[^>]*>/, "")
                 .replace(/^[\r\n\s]*/, "") //.replace(/&nbsp;/g, " ")
                 .replace(/xmlns\=\"[^"]*\"/g, "");
             
             if (!xmlString) {
-                throw new Error(apf.formatErrorString(0, _self,
+                throw new Error(ppc.formatErrorString(0, _self,
                     "Loading skin",
                     "Empty skin file. Maybe the file does not exist?", _self));
             }
             
-            var xmlNode = apf.getXml(xmlString);//apf.getAmlDocFromString(xmlString);
+            var xmlNode = ppc.getXml(xmlString);//ppc.getAmlDocFromString(xmlString);
             
             // #ifdef __DEBUG
             checkForAmlNamespace(xmlNode);
             // #endif
             
             if (!xmlNode) {
-                throw new Error(apf.formatErrorString(0, _self,
+                throw new Error(ppc.formatErrorString(0, _self,
                     "Loading skin",
                     "Could not parse skin. Maybe the file does not exist?", _self));
             }
@@ -248,10 +248,10 @@ apf.aml.setElement("skin", apf.skin);
             xmlNode.setAttribute("filename", extra.url);
             
             //#ifdef __WITH_SKIN_INCLUDES
-            var includeNodes = $xmlns(xmlNode, "include", apf.ns.aml);
+            var includeNodes = $xmlns(xmlNode, "include", ppc.ns.aml);
             _self.$includesRemaining += includeNodes.length;
             if (includeNodes.length) {
-                var path = apf.getDirname(extra.url);
+                var path = ppc.getDirname(extra.url);
                 for (var i = 0; i < includeNodes.length; i++) {
                     loadSkinInclude.call(_self, includeNodes[i], xmlNode, path);
                 }
@@ -261,7 +261,7 @@ apf.aml.setElement("skin", apf.skin);
             //#endif
             {
                 // #ifdef __DEBUG
-                apf.console.info("Loading of " + xmlNode[apf.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
+                ppc.console.info("Loading of " + xmlNode[ppc.TAGNAME].toLowerCase() + " skin done from file: " + extra.url);
                 // #endif
                 
                 finish.call(_self, xmlNode);
@@ -277,16 +277,16 @@ apf.aml.setElement("skin", apf.skin);
         if (this.src || this.name)
             return;
         
-        apf.skins.Init(this.$aml || this);
+        ppc.skins.Init(this.$aml || this);
         
         //@todo implied skin
         /*if (this.parentNode && this.parentNode.parentNode) {
             var name = "skin" + Math.round(Math.random() * 100000);
             q.parentNode.setAttribute("skin", name);
-            apf.skins.skins[name] = {name: name, templates: {}};
-            apf.skins.skins[name].templates[q.parentNode[apf.TAGNAME]] = q;
+            ppc.skins.skins[name] = {name: name, templates: {}};
+            ppc.skins.skins[name].templates[q.parentNode[ppc.TAGNAME]] = q;
         }*/
     });
-}).call(apf.skin.prototype = new apf.AmlElement());
+}).call(ppc.skin.prototype = new ppc.AmlElement());
 
 // #endif

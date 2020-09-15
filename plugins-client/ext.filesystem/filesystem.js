@@ -13,7 +13,7 @@ var util = require("core/util");
 var commands = require("ext/commands/commands");
 var editors = require("ext/editors/editors");
 
-require("ext/main/main"); //Make sure apf is inited.
+require("ext/main/main"); //Make sure ppc is inited.
 
 module.exports = ext.register("ext/filesystem/filesystem", {
     name   : "File System",
@@ -25,7 +25,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     createFileNodeFromPath : function (path, attributes) {
         var name = path.split("/").pop();
-        var node = apf.n("<file />")
+        var node = ppc.n("<file />")
             .attr("name", name)
             .attr("contenttype", util.getContentType(name))
             .attr("type", "file")
@@ -44,7 +44,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     createFolderNodeFromPath : function (path, attributes) {
         var name = path.split("/").pop();
-        var node = apf.n("<folder />")
+        var node = ppc.n("<folder />")
             .attr("name", name)
             .attr("path", path)
             .attr("type", "folder");
@@ -85,7 +85,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             return;
 
         this.webdav.write(path, data, null, function(data, state, extra) {
-            if ((state == apf.ERROR && extra.status == 400 && extra.retries < 3) || state == apf.TIMEOUT)
+            if ((state == ppc.ERROR && extra.status == 400 && extra.retries < 3) || state == ppc.TIMEOUT)
                 return extra.tpModule.retry(extra.id);
 
             callback(data, state, extra);
@@ -104,7 +104,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
 
     createFolder: function(name, tree, noRename, callback) {
         if (!tree) {
-            tree = apf.document.activeElement;
+            tree = ppc.document.activeElement;
             if (!tree || tree.localName != "tree")
                 tree = trFiles;
         }
@@ -144,7 +144,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         }
 
                         // parse xml
-                        var nodesInDirXml = apf.getXml(data);
+                        var nodesInDirXml = ppc.getXml(data);
                         // we expect the new created file in the directory listing
                         var fullFolderPath = path + "/" + name;
                         var folder = nodesInDirXml
@@ -163,7 +163,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                             if (!data)
                                 tree.add(folder, node);
 
-                            folder = apf.queryNode(node, "folder[@path="+ util.escapeXpathString(fullFolderPath) +"]");
+                            folder = ppc.queryNode(node, "folder[@path="+ util.escapeXpathString(fullFolderPath) +"]");
 
                             tree.select(folder);
 
@@ -190,7 +190,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         var node;
 
         if (!tree) {
-            tree = apf.document.activeElement;
+            tree = ppc.document.activeElement;
             if (!tree || tree.localName != "tree")
                 tree = trFiles;
         }
@@ -203,7 +203,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 node = node.parentNode;
         }
         else {
-            node = apf.getXml('<file newfile="1" type="file" size="" changed="1" '
+            node = ppc.getXml('<file newfile="1" type="file" size="" changed="1" '
                 + 'name="Untitled.txt" contenttype="text/plain; charset=utf-8" '
                 + 'modifieddate="" creationdate="" lockable="false" hidden="false" '
                 + 'executable="false"></file>');
@@ -235,7 +235,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                         var both = 0;
                         function done(){
                             if (both == 2) {
-                                file = apf.xmldb.appendChild(node, file);
+                                file = ppc.xmldb.appendChild(node, file);
                                 tree.select(file);
                                 tree.startRename();
                                 tree.slideOpen(null, node, true);
@@ -256,7 +256,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                                 }
 
                                 // parse xml
-                                var filesInDirXml = apf.getXml(data);
+                                var filesInDirXml = ppc.getXml(data);
 
                                 // we expect the new created file in the directory listing
                                 var fullFilePath = path + "/" + filename;
@@ -341,7 +341,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         node.setAttribute("oldpath", node.getAttribute("path"));
         node.setAttribute("path", newPath);
         if (isCopyAction || node.getAttribute("name") != name)
-            apf.xmldb.setAttribute(node, "name", name);
+            ppc.xmldb.setAttribute(node, "name", name);
 
         // when this is a copy action, then we don't want this to happen
         if (page && !isCopyAction)
@@ -409,7 +409,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
         // with the filesystem listing data, since the file node has already
         // been removed from this module's model.
         davProject.list(path, function(modelString) {
-            var model = new apf.model();
+            var model = new ppc.model();
             model.load(modelString);
 
             var nodeToRemove = model.queryNode("//node()[@path=" + util.escapeXpathString(path) + "]");
@@ -447,14 +447,14 @@ module.exports = ext.register("ext/filesystem/filesystem", {
             }
         });
 
-        this.model = new apf.model();
+        this.model = new ppc.model();
         this.model.load("<data><folder type='folder' name='" + ide.projectName +
             "' path='" + ide.davPrefix + "' root='1'/></data>");
 
         this.model.setAttribute("whitespace", false);
 
         var dav_url = location.href.replace(location.pathname + location.hash, "") + ide.davPrefix;
-        this.webdav = apf.document.documentElement.appendChild(new apf.webdav({
+        this.webdav = ppc.document.documentElement.appendChild(new ppc.webdav({
             id  : "davProject",
             url : dav_url,
             onauthfailure: function() {
@@ -499,10 +499,10 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                 }, 150);
             }
 
-            apf.xmldb.setAttribute(node, "loading", "true");
+            ppc.xmldb.setAttribute(node, "loading", "true");
             ide.addEventListener("afteropenfile", function(e) {
                 if (e.node == node) {
-                    apf.xmldb.removeAttribute(e.node, "loading");
+                    ppc.xmldb.removeAttribute(e.node, "loading");
                     ide.removeEventListener("afteropenfile", arguments.callee);
                 }
             });
@@ -537,7 +537,7 @@ module.exports = ext.register("ext/filesystem/filesystem", {
                  */
                 var readfileCallback = function(data, state, extra) {
                     // verify if the request succeeded
-                    if (state != apf.SUCCESS) {
+                    if (state != ppc.SUCCESS) {
                         // 404's should give a file not found, but what about others?
                         // for clarity we'll console.log some info; so it'll help us debug it
                         // in case it would happen actually
@@ -576,13 +576,13 @@ module.exports = ext.register("ext/filesystem/filesystem", {
              * the current state of online/offline
              */
             var readfileCallback = function(data, state, extra) {
-                if (state == apf.OFFLINE) {
+                if (state == ppc.OFFLINE) {
                     ide.addEventListener("afteronline", function(e) {
                         fs.readFile(path, readfileCallback);
                         ide.removeEventListener("afteronline", arguments.callee);
                     });
                 }
-                else if (state != apf.SUCCESS) {
+                else if (state != ppc.SUCCESS) {
                     if (extra.status == 404)
                         ide.dispatchEvent("filenotfound", {
                             node : node,

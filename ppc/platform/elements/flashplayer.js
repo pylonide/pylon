@@ -28,7 +28,7 @@
  * @allowchild {smartbinding}
  *
  *
- * @inherits apf.BaseSimple
+ * @inherits ppc.BaseSimple
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -46,16 +46,16 @@
  *  </a:flashplayer>
  * </code>
  */
-apf.flashplayer = function(struct, tagName){
-    this.$init(tagName || "flashplayer", apf.NODE_VISIBLE, struct);
+ppc.flashplayer = function(struct, tagName){
+    this.$init(tagName || "flashplayer", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
     this.implement(
         //#ifdef __WITH_DATAACTION
-        apf.DataAction,
+        ppc.DataAction,
         //#endif
-        apf.StandardBinding
+        ppc.StandardBinding
     );
     
     // *** Public methods *** //
@@ -144,7 +144,7 @@ apf.flashplayer = function(struct, tagName){
     
     this.$loadAml = function(x){
     };
-}).call(apf.flashplayer.prototype = new apf.GuiElement());
+}).call(ppc.flashplayer.prototype = new ppc.GuiElement());
 
-apf.aml.setElement("flashplayer", apf.flashplayer);
+ppc.aml.setElement("flashplayer", ppc.flashplayer);
 // #endif

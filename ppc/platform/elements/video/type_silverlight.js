@@ -34,20 +34,20 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.video.TypeSilverlight = function(oVideo, node, options) {
+ppc.video.TypeSilverlight = function(oVideo, node, options) {
     this.oVideo         = oVideo;
-    if (!apf.video.TypeSilverlight.INITED) {
-        apf.silverlight.startup();
-        apf.video.TypeSilverlight.INITED = true;
+    if (!ppc.video.TypeSilverlight.INITED) {
+        ppc.silverlight.startup();
+        ppc.video.TypeSilverlight.INITED = true;
     }
 
     // #ifndef __PACKAGED
-    this.DEFAULT_PLAYER = (apf.config.resourcePath || apf.basePath) + "elements/video/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = (ppc.config.resourcePath || ppc.basePath) + "elements/video/wmvplayer.xaml";
     /* #else
-    this.DEFAULT_PLAYER = (apf.config.resourcePath || apf.basePath) + "resources/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = (ppc.config.resourcePath || ppc.basePath) + "resources/wmvplayer.xaml";
     #endif */
     /* #ifdef __WITH_CDN
-    this.DEFAULT_PLAYER = apf.CDN + apf.VERSION + "/resources/wmvplayer.xaml";
+    this.DEFAULT_PLAYER = ppc.CDN + ppc.VERSION + "/resources/wmvplayer.xaml";
     #endif */
     this.htmlElement    = node;
     this.options        = {
@@ -90,7 +90,7 @@ apf.video.TypeSilverlight = function(oVideo, node, options) {
         }
     }
 
-    apf.silverlight.createObjectEx({
+    ppc.silverlight.createObjectEx({
         id:            this.oVideo.$uniqueId + "_Player",
         source:        this.DEFAULT_PLAYER,
         parentElement: node,
@@ -104,26 +104,26 @@ apf.video.TypeSilverlight = function(oVideo, node, options) {
         },
         events:        {
             onLoad:  this.onLoadHandler,
-            onError: apf.silverlight.default_error_handler
+            onError: ppc.silverlight.default_error_handler
         },
         context:       this
     });
 
-    //apf.extend(this, apf.video.TypeInterface);
+    //ppc.extend(this, ppc.video.TypeInterface);
     //#ifdef __WITH_LAYOUT
-    apf.layout.setRules(this.oVideo.$ext, this.oVideo.$uniqueId + "_silverlight",
-        "apf.all[" + this.oVideo.$uniqueId + "].player.resizePlayer()");
-    apf.layout.queue(this.oVideo.$ext);
+    ppc.layout.setRules(this.oVideo.$ext, this.oVideo.$uniqueId + "_silverlight",
+        "ppc.all[" + this.oVideo.$uniqueId + "].player.resizePlayer()");
+    ppc.layout.queue(this.oVideo.$ext);
     //#endif
 };
 
-apf.video.TypeSilverlight.isSupported = function(){
-    return apf.silverlight.isAvailable("1.0");
+ppc.video.TypeSilverlight.isSupported = function(){
+    return ppc.silverlight.isAvailable("1.0");
 };
 
-apf.video.TypeSilverlight.INITED = false;
+ppc.video.TypeSilverlight.INITED = false;
 
-apf.video.TypeSilverlight.prototype = {
+ppc.video.TypeSilverlight.prototype = {
     /**
      * Play a WMV movie. Does a call to the XAML Silverlight player to load or
      * load & play the video, depending on the 'autoPlay' flag (TRUE for play).
@@ -369,7 +369,7 @@ apf.video.TypeSilverlight.prototype = {
         var _self = this;
         this.pollTimer = $setTimeout(function() {
             if (_self.oVideo && !_self.oVideo.ready && _self.video.CanSeek)
-                _self.oVideo.setProperty("readyState", apf.Media.HAVE_ENOUGH_DATA);
+                _self.oVideo.setProperty("readyState", ppc.Media.HAVE_ENOUGH_DATA);
             _self.oVideo.$changeHook({
                 type        : "change",
                 playheadTime: Math.round(_self.video.Position.Seconds * 1000)
@@ -449,7 +449,7 @@ apf.video.TypeSilverlight.prototype = {
 
     $destroy: function() {
         //#ifdef __WITH_LAYOUT
-        apf.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_silverlight");
+        ppc.layout.removeRule(this.oVideo.$ext, this.oVideo.$uniqueId + "_silverlight");
         //#endif
         this.stopPlayPoll();
         if (this.player) {

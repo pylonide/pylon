@@ -25,7 +25,7 @@
  * @constructor
  * @private
  */
-apf.AbstractEvent = function(event, win) {
+ppc.AbstractEvent = function(event, win) {
     win = win || window;
     var doc = win.document;
     event = event || win.event;
@@ -41,7 +41,7 @@ apf.AbstractEvent = function(event, win) {
 
     if (this.type.indexOf("key") != -1) {
         this.code = event.which || event.keyCode;
-        /*this.key = apf.AbstractEvent.KEYS.fromCode(this.code);
+        /*this.key = ppc.AbstractEvent.KEYS.fromCode(this.code);
         if (this.type == 'keydown') {
             var fKey = this.code - 111;
             if (fKey > 0 && fKey < 13)
@@ -105,7 +105,7 @@ apf.AbstractEvent = function(event, win) {
     };
 };
 
-apf.AbstractEvent.KEYS = {
+ppc.AbstractEvent.KEYS = {
     'enter'    : 13,
     'up'       : 38,
     'down'     : 40,
@@ -126,8 +126,8 @@ apf.AbstractEvent.KEYS = {
     }
 };
 
-apf.AbstractEvent.stop = function(event) {
-    return (new apf.AbstractEvent(event)).stop();
+ppc.AbstractEvent.stop = function(event) {
+    return (new ppc.AbstractEvent(event)).stop();
 };
 
 // #endif

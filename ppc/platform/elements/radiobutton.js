@@ -27,7 +27,7 @@
  * #### Example: Settings Groups
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <a:table columns="100, 150" cellheight="20">
  *   <!-- startcontent -->
  *     <a:label>Options</a:label> 
@@ -41,12 +41,12 @@
  * </a:application>
  * ```
  *
- * @class apf.radiobutton
+ * @class ppc.radiobutton
  * @define radiobutton
  * @allowchild {smartbinding}
  *
  * @form
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  *
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -80,27 +80,27 @@
  */
 /**
  * @event click Fires when the user presses a mousebutton while over this element and then lets the mousebutton go. 
- * @see apf.AmlNode@afterchange
+ * @see ppc.AmlNode@afterchange
  */
-apf.radiobutton = function(struct, tagName){
-    this.$init(tagName || "radiobutton", apf.NODE_VISIBLE, struct);
+ppc.radiobutton = function(struct, tagName){
+    this.$init(tagName || "radiobutton", ppc.NODE_VISIBLE, struct);
     
-    /*this.$constructor = apf.radiobutton;
-    var fEl = apf.aml.setElement("radiobutton", function(){
-        this.$init(tagName || "radiobutton", apf.NODE_VISIBLE, struct);
+    /*this.$constructor = ppc.radiobutton;
+    var fEl = ppc.aml.setElement("radiobutton", function(){
+        this.$init(tagName || "radiobutton", ppc.NODE_VISIBLE, struct);
     });
-    fEl.prototype = apf.radiobutton.prototype;
-    apf.radiobutton = fEl;*/
+    fEl.prototype = ppc.radiobutton.prototype;
+    ppc.radiobutton = fEl;*/
 };
 
 (function(){
-    this.implement(apf.ChildValue);
+    this.implement(ppc.ChildValue);
     this.$childProperty = "label";
     
-    this.$focussable = apf.KEYBOARD; // This object can get the focus
+    this.$focussable = ppc.KEYBOARD; // This object can get the focus
     
     //1 = force no bind rule, 2 = force bind rule
-    /*this.$attrExcludePropBind = apf.extend({
+    /*this.$attrExcludePropBind = ppc.extend({
         selected: 1
     }, this.$attrExcludePropBind);*/
 
@@ -132,15 +132,15 @@ apf.radiobutton = function(struct, tagName){
         var group = typeof value == "string"
             ?
             //#ifdef __WITH_NAMESERVER
-            apf.nameserver.get("group", value)
+            ppc.nameserver.get("group", value)
             /* #else
             self[value]
             #endif */
             : value;
         if (!group) {
             //#ifdef __WITH_NAMESERVER
-            group = apf.nameserver.register("group", value, 
-                new apf.$group());
+            group = ppc.nameserver.register("group", value, 
+                new ppc.$group());
             group.setAttribute("id", value);
             group.dispatchEvent("DOMNodeInsertedIntoDocument");
             group.parentNode = this;
@@ -167,7 +167,7 @@ apf.radiobutton = function(struct, tagName){
     this.$propHandlers["icon"] = function(value){
         // #ifdef __DEBUG
         if (!this.oIcon)
-            return apf.console.warn("No icon defined in the Button skin", "button");
+            return ppc.console.warn("No icon defined in the Button skin", "button");
         /* #else
         if (!this.oIcon) return;
         #endif */
@@ -177,7 +177,7 @@ apf.radiobutton = function(struct, tagName){
         else
             this.$setStyleClass(this.$ext, "", [this.$baseCSSname + "Icon"]);
 
-        apf.skins.setIcon(this.oIcon, value, this.iconPath);
+        ppc.skins.setIcon(this.oIcon, value, this.iconPath);
     };
 
     /**
@@ -225,7 +225,7 @@ apf.radiobutton = function(struct, tagName){
      * ```xml
      * background="threestates.gif|vertical|3|16"
      * ```
-     * @see apf.BaseButton
+     * @see ppc.BaseButton
      */
     this.$propHandlers["background"] = function(value){
         var oNode = this.$getLayoutNode("main", "background", this.$ext);
@@ -320,7 +320,7 @@ apf.radiobutton = function(struct, tagName){
             if ((e.srcElement || e.target) == this)
                 return;
 
-            apf.setStyleClass(this, _self.$baseCSSname + "Down");
+            ppc.setStyleClass(this, _self.$baseCSSname + "Down");
         }
 
         this.$ext.onmouseover = function(e){
@@ -328,12 +328,12 @@ apf.radiobutton = function(struct, tagName){
             if ((e.srcElement || e.target) == this)
                 return;
 
-            apf.setStyleClass(this, _self.$baseCSSname + "Over");
+            ppc.setStyleClass(this, _self.$baseCSSname + "Over");
         }
 
         this.$ext.onmouseout =
         this.$ext.onmouseup  = function(){
-            apf.setStyleClass(this, "", [_self.$baseCSSname + "Down", _self.$baseCSSname + "Over"]);
+            ppc.setStyleClass(this, "", [_self.$baseCSSname + "Down", _self.$baseCSSname + "Over"]);
         }
     };
 
@@ -468,9 +468,9 @@ apf.radiobutton = function(struct, tagName){
         return this.$activeElements;
     };
     //#endif
-}).call(apf.radiobutton.prototype = new apf.Presentation());
+}).call(ppc.radiobutton.prototype = new ppc.Presentation());
 
-apf.aml.setElement("radiobutton", apf.radiobutton);
+ppc.aml.setElement("radiobutton", ppc.radiobutton);
 
 /**
  * An element that defines groups for radio buttons.
@@ -491,19 +491,19 @@ apf.aml.setElement("radiobutton", apf.radiobutton);
  *  </a:group>
  * ```
  *
- * @class apf.group
+ * @class ppc.group
  * @define group
  */
-apf.$group = apf.group = function(struct, tagName){
-    this.$init(tagName || "group", apf.NODE_VISIBLE, struct);
+ppc.$group = ppc.group = function(struct, tagName){
+    this.$init(tagName || "group", ppc.NODE_VISIBLE, struct);
     
     this.implement(
-        apf.StandardBinding,
+        ppc.StandardBinding,
         //#ifdef __WITH_DATAACTION
-        apf.DataAction
+        ppc.DataAction
         //#endif
         //#ifdef __WITH_XFORMS
-        //,apf.XForms
+        //,ppc.XForms
         //#endif
     );
 
@@ -582,8 +582,8 @@ apf.$group = apf.group = function(struct, tagName){
         this.$ext = this.$int = this.$pHtmlNode;
     };
 };
-apf.$group.prototype = new apf.GuiElement();
+ppc.$group.prototype = new ppc.GuiElement();
 
-apf.aml.setElement("group", apf.$group);
+ppc.aml.setElement("group", ppc.$group);
 
 // #endif

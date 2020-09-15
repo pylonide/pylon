@@ -30,9 +30,9 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
                 menus.addItemByPath("File/Open Recent/", null, 600),
 
             this.divider =
-              menus.addItemByPath("File/Open Recent/~", new apf.divider(), 1000000),
+              menus.addItemByPath("File/Open Recent/~", new ppc.divider(), 1000000),
 
-            menus.addItemByPath("File/Open Recent/Clear Menu", new apf.item({
+            menus.addItemByPath("File/Open Recent/Clear Menu", new ppc.item({
                 onclick : function(){
                     _self.clearMenu();
                 }
@@ -64,7 +64,7 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
             if (!_self.changed)
                 return;
 
-            var xmlSettings = apf.createNodeFromXpath(e.model.data, "auto/recentfiles/text()");
+            var xmlSettings = ppc.createNodeFromXpath(e.model.data, "auto/recentfiles/text()");
 
             var currentSettings = [];
             var nodes = _self.menu.childNodes;
@@ -125,11 +125,11 @@ module.exports = ext.register("ext/recentfiles/recentfiles", {
         }
         else {
             if (def.caption && def.value) {
-                this.menu.insertBefore(new apf.item({
+                this.menu.insertBefore(new ppc.item({
                     caption : def.caption,
                     value   : def.value,
                     onclick : function(){
-                        var node = apf.n("<file/>")
+                        var node = ppc.n("<file/>")
                             .attr("name", def.caption)
                             .attr("path", def.value)
                             .node();

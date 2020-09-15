@@ -47,13 +47,13 @@ module.exports = ext.register("ext/openfiles/openfiles", {
             }
         });
 
-        var model = this.model = new apf.model().load("<files />");
+        var model = this.model = new ppc.model().load("<files />");
 
         ide.addEventListener("openfile", function(e){
             var node = e.doc.getNode();
             if (node) {
                 if (!model.queryNode('//node()[@path=' + util.escapeXpathString(node.getAttribute("path")) + ']')) {
-                    var xmlNode = model.appendXml(apf.getCleanCopy(node));
+                    var xmlNode = model.appendXml(ppc.getCleanCopy(node));
 
                     if (ide.inited && _self.inited && lstOpenFiles.$ext.offsetWidth)
                         _self.animateAdd(xmlNode);
@@ -77,7 +77,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
                   var changed = pgModel.data.getAttribute("changed");
                   if (changed != node.getAttribute("changed"))
-                      apf.xmldb.setAttribute(node, "changed", changed);
+                      ppc.xmldb.setAttribute(node, "changed", changed);
               });
         });
 
@@ -122,7 +122,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 return;
 
             if (node.getAttribute("customtype") == util.getContentType("c9search")) {
-                apf.xmldb.setAttribute(node, "changed", 0);
+                ppc.xmldb.setAttribute(node, "changed", 0);
                 return;
             }
 
@@ -134,30 +134,30 @@ module.exports = ext.register("ext/openfiles/openfiles", {
                 var trNode = trFiles.queryNode('//node()[@path=' + path + ']');
             if (node && fNode) {
                 if (e.path) {
-                    apf.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
-                    trNode && apf.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
+                    ppc.xmldb.setAttribute(fNode, "path", node.getAttribute("path"));
+                    trNode && ppc.xmldb.setAttribute(trNode, "path", node.getAttribute("path"));
                 }
                 if (e.newPath) {
-                    apf.xmldb.setAttribute(fNode, "path", e.newPath);
-                    trNode && apf.xmldb.setAttribute(trNode, "path", e.newPath);
+                    ppc.xmldb.setAttribute(fNode, "path", e.newPath);
+                    trNode && ppc.xmldb.setAttribute(trNode, "path", e.newPath);
                 }
                 if (e.filename)
-                    apf.xmldb.setAttribute(fNode, "name", apf.getFilename(e.filename));
+                    ppc.xmldb.setAttribute(fNode, "name", ppc.getFilename(e.filename));
                 if (e.changed != undefined)
-                    apf.xmldb.setAttribute(fNode, "changed", e.changed);
+                    ppc.xmldb.setAttribute(fNode, "changed", e.changed);
             }
         });
     },
 
     animateAdd : function(xmlNode){
-        if (!apf.isTrue(settings.model.queryValue("general/@animateui")))
+        if (!ppc.isTrue(settings.model.queryValue("general/@animateui")))
             return;
 
-        var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
+        var htmlNode = ppc.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
 
         htmlNode.style.overflow = "hidden";
-        apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
-            {type: "left", to:0, from: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
+        ppc.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
+            {type: "left", to:0, from: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: ppc.tween.NORMAL}
         ], onfinish: function(){
 
         }});
@@ -166,12 +166,12 @@ module.exports = ext.register("ext/openfiles/openfiles", {
     animateRemove : function(xmlNode){
         var _self = this;
 
-        if (apf.isTrue(settings.model.queryValue("general/@animateui"))) {
-            var htmlNode = apf.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
+        if (ppc.isTrue(settings.model.queryValue("general/@animateui"))) {
+            var htmlNode = ppc.xmldb.findHtmlNode(xmlNode, lstOpenFiles);
                 htmlNode.style.overflow = "hidden";
 
-            apf.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
-                {type: "left", from:0, to: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: apf.tween.NORMAL}
+            ppc.tween.multi(htmlNode, {steps: 10, interval: 10, tweens: [
+                {type: "left", from:0, to: -1 * htmlNode.offsetWidth, steps: 10, interval: 10, anim: ppc.tween.NORMAL}
             ], onfinish: function(){
                 htmlNode.style.display = "none";
                 _self.model.removeXml(xmlNode);
@@ -208,7 +208,7 @@ module.exports = ext.register("ext/openfiles/openfiles", {
 
         lstOpenFiles.addEventListener("click", function(e){
             if (e.htmlEvent.target.tagName == "SPAN") {
-                var xmlNode = apf.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
+                var xmlNode = ppc.xmldb.findXmlNode(e.htmlEvent.target.parentNode.parentNode);
                 var page = tabEditors.getPage(xmlNode.getAttribute("path"));
                 editors.close(page);
             }

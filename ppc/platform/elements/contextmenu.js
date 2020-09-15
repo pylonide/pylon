@@ -32,7 +32,7 @@
  * shown.
  *
  * ```xml, demo
- *  <a:application xmlns:a="http://ajax.org/2005/aml">
+ *  <a:application xmlns:a="https://github.com/pylonide/pylon">
  *   <!-- startcontent -->
  *   <a:menu id="ctxMenu">
  *       <a:item>Choice 1!</a:item>
@@ -49,9 +49,9 @@
  *  </a:application>
  * ```
  *
- * @class apf.contextmenu
+ * @class ppc.contextmenu
  * @define contextmenu
- * @inherits apf.AmlElement
+ * @inherits ppc.AmlElement
  * @selection
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
@@ -65,15 +65,15 @@
  *
  * 
  */
-apf.contextmenu = function(){
-    this.$init("contextmenu", apf.NODE_HIDDEN);
+ppc.contextmenu = function(){
+    this.$init("contextmenu", ppc.NODE_HIDDEN);
 };
 
 (function(){
     this.$amlNodes = [];
     
     //1 = force no bind rule, 2 = force bind rule
-    this.$attrExcludePropBind = apf.extend({
+    this.$attrExcludePropBind = ppc.extend({
         "match" : 1
     }, this.$attrExcludePropBind);
     
@@ -90,8 +90,8 @@ apf.contextmenu = function(){
     this.addEventListener("DOMNodeInsertedIntoDocument", function(e){
         this.register(this.parentNode);
     });
-}).call(apf.contextmenu.prototype = new apf.AmlElement());
+}).call(ppc.contextmenu.prototype = new ppc.AmlElement());
 
-apf.aml.setElement("contextmenu", apf.contextmenu);
+ppc.aml.setElement("contextmenu", ppc.contextmenu);
 
 // #endif

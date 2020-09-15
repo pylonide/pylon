@@ -23,8 +23,8 @@
 /**
  * Specifies the exact number of characters or list items allowed. Must be equal to or greater than zero
  */
-apf.XsdLength = function(struct, tagName){
-    this.$init(tagName || "length", apf.NODE_HIDDEN, struct);
+ppc.XsdLength = function(struct, tagName){
+    this.$init(tagName || "length", ppc.NODE_HIDDEN, struct);
 };
 
 (function(){
@@ -35,7 +35,7 @@ apf.XsdLength = function(struct, tagName){
     this.$compile = function(stack){
         stack.push("if (value.length != " + this.value + ") return false;");
     };
-}).call(apf.XsdLength.prototype = new apf.XsdElement());
+}).call(ppc.XsdLength.prototype = new ppc.XsdElement());
 
-apf.xsd.setElement("length", apf.XsdLength);
+ppc.xsd.setElement("length", ppc.XsdLength);
 //#endif

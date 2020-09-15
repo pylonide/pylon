@@ -62,11 +62,11 @@ img.openid {
 body{
 }
 
-.apf_page{
+.ppc_page{
     min-height : 600px;
 }
 
-.apf_page_content{
+.ppc_page_content{
     min-height : 515px;
 }
 
@@ -361,7 +361,7 @@ table.form th{
     font-size : 8pt;
 }
 
-.apf_articles .inheritance a,
+.ppc_articles .inheritance a,
 .inheritance a{
     font-size : 8pt;
 }
@@ -492,17 +492,17 @@ body .dochome h1{
 }
 
 /* alterations to the standard Ajax.org styles - they only apply when embedded inside Ajax.org */
-.apf_articles .apf_caption {
+.ppc_articles .ppc_caption {
     padding-top: 1px;
     padding-left: 10px;
 }
 
-.apf_articles .apf_caption span {
+.ppc_articles .ppc_caption span {
     margin-top: 0pt;
     margin-right: -10px;
 }
 
-.apf_articles .apf_caption h1 {
+.ppc_articles .ppc_caption h1 {
     display: none;
 }
 
@@ -517,7 +517,7 @@ h1.hdownload a:hover{
     color: #ffa811;
 }
 
-.apf_articles .line{
+.ppc_articles .line{
     position : absolute;
     color : #AAA;
     text-decoration : none;
@@ -526,16 +526,16 @@ h1.hdownload a:hover{
     margin-top : -5px;
 }
 
-.apf_articles .line:hover{
+.ppc_articles .line:hover{
     color :  #1063c0;
 }
 
-body .column_left .apf_democol{
+body .column_left .ppc_democol{
     padding : 0 5px 5px 5px;
     width : 239px;
 }
 
-body .column_left .apf_refcol{
+body .column_left .ppc_refcol{
     padding : 0 5px 5px 5px;
     width : 239px;
 }
@@ -626,7 +626,7 @@ table.figure1 td.blue {
     background-color:#4062ad;
 }
 
-div.infoAPF {
+div.infoPPC {
     font-family: Arial, Helvetica, sans-serif, Tahoma, Verdana;
     font-size : 13px;
     color : #ffffff;
@@ -636,13 +636,13 @@ div.infoAPF {
     margin-top : 34px;
 }
 
-div.infoAPF img {
+div.infoPPC img {
 	clear : both;
 	margin-top : 15px;
 	margin-bottom : 15px;
 }
 
-div.infoAPF p{
+div.infoPPC p{
     margin : 0 0 10px 0;
     width : 270px;
     line-height : 1.5em;
@@ -650,7 +650,7 @@ div.infoAPF p{
     color : #ffffff;
 }
 
-div.infoAPF p span{
+div.infoPPC p span{
     font-weight : bold;
 }
 div.demoarea p span{
@@ -672,32 +672,32 @@ div.demoarea p span{
     font-size : 10px;
 }
 
-div.infoAPF .moreinfo{
+div.infoPPC .moreinfo{
     margin : 0;
     padding: 0;
 }
-div.infoAPF .moreinfo li{
+div.infoPPC .moreinfo li{
     list-style-type: none;
     color : #ffffff;
     font-size : 12px;
     font-weight : bold;
     line-height : 1.7em;
 }
-div.infoAPF .moreinfo a{
+div.infoPPC .moreinfo a{
     color : #ffffff;
     font-size : 12px;
     font-weight : bold;
     line-height : 1.7em;
 }
-div.infoAPF .moreinfo a:hover{
+div.infoPPC .moreinfo a:hover{
     color: #ffc156;
 }
-div.infoAPF .moreinfo a span{
+div.infoPPC .moreinfo a span{
     font-size : 9px;
     font-weight : normal;
 }
 
-div.infoAPF  a.aMoreInfo {
+div.infoPPC  a.aMoreInfo {
     font-size : 8px;
     color : #ffffff;
 }

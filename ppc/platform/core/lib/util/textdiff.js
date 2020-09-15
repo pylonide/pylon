@@ -31,7 +31,7 @@
  * Class containing the diff, match and patch methods.
  * @constructor
  */
-apf.diff_match_patch = new (function() {
+ppc.diff_match_patch = new (function() {
 
     // Defaults.
     // Redefine these in your program to override the defaults.

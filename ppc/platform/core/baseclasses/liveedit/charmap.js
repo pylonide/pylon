@@ -21,14 +21,14 @@
 
 // #ifdef __ENABLE_EDITOR_CHARMAP || __INC_ALL
 
-apf.LiveEdit.plugin("charmap", function() {
+ppc.LiveEdit.plugin("charmap", function() {
     this.name        = "charmap";
     this.icon        = "charmap";
-    this.type        = apf.TOOLBARITEM;
-    this.subType     = apf.TOOLBARPANEL;
+    this.type        = ppc.TOOLBARITEM;
+    this.subType     = ppc.TOOLBARPANEL;
     this.hook        = "ontoolbar";
     this.buttonNode  = null;
-    this.state       = apf.OFF;
+    this.state       = ppc.OFF;
     this.colspan     = 20;
 
     var panelBody;
@@ -43,12 +43,12 @@ apf.LiveEdit.plugin("charmap", function() {
     this.execute = function(editor) {
         if (!panelBody) {
             this.editor = editor;
-            apf.popup.setContent(this.$uniqueId, this.createPanelBody());
+            ppc.popup.setContent(this.$uniqueId, this.createPanelBody());
         }
 
         editor.dispatchEvent("pluginexecute", {name: this.name, plugin: this});
 
-        this.editor.$showPopup(this, this.$uniqueId, this.buttonNode, apf.isIE6 ? 469 : 466, 318);
+        this.editor.$showPopup(this, this.$uniqueId, this.buttonNode, ppc.isIE6 ? 469 : 466, 318);
         //return button id, icon and action:
         return {
             id: this.name,
@@ -104,7 +104,7 @@ apf.LiveEdit.plugin("charmap", function() {
             el = el.parentNode;
         var sCode = el.getAttribute("rel");
         if (sCode) {
-            apf.popup.forceHide();
+            ppc.popup.forceHide();
             //this.storeSelection();
             this.editor.$insertHtml(sCode, true);
             var _self = this;
@@ -129,7 +129,7 @@ apf.LiveEdit.plugin("charmap", function() {
             if (i % this.colspan == 0)
                 aHtml.push('<div class="editor_panelrow">');
             aHtml.push('<a class="editor_panelcell editor_largecell" style="background-color:#',
-                chars[i], ';" rel="', chars[i], '" href="javascript:;" onmousedown="apf.lookup(',
+                chars[i], ';" rel="', chars[i], '" href="javascript:;" onmousedown="ppc.lookup(',
                 this.$uniqueId, ').submit(event);">\
                 <span>', chars[i],"</span>\
                 </a>");

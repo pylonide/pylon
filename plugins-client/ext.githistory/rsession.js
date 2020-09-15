@@ -66,7 +66,7 @@ module.exports = (function() {
         },
 
         getLogDataXml : function() {
-            return apf.getXml(this.arrCommits2Xml(this.logData, "commit"));
+            return ppc.getXml(this.arrCommits2Xml(this.logData, "commit"));
         },
 
         setFirstGitShow : function(firstShow) {
@@ -103,15 +103,15 @@ module.exports = (function() {
                 attrMessage;
 
             for (var i = 0, len = arr.length; i < len; i++) {
-                attrMessage = apf.xmlentities(apf.htmlentities(arr[i].messageJoinedLower));
+                attrMessage = ppc.xmlentities(ppc.htmlentities(arr[i].messageJoinedLower));
                 attrMessage = attrMessage.replace(/(\r\n|\r|\n)/gm, " ").replace(/"/g, "&quot;");
                 out.push("<", elName, " ",
                     'hash="', arr[i].commitLower, '" ',
                     'parenthash="', arr[i].parentLower, '" ',
                     'treehash="', arr[i].treeLower, '" ',
-                    'authoremail="', apf.htmlentities(arr[i].author.email), '" ',
+                    'authoremail="', ppc.htmlentities(arr[i].author.email), '" ',
                     'authorname="', arr[i].author.fullName, '" ',
-                    'committeremail="', apf.htmlentities(arr[i].committer.email), '" ',
+                    'committeremail="', ppc.htmlentities(arr[i].committer.email), '" ',
                     'committername="', arr[i].committer.fullName, '" ',
                     'timestamp="', arr[i].committer.timestamp, '" ',
                     'message="', attrMessage, '" ',

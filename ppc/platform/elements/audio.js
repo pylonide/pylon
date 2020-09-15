@@ -35,7 +35,7 @@
  * 
  * @return {Audio} Returns a new audio
  * @type {Audio}
- * @inherits apf.Media
+ * @inherits ppc.Media
  * @constructor
  * @allowchild {text}
  *
@@ -46,8 +46,8 @@
  * @version     %I%, %G%
  * @since       1.0
  */
-apf.audio = function(struct, tagName){
-    this.$init(tagName || "audio", apf.NODE_VISIBLE, struct);
+ppc.audio = function(struct, tagName){
+    this.$init(tagName || "audio", ppc.NODE_VISIBLE, struct);
 };
 
 (function() {
@@ -65,7 +65,7 @@ apf.audio = function(struct, tagName){
         if (!this.player) return this;
 
         this.setProperty("currentSrc",   this.src);
-        this.setProperty("networkState", apf.Media.NETWORK_LOADING);
+        this.setProperty("networkState", ppc.Media.NETWORK_LOADING);
         this.player.load(this.src);
         return this;
     };
@@ -102,7 +102,7 @@ apf.audio = function(struct, tagName){
         // make a best-guess, based on the extension of the src attribute (file name)
         var ext  = path.substr(path.lastIndexOf(".") + 1),
             type = "";
-        if (apf.hasAudio && ((ext == "ogg" || ext == "wav") || (ext == "mp3" && apf.isWebkit)))
+        if (ppc.hasAudio && ((ext == "ogg" || ext == "wav") || (ext == "mp3" && ppc.isWebkit)))
             type = "audio/ogg";
         else if (ext == "mp3")
             type = "audio/flash";
@@ -134,7 +134,7 @@ apf.audio = function(struct, tagName){
             else if (mimeType.indexOf("quicktime") > -1)
                 playerType = "TypeQT";
             else if (mimeType.indexOf("wmv") > -1)
-                playerType = apf.isMac ? "TypeQT" : "TypeWmp";
+                playerType = ppc.isMac ? "TypeQT" : "TypeWmp";
             else if (mimeType.indexOf("silverlight") > -1)
                 playerType = "TypeSilverlight";
 
@@ -146,15 +146,15 @@ apf.audio = function(struct, tagName){
     };
 
     /**
-     * Checks if a specified playerType is supported by APF or not...
+     * Checks if a specified playerType is supported by PPC or not...
      *
      * @param {String} [playerType]
      * @type {Boolean}
      */
     this.$isSupported = function(playerType) {
         playerType = playerType || this.playerType;
-        return (apf.audio[playerType]
-            && apf.audio[playerType].isSupported());
+        return (ppc.audio[playerType]
+            && ppc.audio[playerType].isSupported());
     };
 
     /**
@@ -163,7 +163,7 @@ apf.audio = function(struct, tagName){
      * @type {Object}
      */
     this.$initPlayer = function() {
-        this.player = new apf.audio[this.playerType](this, this.$ext, {
+        this.player = new ppc.audio[this.playerType](this, this.$ext, {
             src         : this.src,
             width       : this.width,
             height      : this.height,
@@ -225,8 +225,8 @@ apf.audio = function(struct, tagName){
      * @type {void}
      */
     this.$errorHook = function(e) {
-        apf.console.log("Error: <audio>");
-        apf.console.error(e.error);
+        ppc.console.log("Error: <audio>");
+        ppc.console.error(e.error);
     };
 
     /**
@@ -243,7 +243,7 @@ apf.audio = function(struct, tagName){
         this.setProperty("totalBytes", e.totalBytes);
         var iDiff = Math.abs(e.bytesLoaded - e.totalBytes);
         if (iDiff <= 20)
-            this.setProperty("readyState", apf.Media.HAVE_ENOUGH_DATA);
+            this.setProperty("readyState", ppc.Media.HAVE_ENOUGH_DATA);
     };
 
     /**
@@ -257,7 +257,7 @@ apf.audio = function(struct, tagName){
     this.$stateChangeHook = function(e) {
         //for audio, we only use this for connection errors: connectionError
         if (e.state == "connectionError") {
-            this.networkState = apf.Media.HAVE_NOTHING;
+            this.networkState = ppc.Media.HAVE_NOTHING;
             //this.setProperty("readyState", this.networkState);
             this.$propHandlers["readyState"].call(this, this.networkState);
         }
@@ -306,8 +306,8 @@ apf.audio = function(struct, tagName){
      * @type {Object}
      */
     this.$readyHook = function(e) {
-        this.setProperty("networkState", apf.Media.NETWORK_LOADED);
-        this.setProperty("readyState",   apf.Media.HAVE_FUTURE_DATA);
+        this.setProperty("networkState", ppc.Media.NETWORK_LOADED);
+        this.setProperty("readyState",   ppc.Media.HAVE_FUTURE_DATA);
         this.setProperty("duration",     this.player.getTotalTime());
         this.seeking  = false;
         this.seekable = true;
@@ -325,7 +325,7 @@ apf.audio = function(struct, tagName){
      * @type {void}
      */
     this.$metadataHook = function(e) {
-        this.oVideo.setProperty("readyState", apf.Media.HAVE_METADATA);
+        this.oVideo.setProperty("readyState", ppc.Media.HAVE_METADATA);
         if (e.waveData)
             this.setProperty("waveform", e.waveData);
         if (e.peakData)
@@ -343,7 +343,7 @@ apf.audio = function(struct, tagName){
      */
     this.$draw = function(){
         this.$ext = this.$pHtmlNode.appendChild(document.createElement("div"));
-        this.$ext.className = "apf_audio " + (this.getAttributeNode("class") || "");
+        this.$ext.className = "ppc_audio " + (this.getAttributeNode("class") || "");
         this.$ext;
     };
 
@@ -367,11 +367,11 @@ apf.audio = function(struct, tagName){
         if (bRuntime)
             this.$ext.innerHTML = "";
     };
-}).call(apf.audio.prototype = new apf.Media());
+}).call(ppc.audio.prototype = new ppc.Media());
 
-apf.aml.setElement("audio", apf.audio);
+ppc.aml.setElement("audio", ppc.audio);
 
-apf.audio.TypeInterface = {
+ppc.audio.TypeInterface = {
     properties: ["src", "volume", "showControls", "autoPlay", "totalTime", "mimeType"],
 
     /**
@@ -400,7 +400,7 @@ apf.audio.TypeInterface = {
      * @type {HTMLDomElement}
      */
     getElement: function(id) {
-        return apf.flash.getElement(id);
+        return ppc.flash.getElement(id);
     }
 };
 

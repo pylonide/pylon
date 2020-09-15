@@ -28,25 +28,25 @@
  * @version     %I%, %G%
  * @since       3.0
  * @classDescription This class intantiates a new XMPP RDB object
- * @return {apf.xmpp_rdb} A new XMPP RDB object
+ * @return {ppc.xmpp_rdb} A new XMPP RDB object
  * @type {Object}
  * @constructor
  */
-apf.xmpp_rdb = function(){
+ppc.xmpp_rdb = function(){
     var _self     = this,
         rdbVars   = {"SID":0},
         docQueue  = [],
         syncQueue = [],
         // keep reference to access class constants in function scope chain
-        oXmpp     = apf.xmpp,
+        oXmpp     = ppc.xmpp,
         // munge often-used strings
         SID       = "SID",
         JID       = "JID",
         CONN      = "connected";
-    this.$rdbRoster = new apf.xmpp_roster(this["rdb-model"], {rdb: true}, this.resource);
+    this.$rdbRoster = new ppc.xmpp_roster(this["rdb-model"], {rdb: true}, this.resource);
 
     /*
-     * Wrapper function for apf.xmpp.$doXmlRequest. Since all RDB request are
+     * Wrapper function for ppc.xmpp.$doXmlRequest. Since all RDB request are
      * asynchronous - responses to each call return via the message poll/ push -
      * the only variable left for each request is the text body.
      *
@@ -148,7 +148,7 @@ apf.xmpp_rdb = function(){
                         from     : sJID,
                         sid      : cmd.getAttribute("sid"),
                         command  : cmd.firstChild.nodeValue,
-                        data     : apf.serializeChildren(oNode.getElementsByTagName("data")[0])
+                        data     : ppc.serializeChildren(oNode.getElementsByTagName("data")[0])
                     });
                 }
                 else if (sDoc) {
@@ -203,7 +203,7 @@ apf.xmpp_rdb = function(){
                     fields   : {
                         session  : {value: sDoc},
                         baseline : {value: aBaseline.length ? aBaseline[0].firstChild.nodeValue : ""},
-                        modeldata: {value: aData.length     ? this.$decodeCDATA(apf.serializeChildren(aData[0])) : ""}
+                        modeldata: {value: aData.length     ? this.$decodeCDATA(ppc.serializeChildren(aData[0])) : ""}
                     }
                 });
             }
@@ -220,14 +220,14 @@ apf.xmpp_rdb = function(){
                     status = parseInt(oNode.getElementsByTagName("status")[0].firstChild.nodeValue) || 500;
                 cb = rdbVars["doc_cb_rpc_" + sid];
                 if (cb) {
-                    var state = apf.SUCCESS,
-                        oData = JSON.parse(apf.serializeChildren(oNode.getElementsByTagName("data")[0]) || "{}");
+                    var state = ppc.SUCCESS,
+                        oData = JSON.parse(ppc.serializeChildren(oNode.getElementsByTagName("data")[0]) || "{}");
                     // RDB-RPC works with HTTP status codes:
                     if (status >= 400 && status < 600 || status < 10 && status != 0) {
                         //#ifdef __WITH_AUTH
                         /*@todo This should probably have an RPC specific handler
                         if (status == 401) {
-                            var auth = apf.document.getElementsByTagNameNS(apf.ns.apf, "auth")[0];
+                            var auth = ppc.document.getElementsByTagNameNS(ppc.ns.ppc, "auth")[0];
                             if (auth) {
                                 var wasDelayed = qItem.isAuthDelayed;
                                 qItem.isAuthDelayed = true;
@@ -236,9 +236,9 @@ apf.xmpp_rdb = function(){
                             }
                         }
                         //#endif*/
-                        state = apf.ERROR;
+                        state = ppc.ERROR;
                         //#ifdef __DEBUG
-                        apf.console.error("We received the following from the server: "
+                        ppc.console.error("We received the following from the server: "
                             + status + (oData.message ? ", with message '" + oData.message + "'" : ""), "rdb");
                         //#endif
                     }
@@ -420,7 +420,7 @@ apf.xmpp_rdb = function(){
 
     this.startRDB = function(sSession, fCallback) {
         if (!sSession)
-            throw new Error(apf.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
+            throw new Error(ppc.formatErrorString(0, this, "Initiating RDB session", "Invalid model provided."));
         var sDoc  = this.$rdbRoster.sanitizeJID(sSession + "@" + this["rdb-host"]),
             _self = this,
             f     = function() {
@@ -454,7 +454,7 @@ apf.xmpp_rdb = function(){
 
     this.endRDB = function(sSession) {
         if (!sSession)
-            throw new Error(apf.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
+            throw new Error(ppc.formatErrorString(0, this, "Ending RDB session", "Invalid model provided."));
         if (this["rdb-bot"]) {
             if (!rdbVars["bot_started"] || rdbVars["bot_timer2"]) return;
             var _self = this;
@@ -536,23 +536,23 @@ apf.xmpp_rdb = function(){
         doRequest(this.$createPresenceBlock({
                 from  : this.$serverVars[JID],
                 to    : sDomain,
-                type  : apf.xmpp.TYPE_UNAVAILABLE
+                type  : ppc.xmpp.TYPE_UNAVAILABLE
             })
         );
     };
 };
 
-apf.xmpp_rdb.DOC_CREATE    = 1;
-apf.xmpp_rdb.DOC_EXISTS    = 2;
-apf.xmpp_rdb.DOC_NOTFOUND  = 3;
-apf.xmpp_rdb.DOC_JOINED    = 4;
-apf.xmpp_rdb.DOC_LEFT      = 5;
-apf.xmpp_rdb.DOC_RDB       = 6;
+ppc.xmpp_rdb.DOC_CREATE    = 1;
+ppc.xmpp_rdb.DOC_EXISTS    = 2;
+ppc.xmpp_rdb.DOC_NOTFOUND  = 3;
+ppc.xmpp_rdb.DOC_JOINED    = 4;
+ppc.xmpp_rdb.DOC_LEFT      = 5;
+ppc.xmpp_rdb.DOC_RDB       = 6;
 
-apf.xmpp_rdb.ACTION_SUBJECT = 0x0001;
-apf.xmpp_rdb.ACTION_KICK    = 0x0002;
-apf.xmpp_rdb.ACTION_BAN     = 0x0004;
-apf.xmpp_rdb.ACTION_GRANT   = 0x0008;
-apf.xmpp_rdb.ACTION_REVOKE  = 0x0010;
+ppc.xmpp_rdb.ACTION_SUBJECT = 0x0001;
+ppc.xmpp_rdb.ACTION_KICK    = 0x0002;
+ppc.xmpp_rdb.ACTION_BAN     = 0x0004;
+ppc.xmpp_rdb.ACTION_GRANT   = 0x0008;
+ppc.xmpp_rdb.ACTION_REVOKE  = 0x0010;
 
 // #endif

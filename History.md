@@ -1,3 +1,17 @@
+v2.6.0
+======
+* APF usage deprecated #93
+* Cutting the support of the following old Node.js versions #122:
+    * v4, v5, v6, v7, v8, v9)
+* Node.JS v10 required going forward
+* Upgrade to ACE v1.4.12
+* Notable dependency upgrades:
+    * Engine.io v4.0.0
+    * xterm v4.9.0
+* New @pylonide scoped dependencies:
+    * @pylonide/vfs-architect
+    * @pylonide/vfs-nodefs-adapter
+
 v2.5.0
 ======
 * Dark themed file browser, ui enhancements

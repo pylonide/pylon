@@ -34,7 +34,7 @@
  * @since       1.0
  */
 
-apf.video.TypeNative = function(oVideo, oNode, options) {
+ppc.video.TypeNative = function(oVideo, oNode, options) {
     this.oVideo = oVideo;
 
     this.inited = false;
@@ -50,16 +50,16 @@ apf.video.TypeNative = function(oVideo, oNode, options) {
 
     // Initialize player
     this.player       = null;
-    apf.extend(this, apf.video.TypeInterface);
+    ppc.extend(this, ppc.video.TypeInterface);
 
     this.setOptions(options).createPlayer();
 };
 
-apf.video.TypeNative.isSupported = function() {
-    return apf.hasVideo;
+ppc.video.TypeNative.isSupported = function() {
+    return ppc.hasVideo;
 };
 
-apf.video.TypeNative.prototype = {
+ppc.video.TypeNative.prototype = {
     /**
      * Load an video file.
      *
@@ -243,7 +243,7 @@ apf.video.TypeNative.prototype = {
                 break;
             case "init":
                 this.inited = true;
-                this.oVideo.$initHook(apf.extend(evtObj, apf.flash.getSandbox(evtObj.sandboxType)));
+                this.oVideo.$initHook(ppc.extend(evtObj, ppc.flash.getSandbox(evtObj.sandboxType)));
                 break;
             case "id3":
                 this.oVideo.$metadataHook({
@@ -252,7 +252,7 @@ apf.video.TypeNative.prototype = {
                 });
                 break;
             case "debug":
-                apf.console.log(">> SWF DBUG: " + evtObj.msg);
+                ppc.console.log(">> SWF DBUG: " + evtObj.msg);
                 break;
         }
     },
@@ -310,7 +310,7 @@ apf.video.TypeNative.prototype = {
             _self.oVideo.$completeHook({type:"complete"});
         }, false);
         a.addEventListener("error", function(e) {
-            throw new Error(apf.formatErrorString(0, _self, "Audio playback",
+            throw new Error(ppc.formatErrorString(0, _self, "Audio playback",
                 e.message, _self.oVideo));
         }, false);
 

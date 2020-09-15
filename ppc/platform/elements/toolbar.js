@@ -29,7 +29,7 @@
  * #### Example
  *
  * ```xml, demo
- * <a:application xmlns:a="http://ajax.org/2005/aml">
+ * <a:application xmlns:a="https://github.com/pylonide/pylon">
  *  <a:window 
  *    id          = "winMail"
  *    contextmenu = "fileMenu"
@@ -62,7 +62,7 @@
  * </a:application>
  * ```
  *
- * @class apf.toolbar
+ * @class ppc.toolbar
  * @define toolbar
  * @container
  *
@@ -72,11 +72,11 @@
  * @version     %I%, %G%
  * @since       0.4
  *
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  */
 
-apf.toolbar = function(struct, tagName){
-    this.$init(tagName || "toolbar", apf.NODE_VISIBLE, struct);
+ppc.toolbar = function(struct, tagName){
+    this.$init(tagName || "toolbar", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -92,7 +92,7 @@ apf.toolbar = function(struct, tagName){
         this.$ext = this.$getExternal();
         this.$int = this.$getLayoutNode("main", "container", this.$ext);
     };
-}).call(apf.toolbar.prototype = new apf.Presentation());
+}).call(ppc.toolbar.prototype = new ppc.Presentation());
 
-apf.aml.setElement("toolbar", apf.toolbar);
+ppc.aml.setElement("toolbar", ppc.toolbar);
 // #endif

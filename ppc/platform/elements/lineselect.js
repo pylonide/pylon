@@ -29,8 +29,8 @@
  * 
  */
 // @todo test this
-apf.lineselect = function(struct, tagName){
-    this.$init(tagName || "lineselect", apf.NODE_VISIBLE, struct);
+ppc.lineselect = function(struct, tagName){
+    this.$init(tagName || "lineselect", ppc.NODE_VISIBLE, struct);
 };
 
 (function(){
@@ -74,10 +74,10 @@ apf.lineselect = function(struct, tagName){
             else if(ar[i].match(/warning \P/)) var clr = "yellow";
             else var clr = "white";
             
-            ar[i] = "<div style='color:" + clr + "' onmousedown='" + 'apf.lookup(' + this.$uniqueId + ').select(this)' + "' ondblclick=\"" + 'apf.lookup(' + this.$uniqueId + ').dispatchEvent(\'onchoose\', this.innerHTML)' + "\" class='" + this.skin.clsItem + "'>" + ar[i] + "</div>";
+            ar[i] = "<div style='color:" + clr + "' onmousedown='" + 'ppc.lookup(' + this.$uniqueId + ').select(this)' + "' ondblclick=\"" + 'ppc.lookup(' + this.$uniqueId + ').dispatchEvent(\'onchoose\', this.innerHTML)' + "\" class='" + this.skin.clsItem + "'>" + ar[i] + "</div>";
         }
                 
-        this.$ext.innerHTML = "<div style='color:white' class='" + this.skin.clsItem + "'>APF Packager</div><div nowrap style='color:white' class='" + this.skin.clsItem + "'>(c) 2001-2003 All Rights Reserved.</div><br>" + ar.join("");
+        this.$ext.innerHTML = "<div style='color:white' class='" + this.skin.clsItem + "'>PPC Packager</div><div nowrap style='color:white' class='" + this.skin.clsItem + "'>(c) 2001-2003 All Rights Reserved.</div><br>" + ar.join("");
         //this.parentNode.style.width = "100%";
     }
     
@@ -132,7 +132,7 @@ apf.lineselect = function(struct, tagName){
         this.$ext = this.$getExternal();
         this.$int = this.$ext;
     }
-}).call(apf.lineselect.prototype = new apf.GuiElement());
+}).call(ppc.lineselect.prototype = new ppc.GuiElement());
 
-apf.aml.setElement("lineselect", apf.lineselect);
+ppc.aml.setElement("lineselect", ppc.lineselect);
 // #endif

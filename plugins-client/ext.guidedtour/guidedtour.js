@@ -163,9 +163,9 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
 
         this.overlay.style = 'block';
 
-        apf.removeEventListener("keyup", _self.keyUpEvent);
+        ppc.removeEventListener("keyup", _self.keyUpEvent);
 
-        apf.addEventListener("keyup", _self.keyUpEvent = function(e){
+        ppc.addEventListener("keyup", _self.keyUpEvent = function(e){
             if(e.keyCode == 39)
                 _self.stepForward();
             else if(e.keyCode == 37)
@@ -274,13 +274,13 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
                     _self.currentEl = expandedDbg;
                 }
                 else if (step.div == "editorGutter") {
-                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes('DIV[2]/DIV[1]/DIV[2]', amlEditor.$ext);
+                    _self.currentEl = (ppc.XPath || ppc.runXpath() || ppc.XPath).selectNodes('DIV[2]/DIV[1]/DIV[2]', amlEditor.$ext);
                 }
                 else if (step.node !== undefined) {
-                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, apf.document.selectSingleNode(step.node).$ext);
+                    _self.currentEl = (ppc.XPath || ppc.runXpath() || ppc.XPath).selectNodes(step.div, ppc.document.selectSingleNode(step.node).$ext);
                 }
                 else {
-                    _self.currentEl = (apf.XPath || apf.runXpath() || apf.XPath).selectNodes(step.div, amlEditor.$ext);
+                    _self.currentEl = (ppc.XPath || ppc.runXpath() || ppc.XPath).selectNodes(step.div, amlEditor.$ext);
                 }
             }
             else {
@@ -315,7 +315,7 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             winTourText.setAttribute("left", "");
             winTourText.setAttribute("right", "");
 
-            textTourDesc.setValue(apf.escapeXML(step.desc));
+            textTourDesc.setValue(ppc.escapeXML(step.desc));
 
             var pos = _self.getElementPosition(_self.currentEl);
 
@@ -419,11 +419,11 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
             else
                 elExt = el[0];
 
-            var pos = apf.getAbsolutePosition(elExt);
+            var pos = ppc.getAbsolutePosition(elExt);
             return [pos[0], pos[1], elExt.offsetWidth, elExt.offsetHeight];
         }
         else {
-            var pos = apf.getAbsolutePosition(elExt);
+            var pos = ppc.getAbsolutePosition(elExt);
             var w = el.getWidth();
             var h = el.getHeight();
             return [pos[0], pos[1], w, h];
@@ -433,13 +433,13 @@ module.exports = ext.register("ext/guidedtour/guidedtour", {
     closeTG: function() {
         var _self = this;
         winTourGuide.hide();
-        apf.removeEventListener("keyup", _self.keyUpEvent);
+        ppc.removeEventListener("keyup", _self.keyUpEvent);
     },
 
     shutdown: function(hlElement) {
         var _self = this;
 
-        apf.removeEventListener("keyup", _self.keyUpEvent);
+        ppc.removeEventListener("keyup", _self.keyUpEvent);
         return function() {
             require("ext/guidedtour/guidedtour").pause(); // stop auto-moving
             winTourText.hide();

@@ -5,13 +5,13 @@ var Path = require("path"),
  * Combines multiple files into one. Optionally it can process ifdefs while
  * combining the files.
  */
-apf.process.handler.combine = function(x){
+ppc.process.handler.combine = function(x){
     var defines,
-        s      = apf.settings,
+        s      = ppc.settings,
         group  = s.parseAttribute(x.getAttribute("group")),
         output = Path.normalize(s.parseAttribute(x.getAttribute("out"))),
         strip  = s.parseAttribute(x.getAttribute("strip")),
-        files  = apf.files.get(group),
+        files  = ppc.files.get(group),
         out    = [],
         type   = s.parseAttribute(x.getAttribute("type"));
 
@@ -19,7 +19,7 @@ apf.process.handler.combine = function(x){
         var prefix = s.parseAttribute(x.getAttribute("prefix")),
             xmlns  = s.parseAttribute(x.getAttribute("xmlns")),
             root   = s.parseAttribute(x.getAttribute("root")) || "xml",
-            parse  = apf.isTrue(s.parseAttribute(x.getAttribute("parse")));
+            parse  = ppc.isTrue(s.parseAttribute(x.getAttribute("parse")));
         
         out.push("<?xml version='1.0'?>\n<" 
             + (prefix ? prefix + ":" : "") + root 
@@ -27,14 +27,14 @@ apf.process.handler.combine = function(x){
             + (prefix ? ":" + prefix : "") + "=\"" + xmlns + "\">\n");
     }
     else {
-        defines = apf.isTrue(s.parseAttribute(x.getAttribute("defines")));
+        defines = ppc.isTrue(s.parseAttribute(x.getAttribute("defines")));
     }
-    var fhead  = apf.isTrue(s.parseAttribute(x.getAttribute("filehead")));
+    var fhead  = ppc.isTrue(s.parseAttribute(x.getAttribute("filehead")));
     
     files.each(function(file){
         
         if (!/\/doc\//.test(file.path)) { // ignore doc folder
-            apf.console.info("Adding file : " + file.path + " size: " + file.size);
+            ppc.console.info("Adding file : " + file.path + " size: " + file.size);
             
             if (fhead) {
                 if (type == "xml") {
@@ -54,7 +54,7 @@ apf.process.handler.combine = function(x){
                 }
                 //@todo maybe add define support here (see mwa subscribe)
                 if (parse) {
-                    var x = apf.getXml(file.data.replace(/<\?xml.*$/m,"")); //errors
+                    var x = ppc.getXml(file.data.replace(/<\?xml.*$/m,"")); //errors
                     if (x)
                         out.push(x.xml);
                 }
@@ -64,7 +64,7 @@ apf.process.handler.combine = function(x){
             }
             else {
                 out.push(defines
-                    ? apf.defines.parse(file.data, file.name)
+                    ? ppc.defines.parse(file.data, file.name)
                     : file.data);
             }
         }
@@ -90,11 +90,11 @@ apf.process.handler.combine = function(x){
     }
 
     if (type != "xml" && s.version) {
-        result = result.replace(/apf = \{/, "apf = {\nVERSION:'"
+        result = result.replace(/ppc = \{/, "ppc = {\nVERSION:'"
             + s.version.replace(/(\d+\.\d+)\.\d*\./, "$1").toLowerCase() + "',");
     }
 
     Fs.writeFileSync(output, result, "utf8");
 
-    apf.console.info("Combine done. Written to " + output);
+    ppc.console.info("Combine done. Written to " + output);
 };

@@ -116,7 +116,7 @@ module.exports = ext.register("ext/zen/zen", {
             });
         });
 
-        this.mnuItem = menus.addItemByPath("View/Zen Mode", new apf.item({
+        this.mnuItem = menus.addItemByPath("View/Zen Mode", new ppc.item({
             caption : "Zen Mode",
             type    : "check",
             command : "zen"
@@ -164,7 +164,7 @@ module.exports = ext.register("ext/zen/zen", {
             // prevent adding vbZen every time the button is clicked
             if (!_self.entered) {
                 _self.entered = true;
-                vbMain.parentNode.appendChild(new apf.vbox({
+                vbMain.parentNode.appendChild(new ppc.vbox({
                     anchors: "0 0 0 0",
                     id: "vbZen",
                     "class": "vbZen",
@@ -223,19 +223,19 @@ module.exports = ext.register("ext/zen/zen", {
     setupHandleListeners : function() {
         var _self = this;
 
-        apf.addListener(this.zenHandleLeft, "mousedown", function(e) {
+        ppc.addListener(this.zenHandleLeft, "mousedown", function(e) {
             _self.browserWidth = window.innerWidth;
             _self.handleLeftMove = true;
-            apf.dragMode = true;
+            ppc.dragMode = true;
         });
 
-        apf.addListener(this.zenHandleRight, "mousedown", function(e) {
+        ppc.addListener(this.zenHandleRight, "mousedown", function(e) {
             _self.browserWidth = window.innerWidth;
             _self.handleRightMove = true;
-            apf.dragMode = true;
+            ppc.dragMode = true;
         });
 
-        apf.addListener(document, "mousemove", function(e) {
+        ppc.addListener(document, "mousemove", function(e) {
             if (_self.isFocused) {
                 // Now resize those love handles!
                 function afterCalculation() {
@@ -244,7 +244,7 @@ module.exports = ext.register("ext/zen/zen", {
                     else if (_self.initialWidth > 0.95)
                         _self.initialWidth = 1.0;
                     _self.calculatePositions();
-                    apf.layout.forceResize(tabEditors.parentNode.$ext);
+                    ppc.layout.forceResize(tabEditors.parentNode.$ext);
                 }
                 if (_self.handleLeftMove) {
                     _self.initialWidth = 1.0 - ((e.clientX * 2)/_self.browserWidth);
@@ -258,7 +258,7 @@ module.exports = ext.register("ext/zen/zen", {
             }
         });
 
-        apf.addListener(document, "mouseup", function() {
+        ppc.addListener(document, "mouseup", function() {
             if (!_self.isFocused)
                 return;
 
@@ -267,9 +267,9 @@ module.exports = ext.register("ext/zen/zen", {
 
             _self.handleLeftMove = false;
             _self.handleRightMove = false;
-            apf.layout.forceResize();
+            ppc.layout.forceResize();
 
-            apf.dragMode = false;
+            ppc.dragMode = false;
         });
     },
 
@@ -314,7 +314,7 @@ module.exports = ext.register("ext/zen/zen", {
 
         var _self = this;
 
-        var activeElement = apf.document.activeElement;
+        var activeElement = ppc.document.activeElement;
 
         if (self.btnZenFullscreen)
             btnZenFullscreen.setAttribute("class", "full");
@@ -349,7 +349,7 @@ module.exports = ext.register("ext/zen/zen", {
             var astyles = "display:block;top:0;height:" + afHeight + ";left:" + leftOffset + ";width:" + afWidth + "px";
             _self.animateZen.setAttribute("style", astyles);
 
-            apf.layout.forceResize();
+            ppc.layout.forceResize();
 
             _self.zenHandleLeft.style.display = "block";
             _self.zenHandleRight.style.display = "block";
@@ -396,7 +396,7 @@ module.exports = ext.register("ext/zen/zen", {
 
         var _self = this;
 
-        var activeElement = apf.document.activeElement;
+        var activeElement = ppc.document.activeElement;
 
         btnZenFullscreen.setAttribute("class", "notfull");
         this.isFocused = false;
@@ -408,16 +408,16 @@ module.exports = ext.register("ext/zen/zen", {
 
         // Get the destination values
         var container = tabEditors.parentNode.parentNode.$ext;
-        var pos = apf.getAbsolutePosition(container);
+        var pos = ppc.getAbsolutePosition(container);
         var left = pos[0];
         var top = pos[1];
         var width = container.offsetWidth;
         var height = container.offsetHeight;
 
         // Set the width to its actual width instead of "85%"
-        var afWidth = apf.getHtmlInnerWidth(this.animateZen);
+        var afWidth = ppc.getHtmlInnerWidth(this.animateZen);
         this.animateZen.style.width = afWidth + "px";
-        var afHeight = apf.getHtmlInnerHeight(this.animateZen);
+        var afHeight = ppc.getHtmlInnerHeight(this.animateZen);
         this.animateZen.style.height = afHeight + "px";
 
         Firmin.animate(this.animateZen, {
@@ -431,7 +431,7 @@ module.exports = ext.register("ext/zen/zen", {
 
             container.appendChild(tabEditors.parentNode.$ext);
 
-            apf.layout.forceResize(tabEditors.parentNode.$ext);
+            ppc.layout.forceResize(tabEditors.parentNode.$ext);
 
             setTimeout(function() {
                 if (activeElement && activeElement.getHeight()
@@ -453,7 +453,7 @@ module.exports = ext.register("ext/zen/zen", {
      * holds tabEditors.parentNode during the animation
      */
     matchAnimationWindowPosition : function() {
-        var tePos = apf.getAbsolutePosition(tabEditors.parentNode.$ext);
+        var tePos = ppc.getAbsolutePosition(tabEditors.parentNode.$ext);
         var teWidth = tabEditors.parentNode.getWidth();
         var teHeight = tabEditors.parentNode.getHeight();
 
@@ -484,9 +484,9 @@ module.exports = ext.register("ext/zen/zen", {
         for (var cn = 0; cn < classNames.length; cn++) {
             if (classNames[cn].indexOf("ace-") === 0) {
                 var selectorString = "." + classNames[cn] + " .ace_scroller";
-                var bgColor = apf.getStyleRule(selectorString, "background-color");
+                var bgColor = ppc.getStyleRule(selectorString, "background-color");
                 if (!bgColor)
-                    bgColor = apf.getStyleRule(".ace_scroller", "background-color");
+                    bgColor = ppc.getStyleRule(".ace_scroller", "background-color");
                 ace_editor.style.backgroundColor = bgColor;
                 break;
             }
@@ -501,7 +501,7 @@ module.exports = ext.register("ext/zen/zen", {
      */
     placeTabIntoAnimationWindow : function() {
         var reappendlist = [];
-        var iframelist   = apf.getArrayFromNodelist(
+        var iframelist   = ppc.getArrayFromNodelist(
             tabEditors.parentNode.$ext.getElementsByTagName("iframe"));
 
         for (var i = 0; i < iframelist.length; i++) {
@@ -525,9 +525,9 @@ module.exports = ext.register("ext/zen/zen", {
      * Called during the onmouseover event from the zen button
      */
     fadeZenButtonIn : function() {
-        apf.tween.single(btnZenFullscreen, {
+        ppc.tween.single(btnZenFullscreen, {
             type     : "opacity",
-            anim     : apf.tween.easeInOutCubic,
+            anim     : ppc.tween.easeInOutCubic,
             from     : 0,
             to       : 1,
             steps    : 8,
@@ -543,9 +543,9 @@ module.exports = ext.register("ext/zen/zen", {
      */
     fadeZenButtonOut : function() {
         if (window.btnZenFullscreen) {// for the guided tour
-            apf.tween.single(btnZenFullscreen, {
+            ppc.tween.single(btnZenFullscreen, {
                 type     : "opacity",
-                anim     : apf.tween.easeInOutCubic,
+                anim     : ppc.tween.easeInOutCubic,
                 from     : 1,
                 to       : 0,
                 steps    : 8,

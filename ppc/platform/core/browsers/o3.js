@@ -2,28 +2,28 @@
 /**
  * @private
  */
-apf.runO3 = function(){
+ppc.runO3 = function(){
     document = new DOMParser().parseFromString("<html><body /></html>", "text/xml");
     document.body = document.documentElement.firstChild;
 
-    apf.runXpath();
+    ppc.runXpath();
 
     var ASYNCNOTSUPPORTED = false;
     
     Array.prototype.item = function(i){return this[i];};
     Array.prototype.expr = "";
     
-    apf.getHttpReq = function(){
+    ppc.getHttpReq = function(){
         var xhr = require("./node/XMLHttpRequest").XMLHttpRequest;
         return new xhr();
     };
 
-    apf.getSocket = function() {
+    ppc.getSocket = function() {
         var net = require("net");
         return new net.Stream(); // 'new' not required, doesn't do anything
     };
     
-    apf.getXmlDom = function(message, noError){
+    ppc.getXmlDom = function(message, noError){
     	xmlParser     = new DOMParser().parseFromString(message, "text/xml");
         
         if (!noError)
@@ -32,9 +32,9 @@ apf.runO3 = function(){
         return xmlParser;
     };
     
-    apf.xmlParseError = function(xml){
+    ppc.xmlParseError = function(xml){
         if (!xml){
-            apf.console.error("no xml document was passed to the xml parse error function");
+            ppc.console.error("no xml document was passed to the xml parse error function");
             return;
         }
         if (xml.documentElement.tagName == "parsererror") {
@@ -44,7 +44,7 @@ apf.runO3 = function(){
             
             var srcText = xml.documentElement.lastChild.firstChild.nodeValue.split("\n")[0];
             
-            throw new Error(apf.formatErrorString(1050, null, 
+            throw new Error(ppc.formatErrorString(1050, null, 
                 "XML Parse Error on line " +  linenr, message + 
                 "\nSource Text : " + srcText.replace(/\t/gi, " ")));
         }

@@ -24,13 +24,13 @@
 /**
  * Baseclass of a paged element. 
  *
- * @class apf.BaseTab
+ * @class ppc.BaseTab
  * @baseclass
  * @allowchild page
  * @author      Ruben Daniels (ruben AT ajax DOT org)
  * @version     %I%, %G%
  * @since       0.8
- * @inherits apf.Presentation
+ * @inherits ppc.Presentation
  *
  */
 /**
@@ -39,28 +39,28 @@
  * @param {Object} e The standard event object. It contains the following properties:
  *   - previous ([[String]] or [[Number]]): The name or number of the current page.
  *   - previousId ([[Number]]): The number of the current page.
- *   - previousPage ([[apf.page]]): The current page.
+ *   - previousPage ([[ppc.page]]): The current page.
  *   - next ([[String]] or [[Number]]): The name or number of the page the will become active.
  *   - nextId ([[Number]]): The number of the page the will become active.
- *   - nextPage ([[apf.page]]): The page the will become active.
+ *   - nextPage ([[ppc.page]]): The page the will become active.
  */
 /**
  *  @event afterswitch   Fires after this element has switched to another page.
  *  @param {Object} e The standard event object. It contains the following properties:
  *   - previous ([[String]] or [[Number]]): The name or number of the previous page.
  *   - previousId ([[Number]]): The number of the previous page.
- *   - previousPage ([[apf.page]]): The previous page.
+ *   - previousPage ([[ppc.page]]): The previous page.
  *   - next ([[String]] or [[Number]]): The name or number of the current page.
  *   - nextId ([[Number]]): The number of the the current page.
- *   - nextPage ([[apf.page]]): The the current page.   
+ *   - nextPage ([[ppc.page]]): The the current page.   
  */
-apf.BaseTab = function(){
+ppc.BaseTab = function(){
     this.$init(true);
 };
 
 (function() {
     this.isPaged     = true;
-    this.$focussable = apf.KEYBOARD;
+    this.$focussable = ppc.KEYBOARD;
     this.length      = 0;
     this.isLoading   = {};
     this.inited      =
@@ -152,7 +152,7 @@ apf.BaseTab = function(){
      * ```
      */
     this.$propHandlers["activepage"]   = function(next, prop, force, callback, noEvent){
-        if (!this.inited || apf.isNot(next) || next == -1) return;
+        if (!this.inited || ppc.isNot(next) || next == -1) return;
 
         if (!callback) {
             callback = this.$lastCallback;
@@ -173,25 +173,25 @@ apf.BaseTab = function(){
                 this.setProperty("loading", true);
                 this.isLoading[next] = true;
 
-                page = this.ownerDocument.createElementNS(apf.ns.apf, "page");
+                page = this.ownerDocument.createElementNS(ppc.ns.ppc, "page");
                 page.setAttribute("id", next);
                 this.appendChild(page);
 
                 var _self = this;
                 page.insertMarkup(this.src, {
                     page     : next,
-                    //@todo apf3.0 change callback arguments in xinclude
+                    //@todo ppc3.0 change callback arguments in xinclude
                     callback : function(options){
                         delete _self.isLoading[next];
                     
                         if (!options.xmlNode) {
-                            var oError = new Error(apf.formatErrorString(0, null,
+                            var oError = new Error(ppc.formatErrorString(0, null,
                                 "Loading new page", "Could not load new page: "
                                 + _self.src));
                                 
                             _self.setProperty("loading", false);
                             
-                            if (this.dispatchEvent("error", apf.extend({
+                            if (this.dispatchEvent("error", ppc.extend({
                                 error   : oError,
                                 bubbles : true
                             }, options)) === false)
@@ -215,7 +215,7 @@ apf.BaseTab = function(){
             }
             
             //#ifdef __DEBUG
-            apf.console.warn("Setting tab page which doesn't exist, \
+            ppc.console.warn("Setting tab page which doesn't exist, \
                               referenced by name: '" + next + "'");
             //#endif
 
@@ -224,7 +224,7 @@ apf.BaseTab = function(){
 
         if (page.parentNode != this) {
             //#ifdef __DEBUG
-            apf.console.warn("Setting active page on page component which \
+            ppc.console.warn("Setting active page on page component which \
                               isn't a child of this tab component. Cancelling.");
             //#endif
 
@@ -233,7 +233,7 @@ apf.BaseTab = function(){
 
         if (!page.visible || page.disabled) {
             //#ifdef __DEBUG
-            apf.console.warn("Setting active page on page component which \
+            ppc.console.warn("Setting active page on page component which \
                               is not visible or disabled. Cancelling.");
             //#endif
 
@@ -341,7 +341,7 @@ apf.BaseTab = function(){
             this.addEventListener("resize", scalersz);
             
             this.minwidth = this.$minBtnWidth * this.getPages().length + 10;
-            this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+            this.$ext.style.minWidth = Math.max(0, this.minwidth - ppc.getWidthDiff(this.$ext)) + "px";
         }
         else {
             this.$setStyleClass(this.$buttons, "", ["scale"]);
@@ -362,15 +362,15 @@ apf.BaseTab = function(){
         var t = tab.$button;
 
         var animateWidth = (t.offsetWidth 
-            - apf.getWidthDiff(t)) < parseInt(apf.getStyle(t, "maxWidth"));
+            - ppc.getWidthDiff(t)) < parseInt(ppc.getStyle(t, "maxWidth"));
         
         if (animateWidth) {
             var p = tab.parentNode.getPages()[0] == tab 
                 ? null 
                 : t.previousElementSibling;
             var tb = p 
-                ? (p.offsetWidth - apf.getWidthDiff(p)) 
-                : parseInt(apf.getStyle(t, "maxWidth"));
+                ? (p.offsetWidth - ppc.getWidthDiff(p)) 
+                : parseInt(ppc.getStyle(t, "maxWidth"));
             t.style.maxWidth = "0px";
         }
 
@@ -380,9 +380,9 @@ apf.BaseTab = function(){
             t.style.marginTop = "0px";
             
             setTimeout(function(){
-                t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
-                t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                t.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                t.style[ppc.CSSPREFIX + "TransitionProperty"] = "";
+                t.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
+                t.style[ppc.CSSPREFIX + "TimingFunction"] = "";
                 
                 t.style.marginTop = "";
                 
@@ -394,9 +394,9 @@ apf.BaseTab = function(){
         }
         
         setTimeout(function(){
-            t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width";
-            t.style[apf.CSSPREFIX + "TransitionDuration"] = "100ms, 50ms";
-            t.style[apf.CSSPREFIX + "TimingFunction"] = "cubic-bezier(.10, .10, .25, .90), cubic-bezier(.10, .10, .25, .90)";
+            t.style[ppc.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width";
+            t.style[ppc.CSSPREFIX + "TransitionDuration"] = "100ms, 50ms";
+            t.style[ppc.CSSPREFIX + "TimingFunction"] = "cubic-bezier(.10, .10, .25, .90), cubic-bezier(.10, .10, .25, .90)";
             
             if (animateWidth) {
                 t.style.maxWidth = tb + "px";
@@ -413,35 +413,35 @@ apf.BaseTab = function(){
         
         var diff = t.offsetWidth;
         
-        t.style[apf.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width, padding";
-        t.style[apf.CSSPREFIX + "TransitionDuration"] = (isOnly ? ".2" : ".15") + "s, .1s, .1s";
-        t.style[apf.CSSPREFIX + "TimingFunction"] = "linear, ease-out, ease-out";
+        t.style[ppc.CSSPREFIX + "TransitionProperty"] = "margin-top, max-width, padding";
+        t.style[ppc.CSSPREFIX + "TransitionDuration"] = (isOnly ? ".2" : ".15") + "s, .1s, .1s";
+        t.style[ppc.CSSPREFIX + "TimingFunction"] = "linear, ease-out, ease-out";
         
         t.style.marginTop = (tb + 2) + "px";
 
         var p = t.parentNode;
-        if (apf.isGecko) p = p.parentNode;
+        if (ppc.isGecko) p = p.parentNode;
         
-        p.style[apf.CSSPREFIX + "TransitionProperty"] = "padding-right";
-        p.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
-        p.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
+        p.style[ppc.CSSPREFIX + "TransitionProperty"] = "padding-right";
+        p.style[ppc.CSSPREFIX + "TransitionDuration"] = ".2s";
+        p.style[ppc.CSSPREFIX + "TimingFunction"] = "ease-out";
         
         if (isLast)
             p.style.paddingRight = "";
         else {
-            var cur = parseInt(apf.getStyle(p, "paddingRight"));
+            var cur = parseInt(ppc.getStyle(p, "paddingRight"));
             p.style.paddingRight = (cur + diff - 21) + "px";
         }
         
         function end(){
             setTimeout(function(){
-                p.style[apf.CSSPREFIX + "TransitionProperty"] = "";
-                p.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                p.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                p.style[ppc.CSSPREFIX + "TransitionProperty"] = "";
+                p.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
+                p.style[ppc.CSSPREFIX + "TimingFunction"] = "";
                 
-                t.style[apf.CSSPREFIX + "TransitionProperty"] = "";
-                t.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-                t.style[apf.CSSPREFIX + "TimingFunction"] = "";
+                t.style[ppc.CSSPREFIX + "TransitionProperty"] = "";
+                t.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
+                t.style[ppc.CSSPREFIX + "TimingFunction"] = "";
                 
                 t.style.display = "none";
                 
@@ -473,7 +473,7 @@ apf.BaseTab = function(){
         var pg = this.getPages();
         var l  = pg.length;
         this.minwidth = this.$minBtnWidth * l + 10; //@todo padding + margin of button container
-        this.$ext.style.minWidth = Math.max(0, this.minwidth - apf.getWidthDiff(this.$ext)) + "px";
+        this.$ext.style.minWidth = Math.max(0, this.minwidth - ppc.getWidthDiff(this.$ext)) + "px";
         
         if (force && !this.$ext.offsetWidth && !this.$ext.offsetHeight
           || this.anims.indexOf(type) == -1) {
@@ -489,18 +489,18 @@ apf.BaseTab = function(){
             return;
         }
         
-        if (!apf.window.vManager.check(this, "tabscale", visCheck))
+        if (!ppc.window.vManager.check(this, "tabscale", visCheck))
             return;
         
         if (!type)
             return scalersz.call(this);
         
         function btnMoHandler(e){
-            var pos = apf.getAbsolutePosition(this);
+            var pos = ppc.getAbsolutePosition(this);
             if (e.clientX <= pos[0] || e.clientY <= pos[1] 
               || e.clientX >= pos[0] + this.offsetWidth 
               || e.clientY >= pos[1] + this.offsetHeight) {
-                apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                ppc.removeListener(_self.$buttons, "mouseout", btnMoHandler);
                     delete _self.$waitForMouseOut;
                     _self.$scaleinit(null, "sync");
 //                }
@@ -534,7 +534,7 @@ apf.BaseTab = function(){
                 }
                 
                 if (_self.$waitForMouseOut == 2) {
-                    apf.removeListener(_self.$buttons, "mouseout", btnMoHandler);
+                    ppc.removeListener(_self.$buttons, "mouseout", btnMoHandler);
                     delete _self.$waitForMouseOut;
                 }
                 else if (isLast)
@@ -550,15 +550,15 @@ apf.BaseTab = function(){
             if (!lNode) return;
             
             var isLast = lNode == node;
-            var isContracted = (node.$button.offsetWidth - apf.getWidthDiff(node.$button) 
-                != parseInt(apf.getStyle(node.$button, "maxWidth")));
+            var isContracted = (node.$button.offsetWidth - ppc.getWidthDiff(node.$button) 
+                != parseInt(ppc.getStyle(node.$button, "maxWidth")));
             
             if (!isLast && isContracted) {
                 for (var i = 0, l = pages.length; i < l; i++) {
                     var page = pages[i];
                     page.$button.style.minWidth = 
                     page.$button.style.maxWidth = (page.$button.offsetWidth 
-                        - (apf.isGecko ? 0 : apf.getWidthDiff(page.$button))) 
+                        - (ppc.isGecko ? 0 : ppc.getWidthDiff(page.$button))) 
                         + "px";
                 }
             }
@@ -582,7 +582,7 @@ apf.BaseTab = function(){
             }
             
             if (isCur) {
-                apf.setStyleClass(node.$button, "curbtn");
+                ppc.setStyleClass(node.$button, "curbtn");
                 node.$button.style.zIndex = 0;
             }
             
@@ -593,7 +593,7 @@ apf.BaseTab = function(){
             
             this.$waitForMouseOut = true;
             if (!isLast)
-                apf.addListener(_self.$buttons, "mouseout", btnMoHandler);
+                ppc.addListener(_self.$buttons, "mouseout", btnMoHandler);
         }
     }
     
@@ -604,23 +604,23 @@ apf.BaseTab = function(){
         if (!this.length && !this.getPages().length || this.$waitForMouseOut)
             return;
         
-        var p = apf.isGecko ? this.$buttons.parentNode : this.$buttons;
+        var p = ppc.isGecko ? this.$buttons.parentNode : this.$buttons;
         
-        p.style[apf.CSSPREFIX + "TransitionProperty"] = "padding-right";
-        p.style[apf.CSSPREFIX + "TransitionDuration"] = ".2s";
-        p.style[apf.CSSPREFIX + "TimingFunction"] = "ease-out";
+        p.style[ppc.CSSPREFIX + "TransitionProperty"] = "padding-right";
+        p.style[ppc.CSSPREFIX + "TransitionDuration"] = ".2s";
+        p.style[ppc.CSSPREFIX + "TimingFunction"] = "ease-out";
         
-        if (apf.isGecko) {
-            p.style.paddingRight = apf.getWidthDiff(this.$buttons) + "px";
+        if (ppc.isGecko) {
+            p.style.paddingRight = ppc.getWidthDiff(this.$buttons) + "px";
         }
         else {
             p.style.paddingRight = "";
         }
         
         setTimeout(function(){
-            p.style[apf.CSSPREFIX + "TransitionProperty"] = "";
-            p.style[apf.CSSPREFIX + "TransitionDuration"] = "";
-            p.style[apf.CSSPREFIX + "TimingFunction"] = "";
+            p.style[ppc.CSSPREFIX + "TransitionProperty"] = "";
+            p.style[ppc.CSSPREFIX + "TransitionDuration"] = "";
+            p.style[ppc.CSSPREFIX + "TimingFunction"] = "";
         }, 250);
     }
     //#endif
@@ -632,32 +632,32 @@ apf.BaseTab = function(){
         var _self = this;
         
         if (!this.$transInfo) {
-            this.$int.style.overflow = apf.getStyle(this.$int, 'overflow') || "hidden";
+            this.$int.style.overflow = ppc.getStyle(this.$int, 'overflow') || "hidden";
             
             this.$transInfo = {
                 start : function(){
                     var h = _self.$ext;
                     this.size = [h.style.width, h.style.height];
-                    var d = apf.getDiff(h);
+                    var d = ppc.getDiff(h);
                     h.style.width  = (h.offsetWidth - d[0]) + "px";
                     h.style.height = (h.offsetHeight - d[1]) + "px";
                     
                     //@todo start anims
                     if (this["in"]) {
                         var h = this["in"].oHtml.$ext;
-                        var d = apf.getDiff(h);
+                        var d = ppc.getDiff(h);
                         h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
                         h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
                         h.style.display = "block";
-                        apf.tween.multi(h, this["in"]);
+                        ppc.tween.multi(h, this["in"]);
                     }
                     if (this["out"]) {
                         var h = this["out"].oHtml.$ext;
-                        var d = apf.getDiff(h);
+                        var d = ppc.getDiff(h);
                         h.style.width   = (_self.$int.offsetWidth - d[0]) + "px";
                         h.style.height  = (_self.$int.offsetHeight - d[1]) + "px";
                         h.style.display = "block";
-                        apf.tween.multi(h, this["out"]);
+                        ppc.tween.multi(h, this["out"]);
                     }
                 },
                 
@@ -683,7 +683,7 @@ apf.BaseTab = function(){
                         h.style.zIndex   = "";
                         h.style.left     = "";
                         h.style.top      = "";
-                        apf.setOpacity(h, 1);
+                        ppc.setOpacity(h, 1);
                         delete this["in"];
                     }
                     if (this["out"]) {
@@ -695,7 +695,7 @@ apf.BaseTab = function(){
                         h.style.zIndex   = "";
                         h.style.left     = "";
                         h.style.top      = "";
-                        apf.setOpacity(h, 1);
+                        ppc.setOpacity(h, 1);
                         delete this["out"];
                     }
                     
@@ -708,7 +708,7 @@ apf.BaseTab = function(){
         //stop
         this.$transInfo.stop();
         
-        var d = apf.getDiff(this.oPages);
+        var d = ppc.getDiff(this.oPages);
         this.oPages.style.width = (this.oPages.offsetWidth - d[0]) + "px";
         this.oPages.style.height = (this.oPages.offsetHeight - d[1]) + "px";
         
@@ -733,9 +733,9 @@ apf.BaseTab = function(){
         
         //create new anim
         var anim = {
-            steps    : apf.isIE ? 15 : 25,
+            steps    : ppc.isIE ? 15 : 25,
             control  : {},
-            anim     : out ? apf.tween.EASEOUT : apf.tween.EASEOUT,
+            anim     : out ? ppc.tween.EASEOUT : ppc.tween.EASEOUT,
             interval : 10,
             tweens   : [],
             oHtml    : page,
@@ -756,7 +756,7 @@ apf.BaseTab = function(){
         animType = animType.split("-");
         switch (animType[0]) {
             case "fade":
-                anim.anim = apf.tween.NORMAL;
+                anim.anim = ppc.tween.NORMAL;
                 if (out) h.style.zIndex = 30;
                 anim.tweens.push(
                     out 
@@ -785,7 +785,7 @@ apf.BaseTab = function(){
                 else
                     this.$createAnim(pageOut, "normal", true);
 
-                var hInt = apf[info[3]](this.$int);
+                var hInt = ppc[info[3]](this.$int);
 
                 var from1 = info[0] * hInt;//h[info[1]];
                 var to1   = 0;
@@ -805,14 +805,14 @@ apf.BaseTab = function(){
             case "normal":
                 break;
             default:
-                throw new Error("Unknown animation type:" + animType[0]); //@todo make into proper apf3.0 error
+                throw new Error("Unknown animation type:" + animType[0]); //@todo make into proper ppc3.0 error
         }
     };
     //#endif
 
     /**
      * Retrieves an array of all the page elements of this element.
-     * @returns {Array} An array of all the {apf.page} elements
+     * @returns {Array} An array of all the {ppc.page} elements
      */
     this.getPages = function(){
         var r = [], nodes = this.childNodes;
@@ -826,10 +826,10 @@ apf.BaseTab = function(){
     /**
      * Retrieves a page element by its name or child number.
      * @param {String | Number} nameOrId The name or child number of the page element to retrieve.
-     * @return {apf.page} The found page element.
+     * @return {ppc.page} The found page element.
      */
     this.getPage = function(nameOrId){
-        if (apf.isNot(nameOrId))
+        if (ppc.isNot(nameOrId))
             return this.$activepage;
         else
             return this.$findPage(nameOrId);
@@ -840,12 +840,12 @@ apf.BaseTab = function(){
      * @param {String} [caption] The text displayed on the button of the page
      * @param {String} [name]    The name of the page which is can be referenced by
      * @param {String} [type]    The type of the page
-     * @param {apf.page} [insertBefore]   The page to insert ahead of; `null` means to put it at the end
+     * @param {ppc.page} [insertBefore]   The page to insert ahead of; `null` means to put it at the end
      * @param {Function} [callback]   A callback to call and pass the new page to
-     * @return {apf.page} The created page element.
+     * @return {ppc.page} The created page element.
      */
     this.add = function(caption, name, type, before, callback){
-        var page = this.ownerDocument.createElementNS(apf.ns.aml, "page");
+        var page = this.ownerDocument.createElementNS(ppc.ns.aml, "page");
         if (name)
             page.setAttribute("id", name);
         if (type)
@@ -867,10 +867,10 @@ apf.BaseTab = function(){
     /**
      * Removes a page element from this element. This function destroys ALL children
      * of this page. To simple remove the page from the DOM tree, use the
-     * [[apf.AmlNode.removeNode]] method.
+     * [[ppc.AmlNode.removeNode]] method.
      *
      * @param {Mixed} nameOrId The name or child number of the page element to remove
-     * @return {apf.page} The removed page element
+     * @return {ppc.page} The removed page element
      */
     this.remove = function(nameOrId, force, noAnimation){
         var page = typeof nameOrId == "object" 
@@ -967,13 +967,13 @@ apf.BaseTab = function(){
         }
         
         if (state & SCROLL_OFF)
-            apf.setStyleClass(oBtn,  "", ["disabled", "hover", "down"]);
+            ppc.setStyleClass(oBtn,  "", ["disabled", "hover", "down"]);
         else if (state & SCROLL_HOVER)
-            apf.setStyleClass(oBtn,  "hover", ["disabled", "down"]);
+            ppc.setStyleClass(oBtn,  "hover", ["disabled", "down"]);
         else if (state & SCROLL_DOWN)
-            apf.setStyleClass(oBtn,  "down", ["disabled", "hover"]);
+            ppc.setStyleClass(oBtn,  "down", ["disabled", "hover"]);
         else if (state & SCROLL_DIS)
-            apf.setStyleClass(oBtn,  "disabled", ["hover", "down"]);
+            ppc.setStyleClass(oBtn,  "disabled", ["hover", "down"]);
 
         if (bBoth)
             setButtonState(SCROLL_RIGHT, state);
@@ -984,7 +984,7 @@ apf.BaseTab = function(){
      * depending on the state of the tab buttons
      *
      * @param {Boolean} [bOn]   Indicates whether to turn the scroll buttons on or off
-     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be [[apf.BaseTab.SCROLL_LEFT]], [[apf.BaseTab.SCROLL_RIGHT]] or [[apf.BaseTab.SCROLL_BOTH]]
+     * @param {Number}  [iBtns] Specifies the buttons to set the state of. Can be [[ppc.BaseTab.SCROLL_LEFT]], [[ppc.BaseTab.SCROLL_RIGHT]] or [[ppc.BaseTab.SCROLL_BOTH]]
      * 
      */
     this.setScrollerState = function(bOn, iBtns) {
@@ -992,7 +992,7 @@ apf.BaseTab = function(){
 
         if (typeof bOn == "undefined") {
             var scrollerWidth = this.oScroller.offsetWidth
-                || parseInt(apf.getStyle(this.oScroller, "width").replace(/(px|em|%)/, ""));
+                || parseInt(ppc.getStyle(this.oScroller, "width").replace(/(px|em|%)/, ""));
             bOn   = ((getButtonsWidth.call(this) + scrollerWidth) > this.$ext.offsetWidth);
             iBtns = SCROLL_BOTH;
         }
@@ -1038,7 +1038,7 @@ apf.BaseTab = function(){
      * Retrieves the utmost left or right boundaries of the tab buttons strip that
      * can be scrolled to. The tabs cannot scroll any further than these boundaries
      *
-     * @param {Number} dir        Determines which boundary side to look at, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
+     * @param {Number} dir        Determines which boundary side to look at, either [[ppc.BaseTab.SCROLL_LEFT]] or [[ppc.BaseTab.SCROLL_RIGHT]]
      * @param {Boolean} [useCache] Used only when tabs are draggable. Not implemented.
      * @returns  {Number}
      */
@@ -1071,7 +1071,7 @@ apf.BaseTab = function(){
      * respective behavior is called.
      *
      * @param {Event}  e   An event object, usually a mousedown event from a scroller-button
-     * @param {Number} dir The direction of the scroll, either [[apf.BaseTab.SCROLL_LEFT]] or [[apf.BaseTab.SCROLL_RIGHT]]
+     * @param {Number} dir The direction of the scroll, either [[ppc.BaseTab.SCROLL_LEFT]] or [[ppc.BaseTab.SCROLL_RIGHT]]
      *
      */
     this.scroll = function(e, dir) {
@@ -1086,7 +1086,7 @@ apf.BaseTab = function(){
         if (typeof dir == "undefined")
             dir = SCROLL_LEFT;
 
-        //apf.tween.clearQueue(this.$buttons, true);
+        //ppc.tween.clearQueue(this.$buttons, true);
         var iCurrentLeft = this.$buttons.offsetLeft,
             size         = e["delta"] ? Math.round(e.delta * 36) : SCROLLANIM.size,
             //get maximum left offset for either direction
@@ -1097,22 +1097,22 @@ apf.BaseTab = function(){
             setButtonState(SCROLL_RIGHT, SCROLL_OFF);
             if (iCurrentLeft === iBoundary) {
                 this.setScrollerState(false, SCROLL_LEFT);
-                return apf.tween.single(this.$buttons, {
+                return ppc.tween.single(this.$buttons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft + 12,
                     type    : "left",
-                    anim    : apf.tween.EASEOUT,
+                    anim    : ppc.tween.EASEOUT,
                     onstop  : SCROLLANIM.stopHandle,
                     onfinish: function(oNode) {
-                        apf.tween.single(oNode, {
+                        ppc.tween.single(oNode, {
                             steps   : SCROLLANIM.steps,
                             interval: SCROLLANIM.interval,
                             from    : iCurrentLeft + 12,
                             to      : iCurrentLeft,
                             type    : "left",
-                            anim    : apf.tween.EASEIN,
+                            anim    : ppc.tween.EASEIN,
                             onstop  : SCROLLANIM.stopHandle,
                             onfinish: function() {
                                 bAnimating = false;
@@ -1133,14 +1133,14 @@ apf.BaseTab = function(){
             this.setScrollerState(true, SCROLL_RIGHT);
 
             //start animated scroll to the left
-            apf.tween.single(this.$buttons, {
+            ppc.tween.single(this.$buttons, {
                 steps   : SCROLLANIM.steps,
                 interval: SCROLLANIM.interval,
                 control : SCROLLANIM.control,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
-                anim    : apf.tween.NORMAL,
+                anim    : ppc.tween.NORMAL,
                 onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
@@ -1157,22 +1157,22 @@ apf.BaseTab = function(){
             setButtonState(SCROLL_LEFT,  SCROLL_OFF);
             if (iCurrentLeft === iBoundary) {
                 this.setScrollerState(false, SCROLL_RIGHT);
-                return apf.tween.single(this.$buttons, {
+                return ppc.tween.single(this.$buttons, {
                     steps   : SCROLLANIM.steps,
                     interval: 20,
                     from    : iCurrentLeft,
                     to      : iCurrentLeft - 24,
                     type    : "left",
-                    anim    : apf.tween.EASEOUT,
+                    anim    : ppc.tween.EASEOUT,
                     onstop  : SCROLLANIM.stopHandle,
                     onfinish: function(oNode, options) {
-                        apf.tween.single(oNode, {
+                        ppc.tween.single(oNode, {
                             steps   : SCROLLANIM.steps,
                             interval: SCROLLANIM.interval,
                             from    : iCurrentLeft - 24,
                             to      : iCurrentLeft,
                             type    : "left",
-                            anim    : apf.tween.EASEIN,
+                            anim    : ppc.tween.EASEIN,
                             onstop  : SCROLLANIM.stopHandle,
                             onfinish: function() {
                                 bAnimating = false;
@@ -1190,14 +1190,14 @@ apf.BaseTab = function(){
             if (iTargetLeft < iBoundary)
                 iTargetLeft = iBoundary;
             //start animated scroll to the right
-            apf.tween.single(this.$buttons, {
+            ppc.tween.single(this.$buttons, {
                 steps   : SCROLLANIM.steps,
                 interval: SCROLLANIM.interval,
                 control : SCROLLANIM.control,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
-                anim    : apf.tween.NORMAL,
+                anim    : ppc.tween.NORMAL,
                 onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
@@ -1214,7 +1214,7 @@ apf.BaseTab = function(){
      * If a tab page is outside of the user's view, this function scrolls that
      * tabpage into view smoothly.
      *
-     * @param {apf.page} oPage The page to scroll into view
+     * @param {ppc.page} oPage The page to scroll into view
      * 
      */
     this.scrollIntoView = function(oPage) {
@@ -1257,15 +1257,15 @@ apf.BaseTab = function(){
             this.setScrollerState(true);
             setButtonState(SCROLL_RIGHT, dir & SCROLL_RIGHT ? SCROLL_DOWN : SCROLL_OFF);
             setButtonState(SCROLL_LEFT,  dir & SCROLL_LEFT  ? SCROLL_DOWN : SCROLL_OFF);
-            apf.tween.clearQueue(this.$buttons, true);
+            ppc.tween.clearQueue(this.$buttons, true);
 
-            apf.tween.single(this.$buttons, {
+            ppc.tween.single(this.$buttons, {
                 steps   : SCROLLANIM.steps,
                 interval: SCROLLANIM.interval,
                 from    : iCurrentLeft,
                 to      : iTargetLeft,
                 type    : "left",
-                anim    : apf.tween.NORMAL,
+                anim    : ppc.tween.NORMAL,
                 onstop  : SCROLLANIM.stopHandle,
                 onfinish: function() {
                     bAnimating = false;
@@ -1500,10 +1500,10 @@ apf.BaseTab = function(){
             this.$buttons = this.$getLayoutNode("main", "buttons", this.$ext);
             this.$buttons.setAttribute("id", this.$uniqueId + "_buttons");
             
-            if (apf.isGecko && !this.$gotContainer) {
+            if (ppc.isGecko && !this.$gotContainer) {
                 var div = this.$ext.appendChild(document.createElement("div"));
-                div.style.backgroundImage = apf.getStyle(this.$buttons, "backgroundImage");
-                div.style.backgroundColor = apf.getStyle(this.$buttons, "backgroundColor");
+                div.style.backgroundImage = ppc.getStyle(this.$buttons, "backgroundImage");
+                div.style.backgroundColor = ppc.getStyle(this.$buttons, "backgroundColor");
                 div.style.position = "absolute";
                 div.style.left = 0;
                 div.style.top = 0;
@@ -1512,7 +1512,7 @@ apf.BaseTab = function(){
                 div.style.height = this.$buttons.offsetHeight + "px";
                 div.appendChild(this.$buttons);
                 this.$buttons.style.width = "100%";
-                div.style.paddingRight = apf.getWidthDiff(this.$buttons) + "px";
+                div.style.paddingRight = ppc.getWidthDiff(this.$buttons) + "px";
                 
                 this.$gotContainer = true;
             }
@@ -1543,7 +1543,7 @@ apf.BaseTab = function(){
             };
 
             // #ifdef __WITH_MOUSESCROLL
-            /*apf.addEventListener("mousescroll", function(e) {
+            /*ppc.addEventListener("mousescroll", function(e) {
                 var found = (e.target == _self.$buttons);
                 while (!found && e.target != document.body) {
                     e.target = e.target.offsetParent;
@@ -1556,8 +1556,8 @@ apf.BaseTab = function(){
             });* /
             //#endif
 
-            this.oLeftScroll  = apf.getNode(this.oScroller, [0]);
-            this.oRightScroll = apf.getNode(this.oScroller, [1]);
+            this.oLeftScroll  = ppc.getNode(this.oScroller, [0]);
+            this.oRightScroll = ppc.getNode(this.oScroller, [1]);
             
             ["oLeftScroll", "oRightScroll"].forEach(function(sBtn) {
                 var dir    = sBtn == "oLeftScroll" ? SCROLL_LEFT  : SCROLL_RIGHT,
@@ -1572,7 +1572,7 @@ apf.BaseTab = function(){
                     e = e || event;
                     _self.scroll(e, dir);
                     startTimer(e, dir);
-                    if (!apf.isSafariOld)
+                    if (!ppc.isSafariOld)
                         this.onmouseout();
                 };
                 _self[sBtn].onmouseover = function() {
@@ -1601,19 +1601,19 @@ apf.BaseTab = function(){
         }
 
         //#ifdef __WITH_LAYOUT
-        apf.layout.setRules(this.$ext, this.$uniqueId + "_tabscroller",
-            "var o = apf.all[" + this.$uniqueId + "]; o && o.correctScrollState()");
-        apf.layout.queue(this.$ext);*/
+        ppc.layout.setRules(this.$ext, this.$uniqueId + "_tabscroller",
+            "var o = ppc.all[" + this.$uniqueId + "]; o && o.correctScrollState()");
+        ppc.layout.queue(this.$ext);*/
         //#endif
         // #endif
 
         //Skin changing support
         if (this.$int) {
-            //apf.AmlParser.replaceNode(this.oPages, oPages);
+            //ppc.AmlParser.replaceNode(this.oPages, oPages);
             this.$int = this.oPages;
             page      = true;
 
-            //@todo apf3.0 skin change?
+            //@todo ppc3.0 skin change?
             nodes = this.childNodes;
             for (i = 0; i < nodes.length; i++) {
                 node = nodes[i];
@@ -1671,7 +1671,7 @@ apf.BaseTab = function(){
             return;
         // #ifdef __ENABLE_TABSCROLL
         //#ifdef __WITH_LAYOUT
-        /*apf.layout.removeRule(this.$ext, this.$uniqueId + "_tabscroller");
+        /*ppc.layout.removeRule(this.$ext, this.$uniqueId + "_tabscroller");
         //#endif
         [this.oLeftScroll, this.oRightScroll].forEach(function(oBtn) {
             oBtn.onmousedown = oBtn.ondblclick = oBtn.onmouseover = 
@@ -1679,6 +1679,6 @@ apf.BaseTab = function(){
         });*/
         // #endif
     };
-}).call(apf.BaseTab.prototype = new apf.Presentation());
+}).call(ppc.BaseTab.prototype = new ppc.Presentation());
 
 // #endif

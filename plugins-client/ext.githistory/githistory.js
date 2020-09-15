@@ -24,7 +24,7 @@
  * clicking around clears the syntax highlighting (wtf?)
  *  - This happen only the first time for each file, subsequent
  *    re-entries and clicking around keeps the highlighting
- * focus() on search after clear doesn't work. Fix APF
+ * focus() on search after clear doesn't work. Fix PPC
  *  - Or get rid of X
  * Hover on timeline dots don't register when focus is in search box
  * UI and animations are totally messed up in FF
@@ -100,7 +100,7 @@ module.exports = ext.register("ext/githistory/githistory", {
         });
 
         this.nodes.push(
-            ide.mnuEdit.appendChild(new apf.item({
+            ide.mnuEdit.appendChild(new ppc.item({
                 caption : "Compare File History",
                 onclick : function(){
                     _self.enterRevisionMode();
@@ -113,26 +113,26 @@ module.exports = ext.register("ext/githistory/githistory", {
 
     init : function() {
         var _self = this;
-        vbMain.parentNode.appendChild(new apf.vbox({
+        vbMain.parentNode.appendChild(new ppc.vbox({
             anchors: "0 0 0 0",
             id: "vbVersions",
             "class": "vbZen vbVersions",
             visible: false,
             childNodes : [
-                new apf.hbox({
+                new ppc.hbox({
                     flex : "1",
                     childNodes : [
-                        new apf.vbox({
+                        new ppc.vbox({
                             flex : "1",
                             margin : "20 20 0 30",
                             childNodes : [
-                                new apf.vbox({
+                                new ppc.vbox({
                                     height : "104",
                                     id : "vbHistoricalHeader",
                                     childNodes : [
-                                        new apf.hbox({
+                                        new ppc.hbox({
                                             childNodes : [
-                                                new apf.text({
+                                                new ppc.text({
                                                     id : "versionsLabel",
                                                     "class" : "versions_label",
                                                     value : "",
@@ -140,7 +140,7 @@ module.exports = ext.register("ext/githistory/githistory", {
                                                     height : "46",
                                                     margin : "0 10 0 0"
                                                 }),
-                                                new apf.textbox({
+                                                new ppc.textbox({
                                                     width : "100",
                                                     height : "25",
                                                     id : "tbRevisionsSearch",
@@ -162,25 +162,25 @@ module.exports = ext.register("ext/githistory/githistory", {
                                                         );
                                                     },
                                                     onfocus : function() {
-                                                        apf.tween.single(this.$ext, {
+                                                        ppc.tween.single(this.$ext, {
                                                             type: "width",
                                                             from: 100,
                                                             to  : 140,
-                                                            anim : apf.tween.EASEOUT,
+                                                            anim : ppc.tween.EASEOUT,
                                                             steps : 20
                                                         });
                                                     },
                                                     onblur : function() {
-                                                        apf.tween.single(this.$ext, {
+                                                        ppc.tween.single(this.$ext, {
                                                             type: "width",
                                                             from: 140,
                                                             to  : 100,
-                                                            anim : apf.tween.EASEOUT,
+                                                            anim : ppc.tween.EASEOUT,
                                                             steps : 20
                                                         });
                                                     }
                                                 }),
-                                                new apf.button({
+                                                new ppc.button({
                                                     width : 17,
                                                     height : 17,
                                                     skin : "btn_icon_only",
@@ -193,22 +193,22 @@ module.exports = ext.register("ext/githistory/githistory", {
                                         })
                                     ]
                                 }),
-                                new apf.vbox({
+                                new ppc.vbox({
                                     id : "historicalVersionHolder",
                                     flex : "1"
                                 })
                             ]
                         }),
-                        new apf.vbox({
+                        new ppc.vbox({
                             flex : "1",
                             margin : "20 20 0 30",
                             childNodes : [
-                                new apf.vbox({
+                                new ppc.vbox({
                                     height : "104",
                                     childNodes : [
-                                        new apf.hbox({
+                                        new ppc.hbox({
                                             childNodes : [
-                                                new apf.text({
+                                                new ppc.text({
                                                     "class" : "versions_label",
                                                     id : "currentVersionsLabel",
                                                     value : "",
@@ -216,7 +216,7 @@ module.exports = ext.register("ext/githistory/githistory", {
                                                     margin : "0 10 0 0",
                                                     height : "80"
                                                 }),
-                                                new apf.text({
+                                                new ppc.text({
                                                     id : "currentDocLabel",
                                                     "class" : "current_label rounded",
                                                     value : "Current Document",
@@ -226,7 +226,7 @@ module.exports = ext.register("ext/githistory/githistory", {
                                         })
                                     ]
                                 }),
-                                new apf.vbox({
+                                new ppc.vbox({
                                     id : "currentVersionHolder",
                                     flex : "1"
                                 })
@@ -234,12 +234,12 @@ module.exports = ext.register("ext/githistory/githistory", {
                         })
                     ]
                 }),
-                new apf.hbox({
+                new ppc.hbox({
                     height : "75",
                     align : "center",
                     pack : "center",
                     childNodes : [
-                        new apf.hbox({
+                        new ppc.hbox({
                             height : "45",
                             padding : "4",
                             margin : "0 0 0 10",
@@ -247,7 +247,7 @@ module.exports = ext.register("ext/githistory/githistory", {
                             pack : "center",
                             "class" : "current_label black",
                             childNodes : [
-                                new apf.button({
+                                new ppc.button({
                                     id : "btnRestore",
                                     caption : "Restore",
                                     skinset : "skin_revisions",
@@ -260,7 +260,7 @@ module.exports = ext.register("ext/githistory/githistory", {
                                         _self.restoreRevision();
                                     }
                                 }),
-                                new apf.button({
+                                new ppc.button({
                                     caption : "Done",
                                     skinset : "skin_revisions",
                                     skin : "revisionsbutton",
@@ -278,12 +278,12 @@ module.exports = ext.register("ext/githistory/githistory", {
             ]
         }));
 
-        var animateEditorClone = new apf.vbox({
+        var animateEditorClone = new ppc.vbox({
             id : "animateEditorClone",
             "class" : "animate_editor_clone",
             style : "z-index : 99999; position: absolute; background: #fff; overflow: hidden",
             childNodes: [
-                new apf.codeeditor({
+                new ppc.codeeditor({
                     flex : "1",
                     id                : "currentEditorClone",
                     visible           : "true",
@@ -409,7 +409,7 @@ module.exports = ext.register("ext/githistory/githistory", {
         cecSession.setScrollLeft(sl);
         cecSession.setScrollTop(st);
 
-        var cePos = apf.getAbsolutePosition(ceEditor.$ext);
+        var cePos = ppc.getAbsolutePosition(ceEditor.$ext);
         animateEditorClone.$ext.style.left = cePos[0] + "px";
         animateEditorClone.$ext.style.top = "124px";//cePos[1] + "px";
         animateEditorClone.$ext.style.width = ceEditor.getWidth() + "px";
@@ -478,8 +478,8 @@ module.exports = ext.register("ext/githistory/githistory", {
         currentSession.setScrollLeft(sl);
         currentSession.setScrollTop(st);
 
-        var cePos = apf.getAbsolutePosition(ceEditor.$ext);
-        var cvePos = apf.getAbsolutePosition(currentVersionEditor.$ext);
+        var cePos = ppc.getAbsolutePosition(ceEditor.$ext);
+        var cvePos = ppc.getAbsolutePosition(currentVersionEditor.$ext);
         animateEditorClone.$ext.style.left = cvePos[0] + "px";
         animateEditorClone.$ext.style.top = cePos[1] + "px";
         animateEditorClone.$ext.style.width = currentVersionEditor.getWidth() + "px";
@@ -530,7 +530,7 @@ module.exports = ext.register("ext/githistory/githistory", {
      */
     resizeElements : function() {
         var ph = currentVersionHolder.$ext;
-        var pos = apf.getAbsolutePosition(ph);
+        var pos = ppc.getAbsolutePosition(ph);
         currentVersionEditor.$ext.style.left = pos[0] + "px";
         currentVersionEditor.$ext.style.top  = pos[1] + "px";
 
@@ -538,7 +538,7 @@ module.exports = ext.register("ext/githistory/githistory", {
         currentVersionEditor.$ext.style.height = ph.offsetHeight + "px";
 
         ph = historicalVersionHolder.$ext;
-        pos = apf.getAbsolutePosition(ph);
+        pos = ppc.getAbsolutePosition(ph);
         /*historicalVersionEditor.$ext.style.left = pos[0] + "px";
         historicalVersionEditor.$ext.style.top  = pos[1] + "px";
 
@@ -587,19 +587,19 @@ module.exports = ext.register("ext/githistory/githistory", {
 
         var output = rutil.formulateRevisionMetaData(logData[num], true);
         versionsLabel.setValue(output);
-        apf.tween.single(versionsLabel.$ext, {
+        ppc.tween.single(versionsLabel.$ext, {
             type : "scrollTop",
             from : 0,
             to   : 16,
-            anim : apf.tween.EASEIN,
+            anim : ppc.tween.EASEIN,
             steps : 50,
             onfinish : function() {
                 setTimeout(function() {
-                    apf.tween.single(versionsLabel.$ext, {
+                    ppc.tween.single(versionsLabel.$ext, {
                         type : "scrollTop",
                         from : 16,
                         to   : 0,
-                        anim : apf.tween.EASEOUT,
+                        anim : ppc.tween.EASEOUT,
                         steps : 50
                     });
                 }, 1000);
@@ -611,7 +611,7 @@ module.exports = ext.register("ext/githistory/githistory", {
         this.removeMarkers(cveSession);
 
         this.requestGitShow(hash);
-        /*var hvePos = apf.getAbsolutePosition(historicalVersionEditor.$ext);
+        /*var hvePos = ppc.getAbsolutePosition(historicalVersionEditor.$ext);
         Firmin.animate(historicalPlaceholder.$ext, {
             opacity : 0,
             zIndex  : 99999,
@@ -666,8 +666,8 @@ module.exports = ext.register("ext/githistory/githistory", {
         if (initialShow)
             this.loading_div.style.top = "-2000px";
 
-        var iw = apf.getHtmlInnerWidth(this.loading_div);
-        var ih = apf.getHtmlInnerHeight(this.loading_div);
+        var iw = ppc.getHtmlInnerWidth(this.loading_div);
+        var ih = ppc.getHtmlInnerHeight(this.loading_div);
         this.loading_div.style.left = (window.innerWidth/2 - iw/2) + "px";
         if (initialShow)
             this.loading_div.style.top = (window.innerHeight/2 - ih/2) + "px";
@@ -687,7 +687,7 @@ module.exports = ext.register("ext/githistory/githistory", {
             file : this.revisionState.getCurrentFile()
         };
 
-        apf.extend(data, extra);
+        ppc.extend(data, extra);
 
         ide.dispatchEvent("track_action", {
             type: "gittools",
@@ -1042,7 +1042,7 @@ module.exports = ext.register("ext/githistory/githistory", {
     /**
      * Removes all markers from a code editor
      * 
-     * @param {apf.codeeditor.session} Code editor session
+     * @param {ppc.codeeditor.session} Code editor session
      */
     removeMarkers: function(session) {
         if (!session.revisionAnchors)
@@ -1062,7 +1062,7 @@ module.exports = ext.register("ext/githistory/githistory", {
     /**
      * Adds code highlighting to emphasize differences from diff_match_patch
      * 
-     * @param {apf.codeeditor} editor The code editor
+     * @param {ppc.codeeditor} editor The code editor
      * @param {string} type The CSS class suffix to apply (ex. "remove", "add")
      * @param {number} fromRow Which row to start from
      * @param {number} fromColumn Which column to start from

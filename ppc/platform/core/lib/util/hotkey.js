@@ -3,7 +3,7 @@
 /**
  * @private
  */
-apf.hotkeys = {};
+ppc.hotkeys = {};
 (function() {
     /**
      * @private
@@ -117,7 +117,7 @@ apf.hotkeys = {};
      * 
      * #### Example:
      * ```javascript
-     *   apf.registerHotkey('Ctrl-Z', undoHandler);
+     *   ppc.registerHotkey('Ctrl-Z', undoHandler);
      * ```
      * @param {String}   hotkey  The key combination to user. This is a
      * combination of [[keys: Ctrl]], [[keys: Alt]], [[keys: Shift]] and a normal key to press. Use `+` to
@@ -125,7 +125,7 @@ apf.hotkeys = {};
      * @param {Function} handler The code to be executed when the key
      * combination is pressed.
      */
-    apf.registerHotkey = this.register = function(hotkey, handler){
+    ppc.registerHotkey = this.register = function(hotkey, handler){
         var parts = hotkey.split("|"),
             i     = 0,
             l     = parts.length;
@@ -148,7 +148,7 @@ apf.hotkeys = {};
             handler(eInfo.htmlEvent);
             eInfo.returnValue = false;
             // #ifdef __WITH_QUEUE
-            apf.queue.empty();
+            ppc.queue.empty();
             // #endif
         }
 
@@ -161,7 +161,7 @@ apf.hotkeys = {};
      * @param {Function} handler The code to be executed when the key
      * combination is pressed.
      */
-    apf.removeHotkey = this.remove = this.unregister = function(hotkey, handler) {
+    ppc.removeHotkey = this.remove = this.unregister = function(hotkey, handler) {
         var parts = hotkey.split("|"),
             i     = 0,
             l     = parts.length;
@@ -193,13 +193,13 @@ apf.hotkeys = {};
         return res.join(" | ");
     };
 
-    apf.addEventListener("keydown", function(eInfo) {
+    ppc.addEventListener("keydown", function(eInfo) {
         var e = eInfo.htmlEvent;
         //Hotkey
         if (/*!eInfo.isTextInput && */_self.$exec(eInfo) === false
           || eInfo.returnValue === false) {
-            apf.stopEvent(e);
-            if (apf.canDisableKeyCodes) {
+            ppc.stopEvent(e);
+            if (ppc.canDisableKeyCodes) {
                 try {
                     e.keyCode = 0;
                 }
@@ -225,10 +225,10 @@ apf.hotkeys = {};
         if (keys.length) {
             if (e.keyCode > 46 && !_self.keyNames[e.keyCode])
                 keys.push(String.fromCharCode(e.keyCode));
-            apf.setProperty("hotkey", keys.join("-"));
+            ppc.setProperty("hotkey", keys.join("-"));
         }
         //#endif
     });
-}).call(apf.hotkeys);
+}).call(ppc.hotkeys);
 
 //#endif

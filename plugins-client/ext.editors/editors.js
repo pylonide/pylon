@@ -33,7 +33,7 @@ module.exports = ext.register("ext/editors/editors", {
     register : function(oExtension){
         /*var id = "rb" + oExtension.path.replace(/\//g, "_");
 
-        oExtension.$rbEditor = barButtons.appendChild(new apf.radiobutton({
+        oExtension.$rbEditor = barButtons.appendChild(new ppc.radiobutton({
             id        : id,
             label     : oExtension.name,
             value     : oExtension.path,
@@ -47,7 +47,7 @@ module.exports = ext.register("ext/editors/editors", {
         var _self = this;
 
         //Add a menu item to the list of editors
-        oExtension.$itmEditor = menus.addItemByPath("View/Editors/" + oExtension.name, new apf.item({
+        oExtension.$itmEditor = menus.addItemByPath("View/Editors/" + oExtension.name, new ppc.item({
             type     : "radio",
             value    : oExtension.path,
             group    : this.$itmGroup,
@@ -91,7 +91,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     toggleTabs : function(force, preview, noAnim, mouse){
         if (typeof noAnim == "undefined") {
-            noAnim = apf.isFalse(settings.model.queryValue("general/@animateui"));
+            noAnim = ppc.isFalse(settings.model.queryValue("general/@animateui"));
         }
 
         if (!force || force > 0) {
@@ -119,20 +119,20 @@ module.exports = ext.register("ext/editors/editors", {
         var _self = this;
 
         var btn, btnMenu;
-        var tab = new apf.bar({
+        var tab = new ppc.bar({
             skin     : "basic",
             "class"  : "codeditorHolder",
             style    : "position:absolute;",
             childNodes: [
-                new apf.tab({
+                new ppc.tab({
                     id      : "tabEditors",
                     skin    : "editor_tab",
                     style   : "height : 100%",
                     buttons : "close,scale,order",
-                    animate : apf.isGecko
+                    animate : ppc.isGecko
                         ? false
                         : "[{require('core/settings').model}::general/@animateui]",
-                    anims   : "{apf.isTrue(this.animate) ? 'add|remove|sync' : ''}",
+                    anims   : "{ppc.isTrue(this.animate) ? 'add|remove|sync' : ''}",
                     overactivetab  : true,
                     onfocus        : function(e){
                         _self.switchfocus(e);
@@ -161,7 +161,7 @@ module.exports = ext.register("ext/editors/editors", {
                         catch(e){ console.warn("Error afterclose", e); }
                     },
                     childNodes : [
-                        btn = new apf.button({
+                        btn = new ppc.button({
                             id : "plus_tab_button",
                             "class" : "plus_tab_button",
                             skin : "btn_icon_only",
@@ -173,7 +173,7 @@ module.exports = ext.register("ext/editors/editors", {
                     ]
                 }),
 
-                btnMenu = new apf.button({
+                btnMenu = new ppc.button({
                     id : "btnEditorTabsBehavior",
                     onmouseover : function(){
                         this.setAttribute("submenu", require('ext/menus/menus').getMenuId('View/Tabs'));
@@ -181,7 +181,7 @@ module.exports = ext.register("ext/editors/editors", {
                     skin : "btn_icon_only",
                     "class" : "tabmenubtn"
                 }) /*,
-                new apf.hbox({
+                new ppc.hbox({
                     id      : "barButtons",
                     edge    : "0 0 0 6",
                     "class" : "relative",
@@ -226,17 +226,17 @@ module.exports = ext.register("ext/editors/editors", {
         });
 
         // on firefox tabEditors.$buttons are wrapped in additional div
-        // https://github.com/ajaxorg/apf/blob/master/core/baseclasses/basetab.js#L1503
+        // https://github.com/ajaxorg/ppc/blob/master/core/baseclasses/basetab.js#L1503
         if (tabEditors.$gotContainer) {
             tabEditors.$buttons.parentNode.removeNode();
         }
 
         barButtonContainer.$int.appendChild(tabEditors.$buttons);
         barButtonContainer.$int.style.paddingRight
-            = (parseInt(apf.getStyle(tabEditors.$buttons, "paddingLeft"))
-            + parseInt(apf.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
+            = (parseInt(ppc.getStyle(tabEditors.$buttons, "paddingLeft"))
+            + parseInt(ppc.getStyle(tabEditors.$buttons, "paddingRight"))) + "px";
 
-        if (!apf.isGecko) {
+        if (!ppc.isGecko) {
             tabEditors.$buttons.style.position = "absolute";
             tabEditors.$buttons.style.left = "0";
             tabEditors.$buttons.style.top = "0";
@@ -270,8 +270,8 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$buttons.style.overflow = "hidden";
 
             if (dir) {
-                apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
-                apf.setStyleClass(tabEditors.$buttons.parentNode, "step5");
+                ppc.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
+                ppc.setStyleClass(tabEditors.$buttons.parentNode, "step5");
             }
             else {
                 //@todo this is a bit hacky
@@ -286,12 +286,12 @@ module.exports = ext.register("ext/editors/editors", {
                 setTimeout(function(){
                     if (x == 6) {
                         if (!dir)
-                            apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
+                            ppc.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
 
                         return;
                     }
 
-                    apf.setStyleClass(tabEditors.$buttons.parentNode,
+                    ppc.setStyleClass(tabEditors.$buttons.parentNode,
                         "step" + (dir ? --i : ++i),
                         ["step" + (dir ? i + 1 : i-1)]);
 
@@ -307,7 +307,7 @@ module.exports = ext.register("ext/editors/editors", {
                 { duration : duration, node: this.buttons.menu, opacity : dir ? 1 : 0},
                 { duration : duration, node: this.buttons.menu, height : (dir ? 17 : 10) + "px"}
             ], function(e){
-                apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
+                ppc.setStyleClass(tabEditors.$buttons.parentNode, "", ["step" + i]);
                     _self.animating = false;
 
                 tabEditors.parentNode.setAttribute("margin",
@@ -319,7 +319,7 @@ module.exports = ext.register("ext/editors/editors", {
         else {
             if (this.showTabs || preview) {
                 tabEditors.$buttons.style.height = "22px";
-                apf.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
+                ppc.setStyleClass(tabEditors.$buttons.parentNode, "", ["hidetabs"]);
                 this.buttons.menu.setHeight(17);
                 this.buttons.add.setHeight(17);
 
@@ -327,7 +327,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
             else {
                 tabEditors.$buttons.style.height = "7px";
-                apf.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
+                ppc.setStyleClass(tabEditors.$buttons.parentNode, "hidetabs");
                 this.buttons.menu.setHeight(10);
                 this.buttons.add.setHeight(10);
 
@@ -353,7 +353,7 @@ module.exports = ext.register("ext/editors/editors", {
 
     initEditor : function(editor){
         //Create Page Element
-        var editorPage = new apf.page({
+        var editorPage = new ppc.page({
             id        : editor.path,
             mimeTypes : editor.fileExtensions,
             visible   : false,
@@ -436,10 +436,10 @@ module.exports = ext.register("ext/editors/editors", {
         if (init)
             tabs.setAttribute("buttons", "close");
 
-        if (!apf.isGecko)
+        if (!ppc.isGecko)
             tabEditors.$buttons.style.overflow = "";
 
-        var model = new apf.model();
+        var model = new ppc.model();
         var fake = tabs.add("{([@changed] == 1 ? '*' : '') + %[.].getAttribute('name')}", filepath, editor.path, null, function(page) {
             page.$doc    = doc;
             doc.$page    = page;
@@ -473,7 +473,7 @@ module.exports = ext.register("ext/editors/editors", {
             doc: doc
         });
 
-        apf.setStyleClass(tabEditors.$ext, "", ["empty"])
+        ppc.setStyleClass(tabEditors.$ext, "", ["empty"])
 
         if (active === false) // init && !
             return {editor: editor, page: fake};
@@ -574,7 +574,7 @@ module.exports = ext.register("ext/editors/editors", {
             editor.clear && editor.clear();
             require("ext/editors/editors").currentEditor = null;
 
-            apf.setStyleClass(tabEditors.$ext, "empty")
+            ppc.setStyleClass(tabEditors.$ext, "empty")
         }
 
         //Destroy the app page if it has no application instance
@@ -634,9 +634,9 @@ module.exports = ext.register("ext/editors/editors", {
             window.history.pushState(path, path, "/" + (p[1] || "name") + "/" + (p[2] || "project") + path);
         }
         else {
-            apf.history.setHash("!" + path);
+            ppc.history.setHash("!" + path);
         }*/
-        apf.history.setHash("!" + path);
+        ppc.history.setHash("!" + path);
 
         if (page.$model.data.getAttribute("ignore") !== "1")
             settings.model.setQueryValue("auto/files/@active", path);
@@ -700,13 +700,13 @@ module.exports = ext.register("ext/editors/editors", {
                 tabEditors.set(page);
         };
 
-        apf.addEventListener("hashchange", function(e){
+        ppc.addEventListener("hashchange", function(e){
             var page = "/workspace" + e.page;
             if (tabEditors.activepage != page && tabEditors.getPage(page))
                 tabEditors.set(page);
         });
 
-        menus.addItemByPath("View/Editors/", new apf.menu({
+        menus.addItemByPath("View/Editors/", new ppc.menu({
             "onprop.visible" : function(e){
                 if (e.value) {
                     if (!_self.currentEditor)
@@ -755,15 +755,15 @@ module.exports = ext.register("ext/editors/editors", {
 
         menus.addItemByPath("View/Font Size/", null, 290001),
 
-        menus.addItemByPath("View/Font Size/Increase Font Size", new apf.item({
+        menus.addItemByPath("View/Font Size/Increase Font Size", new ppc.item({
             command : "largerfont"
         }), 1);
 
-        menus.addItemByPath("View/Font Size/Decrease Font Size", new apf.item({
+        menus.addItemByPath("View/Font Size/Decrease Font Size", new ppc.item({
             command : "smallerfont"
         }), 2);
 
-        menus.addItemByPath("View/Tab Buttons", new apf.item({
+        menus.addItemByPath("View/Tab Buttons", new ppc.item({
             type: "check",
             checked : "[{require('core/settings').model}::auto/tabs/@show]",
             command : "toggleTabs"
@@ -789,7 +789,7 @@ module.exports = ext.register("ext/editors/editors", {
             tabEditors.$setStyleClass(tabEditors.$ext, "", ["offline"]);
         });
 
-        this.$itmGroup = new apf.group();
+        this.$itmGroup = new ppc.group();
 
         this.nodes.push(this.addTabSection());
 
@@ -801,7 +801,7 @@ module.exports = ext.register("ext/editors/editors", {
                         timingFunction: e.options.timingFunction,
                         duration: e.options.duration
                     }, function(){
-                        apf.setStyleClass(tabEditors.$buttons, "morepadding");
+                        ppc.setStyleClass(tabEditors.$buttons, "morepadding");
                     });
                 }
                 else {
@@ -810,7 +810,7 @@ module.exports = ext.register("ext/editors/editors", {
                         timingFunction: e.options.timingFunction,
                         duration: e.options.duration
                     }, function(){
-                        apf.setStyleClass(tabEditors.$buttons, "", ["morepadding"]);
+                        ppc.setStyleClass(tabEditors.$buttons, "", ["morepadding"]);
                     });
                 }
             }
@@ -825,18 +825,18 @@ module.exports = ext.register("ext/editors/editors", {
 
             _self.loadedSettings = false;
 
-            if (apf.isTrue(e.model.queryValue("auto/menus/@minimized"))) {
-                apf.setStyleClass(tabEditors.$buttons, "morepadding");
+            if (ppc.isTrue(e.model.queryValue("auto/menus/@minimized"))) {
+                ppc.setStyleClass(tabEditors.$buttons, "morepadding");
             }
 
             var showTab = settings.model.queryValue("auto/tabs/@show");
-            _self.showTabs = apf.isTrue(showTab);
+            _self.showTabs = ppc.isTrue(showTab);
             if (!_self.showTabs)
                 _self.toggleTabs(_self.showTabs ? 1 : -1, true, true);
 
             function checkExpand(path, doc) {
                 ide.addEventListener("init.ext/tree/tree", function(){
-                    var parent_path = (apf.getDirname(path) || "").replace(/\/$/, "");
+                    var parent_path = (ppc.getDirname(path) || "").replace(/\/$/, "");
                     var expandEventListener = function(e) {
                         if (e.xmlNode && e.xmlNode.getAttribute("path") == parent_path) {
                             // if the file has been loaded from the tree
@@ -928,7 +928,7 @@ module.exports = ext.register("ext/editors/editors", {
             }
 
             if (pages.length) {
-                pNode = apf.createNodeFromXpath(e.model.data, "auto/files");
+                pNode = ppc.createNodeFromXpath(e.model.data, "auto/files");
                 for (var i = 0, l = pages.length; i < l; i++) {
                     if (!pages[i] || !pages[i].$model || !pages[i].$model.data || pages[i].$model.data.getAttribute("ignore") == "1")
                         continue;
@@ -937,7 +937,7 @@ module.exports = ext.register("ext/editors/editors", {
                     if (!file || file.getAttribute("debug"))
                         continue;
 
-                    var copy = apf.xmldb.cleanNode(file.cloneNode(false));
+                    var copy = ppc.xmldb.cleanNode(file.cloneNode(false));
                     if (!copy.getAttribute("newfile"))
                         copy.removeAttribute("changed");
                     copy.removeAttribute("loading");
@@ -1117,7 +1117,7 @@ module.exports = ext.register("ext/editors/editors", {
                 ide.addEventListener("afteropenfile", _self.currentEditor.$pendingJumpTo);
             }
 
-            ide.dispatchEvent("openfile", apf.extend(options, extraOptions));
+            ide.dispatchEvent("openfile", ppc.extend(options, extraOptions));
         }
     },
 

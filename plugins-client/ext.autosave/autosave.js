@@ -37,14 +37,14 @@ module.exports = ext.register("ext/autosave/autosave", {
         settings.addSettings("General", markupSettings);
         ide.addEventListener("settings.load", function(e){
             e.ext.setDefaults("general", [["autosaveenabled", "false"]]);
-            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+            _self.isAutoSaveEnabled = ppc.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
         ide.addEventListener("settings.save", function(e) {
             if (!e.model.data)
                 return;
 
-            _self.isAutoSaveEnabled = apf.isTrue(e.model.queryValue("general/@autosaveenabled"));
+            _self.isAutoSaveEnabled = ppc.isTrue(e.model.queryValue("general/@autosaveenabled"));
         });
 
         // when we're back online we'll trigger an autosave if enabled
@@ -57,7 +57,7 @@ module.exports = ext.register("ext/autosave/autosave", {
         btnSave.setAttribute("margin", "0 20");
         btnSave.removeAttribute("tooltip");
         btnSave.removeAttribute("command");
-        apf.setStyleClass(btnSave.$ext, "btnSave");
+        ppc.setStyleClass(btnSave.$ext, "btnSave");
 
         tooltip.add(btnSave, {
             message : "Changes to your file are automatically saved.<br />\
@@ -83,7 +83,7 @@ module.exports = ext.register("ext/autosave/autosave", {
     /////////////////////
 
     onBeforeSaveWarning: function(e) {
-        var isNewFile = apf.isTrue(e.doc.getNode().getAttribute("newfile"));
+        var isNewFile = ppc.isTrue(e.doc.getNode().getAttribute("newfile"));
         if (!isNewFile && this.isAutoSaveEnabled) {
             this.save(e.doc.$page);
             return false;

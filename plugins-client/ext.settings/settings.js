@@ -40,7 +40,7 @@ module.exports = ext.register("ext/settings/settings", {
     addSection : function(tagName, name, xpath, cbCommit){
         var node = this.model.queryNode(xpath + "/" + tagName);
         if (!node)
-            this.model.appendXml(apf.n("<" + apf.escapeXML(tagName) + "/>").attr("name", name).node(), xpath);
+            this.model.appendXml(ppc.n("<" + ppc.escapeXML(tagName) + "/>").attr("name", name).node(), xpath);
     },
 
     hook : function(){
@@ -74,11 +74,11 @@ module.exports = ext.register("ext/settings/settings", {
         if (this.headings[name])
             return this.headings[name];
 
-        var heading = barSettings.appendChild(new apf.bar({
+        var heading = barSettings.appendChild(new ppc.bar({
             skin: "basic"
         }));
         heading.$int.innerHTML = '<div class="header"><span></span><div>'
-            + apf.escapeXML(name) + '</div></div>';
+            + ppc.escapeXML(name) + '</div></div>';
 
         this.headings[name] = heading;
 
