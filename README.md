@@ -14,7 +14,7 @@ Pylon is built entirely on a web stack, making it the most hacker-friendly IDE t
 ## Features
 
 - High performance ACE text editor with bundled syntax highlighting to support a wide range of programming languages.
-- Modern node support (NodeJS >= 4.9.1)
+- Modern node support (NodeJS >= 10.20.1)
 - Up to date dependencies and compatibility fixes
 - Terminal
 
@@ -58,9 +58,9 @@ For quality of life it is recommended to remap Caps Lock hardware key to act as 
 
 If installing on Windows, please refer to [Installation on Windows](#installation-on-windows-experimental).
 
-Requirements (>= 2.3.0):
+Requirements (>= 2.6.0):
 
-  * NodeJS `>= 4.9.1`
+  * NodeJS `>= 10.20.1`
   * g++-4.9 (Required for node-pty compilation)
   * make (Required for node-pty compilation)
   * python (Required for node-pty compilation)
@@ -112,6 +112,10 @@ Clone the Pylon repo to your machine and run npm:
 
     npm install
     bin/pylon.sh -w . -l 0.0.0.0
+
+## Installation inside Docker container
+
+Pylon IDE can be successfully deployed and run within a container. However, if the `npm` utility complains permissions during install. One must include `--unsafe-perm` for the installation to pass successfully.
 
 ## Updating
 
