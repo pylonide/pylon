@@ -9,15 +9,7 @@ os:
   - linux
   - osx
 
-addons:
-  apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    packages:
-    - g++-4.9
-
-before_install:
-  - if [ `uname` = "Linux" ]; then export CXX=g++-4.9; fi
+dist: focal
 
 install:
   - npm install
