@@ -44,8 +44,8 @@ plugins-client/lib.ace/www/worker/worker-language.js plugins-client/lib.ace/www/
         $(wildcard plugins-client/ext.htmllanguage/*/*) \
         $(wildcard plugins-client/ext.jsinfer/*) \
         $(wildcard plugins-client/ext.jsinfer/*/*) \
-        $(wildcard node_modules/treehugger/lib/*) \
-        $(wildcard node_modules/treehugger/lib/*/*) \
+        $(wildcard node_modules/@pylonide/treehugger/lib/*) \
+        $(wildcard node_modules/@pylonide/treehugger/lib/*/*) \
         $(wildcard node_modules/ace/lib/*) \
         $(wildcard node_modules/ace/*/*) \
         Makefile.dryice.js
