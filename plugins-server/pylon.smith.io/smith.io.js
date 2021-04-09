@@ -3,7 +3,7 @@
 var ASSERT = require("assert");
 var PATH = require("path");
 var FS = require("fs");
-var SMITH = require("smith");
+var SMITH = require("@pylonide/smith");
 var ENGINE_IO = require("engine.io");
 var EVENTS = require("events");
 
@@ -42,7 +42,7 @@ module.exports = function startup(options, imports, register) {
         }]);
 
         imports["static"].addStatics([{
-            path: PATH.dirname(require.resolve("smith")),
+            path: PATH.dirname(require.resolve("@pylonide/smith")),
             mount: "/smith",
             rjs: [
                 {
