@@ -45,6 +45,7 @@
         "xterm-addon-fit": "~0.5.0",
         "vary": "^1.1.2",
         "asyncjs": "~0.0.13",
+        "@pylonide/architect-build": "~0.1.3",
         "@pylonide/dryice": "^0.5.2",
         "@pylonide/jsdav": "~0.4.0",
         "@pylonide/smith": "~0.1.24",
@@ -52,7 +53,6 @@
         "@pylonide/vfs-architect": "~0.2.0",
         "@pylonide/vfs-nodefs-adapter": "~0.4.0",
         "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.12",
-        "architect-build": "https://github.com/pylonide/architect-build/tarball/299d7cf718c9a66192faf18cf85680b98ee3ac86",
         "v8debug": "https://github.com/pylonide/lib-v8debug/tarball/863c0ce1e39a4f100457d306e1d2cc2b0283fa2a"
     },
     "devDependencies": {
@@ -69,6 +69,6 @@
         "start": "./bin/pylon.sh",
         "test": "npm run-script build && ./test/run-tests.sh",
         "build": "mkdir -p ./plugins-client/lib.ppc/www/ppc && cd ppc && mkdir -p build && node ppc-package.js projects/default.ppp && cat ./build/ppc_release.js | sed 's/\\(\\/\\*FILEHEAD(\\).*//g' > ../plugins-client/lib.ppc/www/ppc/ppc.js && cd ..",
-        "postinstall": "npm run-script build; if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../treehugger node_modules/treehugger; cd ../ace; fi; make clean pre_build; ./Makefile.dryice.js minimal; cd ../..; make worker; make mode; make theme; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/treehugger; rmdir node_modules; fi"
+        "postinstall": "npm run-script build; if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../@pylonide node_modules/@pylonide; cd ../ace; fi; make clean pre_build; sed 's/architect-build\\//@pylonide\\/architect-build\\//g' Makefile.dryice.js > MakefilePylon.dryice.js; node ./MakefilePylon.dryice.js minimal; cd ../..; make worker; make mode; make theme; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/@pylonide; rmdir node_modules; fi"
     }
 }
