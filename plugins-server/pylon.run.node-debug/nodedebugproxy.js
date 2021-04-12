@@ -7,7 +7,7 @@
 
 var util = require("util");
 var VfsSocket = require("./vfs_socket");
-var StandaloneV8DebuggerService = require("v8debug").StandaloneV8DebuggerService;
+var StandaloneV8DebuggerService = require("@pylonide/v8debug").StandaloneV8DebuggerService;
 
 var DebugProxy = module.exports = function(vfs, port) {
     require('events').EventEmitter.call(this);

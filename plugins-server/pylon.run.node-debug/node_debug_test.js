@@ -10,8 +10,8 @@ require("../pylon.run.node/node-plugin");
 var node_runner = require("../pylon.run.node/node-runner");
 var node_debug = require("./node_debug-runner");
 
-var V8Debugger = require("v8debug").V8Debugger;
-var WSV8DebuggerService = require("v8debug").WSV8DebuggerService;
+var V8Debugger = require("@pylonide/v8debug").V8Debugger;
+var WSV8DebuggerService = require("@pylonide/v8debug").WSV8DebuggerService;
 var ProcessManager = require("../pylon.process-manager/process_manager");
 var vfsLocal = require("vfs-local");
 var fsnode = require("@pylonide/vfs-nodefs-adapter");
