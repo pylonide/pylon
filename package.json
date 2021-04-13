@@ -1,74 +1,74 @@
 {
-    "name": "pln",
-    "description": "Pylon IDE",
-    "version": "2.7.0",
-    "homepage": "http://github.com/pylonide/pylon",
-    "engines": {
-        "node": ">= 10.20.1"
-    },
-    "author": "Sten Feldman <exile@chamber.ee>",
-    "contributors": [
-        "Ajax.org B.V. <info@ajax.org>",
-        "Sten Feldman <exile@chamber.ee> (http://sten.feldman.eesti.ee/)"
-    ],
-    "license": "GPL-3.0",
-    "help": {
-        "web": "https://github.com/pylonide/pylon/blob/master/README.md"
-    },
-    "dependencies": {
-        "async": "~3.2.0",
-        "colors": "~1.4.0",
-        "connect": "~3.7.0",
-        "express-session": "~1.17.0",
-        "cookie-parser": "~1.4.3",
-        "body-parser": "~1.19.0",
-        "serve-static": "~1.14.1",
-        "serve-favicon": "~2.5.0",
-        "csurf": "~1.11.0",
-        "urlrouter": "~0.5.4",
-        "qs": "~6.10.1",
-        "parseurl": "~1.3.2",
-        "passport": "~0.4.0",
-        "passport-http": "~0.3.0",
-        "passport-local": "~1.0.0",
-        "optimist": "~0.6.1",
-        "msgpack-js-browser": "~0.1.4",
-        "engine.io": "~5.0.0",
-        "engine.io-client": "~5.0.1",
-        "amd-loader": "~0.0.8",
-        "http-error": "~0.0.6",
-        "simple-template": "~0.0.1",
-        "netutil": "~0.0.2",
-        "architect": "~0.1.13",
-        "node-pty": "0.10.0",
-        "xterm": "~4.11.0",
-        "xterm-addon-fit": "~0.5.0",
-        "vary": "^1.1.2",
-        "asyncjs": "~0.0.13",
-        "@pylonide/architect-build": "~0.1.3",
-        "@pylonide/dryice": "^0.5.2",
-        "@pylonide/jsdav": "~0.4.0",
-        "@pylonide/smith": "~0.1.24",
-        "@pylonide/treehugger": "~0.1.0",
-        "@pylonide/v8debug": "~0.1.3",
-        "@pylonide/vfs-architect": "~0.2.0",
-        "@pylonide/vfs-nodefs-adapter": "~0.4.0",
-        "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.12"
-    },
-    "devDependencies": {
-        "nodeunit": "~0.11.2",
-        "rimraf": "~3.0.0",
-        "xmldom": "~0.5.0",
-        "xpath": "~0.0.27"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/pylonide/pylon.git"
-    },
-    "scripts": {
-        "start": "./bin/pylon.sh",
-        "test": "npm run-script build && ./test/run-tests.sh",
-        "build": "mkdir -p ./plugins-client/lib.ppc/www/ppc && cd ppc && mkdir -p build && node ppc-package.js projects/default.ppp && cat ./build/ppc_release.js | sed 's/\\(\\/\\*FILEHEAD(\\).*//g' > ../plugins-client/lib.ppc/www/ppc/ppc.js && cd ..",
-        "postinstall": "npm run-script build; if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../@pylonide node_modules/@pylonide; cd ../ace; fi; make clean pre_build; sed 's/architect-build\\//@pylonide\\/architect-build\\//g' Makefile.dryice.js > MakefilePylon.dryice.js; node ./MakefilePylon.dryice.js minimal; cd ../..; make worker; make mode; make theme; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/@pylonide; rmdir node_modules; fi"
-    }
+  "name": "pln",
+  "description": "Pylon IDE",
+  "version": "2.7.0",
+  "license": "GPL-3.0",
+  "homepage": "https://github.com/pylonide/pylon",
+  "engines": {
+    "node": ">= 12.22.1"
+  },
+  "author": "Sten Feldman <exile@chamber.ee>",
+  "contributors": [
+    "Ajax.org B.V. <info@ajax.org>",
+    "Sten Feldman <exile@chamber.ee> (https://sten.pw/)"
+  ],
+  "help": {
+    "web": "https://github.com/pylonide/pylon/blob/master/README.md"
+  },
+  "dependencies": {
+    "async": "~3.2.0",
+    "colors": "~1.4.0",
+    "connect": "~3.7.0",
+    "express-session": "~1.17.0",
+    "cookie-parser": "~1.4.3",
+    "body-parser": "~1.19.0",
+    "serve-static": "~1.14.1",
+    "serve-favicon": "~2.5.0",
+    "csurf": "~1.11.0",
+    "urlrouter": "~0.5.4",
+    "qs": "~6.10.1",
+    "parseurl": "~1.3.2",
+    "passport": "~0.4.0",
+    "passport-http": "~0.3.0",
+    "passport-local": "~1.0.0",
+    "msgpack-js-browser": "~0.1.4",
+    "engine.io": "~5.0.0",
+    "engine.io-client": "~5.0.1",
+    "amd-loader": "~0.0.8",
+    "http-error": "~0.0.6",
+    "simple-template": "~0.0.1",
+    "netutil": "~0.0.2",
+    "architect": "~0.1.13",
+    "node-pty": "0.10.0",
+    "xterm": "~4.11.0",
+    "xterm-addon-fit": "~0.5.0",
+    "vary": "^1.1.2",
+    "asyncjs": "~0.0.13",
+    "yargs": "~16.2.0",
+    "@pylonide/architect-build": "~0.1.3",
+    "@pylonide/dryice": "^0.5.2",
+    "@pylonide/jsdav": "~0.4.2",
+    "@pylonide/smith": "~0.1.24",
+    "@pylonide/treehugger": "~0.1.0",
+    "@pylonide/v8debug": "~0.1.3",
+    "@pylonide/vfs-architect": "~0.2.0",
+    "@pylonide/vfs-nodefs-adapter": "~0.4.0",
+    "ace": "https://github.com/ajaxorg/ace/tarball/v1.4.12"
+  },
+  "devDependencies": {
+    "nodeunit": "~0.11.2",
+    "rimraf": "~3.0.0",
+    "xmldom": "~0.5.0",
+    "xpath": "~0.0.27"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pylonide/pylon.git"
+  },
+  "scripts": {
+    "start": "./bin/pylon.sh",
+    "test": "npm run-script build && ./test/run-tests.sh",
+    "build": "mkdir -p ./plugins-client/lib.ppc/www/ppc && cd ppc && mkdir -p build && node ppc-package.js projects/default.ppp && cat ./build/ppc_release.js | sed 's/\\(\\/\\*FILEHEAD(\\).*//g' > ../plugins-client/lib.ppc/www/ppc/ppc.js && cd ..",
+    "postinstall": "npm run-script build; if [ -d 'node_modules/ace' ]; then cd node_modules/ace; else mkdir -p node_modules; ln -s ../../ace node_modules/ace; ln -s ../../@pylonide node_modules/@pylonide; cd ../ace; fi; make clean pre_build; sed 's/architect-build\\//@pylonide\\/architect-build\\//g' Makefile.dryice.js > MakefilePylon.dryice.js; node ./MakefilePylon.dryice.js minimal; cd ../..; make worker; make mode; make theme; if [ -L 'node_modules/ace' ]; then rm node_modules/ace; rm node_modules/@pylonide; rmdir node_modules; fi"
+  }
 }

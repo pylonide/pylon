@@ -7,7 +7,7 @@
 "use strict";
 
 var fs = require("fs");
-var argv = require('optimist').argv;
+var argv = require('yargs').argv;
 var path = require("path");
 
 var clientExtensions = {};
