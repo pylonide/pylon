@@ -1,3 +1,19 @@
+v2.7.0
+======
+* Cutting the support for Node.js v10 #192
+* Minimum node.js version set to v12.22.1
+* Deprecate the use of optimist #157 #194
+* Removal of nodeunit dependency #195
+* New scoped packages instead of direct github linking
+    * @pylonide/architect-build
+    * @pylonide/smith
+    * @pylonide/treehugger
+    * @pylonide/v8debug
+* Notable dependency upgrades:
+    * Engine.io v5.1.1
+    * xterm v4.13.0
+* form-auth promoted to default authentication plugin 
+
 v2.6.0
 ======
 * APF usage deprecated #93
