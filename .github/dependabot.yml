@@ -1,0 +1,22 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  target-branch: development
+  assignees:
+  - exsilium
+  ignore:
+  - dependency-name: qs
+    versions:
+    - 6.10.0
+  - dependency-name: engine.io-client
+    versions:
+    - 4.1.0
+    - 4.1.2
+    - 5.0.0
+  - dependency-name: engine.io
+    versions:
+    - 4.1.0
