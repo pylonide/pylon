@@ -1,5 +1,5 @@
 module.exports = function setup(options, imports, register) {
-    var base = require.resolve("treehugger/package.json").slice(0, -13);
+    var base = require.resolve("@pylonide/treehugger/package.json").slice(0, -13);
     imports.static.addStatics([{
         path: base + "/lib",
         mount: "/treehugger/lib",

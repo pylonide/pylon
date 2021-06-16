@@ -26,7 +26,7 @@ function main(args) {
         roots: [
             ACE_HOME + "/lib",
             "/tmp/pln_worker_build",
-            __dirname + "/node_modules/treehugger/lib"
+            __dirname + "/node_modules/@pylonide/treehugger/lib"
         ],
         textPluginPattern: /^ace\/requirejs\/text!/
     };

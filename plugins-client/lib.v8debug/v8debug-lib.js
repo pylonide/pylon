@@ -1,5 +1,5 @@
 module.exports = function setup(options, imports, register) {
-    var base = require.resolve("v8debug/package.json").slice(0, -13);
+    var base = require.resolve("@pylonide/v8debug/package.json").slice(0, -13);
     imports.static.addStatics([{
         path: base + "/lib",
         mount: "/v8debug/lib",
