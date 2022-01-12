@@ -66,7 +66,7 @@ define(function(require) {
      * Open
      */
 
-    var ENGINE_IO = require("engine.io");
+    var ENGINE_IO_Socket = require("engine.io");
 
     tty.open = function () {
       if (document.location.pathname) {
@@ -81,9 +81,9 @@ define(function(require) {
           server = 'ws://';
 
         server = server + window.location.href.split("\/")[2];
-        tty.socket = new ENGINE_IO.Socket(server, {resource: resource});
+        tty.socket = new ENGINE_IO_Socket(server, {resource: resource});
       } else {
-        tty.socket = new ENGINE_IO.Socket();
+        tty.socket = new ENGINE_IO_Socket();
       }
 
       tty.windows = [];
