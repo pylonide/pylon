@@ -2,6 +2,7 @@
 [![Master Dependency Status](https://snyk.io/test/github/pylonide/pylon/badge.svg)](https://snyk.io/test/github/pylonide/pylon)
 [![Development Dependency Status](https://snyk.io/test/github/pylonide/pylon/development/badge.svg)](https://snyk.io/test/github/pylonide/pylon/development)
 [![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://commerce.coinbase.com/checkout/5f3b0455-32ba-4b85-b299-00fe739d8b10 "One-time donation to keep this project alive")
+[![€ donate button](https://img.shields.io/badge/€-donate-brightgreen.svg)](http://warp.pylon.id "One-time donation to keep this project alive, choose the amount at checkout")
 
 # Pylon IDE
 
