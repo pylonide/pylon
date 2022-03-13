@@ -481,7 +481,9 @@ define(function(require) {
 
         self.resize(x, y);
 
-        el.style.width = '';
+        // Starting with xterm.js v4.14.1 the viewport overflows with scroll-bar unless we correct the window size accordingly
+        el.style.width = el.getElementsByClassName('xterm-viewport')[0].clientWidth + 'px';
+        
         el.style.height = '';
 
         el.style.overflow = '';
@@ -662,6 +664,8 @@ define(function(require) {
       this.hookMouse();
 
       win.tabs.push(this);
+      // Starting with xterm.js v4.14.1 the viewport overflows with scroll-bar part unless we correct the window size during creation
+      win.element.style.width = win.element.getElementsByClassName('xterm-viewport')[0].clientWidth + 15 + 'px';
 
       if (!resume) {
         this.socket.send(JSON.stringify({cmd: 'create', cols: cols, rows: rows}));
