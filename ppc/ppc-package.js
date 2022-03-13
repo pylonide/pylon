@@ -1,6 +1,6 @@
 // used by ppc-node below
 XPath = require('xpath');
-DOMParser = require('xmldom').DOMParser;
+DOMParser = require('@xmldom/xmldom').DOMParser;
 
 var Fs = require("fs");
 

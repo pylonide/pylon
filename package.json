@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "rimraf": "~3.0.0",
-    "xmldom": "~0.6.0",
+    "@xmldom/xmldom": "~0.8.0",
     "xpath": "~0.0.27"
   },
   "repository": {
