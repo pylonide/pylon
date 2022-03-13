@@ -1,3 +1,9 @@
+v2.8.0
+======
+* Remediates security vulnerabilities reported in 3rd party packages.
+* Notable upgrades to: passport, engine.io, xterm, yargs, jsdav, vfs, ace, xmldom
+* iOS: Preferences page is not scrollable #41
+
 v2.7.0
 ======
 * Cutting the support for Node.js v10 #192

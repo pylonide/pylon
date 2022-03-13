@@ -1,7 +1,7 @@
 
 define(function(require, exports, module) {
 
-	var ENGINE_IO = require("engine.io");
+	var ENGINE_IO_Socket = require("engine.io");
 	var SMITH = require("smith");
 	var EVENTS = require("smith/events-amd");
 
@@ -141,7 +141,7 @@ define(function(require, exports, module) {
 				}, delay);
 			}
 
-			_self.socket = new ENGINE_IO.Socket(_self.options);
+			_self.socket = new ENGINE_IO_Socket(_self.options);
 
 			_self.socket.on("error", function (err) {
 				if (_self.debug) {

@@ -3,9 +3,8 @@
     <a:bar name="bar-preferences">
         <a:style><![CDATA[
             .bar-preferences {
-                position         : relative;
-                overflow-y       : hidden;
-                overflow-x       : hidden;
+                position         : absolute;
+                overflow         : auto;
                 color            : #202020;
                 font-family      : Tahoma, Arial;
                 font-size        : 12px;
