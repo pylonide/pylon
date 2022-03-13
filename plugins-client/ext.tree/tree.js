@@ -245,9 +245,7 @@ module.exports = ext.register("ext/tree/tree", {
         var _self = this;
         trFiles.setAttribute("model", this.model);
         
-        if(ppc.isIphone) {
-          trFiles.$ext.style.overflow = "auto";
-        }
+        trFiles.$ext.style.overflow = "auto";
 
         if (this.loadedSettings === 1) {
             if (ide.inited) {
