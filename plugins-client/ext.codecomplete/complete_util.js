@@ -57,6 +57,8 @@ function findCompletions(prefix, allIdentifiers) {
 }
 
 function fetchText(staticPrefix, path) {
+    /* This just generates and error and stops the autocomplete to actually work.
+       Needs further looking into what was the original purpose of this function.
     var xhr = new XMLHttpRequest();
     xhr.open('GET', staticPrefix + "/" + path, false);
     try {
@@ -70,6 +72,7 @@ function fetchText(staticPrefix, path) {
         return xhr.responseText;
     else
         return false;
+    */
 }
 
 /**
