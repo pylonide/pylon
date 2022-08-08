@@ -23,7 +23,7 @@
     "express-session": "~1.17.0",
     "cookie-parser": "~1.4.3",
     "body-parser": "~1.19.0",
-    "serve-static": "~1.14.1",
+    "serve-static": "~1.15.0",
     "serve-favicon": "~2.5.0",
     "csurf": "~1.11.0",
     "urlrouter": "~0.5.4",
