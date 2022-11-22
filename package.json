@@ -33,7 +33,7 @@
     "passport-http": "~0.3.0",
     "passport-local": "~1.0.0",
     "msgpack-js-browser": "~0.1.4",
-    "engine.io": "~6.2.2",
+    "engine.io": "~6.2.1",
     "engine.io-client": "~6.2.2",
     "amd-loader": "~0.0.8",
     "http-error": "~0.0.6",
