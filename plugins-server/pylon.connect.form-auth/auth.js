@@ -51,6 +51,17 @@ module.exports = function (options, imports, register) {
 
     connect.useSession(passport.initialize());
     connect.useSession(passport.session());
+
+    connect.useSession(function(req, res, next) {
+      if (req.sessionStore && !req.sessionStore.regenerate) {
+        req.session.regenerate = (cb) => {
+          cb()
+          return res.redirect('/');
+        }
+      }
+      next();
+    });
+
     connect.useSession(bodyParser.urlencoded({ extended: true }));
     connect.useSession(connect.redirect());
     
@@ -82,10 +93,12 @@ module.exports = function (options, imports, register) {
         res.end(login);
       });
 
-      app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login' }), function(req, res) {});
+      app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', keepSessionInfo: false }), function(req, res) {});
       
-      app.get(/^\/logout$/, function(req, res) {
-        req.logout();
+      app.get(/^\/logout$/, function(req, res, next) {
+        req.logout(function(err) {
+          if (err) { return next(err); }
+        });
         res.redirect('/');
       });
       

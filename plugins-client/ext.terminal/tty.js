@@ -241,6 +241,7 @@ define(function(require) {
       var self = this;
 
       var el
+        , winId
         , grip
         , xterm
         , bar
@@ -256,7 +257,8 @@ define(function(require) {
       grip.className = 'grip';
 
       xterm = document.createElement('div');
-      xterm.className = 'xterm-container';
+      winId = (Math.random() + 1).toString(36).substring(7);
+      xterm.className = 'xterm-container-' + winId;
 
       bar = document.createElement('div');
       bar.className = 'bar';
@@ -283,6 +285,7 @@ define(function(require) {
       this.button = button;
       this.defaultS = defaultS;
       this.title = title;
+      this.winId = winId;
 
       this.tabs = [];
       this.focused = null;
@@ -481,9 +484,6 @@ define(function(require) {
 
         self.resize(x, y);
 
-        // Starting with xterm.js v4.14.1 the viewport overflows with scroll-bar unless we correct the window size accordingly
-        el.style.width = el.getElementsByClassName('xterm-viewport')[0].clientWidth + 'px';
-        
         el.style.height = '';
 
         el.style.overflow = '';
@@ -543,7 +543,7 @@ define(function(require) {
 
       window.scrollTo(0, 0);
 
-      var xterm = el.getElementsByClassName('xterm-container')[0];
+      var xterm = el.getElementsByClassName('xterm-container-' + this.winId)[0];
       xterm.style.width = '100%';
       xterm.style.height = '100%';
 
@@ -630,15 +630,19 @@ define(function(require) {
       var cols = win.cols
         , rows = win.rows;
 
-      Terminal.call(this, {
+      this.xterm = new Terminal({
         cols: cols,
         rows: rows,
         cursorBlink: false,
         tabStopWidth: 2,
-        fontSize: 12,
-        rendererType: "dom"
+        fontSize: 12
       });
-
+      
+      this._core = this.xterm._core;
+      this._addonManager = this.xterm._addonManager;
+      this._publicOptions = this.xterm._publicOptions;
+      delete this.xterm;
+      
       var button = document.createElement('div');
       button.className = 'tabT';
       button.innerHTML = '\u2022';
@@ -658,7 +662,7 @@ define(function(require) {
       this.button = button;
       this.element = null;
       this.process = '';
-      this.open(document.getElementsByClassName('xterm-container')[0]);
+      this.open(document.getElementsByClassName('xterm-container-' + win.winId)[0]);
 
       this.hookKeys();
       this.hookMouse();
@@ -721,7 +725,7 @@ define(function(require) {
 
       var win = this.window;
 
-      var xterm = win.element.getElementsByClassName('xterm-container')[0];
+      var xterm = win.element.getElementsByClassName('xterm-container-' + win.winId)[0];
 
       // maybe move to Tab.prototype.switch
       if (win.focused !== this) {

@@ -111,9 +111,11 @@ FileStore.prototype.set = function(sid, sess, fn){
       if (err)
         return fn && fn(err);
 
-      fs.rename(tmpPath, path, function(err) {
-        fn && fn(err);
-      });
+      if(exists(tmpPath)) {
+        fs.rename(tmpPath, path, function(err) {
+          fn && fn(err);
+        });
+      }
   });
 };
 

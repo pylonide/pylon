@@ -15,7 +15,7 @@ Pylon is built entirely on a web stack, making it the most hacker-friendly IDE t
 ## Features
 
 - High performance ACE text editor with bundled syntax highlighting to support a wide range of programming languages.
-- Modern node support (NodeJS >= 12.22.1)
+- Modern node support (NodeJS >= 14.21.1)
 - Up to date dependencies and compatibility fixes
 - Terminal
 
@@ -59,9 +59,9 @@ For quality of life it is recommended to remap Caps Lock hardware key to act as 
 
 If installing on Windows, please refer to [Installation on Windows](#installation-on-windows-experimental).
 
-Requirements (>= 2.7.0):
+Requirements (>= 2.9.0):
 
-  * NodeJS `>= 12.22.1`
+  * NodeJS `>= 14.21.1`
   * g++-4.9 (Required for node-pty compilation)
   * make (Required for node-pty compilation)
   * python (Required for node-pty compilation)
