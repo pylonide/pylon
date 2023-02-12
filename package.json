@@ -42,7 +42,7 @@
     "architect": "~0.1.13",
     "node-pty": "0.10.1",
     "xterm": "~5.1.0",
-    "xterm-addon-fit": "~0.6.0",
+    "xterm-addon-fit": "~0.7.0",
     "vary": "^1.1.2",
     "asyncjs": "~0.0.13",
     "yargs": "~17.6.2",
