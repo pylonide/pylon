@@ -1,9 +1,7 @@
 /**
- * Console for the Cloud9 IDE
+ * Console for the Pylon IDE
  *
- * @copyright 2012, Cloud9 IDE, Inc.
  * @license GPLv3 <http://www.gnu.org/licenses/gpl.txt>
- * @contributor Sergi Mansilla <sergi AT c9 DOT io>
  */
 
 define(function(require, exports, module) {
@@ -33,7 +31,7 @@ var actionCodes = [KEY_TAB, KEY_CR, KEY_UP, KEY_ESC, KEY_DOWN];
 
 module.exports = ext.register("ext/console/console", {
     name   : "Console",
-    dev    : "Cloud9 IDE, Inc.",
+    dev    : "Pylon IDE",
     type   : ext.GENERAL,
     alone  : true,
     markup : markup,
@@ -618,7 +616,7 @@ module.exports = ext.register("ext/console/console", {
         if (!u)
             u = (ide.workspaceId.match(/user\/(\w+)\//) || [,"guest"])[1];
 
-        return "[" + u + "@cloud9]:" + this.$cwd + "$" + ((" " + suffix) || "");
+        return "[" + u + "@pylon]:" + this.$cwd + "$" + ((" " + suffix) || "");
     },
 
     hook: function() {
