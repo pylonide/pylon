@@ -516,7 +516,8 @@ ppc.codeeditor = module.exports = function(struct, tagName) {
         this.activeline = ed.getHighlightActiveLine();//true;
         this.gutterline = ed.getHighlightGutterLine();//true;
         this.animatedscroll = ed.getAnimatedScroll();//true
-        this.showindentguides = ed.getDisplayIndentGuides();//true
+        // FIXME ajaxorg/ace #5228
+        this.showindentguides = true;//ed.getDisplayIndentGuides();//true
         this.autohidehorscrollbar = !ed.renderer.getHScrollBarAlwaysVisible();//true
         this.highlightselectedword = ed.getHighlightSelectedWord();
         this.behaviors = !ed.getBehavioursEnabled();
