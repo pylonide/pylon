@@ -48,7 +48,7 @@
     "yargs": "~17.7.1",
     "@pylonide/architect-build": "~0.1.3",
     "@pylonide/dryice": "^0.5.2",
-    "@pylonide/jsdav": "~0.8.0",
+    "@pylonide/jsdav": "~0.9.0",
     "@pylonide/smith": "~0.1.24",
     "@pylonide/treehugger": "~0.1.0",
     "@pylonide/v8debug": "~0.1.3",
