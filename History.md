@@ -1,3 +1,19 @@
+v2.10.0
+=======
+- Overall dependency updates (chore)
+- Ace upgrade to `v.1.23.2` #347
+- Slow initial session creation fix #350
+
+v2.9.0
+======
+* Includes integration with ACE `v1.13.1` #279 
+* Cutting out of maintenance Node.JS support, new minimum node requirement `v14.21.1`
+* Addresses moderate vulnerability in Passport `< v0.6.0` concerning Session Fixation (session regeneration when a users logs in or out)
+    * Weakness: [CWE-384](https://cwe.mitre.org/data/definitions/384.html)
+    * Vulnerability: [CVE-2022-25896](https://www.cve.org/CVERecord?id=CVE-2022-25896)
+* xterm.js `v5.0.0` upgrade
+* Other dependency updates
+
 v2.8.0
 ======
 * Remediates security vulnerabilities reported in 3rd party packages.
