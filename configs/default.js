@@ -173,14 +173,14 @@ var config = [
     },
     {
         packagePath: "./connect.session",
-        name: "cloud9.sid." + port,
+        name: "pylon.sid." + port,
         secret: "v1234",
         saveUninitialized: true
     },
     {
         packagePath: "./connect.session.file",
         sessionsPath: __dirname + "/../.sessions",
-        maxAge: 7 * 24 * 60 * 60 * 1000
+        maxAge: 86400
     },
     "./pylon.permissions",
     {

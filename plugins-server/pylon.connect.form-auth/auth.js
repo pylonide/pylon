@@ -56,7 +56,6 @@ module.exports = function (options, imports, register) {
       if (req.sessionStore && !req.sessionStore.regenerate) {
         req.session.regenerate = (cb) => {
           cb()
-          return res.redirect('/');
         }
       }
       next();
@@ -99,7 +98,7 @@ module.exports = function (options, imports, register) {
         req.logout(function(err) {
           if (err) { return next(err); }
         });
-        res.redirect('/');
+        res.redirect('/login');
       });
       
     }));
