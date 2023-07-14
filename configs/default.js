@@ -32,6 +32,9 @@ var termLocal = process.env.PLN_TERMLOCAL || (host === 'localhost' || host === '
 
 var useAuth = argv.username && argv.password;
 
+var sessionsPath = process.env.PLN_SESSIONS_PATH || __dirname + "/../.sessions";
+var settingsPath = process.env.PLN_SETTINGS_FILE || ".settings";
+
 var config = [
     {
         packagePath: "./connect",
@@ -179,7 +182,7 @@ var config = [
     },
     {
         packagePath: "./connect.session.file",
-        sessionsPath: __dirname + "/../.sessions",
+        sessionsPath: sessionsPath,
         maxAge: 86400
     },
     "./pylon.permissions",
@@ -227,7 +230,7 @@ var config = [
     "./pylon.ide.revisions",
     {
         packagePath: "./pylon.ide.settings",
-        settingsPath: ".settings"
+        settingsPath: settingsPath
     },
     "./pylon.ide.shell",
     "./pylon.ide.state",
