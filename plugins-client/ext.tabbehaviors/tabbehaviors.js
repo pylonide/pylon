@@ -147,6 +147,12 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
             if (e.currentTarget && e.currentTarget.tagName == "page")
                 mnuContext.$page = e.currentTarget;
         });
+        
+        tabEditors.addEventListener("tabselectclick", function(e) {
+          if(e.htmlEvent.which === 2) {
+            _self.closetab(e.page);
+          }
+        });
 
         mnuContext.addEventListener("prop.visible", function(e) {
             // use setTimeout because ppc closes menu before menuitem onclick event
