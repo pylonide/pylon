@@ -20,7 +20,7 @@
     "async": "~3.2.0",
     "colors": "~1.4.0",
     "connect": "~3.7.0",
-    "express-session": "~1.17.0",
+    "express-session": "~1.18.0",
     "session-file-store": "~1.5.0",
     "cookie-parser": "~1.4.3",
     "body-parser": "~1.20.0",
