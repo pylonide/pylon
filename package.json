@@ -58,7 +58,7 @@
     "ace": "https://github.com/ajaxorg/ace/tarball/v1.23.2"
   },
   "devDependencies": {
-    "rimraf": "~5.0.1",
+    "rimraf": "~6.0.1",
     "@xmldom/xmldom": "~0.9.2",
     "xpath": "~0.0.27",
     "typescript": "~5.6.2"
