@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/pylonide/pylon.svg?branch=master)](https://travis-ci.com/pylonide/pylon)
+[![Build Status](https://github.com/pylonide/pylon/actions/workflows/nodejs.yml/badge.svg)](https://github.com/pylonide/pylon/actions/workflows/nodejs.yml)
 [![Master Dependency Status](https://snyk.io/test/github/pylonide/pylon/badge.svg)](https://snyk.io/test/github/pylonide/pylon)
 [![Development Dependency Status](https://snyk.io/test/github/pylonide/pylon/development/badge.svg)](https://snyk.io/test/github/pylonide/pylon/development)
 [![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://commerce.coinbase.com/checkout/5f3b0455-32ba-4b85-b299-00fe739d8b10 "One-time donation to keep this project alive")
