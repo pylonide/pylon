@@ -48,7 +48,7 @@
     "asyncjs": "~0.0.13",
     "yargs": "~17.7.1",
     "@pylonide/architect-build": "~0.2.0",
-    "@pylonide/dryice": "^0.6.0",
+    "@pylonide/dryice": "^0.7.0",
     "@pylonide/jsdav": "~1.0.0",
     "@pylonide/smith": "~0.2.0",
     "@pylonide/treehugger": "~0.2.0",
