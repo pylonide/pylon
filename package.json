@@ -46,7 +46,7 @@
     "xterm-addon-fit": "~0.8.0",
     "vary": "^1.1.2",
     "asyncjs": "~0.0.13",
-    "yargs": "~17.7.1",
+    "yargs": "~18.0.0",
     "@pylonide/architect-build": "~0.3.0",
     "@pylonide/dryice": "^0.7.0",
     "@pylonide/jsdav": "~1.1.0",
