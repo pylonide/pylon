@@ -52,7 +52,7 @@
     "@pylonide/jsdav": "~1.1.0",
     "@pylonide/smith": "~0.3.0",
     "@pylonide/treehugger": "~0.3.0",
-    "@pylonide/v8debug": "~0.2.0",
+    "@pylonide/v8debug": "~0.3.0",
     "@pylonide/vfs-architect": "~0.6.0",
     "@pylonide/vfs-nodefs-adapter": "~0.7.0",
     "ace": "https://github.com/ajaxorg/ace/tarball/v1.37.5"
