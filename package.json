@@ -54,7 +54,7 @@
     "@pylonide/treehugger": "~0.3.0",
     "@pylonide/v8debug": "~0.3.0",
     "@pylonide/vfs-architect": "~0.7.0",
-    "@pylonide/vfs-nodefs-adapter": "~0.7.0",
+    "@pylonide/vfs-nodefs-adapter": "~0.8.0",
     "ace": "https://github.com/ajaxorg/ace/tarball/v1.37.5"
   },
   "devDependencies": {
