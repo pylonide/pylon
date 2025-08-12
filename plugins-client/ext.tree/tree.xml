@@ -72,7 +72,7 @@
             <a:divider />
             <a:item onclick="
               var path = trFiles.getSelection()[0].getAttribute('path');
-              var url = location.protocol + '//' + location.host + path;
+              var url = new URL(path, location.origin).toString();
               require('ext/preview/preview').preview(url, { path: path });
             ">Preview</a:item>
             <a:divider />
