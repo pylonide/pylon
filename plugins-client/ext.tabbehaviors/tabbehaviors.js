@@ -149,7 +149,7 @@ module.exports = ext.register("ext/tabbehaviors/tabbehaviors", {
         });
         
         tabEditors.addEventListener("tabselectclick", function(e) {
-          if(e.htmlEvent.which === 2) {
+          if (e.htmlEvent.which === 2) {
             _self.closetab(e.page);
           }
         });
