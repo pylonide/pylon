@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/pylonide/pylon.svg?branch=master)](https://travis-ci.com/pylonide/pylon)
+[![Build Status](https://github.com/pylonide/pylon/actions/workflows/nodejs.yml/badge.svg)](https://github.com/pylonide/pylon/actions/workflows/nodejs.yml)
 [![Master Dependency Status](https://snyk.io/test/github/pylonide/pylon/badge.svg)](https://snyk.io/test/github/pylonide/pylon)
 [![Development Dependency Status](https://snyk.io/test/github/pylonide/pylon/development/badge.svg)](https://snyk.io/test/github/pylonide/pylon/development)
 [![Bitcoin donate button](https://img.shields.io/badge/bitcoin-donate-yellow.svg)](https://commerce.coinbase.com/checkout/5f3b0455-32ba-4b85-b299-00fe739d8b10 "One-time donation to keep this project alive")
@@ -15,7 +15,7 @@ Pylon is built entirely on a web stack, making it the most hacker-friendly IDE t
 ## Features
 
 - High performance ACE text editor with bundled syntax highlighting to support a wide range of programming languages.
-- Modern node support (NodeJS >= 14.21.1)
+- Modern node support (NodeJS >= 20.19.0)
 - Up to date dependencies and compatibility fixes
 - Terminal
 
@@ -59,9 +59,9 @@ For quality of life it is recommended to remap Caps Lock hardware key to act as 
 
 If installing on Windows, please refer to [Installation on Windows](#installation-on-windows-experimental).
 
-Requirements (>= 2.9.0):
+Requirements (>= 2.11.0):
 
-  * NodeJS `>= 14.21.1`
+  * NodeJS `>= 20.19.0`
   * g++-4.9 (Required for node-pty compilation)
   * make (Required for node-pty compilation)
   * python (Required for node-pty compilation)
