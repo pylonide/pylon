@@ -48,7 +48,7 @@
     "yargs": "~18.0.0",
     "@pylonide/architect-build": "~0.3.0",
     "@pylonide/dryice": "^0.7.0",
-    "@pylonide/jsdav": "~1.1.0",
+    "@pylonide/jsdav": "~1.1.1",
     "@pylonide/smith": "~0.3.0",
     "@pylonide/treehugger": "~0.3.0",
     "@pylonide/v8debug": "~0.3.0",
@@ -58,7 +58,7 @@
   },
   "devDependencies": {
     "rimraf": "~6.0.1",
-    "@xmldom/xmldom": "~0.9.2",
+    "@xmldom/xmldom": "~0.9.8",
     "xpath": "~0.0.27",
     "typescript": "~5.9.2"
   },
