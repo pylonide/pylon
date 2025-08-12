@@ -1,0 +1,177 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    user-select: none;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    background-color: #121212;
+    overflow: hidden;
+}
+
+.emscripten {
+    padding-right: 0;
+    margin-left: auto;
+    margin-right: auto;
+    display: none;
+    border: 0 none;
+    image-rendering: smooth;
+}
+
+h1, h2, h5 {
+    color: #F0F0F0;
+    font-size: 20px;
+    font-family: monospace;
+    width: 100%;
+    text-align: center;
+    margin-top: 60px;
+    margin-bottom: 10px;
+}
+
+h2 {
+    margin-top: 15px;
+    font-size: 17px;
+}
+
+h5 {
+    margin-top: 0;
+    font-size: 17px;
+}
+
+#not_working {
+    opacity: 0;
+}
+
+#not_working.visible {
+    opacity: 1;
+    transition: opacity 2s ease;
+}
+
+a {
+    color: #7893ff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-shadow: #3a4677 0 0 10px;
+}
+
+.footer {
+    width: 100%;
+    height: 20px;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+    color: #F0F0F0;
+    background-color: #0A0A0A;
+    padding: 10px;
+    font-family: monospace;
+    font-size: 15px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 10%;
+}
+
+.centered {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: 100%;
+}
+
+
+.lds-ripple {
+    display: inline-block;
+    position: relative;
+    width: 80px;
+    height: 80px;
+}
+.lds-ripple div {
+    position: absolute;
+    border: 4px solid #fff;
+    opacity: 1;
+    border-radius: 50%;
+    animation: lds-ripple 1s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+.lds-ripple div:nth-child(2) {
+    animation-delay: -0.5s;
+}
+@keyframes lds-ripple {
+    0% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+    4.9% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+    5% {
+        top: 36px;
+        left: 36px;
+        width: 0;
+        height: 0;
+        opacity: 1;
+    }
+    100% {
+        top: 0;
+        left: 0;
+        width: 72px;
+        height: 72px;
+        opacity: 0;
+    }
+}
+
+
+:root {
+    --progress: 25%;
+}
+
+.progress-bar-container {
+    margin: 100px auto;
+    width: 600px;
+    text-align: center;
+}
+
+.progress {
+    padding: 6px;
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25),
+    0 1px rgba(255, 255, 255, 0.08);
+}
+
+.progress-bar {
+    color: rgba(240, 240, 240, 0.9);
+    height: 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-family: monospace;
+    font-weight: bold;
+    text-wrap: avoid;
+    white-space: nowrap;
+    overflow: hidden;
+    background-image: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.2),
+            rgba(255, 255, 255, 0.0)
+    );
+}
+
+.progress-moved .progress-bar {
+    width: var(--progress);
+    background-color: #3864cb;
+}

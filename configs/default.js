@@ -95,6 +95,7 @@ const config = [
   "./../plugins-client/lib.v8debug",
   "./../plugins-client/lib.requirejs",
   "./../plugins-client/lib.xterm",
+  "./../plugins-client/lib.hexview",
   "./pylon.smith.io",
   {
     packagePath: "./pylon.ide.smith.io",
@@ -196,7 +197,8 @@ const config = [
       "ext/revisions/revisions",
       "ext/language/liveinspect",
       "ext/splitview/splitview",
-      "ext/terminal/terminal"
+      "ext/terminal/terminal",
+      "ext/hexview/hexview"
     ]
   },
   {

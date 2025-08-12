@@ -1,0 +1,24 @@
+<a:application xmlns:a="https://github.com/pylonide/pylon">
+    <a:tab skin="docktab" visible="false">
+        <a:page id="pgHexview" caption="Hexview">
+            <a:bar style="display:none;" border="0 0 0 0">
+                <a:hbox class="hexviewbar" height="36" align="center" edge="4 5 4" padding="5">
+                    <a:textbox id="txtHexview" style="width:100%" class="ace_searchbox tb_textbox searchbox searchTxt tb_console"
+                        flex="1" value=""
+                        onkeydown="if (event.keyCode == 13) require('ext/hexview/hexview').refresh()" />
+                    <a:button onclick="require('ext/hexview/hexview').refresh()" skin="btn-hexview-nav" skinset="hexviewskin" class="refresh"></a:button>
+                    <a:divider skin="c9-divider" />
+                    <a:button onclick="require('ext/hexview/hexview').popup()" skin="btn-hexview-nav" skinset="hexviewskin" class="popup"></a:button>
+                    <a:divider skin="c9-divider" />
+                    <a:button onclick="require('ext/hexview/hexview').close()" skin="btn-hexview-nav" skinset="hexviewskin" class="close"></a:button>
+                </a:hbox>
+            </a:bar>
+            <iframe
+                class="hexview_iframe"
+                sandbox="allow-scripts allow-same-origin"
+                allow="cross-origin-isolated"
+                onload="require('ext/hexview/hexview').onLoad()"
+                src="" />
+            </a:page>
+    </a:tab>
+</a:application>

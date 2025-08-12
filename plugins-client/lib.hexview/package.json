@@ -1,0 +1,14 @@
+{
+    "name": "pylon.client.hexview",
+    "version": "0.0.1",
+    "main": "hexview-lib.js",
+    "private": true,
+
+    "dependencies": {
+    },
+
+    "plugin": {
+        "provides": ["client.hexview"],
+        "consumes": ["static"]
+    }
+}

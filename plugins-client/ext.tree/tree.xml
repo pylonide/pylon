@@ -75,6 +75,11 @@
               var url = location.protocol + '//' + location.host + path;
               require('ext/preview/preview').preview(url, { path: path });
             ">Preview</a:item>
+            <a:item onclick="
+              var path = trFiles.getSelection()[0].getAttribute('path');
+              var url = location.protocol + '//' + location.host + '/static/hex?web=' + location.protocol + '//' + location.host + path;
+              require('ext/hexview/hexview').hexview(url, { path: path });
+            ">Hexview</a:item>
             <a:divider />
             <a:item onclick="require('ext/tree/tree').refresh()">Refresh</a:item>
             <a:item match="[file|folder[not(@root)]]" onclick="ppc.activeElement.startRename()" visible="{!require('core/ide').readonly}">Rename</a:item>
