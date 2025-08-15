@@ -6,7 +6,7 @@
 var encodeUrl = require("encodeurl");
 var accepts = require("accepts");
 var vary = require('vary');
-var mime = require('send').mime;
+var mime = require('mime-types');
 var escapeHtml = require('escape-html');
 var statuses = require('statuses');
 

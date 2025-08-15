@@ -1,7 +1,7 @@
 {
   "name": "pln",
   "description": "Pylon IDE",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "license": "GPL-3.0",
   "homepage": "https://github.com/pylonide/pylon",
   "engines": {
@@ -38,6 +38,7 @@
     "amd-loader": "~0.0.8",
     "http-error": "~0.0.6",
     "simple-template": "~0.0.1",
+    "mime-types": "~3.0.1",
     "netutil": "~0.0.2",
     "architect": "~0.1.13",
     "node-pty": "1.1.0-beta34",
