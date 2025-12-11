@@ -41,7 +41,7 @@
     "mime-types": "~3.0.1",
     "netutil": "~0.0.2",
     "architect": "~0.1.13",
-    "node-pty": "1.1.0-beta39",
+    "node-pty": "1.1.0-beta41",
     "xterm": "~5.3.0",
     "xterm-addon-fit": "~0.8.0",
     "vary": "^1.1.2",
