@@ -1,5 +1,6 @@
 /**
- * style.css (https://github.com/chjj/tty.js)
+ * style.css - Tiling terminal window manager
+ * Based on tty.js (https://github.com/chjj/tty.js)
  * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
  */
 
@@ -22,154 +23,172 @@ html.dark {
   background: #333;
 }
 
-html.maximized {
+/**
+ * Terminal Window Container
+ */
+
+#terminalWindow {
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 
-body {
-  margin: 25px;
-}
-
-/* Only allow plaintext?
-[contenteditable=""],
-[contenteditable="true"] {
-  -webkit-user-modify: read-write-plaintext-only !important;
-}
-*/
-
 /**
- * Terminal
+ * Tiling Layout
  */
 
-.window {
-  padding-top: 15px;
-  border: #888888 solid 1px;
-  background: #272829;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  z-index: 1000;
-  box-shadow: rgba(0, 0, 0, 0.8) 2px 2px 20px;
+.tiling-split {
+  display: flex;
+  overflow: hidden;
 }
 
-.maximized .window {
-  border: none;
-  box-shadow: none;
+.tiling-horizontal {
+  flex-direction: row;
 }
 
-.dark .window {
-  box-shadow: none;
+.tiling-vertical {
+  flex-direction: column;
 }
 
-.bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 13px;
-  padding: 1px 0;
-  font-family: menlo,courier new,fixed,swiss,sans-serif;
-  color: #888888;
+/**
+ * Splitter bars
+ */
+
+.tiling-splitter {
+  flex-shrink: 0;
+  background: #444;
+  z-index: 10;
 }
 
-.dark .bar,
-.maximized .bar {
+.tiling-splitter:hover {
+  background: #0078d4;
 }
 
-.title {
-  position: absolute;
-  right: 5px;
-  top: 2px;
-  font-size: 11px;
-  cursor: default;
+.tiling-splitter-horizontal {
+  width: 4px;
+  cursor: col-resize;
 }
 
-.tabT {
-  font-size: 16px;
-  margin-left: 8px;
-  margin-top: -2px;
-  float: left;
-  cursor: pointer;
+.tiling-splitter-vertical {
+  height: 4px;
+  cursor: row-resize;
 }
 
-.tabT:hover {
-  font-weight: bold;
+/**
+ * Pane
+ */
+
+.tiling-pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 60px;
+  min-height: 40px;
+  background: #1e1e1e;
 }
 
-.grip {
-  position: absolute;
-  bottom: -10px;
-  right: -10px;
-  width: 22px;
+.tiling-pane-focused {
+  outline: 1px solid #0078d4;
+  outline-offset: -1px;
+}
+
+/**
+ * Pane title bar
+ */
+
+.tiling-pane-bar {
+  display: flex;
+  align-items: center;
   height: 22px;
-  cursor: se-resize;
-  z-index: -1;
-  background: transparent;
+  min-height: 22px;
+  background: #2d2d2d;
+  border-bottom: 1px solid #444;
+  font-family: menlo, "courier new", monospace;
+  font-size: 11px;
+  color: #aaa;
+  padding: 0 4px;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-.grip:hover {
+.tiling-pane-focused .tiling-pane-bar {
+  background: #333;
+  border-bottom-color: #0078d4;
 }
+
+.tiling-pane-title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+  padding-right: 4px;
+  color: #888;
+}
+
+/**
+ * Buttons in pane bar
+ */
+
+.tiling-btn {
+  padding: 0 5px;
+  cursor: pointer;
+  color: #888;
+  font-size: 12px;
+  line-height: 22px;
+}
+
+.tiling-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tiling-btn-close:hover {
+  color: #fff;
+  background: #c42b1c;
+}
+
+/**
+ * Tab buttons
+ */
+
+.tiling-tab-btn {
+  padding: 0 4px;
+  cursor: pointer;
+  color: #888;
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.tiling-tab-btn:hover {
+  color: #fff;
+}
+
+/**
+ * Terminal container
+ */
+
+.tiling-term-container {
+  flex: 1;
+  overflow: hidden;
+  background: #1e1e1e;
+  position: relative;
+}
+
+.tiling-term-container .xterm {
+  height: 100%;
+  padding: 2px;
+}
+
+.tiling-term-container .xterm-viewport {
+  overflow-y: auto;
+}
+
+/**
+ * Reverse video
+ */
 
 .reverse-video {
   color: #000;
   background: #f0f0f0;
 }
-
-/**
- * Page
- */
-
-h1 {
-  font: 20px/1.5 sans-serif;
-  background: #333;
-  margin: -25px -25px 0 -25px;
-  height: 30px;
-  padding: 10px 25px;
-  color: white;
-  border-top: #e15729 solid 10px;
-}
-
-#open, #lights {
-  font: 20px/1.5 sans-serif;
-  position: fixed;
-  right: 0;
-  padding: 10px;
-  height: 50px;
-  color: white;
-  cursor: pointer;
-  margin: 0;
-  background: none;
-  border: none;
-  -webkit-appearance: none;
-}
-
-#open {
-  top: 10px;
-  background: #333;
-}
-
-#lights {
-  font-size: 18px;
-  height: 46px;
-  top: 60px;
-  background: #555;
-}
-
-#open:hover, #lights:hover {
-  color: slategrey;
-  background: white;
-}
-
-#open:active, #lights:active {
-  color: orange;
-}
-
-#help {
-  font: 12px/1.5 sans-serif;
-  color: #999;
-  position: fixed;
-  bottom: 10px;
-  left: 10px;
-}
-
-.dark h1, .dark #help { display: none; }

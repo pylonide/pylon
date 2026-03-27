@@ -1,11 +1,12 @@
 define(function(require) {
 
   var Terminal = require("xterm/xterm").Terminal;
-
-  var Fit = require("xterm-fit/xterm-addon-fit").FitAddon;
-  var fit = new Fit();
+  var FitAddon = require("xterm-fit/xterm-addon-fit").FitAddon;
 
   /**
+   * Tiling terminal window manager for Pylon IDE
+   * Replaces the original floating window system with a tiling layout.
+   *
    * Based on tty.js
    * Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
    */
@@ -36,7 +37,7 @@ define(function(require) {
       ev.stopPropagation();
       return false;
     }
-    
+
     function inherits(child, parent) {
       function f() {
         this.constructor = child;
@@ -44,7 +45,6 @@ define(function(require) {
       f.prototype = parent.prototype;
       child.prototype = new f();
     }
-
 
     /**
      * tty
@@ -61,6 +61,378 @@ define(function(require) {
     tty.windows;
     tty.terms;
     tty.elements;
+
+    /**
+     * Tiling layout manager
+     *
+     * The layout is a binary tree of splits. Each leaf node is a Pane
+     * containing a Window (which has tabs of terminals).
+     * Each internal node is a Split with a direction (horizontal/vertical),
+     * two children, and a splitter bar between them.
+     *
+     * The root container is #terminalWindow.
+     */
+
+    var tilingRoot = null;   // Root node of the tiling tree (Pane or Split)
+    var focusedPane = null;  // Currently focused Pane
+
+    /**
+     * Split node - contains two children separated by a splitter bar
+     */
+    function Split(direction, first, second, container) {
+      this.type = 'split';
+      this.direction = direction; // 'horizontal' or 'vertical'
+      this.parent = null;
+      this.first = first;
+      this.second = second;
+      this.ratio = 0.5;
+
+      first.parent = this;
+      second.parent = this;
+
+      this.element = container || document.createElement('div');
+      this.element.className = 'tiling-split tiling-' + direction;
+
+      this.splitter = document.createElement('div');
+      this.splitter.className = 'tiling-splitter tiling-splitter-' + direction;
+
+      this.element.innerHTML = '';
+      this.element.appendChild(first.element);
+      this.element.appendChild(this.splitter);
+      this.element.appendChild(second.element);
+
+      this._bindSplitter();
+      this._applyRatio();
+    }
+
+    Split.prototype._applyRatio = function () {
+      var pct1 = (this.ratio * 100).toFixed(2) + '%';
+      var pct2 = ((1 - this.ratio) * 100).toFixed(2) + '%';
+      var splitterSize = '4px';
+
+      if (this.direction === 'horizontal') {
+        this.first.element.style.width = 'calc(' + pct1 + ' - 2px)';
+        this.first.element.style.height = '100%';
+        this.second.element.style.width = 'calc(' + pct2 + ' - 2px)';
+        this.second.element.style.height = '100%';
+      } else {
+        this.first.element.style.height = 'calc(' + pct1 + ' - 2px)';
+        this.first.element.style.width = '100%';
+        this.second.element.style.height = 'calc(' + pct2 + ' - 2px)';
+        this.second.element.style.width = '100%';
+      }
+    };
+
+    Split.prototype._bindSplitter = function () {
+      var self = this;
+      var splitter = this.splitter;
+
+      splitter.addEventListener('mousedown', function (ev) {
+        ev.preventDefault();
+        var startX = ev.pageX;
+        var startY = ev.pageY;
+        var startRatio = self.ratio;
+        var rect = self.element.getBoundingClientRect();
+
+        document.body.style.cursor = self.direction === 'horizontal' ? 'col-resize' : 'row-resize';
+        // Overlay to prevent iframes/xterm from eating mouse events
+        var overlay = document.createElement('div');
+        overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:99999;cursor:' +
+          (self.direction === 'horizontal' ? 'col-resize' : 'row-resize');
+        document.body.appendChild(overlay);
+
+        function move(ev) {
+          var delta, total;
+          if (self.direction === 'horizontal') {
+            delta = ev.pageX - startX;
+            total = rect.width;
+          } else {
+            delta = ev.pageY - startY;
+            total = rect.height;
+          }
+          self.ratio = Math.min(0.9, Math.max(0.1, startRatio + delta / total));
+          self._applyRatio();
+          fitAllPanes();
+        }
+
+        function up() {
+          document.body.style.cursor = '';
+          document.body.removeChild(overlay);
+          document.removeEventListener('mousemove', move, false);
+          document.removeEventListener('mouseup', up, false);
+          fitAllPanes();
+        }
+
+        document.addEventListener('mousemove', move, false);
+        document.addEventListener('mouseup', up, false);
+      }, false);
+    };
+
+    Split.prototype.replaceChild = function (oldChild, newChild) {
+      newChild.parent = this;
+      if (this.first === oldChild) {
+        this.first = newChild;
+        this.element.replaceChild(newChild.element, oldChild.element);
+      } else if (this.second === oldChild) {
+        this.second = newChild;
+        this.element.replaceChild(newChild.element, oldChild.element);
+      }
+      this._applyRatio();
+    };
+
+    Split.prototype.getLeaves = function () {
+      var leaves = [];
+      function walk(node) {
+        if (node.type === 'pane') leaves.push(node);
+        else {
+          walk(node.first);
+          walk(node.second);
+        }
+      }
+      walk(this);
+      return leaves;
+    };
+
+    Split.prototype.destroy = function () {
+      if (this.element.parentNode) {
+        this.element.parentNode.removeChild(this.element);
+      }
+    };
+
+    /**
+     * Pane - a leaf node containing a Window (terminal with tabs)
+     */
+    function Pane(container) {
+      this.type = 'pane';
+      this.parent = null;
+      this.window = null;
+
+      this.element = container || document.createElement('div');
+      this.element.className = 'tiling-pane';
+
+      // The bar at the top of each pane
+      this.bar = document.createElement('div');
+      this.bar.className = 'tiling-pane-bar';
+
+      // Buttons
+      this.splitHBtn = document.createElement('div');
+      this.splitHBtn.className = 'tiling-btn';
+      this.splitHBtn.innerHTML = '&#x2507;'; // vertical dots = split horizontal
+      this.splitHBtn.title = 'Split horizontal (Alt+D)';
+
+      this.splitVBtn = document.createElement('div');
+      this.splitVBtn.className = 'tiling-btn';
+      this.splitVBtn.innerHTML = '&#x2509;'; // horizontal dots = split vertical
+      this.splitVBtn.title = 'Split vertical (Alt+Shift+D)';
+
+      this.closeBtn = document.createElement('div');
+      this.closeBtn.className = 'tiling-btn tiling-btn-close';
+      this.closeBtn.innerHTML = '&#x2715;';
+      this.closeBtn.title = 'Close pane (Alt+W)';
+
+      this.newTabBtn = document.createElement('div');
+      this.newTabBtn.className = 'tiling-btn';
+      this.newTabBtn.innerHTML = '+';
+      this.newTabBtn.title = 'New tab / Shift+click to close tab';
+
+      this.title = document.createElement('div');
+      this.title.className = 'tiling-pane-title';
+
+      // Container for the xterm
+      this.termContainer = document.createElement('div');
+      this.termContainer.className = 'tiling-term-container';
+
+      this.bar.appendChild(this.newTabBtn);
+      this.bar.appendChild(this.splitHBtn);
+      this.bar.appendChild(this.splitVBtn);
+      this.bar.appendChild(this.title);
+      this.bar.appendChild(this.closeBtn);
+
+      this.element.appendChild(this.bar);
+      this.element.appendChild(this.termContainer);
+
+      this._bind();
+    }
+
+    Pane.prototype._bind = function () {
+      var self = this;
+
+      this.splitHBtn.addEventListener('click', function () {
+        splitPane(self, 'horizontal');
+      }, false);
+
+      this.splitVBtn.addEventListener('click', function () {
+        splitPane(self, 'vertical');
+      }, false);
+
+      this.closeBtn.addEventListener('click', function () {
+        closePane(self);
+      }, false);
+
+      this.newTabBtn.addEventListener('click', function (ev) {
+        if (!self.window) return;
+        if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
+          // Close current tab
+          if (self.window.focused) {
+            self.window.focused.destroy();
+          }
+        } else {
+          self.window.createTab();
+        }
+      }, false);
+
+      this.element.addEventListener('mousedown', function () {
+        focusPane(self);
+      }, false);
+    };
+
+    Pane.prototype.getLeaves = function () {
+      return [this];
+    };
+
+    Pane.prototype.destroy = function () {
+      if (this.window) {
+        this.window.destroy();
+      }
+      if (this.element.parentNode) {
+        this.element.parentNode.removeChild(this.element);
+      }
+    };
+
+    /**
+     * Tiling operations
+     */
+
+    function createPane(container) {
+      var pane = new Pane(container);
+      var win = new Window(tty.socket, false, pane);
+      pane.window = win;
+      return pane;
+    }
+
+    function splitPane(pane, direction) {
+      var newPane = createPane();
+
+      if (pane === tilingRoot && !pane.parent) {
+        // Root pane — wrap in a new split
+        var rootContainer = pane.element.parentNode;
+        rootContainer.removeChild(pane.element);
+
+        // Reset inline styles that may have been set as root
+        pane.element.style.width = '';
+        pane.element.style.height = '';
+
+        var split = new Split(direction, pane, newPane, null);
+        split.element.style.width = '100%';
+        split.element.style.height = '100%';
+        rootContainer.appendChild(split.element);
+        tilingRoot = split;
+      } else {
+        // Nested pane — replace in parent split
+        var parentSplit = pane.parent;
+        pane.element.style.width = '';
+        pane.element.style.height = '';
+
+        var split = new Split(direction, pane, newPane, null);
+        parentSplit.replaceChild(pane, split);
+      }
+
+      focusPane(newPane);
+      fitAllPanes();
+    }
+
+    function closePane(pane) {
+      if (!pane.parent) {
+        // Last pane — don't close, just destroy terminals
+        // Actually, let's keep at least one terminal
+        return;
+      }
+
+      var parentSplit = pane.parent;
+      var sibling = (parentSplit.first === pane) ? parentSplit.second : parentSplit.first;
+
+      // Detach sibling from split
+      sibling.parent = parentSplit.parent;
+
+      if (parentSplit === tilingRoot) {
+        // Parent split is root
+        var rootContainer = parentSplit.element.parentNode;
+        rootContainer.removeChild(parentSplit.element);
+        sibling.element.style.width = '100%';
+        sibling.element.style.height = '100%';
+        rootContainer.appendChild(sibling.element);
+        tilingRoot = sibling;
+        sibling.parent = null;
+      } else {
+        // Parent split is nested
+        var grandparent = parentSplit.parent;
+        grandparent.replaceChild(parentSplit, sibling);
+      }
+
+      pane.destroy();
+
+      // Focus the sibling or first leaf
+      var leaves = tilingRoot.getLeaves();
+      if (leaves.length > 0) {
+        focusPane(leaves[0]);
+      }
+      fitAllPanes();
+    }
+
+    function focusPane(pane) {
+      // Remove focus from previous
+      if (focusedPane && focusedPane.element) {
+        focusedPane.element.classList.remove('tiling-pane-focused');
+      }
+      focusedPane = pane;
+      if (pane && pane.element) {
+        pane.element.classList.add('tiling-pane-focused');
+        if (pane.window && pane.window.focused) {
+          pane.window.focused.focus();
+        }
+      }
+    }
+
+    function getAllPanes() {
+      if (!tilingRoot) return [];
+      return tilingRoot.getLeaves();
+    }
+
+    function fitAllPanes() {
+      // Delay to allow layout to settle
+      setTimeout(function () {
+        var panes = getAllPanes();
+        for (var i = 0; i < panes.length; i++) {
+          var pane = panes[i];
+          if (pane.window && pane.window.focused) {
+            var tab = pane.window.focused;
+            try {
+              var fit = new FitAddon();
+              tab.loadAddon(fit);
+              fit.fit();
+              // Notify server of new size
+              if (tab.cols && tab.rows && tab.id) {
+                tab.socket.send(JSON.stringify({
+                  cmd: 'resize', id: tab.id,
+                  cols: tab.cols, rows: tab.rows
+                }));
+              }
+            } catch (e) {
+              // fit may fail if element not yet visible
+            }
+          }
+        }
+      }, 50);
+    }
+
+    function navigatePane(offset) {
+      var panes = getAllPanes();
+      if (panes.length <= 1) return;
+      var idx = panes.indexOf(focusedPane);
+      if (idx === -1) idx = 0;
+      idx = (idx + offset + panes.length) % panes.length;
+      focusPane(panes[idx]);
+    }
 
     /**
      * Open
@@ -129,12 +501,27 @@ define(function(require) {
 
       if (newTerminal) {
         newTerminal.addEventListener('click', function () {
-          new Window;
+          if (!focusedPane) {
+            // No panes yet, shouldn't happen but create one
+            return;
+          }
+          // Split the focused pane horizontally
+          splitPane(focusedPane, 'horizontal');
         }, false);
       }
 
       tty.socket.on('open', function () {
         tty.reset();
+        // Create initial tiling layout with one pane
+        var container = document.getElementById('terminalWindow');
+        container.innerHTML = '';
+        var pane = createPane(null);
+        pane.element.style.width = '100%';
+        pane.element.style.height = '100%';
+        container.appendChild(pane.element);
+        tilingRoot = pane;
+        focusPane(pane);
+        fitAllPanes();
       });
 
       tty.socket.on('close', function (reason) {
@@ -167,56 +554,89 @@ define(function(require) {
 
           tty.reset();
 
-          Object.keys(data.terms).forEach(function (key) {
-            var tdata = data.terms[key]
-              , win = new Window(tty.socket, true)
-              , tab = win.tabs[0];
+          var container = document.getElementById('terminalWindow');
+          container.innerHTML = '';
+          tilingRoot = null;
+          focusedPane = null;
 
-            delete tty.terms[tab.id];
-            tab.pty = tdata.pty;
-            tab.id = tdata.id;
-            tty.terms[tdata.id] = tab;
-            win.resize(tdata.cols, tdata.rows);
-            win.move(tdata.left, tdata.top);
-            tab.setProcessName(tdata.process);
-            console.log(' - ' + tdata.id)
+          var termKeys = Object.keys(data.terms);
+          if (termKeys.length === 0) {
+            // Create a fresh pane
+            var pane = createPane(null);
+            pane.element.style.width = '100%';
+            pane.element.style.height = '100%';
+            container.appendChild(pane.element);
+            tilingRoot = pane;
+            focusPane(pane);
+          } else {
+            // Restore terminals — one pane per synced terminal
+            var firstPane = null;
+            termKeys.forEach(function (key, idx) {
+              var tdata = data.terms[key];
 
-            /* This is a hack but otherwise the focus remains on the hidden
-             * console at the bottom of the page
-             */
-            setTimeout(function () {
-              win.focus();
-            }, 50);
-          });
+              if (idx === 0) {
+                var pane = createPane(null);
+                pane.element.style.width = '100%';
+                pane.element.style.height = '100%';
+                container.appendChild(pane.element);
+                tilingRoot = pane;
+                firstPane = pane;
+
+                // Replace the auto-created terminal with the synced one
+                var win = pane.window;
+                var tab = win.tabs[0];
+                delete tty.terms[tab.id];
+                tab.pty = tdata.pty;
+                tab.id = tdata.id;
+                tty.terms[tdata.id] = tab;
+                tab.setProcessName(tdata.process);
+              } else {
+                // Split to create additional panes
+                splitPane(focusedPane || firstPane, 'horizontal');
+                var panes = getAllPanes();
+                var newPane = panes[panes.length - 1];
+
+                var win = newPane.window;
+                var tab = win.tabs[0];
+                delete tty.terms[tab.id];
+                tab.pty = tdata.pty;
+                tab.id = tdata.id;
+                tty.terms[tdata.id] = tab;
+                tab.setProcessName(tdata.process);
+              }
+            });
+            if (firstPane) focusPane(firstPane);
+          }
+
+          setTimeout(function () {
+            fitAllPanes();
+          }, 100);
         }
       });
 
-      // We would need to poll the os on the serverside
-      // anyway. there's really no clean way to do this.
-      // This is just easier to do on the
-      // clientside, rather than poll on the
-      // server, and *then* send it to the client.
+      // Poll process names
       setInterval(function () {
-        var i = tty.windows.length;
-        while (i--) {
-          if (!tty.windows[i].focused) continue;
-          tty.windows[i].focused.pollProcessName();
+        var panes = getAllPanes();
+        for (var i = 0; i < panes.length; i++) {
+          if (panes[i].window && panes[i].window.focused) {
+            panes[i].window.focused.pollProcessName();
+          }
         }
       }, 2 * 1000);
 
-      // Keep windows maximized when browser size changes
+      // Re-fit on browser resize
       window.addEventListener('resize', function () {
-        var i = tty.windows.length
-          , win;
-
-        while (i--) {
-          win = tty.windows[i];
-          if (win.minimize) {
-            win.minimize();
-            win.maximize();
-          }
-        }
+        fitAllPanes();
       }, false);
+
+      // Watch for console panel resize via MutationObserver
+      var termWin = document.getElementById('terminalWindow');
+      if (termWin && typeof ResizeObserver !== 'undefined') {
+        var ro = new ResizeObserver(function () {
+          fitAllPanes();
+        });
+        ro.observe(termWin);
+      }
     };
 
     /**
@@ -228,64 +648,21 @@ define(function(require) {
       while (i--) {
         tty.windows[i].destroy();
       }
-
       tty.windows = [];
       tty.terms = {};
     };
 
     /**
-     * Window
+     * Window - a terminal container with tab support
+     * Now lives inside a Pane instead of floating.
      */
 
-    function Window(socket, resume) {
+    function Window(socket, resume, pane) {
       var self = this;
-
-      var el
-        , winId
-        , grip
-        , xterm
-        , bar
-        , button
-        , title
-        , defaultS
-        , container;
-
-      el = document.createElement('div');
-      el.className = 'window';
-
-      grip = document.createElement('div');
-      grip.className = 'grip';
-
-      xterm = document.createElement('div');
-      winId = (Math.random() + 1).toString(36).substring(7);
-      xterm.className = 'xterm-container-' + winId;
-
-      bar = document.createElement('div');
-      bar.className = 'bar';
-
-      button = document.createElement('div');
-      button.innerHTML = '~';
-      button.title = 'new/close';
-      button.className = 'tabT';
-
-      title = document.createElement('div');
-      title.className = 'title';
-      title.innerHTML = '';
-
-      defaultS = document.createElement('div');
-      defaultS.innerHTML = '=';
-      defaultS.title = 'Default size';
-      defaultS.className = 'tabT';
 
       this.socket = socket || tty.socket;
       this.resume = resume || false;
-      this.element = el;
-      this.grip = grip;
-      this.bar = bar;
-      this.button = button;
-      this.defaultS = defaultS;
-      this.title = title;
-      this.winId = winId;
+      this.pane = pane;
 
       this.tabs = [];
       this.focused = null;
@@ -293,271 +670,37 @@ define(function(require) {
       this.cols = 80;
       this.rows = 24;
 
-      // The following is to accomodate very small console areas
-      container = document.getElementsByClassName('page pgTerminal curpage')[0]
-
-      if (container != undefined && container.clientHeight < 370) {
-        this.rows = container.clientHeight / 27 | 0;
+      // Adjust for small containers
+      if (pane && pane.termContainer) {
+        var w = pane.termContainer.clientWidth;
+        var h = pane.termContainer.clientHeight;
+        if (h > 0 && h < 370) {
+          this.rows = Math.max(4, h / 27 | 0);
+        }
+        if (w > 0 && w < 600) {
+          this.cols = Math.max(10, w / 8 | 0);
+        }
       }
-      if (container != undefined && container.clientWidth < 600) {
-        this.cols = container.clientWidth / 8 | 0;
-      }
-      
-      el.appendChild(grip);
-      el.appendChild(xterm);
-      el.appendChild(bar);
-      bar.appendChild(button);
-      bar.appendChild(defaultS);
-      bar.appendChild(title);
-      document.getElementById('terminalWindow').appendChild(el);
 
       tty.windows.push(this);
 
       this.createTab();
-      this.focus();
-      this.bind();
-
       this.resume = false;
     }
 
-    Window.prototype.bind = function () {
-      var self = this
-        , el = this.element
-        , bar = this.bar
-        , grip = this.grip
-        , button = this.button
-        , defaultS = this.defaultS
-        , last = 0;
-
-      button.addEventListener('click', function (ev) {
-        if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
-          self.destroy();
-        } else {
-          self.createTab();
-        }
-      }, false);
-
-      defaultS.addEventListener('click', function (ev) {
-        self.resize(80, 24);
-        return cancel(ev);
-      }, false);
-
-      grip.addEventListener('mousedown', function (ev) {
-        self.focus();
-        self.resizing(ev);
-      }, false);
-
-      el.addEventListener('mousedown', function (ev) {
-        if (ev.target !== el && ev.target !== bar) {
-          if (ppc.document.activeElement == null) return;
-          return ppc.document.activeElement.blur();
-        }
-
-        self.focus();
-
-        if (new Date - last < 600) {
-          return self.maximize();
-        }
-        last = new Date;
-
-        self.drag(ev);
-      }, false);
-    };
-
     Window.prototype.focus = function () {
-      // Restack
-      var parent = this.element.parentNode;
-      if (parent) {
-        parent.removeChild(this.element);
-        parent.appendChild(this.element);
-        if (document.getElementsByClassName('ace_text-input')[0] != undefined) {
-          var length = document.getElementsByClassName('ace_text-input').length;
-          for (var i = 0; i < length; i++) {
-            document.getElementsByClassName('ace_text-input')[i].blur();
-          }
-        }
-      }
-
-      // Focus Foreground Tab
-      this.focused.focus();
+      if (this.focused) this.focused.focus();
     };
 
     Window.prototype.destroy = function () {
       if (this.destroyed) return;
       this.destroyed = true;
 
-      if (this.minimize) this.minimize();
-
       splice(tty.windows, this);
-      if (tty.windows.length) tty.windows[0].focus();
-
-      this.element.parentNode.removeChild(this.element);
 
       this.each(function (term) {
         term.destroy();
       });
-    };
-
-    Window.prototype.drag = function (ev) {
-      var self = this
-        , el = this.element
-        , socket = this.socket
-        , id = this.tabs[0].id;
-
-      if (this.minimize) return;
-
-      var drag = {
-        left: el.offsetLeft,
-        top: el.offsetTop,
-        pageX: ev.pageX,
-        pageY: ev.pageY
-      };
-
-      el.style.opacity = '0.60';
-      el.style.cursor = 'move';
-      root.style.cursor = 'move';
-
-      function move(ev) {
-        el.style.left =
-          (drag.left + ev.pageX - drag.pageX) + 'px';
-        el.style.top =
-          (drag.top + ev.pageY - drag.pageY) + 'px';
-      }
-
-      function up() {
-        el.style.opacity = '';
-        el.style.cursor = '';
-        root.style.cursor = '';
-
-        document.removeEventListener('mousemove', move, false);
-        document.removeEventListener('mouseup', up, false);
-
-        var ev = {
-          left: el.style.left.replace(/\w+/g, ''),
-          top: el.style.top.replace(/\w+/g, '')
-        };
-
-        socket.send(JSON.stringify({cmd: 'move', id: id, left: el.style.left, top: el.style.top}));
-
-        tty.terms[id].focus();
-
-      }
-
-      document.addEventListener('mousemove', move, false);
-      document.addEventListener('mouseup', up, false);
-    };
-
-    Window.prototype.resizing = function (ev) {
-      var self = this
-        , el = this.element
-        , term = this.focused;
-
-      if (this.minimize) delete this.minimize;
-      
-      var resize = {
-        w: el.clientWidth,
-        h: el.clientHeight
-      };
-
-      el.style.overflow = 'hidden';
-      el.style.opacity = '0.70';
-      el.style.cursor = 'se-resize';
-      root.style.cursor = 'se-resize';
-      term.element.style.height = '100%';
-
-      function move(ev) {
-        var x, y;
-        y = window.innerHeight - document.getElementsByClassName('page pgTerminal curpage')[0].clientHeight + 15;
-        x = ev.pageX - el.offsetLeft;
-        y = (ev.pageY - el.offsetTop) - y;
-        el.style.width = x + 'px';
-        el.style.height = y + 'px';
-      }
-
-      function up() {
-        var x, y;
-
-        x = el.clientWidth / resize.w;
-        y = el.clientHeight / resize.h;
-        x = (x * term.cols) | 0;
-        y = (y * term.rows) | 0;
-
-        self.resize(x, y);
-
-        el.style.height = '';
-
-        el.style.overflow = '';
-        el.style.opacity = '';
-        el.style.cursor = '';
-        root.style.cursor = '';
-        term.element.style.height = '';
-        term.element.focus();
-         
-        document.removeEventListener('mousemove', move, false);
-        document.removeEventListener('mouseup', up, false);
-      }
-
-      document.addEventListener('mousemove', move, false);
-      document.addEventListener('mouseup', up, false);
-    };
-
-    Window.prototype.maximize = function () {
-      if (this.minimize) return this.minimize();
-
-      var self = this
-        , el = this.element
-        , term = this.focused
-        , x
-        , y;
-
-      var m = {
-        cols: term.cols,
-        rows: term.rows,
-        left: el.offsetLeft,
-        top: el.offsetTop,
-        width: el.style.width,
-        height: el.style.height,
-        root: root.className
-      };
-
-      this.minimize = function () {
-        delete this.minimize;
-
-        el.style.left = m.left + 'px';
-        el.style.top = m.top + 'px';
-        el.style.width = m.width;
-        el.style.height = m.height;
-        term.element.style.width = '';
-        term.element.style.height = '';
-        el.style.boxSizing = '';
-        self.grip.style.display = '';
-        root.className = m.root;
-
-        self.resize(m.cols, m.rows);
-
-        // This seems to be required by Chrome for proper focusing
-        setTimeout(function() {
-          term.element.focus();
-        }, 50);
-      };
-
-      window.scrollTo(0, 0);
-
-      var xterm = el.getElementsByClassName('xterm-container-' + this.winId)[0];
-      xterm.style.width = '100%';
-      xterm.style.height = '100%';
-
-      el.style.left = '0px';
-      el.style.top = '0px';
-      el.style.width = '100%';
-      el.style.height = '100%';
-      el.style.boxSizing = 'border-box';
-      this.grip.style.display = 'none';
-      root.className = 'maximized';
-
-      term.loadAddon(fit);
-      fit.fit();
-      term.element.focus();
     };
 
     Window.prototype.resize = function (cols, rows) {
@@ -569,11 +712,6 @@ define(function(require) {
       });
     };
 
-    Window.prototype.move = function (left, top) {
-      this.element.style.left = left;
-      this.element.style.top = top;
-    };
-
     Window.prototype.each = function (func) {
       var i = this.tabs.length;
       while (i--) {
@@ -583,17 +721,6 @@ define(function(require) {
 
     Window.prototype.createTab = function () {
       return new Tab(this, this.socket, this.resume);
-    };
-
-    Window.prototype.highlight = function () {
-      var self = this;
-
-      this.element.style.borderColor = 'orange';
-      setTimeout(function () {
-        self.element.style.borderColor = '';
-      }, 200);
-
-      this.focus();
     };
 
     Window.prototype.focusTab = function (next) {
@@ -637,16 +764,21 @@ define(function(require) {
         tabStopWidth: 2,
         fontSize: 12
       });
-      
+
       this._core = this.xterm._core;
       this._addonManager = this.xterm._addonManager;
       this._publicOptions = this.xterm._publicOptions;
       delete this.xterm;
-      
+
+      // Tab button in the pane's bar
       var button = document.createElement('div');
-      button.className = 'tabT';
+      button.className = 'tiling-tab-btn';
       button.innerHTML = '\u2022';
-      win.bar.appendChild(button);
+
+      if (win.pane && win.pane.bar) {
+        // Insert before title
+        win.pane.bar.insertBefore(button, win.pane.title);
+      }
 
       button.addEventListener('click', function (ev) {
         if (ev.ctrlKey || ev.altKey || ev.metaKey || ev.shiftKey) {
@@ -662,14 +794,13 @@ define(function(require) {
       this.button = button;
       this.element = null;
       this.process = '';
-      this.open(document.getElementsByClassName('xterm-container-' + win.winId)[0]);
+
+      this.open(win.pane.termContainer);
 
       this.hookKeys();
       this.hookMouse();
 
       win.tabs.push(this);
-      // Starting with xterm.js v4.14.1 the viewport overflows with scroll-bar part unless we correct the window size during creation
-      win.element.style.width = win.element.getElementsByClassName('xterm-viewport')[0].clientWidth + 15 + 'px';
 
       if (!resume) {
         this.socket.send(JSON.stringify({cmd: 'create', cols: cols, rows: rows}));
@@ -687,28 +818,22 @@ define(function(require) {
       }
 
       this.focus();
-
     }
 
     inherits(Tab, Terminal);
 
-// We could just hook in `tab.on('data', ...)`
-// in the constructor, but this is faster.
     Tab.prototype.handler = function (data) {
       this.socket.send(JSON.stringify({cmd: 'data', id: this.id, payload: data}));
     };
 
-// We could just hook in `tab.on('title', ...)`
-// in the constructor, but this is faster.
     Tab.prototype.handleTitle = function (title) {
       if (!title) return;
 
       title = sanitize(title);
       this.title = title;
 
-      if (this.window.focused === this) {
-        this.window.bar.title = title;
-        // this.setProcessName(this.process);
+      if (this.window.focused === this && this.window.pane) {
+        this.window.pane.bar.title = title;
       }
     };
 
@@ -722,35 +847,35 @@ define(function(require) {
     Tab.prototype._focus = Tab.prototype.focus;
 
     Tab.prototype.focus = function () {
-
       var win = this.window;
+      var container = win.pane ? win.pane.termContainer : null;
+      if (!container) return;
 
-      var xterm = win.element.getElementsByClassName('xterm-container-' + win.winId)[0];
-
-      // maybe move to Tab.prototype.switch
       if (win.focused !== this) {
         if (win.focused) {
-          if (win.focused.element.parentNode) {
+          if (win.focused.element && win.focused.element.parentNode) {
             win.focused.element.parentNode.removeChild(win.focused.element);
           }
           win.focused.button.style.fontWeight = '';
         }
 
-        xterm.appendChild(this.element);
+        container.appendChild(this.element);
         win.focused = this;
 
-        win.title.innerHTML = this.process;
+        if (win.pane) {
+          win.pane.title.innerHTML = this.process;
+        }
         this.button.style.fontWeight = 'bold';
         this.button.style.color = '';
       }
 
       this.handleTitle(this.title);
-      
-      if(ppc.isIphone) {
-        this.element.focus(); // Focus on element
+
+      if (ppc.isIphone) {
+        this.element.focus();
       }
       else {
-        this._focus(); // Use xterm.js focus
+        this._focus();
       }
     };
 
@@ -761,7 +886,7 @@ define(function(require) {
       this._resize(cols, rows);
     };
 
-    Tab.prototype.__destroy = Tab.prototype.dispose; // Release xterm resources
+    Tab.prototype.__destroy = Tab.prototype.dispose;
 
     Tab.prototype._destroy = function () {
       if (this.destroyed) return;
@@ -769,8 +894,8 @@ define(function(require) {
 
       var win = this.window;
 
-      this.button.parentNode.removeChild(this.button);
-      if (this.element.parentNode) {
+      if (this.button.parentNode) this.button.parentNode.removeChild(this.button);
+      if (this.element && this.element.parentNode) {
         this.element.parentNode.removeChild(this.element);
       }
 
@@ -782,7 +907,14 @@ define(function(require) {
       }
 
       if (!win.tabs.length) {
-        win.destroy();
+        // No more tabs — close the pane if there are other panes
+        if (win.pane && win.pane.parent) {
+          closePane(win.pane);
+        }
+        // If it's the last pane, create a new tab
+        else if (win.pane) {
+          win.createTab();
+        }
       }
 
       this.__destroy();
@@ -798,22 +930,22 @@ define(function(require) {
       var self = this;
 
       // Ctrl-V (Paste on Windows)
-      if(ppc.isWin) {
+      if (ppc.isWin) {
         this.attachCustomKeyEventHandler(function (e) {
           if (e.ctrlKey == true && e.keyCode == 86) {
-            return false; // Do nothing
+            return false;
           }
         });
       }
-      
-      // Handle space in iOS & keep focus off from the xterm.js textarea
-      if(ppc.isIphone) {
+
+      // Handle space in iOS
+      if (ppc.isIphone) {
         self.element.addEventListener('keydown', function (ev) {
-          if(ev.charCode === 0 && ev.code === "Space") {
+          if (ev.charCode === 0 && ev.code === "Space") {
             self.handler(" ");
           }
         });
-        
+
         self.element.addEventListener('keyup', function (ev) {
           self.element.focus();
         });
@@ -823,38 +955,51 @@ define(function(require) {
         self.handler(data);
       });
 
-      // Alt-[jk] to quickly swap between windows.
+      // Keyboard shortcuts for tiling
       this.attachCustomKeyEventHandler(function (key) {
-        var offset
-          , i;
+        if (key.type !== 'keydown') return true;
 
-        if(key.altKey === true && (key.key === "j" || key.key === "k")) {
-          if (key.key === 'j') {
-            offset = -1;
-          } else if (key.key === 'k') {
-            offset = +1;
-          } 
-
-          i = indexOf(tty.windows, this.window) + offset;
-
-          if (tty.windows[i]) {
-            tty.windows[i].highlight();
-          }
-
-          if (offset > 0) {
-            if (tty.windows[0]) {
-              tty.windows[0].highlight();
-            }
-          }
-          else {
-            i = tty.windows.length - 1;
-            if (tty.windows[i]) {
-              tty.windows[i].highlight();
-            }
-          }
-
+        // Alt+D: split horizontal
+        if (key.altKey && !key.shiftKey && !key.ctrlKey && key.key === 'd') {
+          var pane = self.window.pane;
+          if (pane) splitPane(pane, 'horizontal');
           return false;
         }
+
+        // Alt+Shift+D: split vertical
+        if (key.altKey && key.shiftKey && !key.ctrlKey && key.key === 'D') {
+          var pane = self.window.pane;
+          if (pane) splitPane(pane, 'vertical');
+          return false;
+        }
+
+        // Alt+W: close pane
+        if (key.altKey && !key.shiftKey && !key.ctrlKey && key.key === 'w') {
+          var pane = self.window.pane;
+          if (pane && pane.parent) closePane(pane);
+          return false;
+        }
+
+        // Alt+J / Alt+K: navigate between panes
+        if (key.altKey && !key.shiftKey && !key.ctrlKey) {
+          if (key.key === 'j') {
+            navigatePane(-1);
+            return false;
+          } else if (key.key === 'k') {
+            navigatePane(1);
+            return false;
+          }
+        }
+
+        // Alt+T: new tab in current pane
+        if (key.altKey && !key.shiftKey && !key.ctrlKey && key.key === 't') {
+          self.window.createTab();
+          return false;
+        }
+
+        // Alt+Shift+T or Alt+number to switch tabs? Keep it simple for now.
+
+        return true;
       });
     };
 
@@ -862,7 +1007,6 @@ define(function(require) {
       var self = this;
 
       self.element.addEventListener('mouseup', function (ev) {
-        // Left mouse button
         if (ev.which == 1 && self.hasSelection()) {
           var termTextarea = self._core.textarea;
 
@@ -882,7 +1026,6 @@ define(function(require) {
 
           termTextarea.value = "";
         }
-        // Right mouse button
         else if (ev.which == 3 && !ppc.clipboard.empty) {
           if (typeof ppc.clipboard.store === 'string') {
             self.handler(ppc.clipboard.store);
@@ -927,10 +1070,8 @@ define(function(require) {
 
         if ((ev.type === 'mousewheel' && ev.wheelDeltaY > 0)
           || (ev.type === 'DOMMouseScroll' && ev.detail < 0)) {
-          // page up
           self.keyDown({keyCode: 33});
         } else {
-          // page down
           self.keyDown({keyCode: 34});
         }
 
@@ -960,8 +1101,8 @@ define(function(require) {
       this.process = name;
       this.button.title = name;
 
-      if (this.window.focused === this) {
-        this.window.title.innerHTML = name;
+      if (this.window.focused === this && this.window.pane) {
+        this.window.pane.title.innerHTML = name;
       }
     };
 
@@ -1011,6 +1152,11 @@ define(function(require) {
     tty.Window = Window;
     tty.Tab = Tab;
     tty.Terminal = Terminal;
+    tty.splitPane = splitPane;
+    tty.closePane = closePane;
+    tty.navigatePane = navigatePane;
+    tty.getAllPanes = getAllPanes;
+    tty.fitAllPanes = fitAllPanes;
 
     this.tty = tty;
 
