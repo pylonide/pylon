@@ -512,7 +512,7 @@ ppc.vsplitbox = function(struct, tagName){
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {
             if (this.visible)
-                this.$ext.style.display = ppc.CSSPREFIX2 + "-box"; //Webkit issue
+                this.$ext.style.display = "flex";
             return;
         }
         

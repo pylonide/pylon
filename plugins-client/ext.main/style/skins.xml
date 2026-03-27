@@ -4093,7 +4093,7 @@
         }
 
         .datagrid .headings div{
-            display : -moz-inline-box;
+            display : inline-block;
             overflow : visible;
             position : relative;
         }
@@ -4102,7 +4102,7 @@
         }
 
         .datagrid .records .row span{
-            display : -moz-inline-box;
+            display : inline-block;
             overflow : visible;
             position : relative;
         }
@@ -4623,7 +4623,7 @@
         }
 
         .dgcheck .headings div{
-            display : -moz-inline-box;
+            display : inline-block;
             overflow : visible;
             position : relative;
         }
@@ -4632,7 +4632,7 @@
         }
 
         .dgcheck .records .row span{
-            display : -moz-inline-box;
+            display : inline-block;
             overflow : visible;
             position : relative;
         }
@@ -6682,7 +6682,7 @@
     ]]></a:style>
     <a:style condition="ppc.isWebkit">
         .sbios{
-            display : -webkit-box;
+            display : flex;
         }
 
         .sbios span{
@@ -8055,7 +8055,7 @@
     ]]></a:style>
     <a:style condition="ppc.isWebkit">
         .console_scrollbar{
-            display : -webkit-box;
+            display : flex;
         }
 
         .console_scrollbar span{
@@ -8779,8 +8779,7 @@
             z-index  : 90000;
             background-color: #e8e8e8;
 
-            display  : -webkit-box;
-            display  : -ms-box;
+            display  : flex;
         }
 
         .w-resize {
@@ -9314,7 +9313,7 @@
         right : 0;
 
         clip: rect(0px 4000px 30px 0px);
-        display : -webkit-box;
+        display : flex;
     }
 
     .tab_console .btncontainer > .btntab {
@@ -9322,7 +9321,7 @@
 
         min-width : 17px;
         max-width : 70px;
-        -webkit-box-flex : 1;
+        flex : 1;
         position : relative;
         width : 0;
 
@@ -9543,7 +9542,7 @@
         /*box-shadow: 0 -1px 0 0 black inset, 0 1px 0 0 rgba(255, 255, 255, .06) inset;*/
         margin-bottom: 1px;
 
-        display : -webkit-box;
+        display : flex;
     }
 
     .editor_tab .btnsesssioncontainer.morepadding{
@@ -9561,7 +9560,7 @@
 
         min-width : 17px;
         max-width : 150px;
-        -webkit-box-flex : 1;
+        flex : 1;
         position : relative;
         width : 0;
         line-height : 1.2em;
@@ -10811,6 +10810,8 @@
             -webkit-border-radius: 0;
             -moz-border-radius: 0;
             border-radius: 0;
+            width: 100%;
+            min-width: 0;
         }
 
         .docktab .btncontainer{
@@ -10822,7 +10823,7 @@
             width : auto;
 
             clip: rect(0px 3000px 30px 0px);
-            display : -webkit-box;
+            display : flex;
         }
 
         .dockcol .docktab .btncontainer{
@@ -10845,7 +10846,7 @@
 
             min-width : 17px;
             max-width : 100px;
-            -webkit-box-flex : 1;
+            flex : 1;
             width : 0;
 
             padding       : 3px 2px 4px;
@@ -12542,13 +12543,10 @@
             .img div {
                 width : 100%;
                 height : 100%;
-                display: -webkit-box;
-                -webkit-box-orient: horizontal;
-                box-orient: horizontal;
-                -webkit-box-pack: center;
-                box-pack: center;
-                -webkit-box-align: center;
-                box-align: center;
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
             }
 
             .img IMG {
