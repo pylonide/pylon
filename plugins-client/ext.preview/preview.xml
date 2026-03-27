@@ -1,7 +1,7 @@
 <a:application xmlns:a="https://github.com/pylonide/pylon">
     <a:tab skin="docktab" visible="false">
         <a:page id="pgPreview" caption="Preview">
-            <a:bar border="0 0 0 0">
+            <a:bar border="0 0 0 0" height="36">
                 <a:hbox class="previewbar" height="36" align="center" edge="4 5 4" padding="5">
                     <a:textbox id="txtPreview" style="width:100%" class="ace_searchbox tb_textbox searchbox searchTxt tb_console"
                         flex="1" value=""
@@ -13,10 +13,8 @@
                     <a:button onclick="require('ext/preview/preview').close()" skin="btn-preview-nav" skinset="previewskin" class="close"></a:button>
                 </a:hbox>
             </a:bar>
-            <iframe
-                class="preview_iframe"
-                onload="require('ext/preview/preview').onLoad()"
-                src="" />
-            </a:page>
+            <a:browser id="frmPreview" src=""
+                onload="require('ext/preview/preview').onLoad()" />
+        </a:page>
     </a:tab>
 </a:application>

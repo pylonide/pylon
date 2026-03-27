@@ -666,12 +666,18 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         if (!bar.vbox) {
             var _self = this;
 
-            if (bar.$dockData.minWidth)
-                pNode.minwidth = bar.$dockData.minWidth;
+            var dockMinWidthVal = bar.$dockData.minWidth || bar.$dockData["min-width"];
+            if (dockMinWidthVal)
+                pNode.minwidth = dockMinWidthVal;
+
+            var dockWidth = bar.$dockData && bar.$dockData.width || 260;
+            var dockMinWidth = dockMinWidthVal || 0;
+            if (dockMinWidth && dockWidth < dockMinWidth)
+                dockWidth = dockMinWidth;
 
             bar.vbox = pNode.insertBefore(new ppc.vbox({
                 padding   : 0,
-                width     : bar.$dockData && bar.$dockData.width || 260,
+                width     : dockWidth,
                 splitters : true,
                 vdock     : 1,
                 "class"   : "dockcol unselectable expandedpanel",
@@ -772,6 +778,12 @@ var DockableLayout = module.exports = function(parentHBox, cbFindPage, cbStorePa
         }
 
         if (bar.vbox) {
+            // Enforce min-width on the vbox — always set if width is too small
+            var minW = bar.$dockData && (bar.$dockData.minWidth || bar.$dockData["min-width"]);
+            var curW = bar.vbox.getWidth ? bar.vbox.getWidth() : 0;
+            if (minW && (!curW || curW < minW))
+                bar.vbox.setWidth(minW);
+
             bar.vbox.show();
             bar.vbox.expanded = true;
             bar.vbox.firstChild.$ext.onmousemove({});
