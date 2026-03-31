@@ -190,7 +190,7 @@ module.exports = ext.register("ext/menus/menus", {
             var nodes = this.childNodes;
             for (var a, cmd, n, i = nodes.length - 1; i >= 0; i--) {
                 if (a = ((cmd = (n = nodes[i]).command)
-                  && commands.commands[cmd].isAvailable) || n.isAvailable)
+                  && commands.commands[cmd] && commands.commands[cmd].isAvailable) || n.isAvailable)
                     n[a(editor) ? "enable" : "disable"]();
             }
         }
