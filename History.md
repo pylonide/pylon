@@ -1,3 +1,18 @@
+v2.12.0
+=======
+* Cutting legacy Node.JS support, new minimum node requirement v22.22.2
+* CI/CD workflow improvements
+* Generic dependency tree updates
+* Selection menu fix #479 (Contriution by @Kreijstal)
+
+v2.11.1
+=======
+* Express/Connect mime break due to dependencies
+
+v2.11.0
+=======
+* Node.JS v14-v18 deprecation. Updated dependencies.
+
 v2.10.0
 =======
 - Overall dependency updates (chore)
