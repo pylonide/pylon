@@ -1,3 +1,8 @@
+v2.12.2
+=======
+* Security fix: Terminal session authentication improvements
+* Test harness partial restoration for avoiding regressions
+
 v2.12.1
 =======
 * Critical fix for node-pty permissions
