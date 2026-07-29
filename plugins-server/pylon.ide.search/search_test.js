@@ -11,7 +11,7 @@
 "use mocha";
 
 var Assert = require("assert");
-var VfsLocal = require("vfs-local");
+var VfsLocal = require("@pylonide/vfs-local");
 var Search = require("./search");
 
 var basePath = __dirname;

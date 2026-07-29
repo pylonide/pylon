@@ -670,8 +670,27 @@ handler.analyze = function(value, ast, callback) {
         scopeAnalyzer(rootScope, ast);
     }
 
-    callback(markers.concat(jshintMarkers));
+    // The markers above carry treehugger positions, whose lines are 1-based, whereas
+    // ACE rows -- and the jshint markers concatenated below, which normalise via
+    // `warning.line-1` -- are 0-based. Without this the two halves of the returned
+    // array used different conventions and scope_analyzer markers rendered one line
+    // below the code they refer to.
+    callback(markers.map(toZeroBasedLines).concat(jshintMarkers));
 };
+
+function toZeroBasedLines(marker) {
+    var pos = marker.pos;
+    if (!pos)
+        return marker;
+
+    marker.pos = {
+        sl: pos.sl > 0 ? pos.sl - 1 : 0,
+        el: pos.el > 0 ? pos.el - 1 : 0,
+        sc: pos.sc,
+        ec: pos.ec
+    };
+    return marker;
+}
 
 /**
  * Determine if any callbacks in the current call
@@ -823,23 +842,30 @@ handler.getVariablePositions = function(doc, fullAst, cursorPos, currentNode, ca
     var length = pos.ec - pos.sc;
     
     // if the annotation cant be found we will skip this to avoid null ref errors
+    // treehugger lines are 1-based; both consumers (jumptodef, and the
+    // "variableLocations" emitter in worker.js) feed these straight into
+    // SyntaxDetector.regionToPos, which works in 0-based ACE row space.
+    function toAceRow(line) {
+        return line > 0 ? line - 1 : 0;
+    }
+
     v && v.declarations.forEach(function(node) {
          if(node !== currentNode[0]) {
             var pos = node.getPos();
-            declarations.push({column: pos.sc, row: pos.sl});
+            declarations.push({column: pos.sc, row: toAceRow(pos.sl)});
         }
     });
-    
+
     v && v.uses.forEach(function(node) {
         if(node !== currentNode) {
             var pos = node.getPos();
-            uses.push({column: pos.sc, row: pos.sl});
+            uses.push({column: pos.sc, row: toAceRow(pos.sl)});
         }
     });
     callback({
         length: length,
         pos: {
-            row: pos.sl,
+            row: toAceRow(pos.sl),
             column: pos.sc
         },
         others: declarations.concat(uses),

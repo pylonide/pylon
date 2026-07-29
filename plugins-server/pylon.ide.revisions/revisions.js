@@ -252,8 +252,11 @@ module.exports = function setup(options, imports, register) {
                 return callback(null, revObj);
 
             Async.whilst(
-                function () {
-                    return lineCount < lines.length && !error;
+                // async >= 3 requires an asynchronous test function; passing the
+                // synchronous v2-style predicate here made whilst() wait forever for
+                // a callback that never came, so extractRevisions never returned.
+                function (test) {
+                    test(null, lineCount < lines.length && !error);
                 },
                 function (next) {
                     var line = lines[lineCount];

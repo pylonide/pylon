@@ -23,6 +23,8 @@ module.exports = function setup(options, imports, register) {
         shell: 'bash',
         server: server,
         localOnly: options.localOnly,
+        session: imports.session,
+        authTimeout: 10000, // ms a connection may stay unauthenticated
         syncSession: true,
         sessionTimeout: 3600 // in seconds
     });

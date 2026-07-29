@@ -4,7 +4,7 @@ var assert = require("assert");
 var EventEmitter = require("events").EventEmitter;
 var ProcessManager = require("./process_manager");
 var shell = require("../pylon.run.shell/shell");
-var vfsLocal = require("vfs-local");
+var vfsLocal = require("@pylonide/vfs-local");
 
 module.exports = {
 
