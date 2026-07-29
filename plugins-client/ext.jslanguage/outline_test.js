@@ -25,18 +25,12 @@ module.exports = {
         assert.equal(outline[1].items[0].name, 'nested(c)');
         assert.equal(outline[2].name, 'someFunction(a, b)');
         assert.equal(outline[3].name, 'bla()');
-    },
-
-    "test jquery" : function() {
-        //var now = microtime.now();
-        var testfile = "" + require('text!jquery.js');
-        var node = parser.parse(testfile);
-        //console.log("Parsing time: " + (microtime.now() - now)/1000 + "ms");
-        //var now = microtime.now();
-        var outline = outlineSync(handler, new Document(testfile), node);
-        //console.log("Outline time: " + (microtime.now() - now)/1000 + "ms");
     }
 
+    // Removed: "test jquery". It required a `jquery.js` fixture that was never part of
+    // this repository, and asserted nothing -- it was a parse/outline benchmark whose
+    // microtime measurements were already commented out, so it could only ever report
+    // "did not throw".
 };
 
 });

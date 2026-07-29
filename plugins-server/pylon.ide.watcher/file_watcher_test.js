@@ -3,7 +3,7 @@
 var assert = require("assert");
 var FileWatcher = require("./file_watcher");
 var execFile = require("child_process").execFile;
-var localFs = require("vfs-local");
+var localFs = require("@pylonide/vfs-local");
 var fs = require("fs");
 
 var base = __dirname + "/assets";

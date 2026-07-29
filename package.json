@@ -61,6 +61,8 @@
     "rimraf": "~6.1.0",
     "@xmldom/xmldom": "~0.9.8",
     "xpath": "~0.0.27",
+    "mocha": "~11.7.6",
+    "sinon": "~22.1.0",
     "typescript": "~7.0.2"
   },
   "repository": {

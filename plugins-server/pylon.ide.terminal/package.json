@@ -9,7 +9,8 @@
         "consumes": [
             "http",
             "ide",
-            "log"
+            "log",
+            "session"
         ]
     }
 }

@@ -4,9 +4,8 @@ var assert = require("assert");
 var sinon = require("sinon");
 var Path = require("path");
 var RevisionsModule = require("../revisions");
-var rimraf = require("rimraf");
 var Diff_Match_Patch = require("../diff_match_patch");
-var VfsLocal = require("vfs-local");
+var VfsLocal = require("@pylonide/vfs-local");
 var Fs = require("fs");
 var util = require('util');
 
@@ -14,8 +13,9 @@ var Diff = new Diff_Match_Patch();
 
 var BASE_URL = "/sergi/node_chat";
 
+// Path.existsSync was removed from the path module in node 0.8; it lives on fs.
 var assertPath = function(path, shouldExist, message) {
-    assert.ok(Path.existsSync(path) == shouldExist, message || "");
+    assert.ok(Fs.existsSync(path) == shouldExist, message || "");
 };
 
 var sampleData = Fs.readFileSync(Path.join(__dirname, "revobj.tst"), "utf8");
@@ -72,7 +72,8 @@ module.exports = {
     tearDown: function(next) {
         Fs.unlink(___dirname + "/test_saving.txt", function(){});
         var revPath = Path.join(___dirname, ".c9revisions");
-        rimraf(revPath, function(err) {
+        // rimraf became promise-only in v4; fs.rm covers this natively since node 14.
+        Fs.rm(revPath, { recursive: true, force: true }, function(err) {
             if (!err)
                 next();
             else
@@ -266,7 +267,7 @@ module.exports = {
                         assert.ok(!err, err);
 
                         //assert.equal(data2.path, leafName);
-                        assert.ok(Path.existsSync(revPath));
+                        assert.ok(Fs.existsSync(revPath));
 
                         var contents = Fs.readFileSync(revPath, "utf8");
                         var lines = contents.split(/\n/);
@@ -363,7 +364,7 @@ module.exports = {
     "test retrieve revision for a new file [flow]": function(next) {
         var revPath = Path.join(___dirname, ".c9revisions");
         var savePath = Path.join(revPath, "package.json.c9save");
-        if (Path.existsSync(savePath))
+        if (Fs.existsSync(savePath))
             Fs.unlinkSync(savePath);
 
         assertPath(savePath, false, "Revisions file shouldn't be there");

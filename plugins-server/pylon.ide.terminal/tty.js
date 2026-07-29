@@ -30,6 +30,14 @@ function Server(conf) {
   this.init();
 }
 
+// NOTE: engine.io's attach() (see Server above) caches the HTTP server's 'request'
+// listeners, removes them, and only delegates to them for URLs outside its own path.
+// Connect -- and therefore connect.session and any auth middleware -- is NOT in the
+// request path for this endpoint. Every engine.io endpoint mounted on the shared HTTP
+// server must authenticate itself at the application layer; see handleConnection here
+// and pylon.socket's handling of the smith.io 'attach' message. The peer-address test
+// in initLocal is defence in depth only: behind a reverse proxy on the same host every
+// client presents the proxy's address and therefore looks local.
 Server.prototype.init = function() {
   this.init = function() {};
   if (this.conf.localOnly) this.initLocal();
@@ -40,11 +48,17 @@ Server.prototype.initLocal = function() {
   var self = this;
   var io = this.io;
 
-  this.warning('Only accepting local connections.'),
+  this.warning('Only accepting local connections.');
   io.on('connection', function(socket) {
     var address = socket.request.connection.remoteAddress;
     if (address !== '127.0.0.1' && address !== '::1') {
       self.log('Attempted connection from %s. Refused.', address);
+      try {
+        socket.close();
+      } catch (e) {
+        ;
+      }
+      return;
     }
     else return self.handleConnection(socket);
   });
@@ -60,13 +74,88 @@ Server.prototype.initIO = function() {
 };
 
 Server.prototype.handleConnection = function(socket) {
-  var session = new Session(this, socket);
+  var self = this
+    , conf = this.conf
+    , session = null
+    , authenticating = false
+    , authTimer = null;
+
+  function clearAuthTimer() {
+    if (!authTimer) return;
+    clearTimeout(authTimer);
+    authTimer = null;
+  }
+
+  function refuse(reason) {
+    clearAuthTimer();
+    self.warning('Refused connection from %s: %s.',
+      socket.request.connection.remoteAddress, reason);
+    try {
+      socket.send(JSON.stringify({cmd: 'authFAIL', error: 'Authentication required.'}));
+      socket.close();
+    } catch (e) {
+      ;
+    }
+  }
+
+  // A connection is inert until it presents a valid IDE session id -- see the note
+  // in Server.prototype.init about why connect's session/auth middleware is not in
+  // the request path for this endpoint. No pty is spawned and no Session object is
+  // created (which would otherwise allow resuming another client's terminals via
+  // Session.prototype.uid) before that handshake completes.
+  authTimer = setTimeout(function() {
+    authTimer = null;
+    if (!session) refuse('authentication timeout');
+  }, conf.authTimeout || 10000);
+
+  function authenticate(data) {
+    if (authenticating)
+      return refuse('unexpected message during authentication');
+
+    if (!data || data.cmd !== 'auth')
+      return refuse('expected auth as the first message');
+
+    if (!conf.session)
+      return refuse('no session store configured');
+
+    if (typeof data.sessionId !== 'string' || !data.sessionId)
+      return refuse('missing session id');
+
+    authenticating = true;
+
+    conf.session.get(data.sessionId, function(err, sess) {
+      authenticating = false;
+
+      if (err || !sess || !(sess.uid || sess.anonid))
+        return refuse('invalid session');
+
+      clearAuthTimer();
+
+      // Acknowledge before creating the Session, so the client is unblocked before
+      // any resume-triggered 'sync' message reaches it.
+      socket.send(JSON.stringify({cmd: 'authACK'}));
+
+      session = new Session(self, socket);
+    });
+  }
 
   // XXX Possibly wrap socket events from inside Session
   // constructor, and do: session.on('create')
   // or session.on('create term').
   socket.on('message', function(data) {
-    data = JSON.parse(data);
+    try {
+      data = JSON.parse(data);
+    } catch (e) {
+      return refuse('malformed message');
+    }
+
+    if (!session) {
+      return authenticate(data);
+    }
+
+    if (data.cmd == 'auth') {
+      return; // already authenticated
+    }
     if (data.cmd == 'data') {
       return session.handleData(data.id, data.payload);
     }
@@ -90,12 +179,13 @@ Server.prototype.handleConnection = function(socket) {
     if (data.cmd == 'request paste') {
       return session.handlePaste();
     }
-    
+
     return console.log("Unknown message received: %s", JSON.stringify(data));
-    
+
   });
   socket.on('close', function() {
-    return session.handleDisconnect();
+    clearAuthTimer();
+    if (session) return session.handleDisconnect();
   });
 };
 

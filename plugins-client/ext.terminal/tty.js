@@ -86,6 +86,33 @@ define(function(require) {
         tty.socket = new ENGINE_IO_Socket();
       }
 
+      // The terminal socket is authenticated at the application layer: engine.io is
+      // attached to the raw HTTP server, so the session cookie never reaches the
+      // server's middleware. Hold everything the UI produces until the server has
+      // acknowledged our session id, so a terminal opened immediately after connect
+      // is not dropped.
+      var ide = require("core/ide");
+      var authQueue = [];
+      var rawSend = tty.socket.send.bind(tty.socket);
+
+      tty.authed = false;
+      tty.authFailed = false;
+
+      tty.socket.send = function (msg) {
+        if (tty.authed) return rawSend(msg);
+        authQueue.push(msg);
+      };
+
+      tty.authenticate = function () {
+        tty.authed = false;
+        rawSend(JSON.stringify({cmd: 'auth', sessionId: ide.sessionId}));
+      };
+
+      tty.onAuthenticated = function () {
+        tty.authed = true;
+        while (authQueue.length) rawSend(authQueue.shift());
+      };
+
       tty.windows = [];
       tty.terms = {};
 
@@ -134,17 +161,32 @@ define(function(require) {
       }
 
       tty.socket.on('open', function () {
-        tty.reset();
+        tty.authenticate();
       });
 
       tty.socket.on('close', function (reason) {
+        tty.authed = false;
+        if (tty.authFailed) {
+          return console.error("Terminal authentication failed. Reload the IDE to retry.");
+        }
         console.log("Disconnect: " + reason + ". Reconnecting...");
         tty.socket.open();
       });
 
       tty.socket.on('message', function (data) {
         data = JSON.parse(data);
-        if (data.cmd == 'data') {
+        if (data.cmd == 'authACK') {
+          tty.onAuthenticated();
+          return tty.reset();
+        }
+        else if (data.cmd == 'authFAIL') {
+          // Don't reconnect in a hot loop against a session the server won't accept.
+          tty.authFailed = true;
+          return require("core/util").alert("Terminal", "Authentication required",
+            "The terminal could not be started because your session is no longer valid. "
+            + "Please reload the IDE.");
+        }
+        else if (data.cmd == 'data') {
           if (!tty.terms[data.id]) return;
           tty.terms[data.id].write(data.payload);
         }

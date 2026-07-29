@@ -1,9 +1,18 @@
 "use strict";
+"use non-osx";
+//
+// Skipped on macOS by test/run-tests.sh. DirWatcher deliberately only emits "change"
+// for fs.watch "rename" events, so that editing a file's *contents* does not look like
+// a directory change. On Linux (inotify) a content write reports "change" and is
+// correctly ignored, but on darwin (FSEvents) the same write reports "rename", so
+// "test file changes should not trigger an event" fails there by platform semantics
+// rather than by defect -- and, being thrown from inside an event handler, it aborted
+// the remaining tests in this file.
 
 var assert = require("assert");
 var DirWatcher = require("./dir_watcher");
 var execFile = require("child_process").execFile;
-var localFs = require("vfs-local");
+var localFs = require("@pylonide/vfs-local");
 var fs = require("fs");
 
 var base = __dirname + "/assets";

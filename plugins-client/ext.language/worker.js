@@ -357,7 +357,11 @@ function asyncParForEach(array, fn, callback) {
         var part = SyntaxDetector.getContextSyntaxPart(_self.doc, rowColPos, _self.$language);
         var language = part.language;
         var posInPart = SyntaxDetector.posToRegion(part.region, rowColPos);
-        posInPart = {line: posInPart.row, col: posInPart.column};
+        // Callers pass 0-based ACE rows, and SyntaxDetector works in that space, but
+        // treehugger node positions are 1-based -- ast.findNode() therefore matched
+        // nothing at all for row 0 and was off by one everywhere else. Convert here,
+        // at the single boundary where positions are handed to a handler.
+        posInPart = {line: posInPart.row + 1, col: posInPart.column};
         var result;
         asyncForEach(_self.handlers, function(handler, next) {
             if (handler.handlesLanguage(language) && part.value.length < handler.getMaxFileSizeSupported()) {
