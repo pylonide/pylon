@@ -412,7 +412,10 @@ module.exports = ext.register("ext/dockpanel/dockpanel", {
     },
 
     expandBar : function(bar){
-        this.layout.expandBar(bar.cache);
+        if (bar.cache)
+            this.layout.expandBar(bar.cache);
+        else if (bar.uniqueId != null)
+            this.layout.expandBar(bar.uniqueId);
     },
 
     //@todo removal of pages

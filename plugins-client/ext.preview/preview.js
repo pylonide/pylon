@@ -167,9 +167,17 @@ module.exports = ext.register($name, {
         if (!button || !button.cache)
             return;
         var pNode = button.cache.$dockpage.$pHtmlNode;
-        if (pNode.children.length === 4) {
-            pNode.removeChild(pNode.children[2]);
-            pNode.children[2].style.top = 0;
+        // Find and hide the caption element by class instead of
+        // removing by index, which could destroy the iframe.
+        for (var i = 0; i < pNode.children.length; i++) {
+            var child = pNode.children[i];
+            if (child.className && child.className.indexOf('docktab_page_caption') !== -1) {
+                child.style.display = 'none';
+                // Expand the content area below to fill the space
+                var next = pNode.children[i + 1];
+                if (next) next.style.top = '0';
+                break;
+            }
         }
     },
 
@@ -182,10 +190,10 @@ module.exports = ext.register($name, {
         })[0];
         if (page)
             this.live.value = page.$doc.getValue();
-        var iframe = this.getIframe().$ext;
-        if (!iframe || !iframe.contentWindow)
+        var frm = this.getIframe();
+        if (!frm || !frm.$browser || !frm.$browser.contentWindow)
             return;
-        var html = iframe.contentWindow.document.getElementsByTagName("html")[0];
+        var html = frm.$browser.contentWindow.document.getElementsByTagName("html")[0];
         html.innerHTML = this.live.value;
     },
 
@@ -195,8 +203,8 @@ module.exports = ext.register($name, {
         dock.expandBar(bar);
         dock.showSection(this.$name, this.$button);
         this.hidePageHeader();
-        var frmPreview = this.getIframe();
-        if (frmPreview.$ext.src !== url)
+        var frm = this.getIframe();
+        if (frm && frm.$browser && frm.$browser.src !== url)
             this.refresh(url);
         this.live = live;
     },
@@ -207,9 +215,10 @@ module.exports = ext.register($name, {
     },
 
     refresh: function (url) {
-        var frmPreview = this.getIframe();
+        var frm = this.getIframe();
+        if (!frm) return;
         url = url || txtPreview.getValue();
-        frmPreview.$ext.src = url;
+        frm.$browser.src = url;
         txtPreview.setValue(url);
         settings.save();
     },
@@ -222,10 +231,45 @@ module.exports = ext.register($name, {
 
     init: function() {
         ppc.importCssString(this.css || "");
+
+        // Size the browser iframe to fill the page below the toolbar.
+        // PPC page elements don't support flexbox so we calculate
+        // the height dynamically based on the docktab container.
+        var fixSize = function() {
+            if (typeof frmPreview === 'undefined' || !frmPreview.$ext ||
+                typeof pgPreview === 'undefined' || !pgPreview.$ext) {
+                setTimeout(fixSize, 200);
+                return;
+            }
+
+            var iframe = frmPreview.$ext;
+            iframe.style.border = 'none';
+            iframe.style.width = '100%';
+
+            var resize = function() {
+                // Find the docktab ancestor to get the available height
+                var el = pgPreview.$ext;
+                while (el && !(el.className || '').match(/docktab/)) {
+                    el = el.parentElement;
+                }
+                if (!el) return;
+                var availH = el.getBoundingClientRect().height;
+                // 36px for the toolbar bar
+                iframe.style.height = Math.max(0, availH - 36 - 28) + 'px';
+            };
+
+            resize();
+            // Re-size when window resizes
+            window.addEventListener('resize', resize);
+            // Also periodically check in case dock panel is resized
+            setInterval(resize, 500);
+        };
+        fixSize();
     },
 
     getIframe: function() {
-        return pgPreview.selectSingleNode("iframe");
+        // frmPreview is the PPC browser element defined in preview.xml
+        return typeof frmPreview !== 'undefined' ? frmPreview : null;
     },
 
     enable : function() {

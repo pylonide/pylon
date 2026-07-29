@@ -463,7 +463,7 @@ ppc.getVerBorders = function(oHtml){
  */
 ppc.getWidthDiff = function(oHtml){
     if (ppc.hasFlexibleBox 
-      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
+      && ppc.getStyle(oHtml, "boxSizing") != "content-box")
         return 0;
     
     return Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingLeft")) || 0)
@@ -479,7 +479,7 @@ ppc.getWidthDiff = function(oHtml){
  */
 ppc.getHeightDiff = function(oHtml){
     if (ppc.hasFlexibleBox 
-      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
+      && ppc.getStyle(oHtml, "boxSizing") != "content-box")
         return 0;
     
     return Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingTop")) || 0)
@@ -496,7 +496,7 @@ ppc.getHeightDiff = function(oHtml){
  */
 ppc.getDiff = function(oHtml){
     if (ppc.hasFlexibleBox 
-      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
+      && ppc.getStyle(oHtml, "boxSizing") != "content-box")
         return [0,0];
     
     return [Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingLeft")) || 0)

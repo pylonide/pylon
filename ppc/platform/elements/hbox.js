@@ -179,9 +179,14 @@ ppc.vbox = function(struct, tagName){
             this.$resize();
     }
     
+    function getFlexDirection(isVbox, isReverse) {
+        if (isVbox) return isReverse ? "column-reverse" : "column";
+        return isReverse ? "row-reverse" : "row";
+    }
+
     this.$propHandlers["reverse"]  = function(value){
         if (ppc.hasFlexibleBox)
-            this.$int.style[ppc.CSSPREFIX + "BoxDirection"] = value ? "reverse" : "normal";
+            this.$int.style.flexDirection = getFlexDirection(this.$vbox, value);
         else {
             //@todo
         }
@@ -196,9 +201,10 @@ ppc.vbox = function(struct, tagName){
     };
     
     this.$propHandlers["pack"]  = function(value){
-        if (ppc.hasFlexibleBox)
-            this.$int.style[ppc.CSSPREFIX + "BoxPack"] = value || "start";
-        else if (this.$amlLoaded) {
+        if (ppc.hasFlexibleBox) {
+            var packMap = {start: "flex-start", center: "center", end: "flex-end"};
+            this.$int.style.justifyContent = packMap[value] || "flex-start";
+        } else if (this.$amlLoaded) {
             if (this.$vbox) {
                 this.$int.style.verticalAlign = value == "center" ? "middle" : (value == "end" ? "bottom" : "top");
             }    
@@ -222,7 +228,8 @@ ppc.vbox = function(struct, tagName){
     
     this.$propHandlers["align"] = function(value){
         if (ppc.hasFlexibleBox) {
-            this.$int.style[ppc.CSSPREFIX + "BoxAlign"] = value || "stretch";
+            var alignMap = {stretch: "stretch", start: "flex-start", center: "center", end: "flex-end"};
+            this.$int.style.alignItems = alignMap[value] || "stretch";
             
             if (ppc.isGecko)
                 this.$int.style.overflow = "visible";
@@ -245,14 +252,10 @@ ppc.vbox = function(struct, tagName){
                     continue;
 
                 //(this[size] || this.anchors || (this.$vbox ? this.top && this.bottom : this.left && this.right)
-                if (stretch && !node[size]) //(node.$altExt || 
-                    node.$ext.style[size] = ppc.isGecko && (this.flex || node.flex) 
-                        ? (isInFixed ? "1px" : "auto")
-                        : (ppc.isWebkit && input[node.$ext.tagName] 
-                            ? "100%" 
-                            : (false && ppc.isWebkit && node[this.$vbox ? "minwidth" : "minheight"] && this.flex //nasty bug fix
-                                ? "0px"
-                                : "auto"));//(ppc.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
+                if (stretch && !node[size]) //(node.$altExt ||
+                    node.$ext.style[size] = (input[node.$ext.tagName]
+                            ? "100%"
+                            : "auto");//(ppc.isWebkit && node.flex && size == "height" ? "100%" : "auto"); // && (this.flex && node.flex)
                 else if (node[size])
                     handlers["true"][size].call(node, node[size]);
             }
@@ -333,7 +336,7 @@ ppc.vbox = function(struct, tagName){
         if (ppc.hasFlexibleBox) {
             if (this.$altExt)
                 this.$altExt.style.display = e.value 
-                    ? (ppc.isGecko ? MOZSTACK : ppc.CSSPREFIX2 + "-box") 
+                    ? "flex"
                     : "none";
             return;
         }
@@ -415,10 +418,10 @@ ppc.vbox = function(struct, tagName){
                         this.$altExt = this.$ext.ownerDocument.createElement("div");
                         this.parentNode.$int.replaceChild(this.$altExt, this.$ext);
                         this.$altExt.appendChild(this.$ext);
-                        this.$altExt.style[ppc.CSSPREFIX + "BoxSizing"] = "border-box";
-                        this.$altExt.style.display = ppc.CSSPREFIX2 + "-box";
-                        this.$altExt.style[ppc.CSSPREFIX + "BoxOrient"] = "vertical";
-                        this.$ext.style[ppc.CSSPREFIX + "BoxFlex"]   = 1;
+                        this.$altExt.style.boxSizing = "border-box";
+                        this.$altExt.style.display = "flex";
+                        this.$altExt.style.flexDirection = "column";
+                        this.$ext.style.flex = "1";
                         var size = this.parentNode.$vbox ? "height" : "width";
                         //var osize = this.parentNode.$vbox ? "width" : "height";
                         
@@ -428,11 +431,11 @@ ppc.vbox = function(struct, tagName){
                         }
                     }
                     
-                    (this.$altExt || this.$ext).style[ppc.CSSPREFIX + "BoxFlex"] = parseInt(value) || 1;
+                    (this.$altExt || this.$ext).style.flex = String(parseInt(value) || 1);
                 }
                 else if (this.$altExt) {
                     this.parentNode.$int.replaceChild(this.$ext, this.$altExt);
-                    this.$ext.style[ppc.CSSPREFIX + "BoxFlex"] = "";
+                    this.$ext.style.flex = "";
                     if (ppc.isGecko)
                         this.$ext.style.overflow = "";
                     delete this.$altExt;
@@ -532,9 +535,9 @@ ppc.vbox = function(struct, tagName){
                     var doc = amlNode.$ext.ownerDocument;
                     amlNode.$altExt = doc.createElement("div");
                     amlNode.parentNode.$int.replaceChild(amlNode.$altExt, amlNode.$ext);
-                    amlNode.$altExt.style[ppc.CSSPREFIX + "BoxSizing"] = "border-box";
+                    amlNode.$altExt.style.boxSizing = "border-box";
                     amlNode.$altExt.appendChild(amlNode.$ext);
-                    
+
                     if (ppc.isWebkit) {
                         var d = ppc.getDiff(amlNode.$ext);
                         //amlNode.$altExt.style.padding = "0 " + d[0] + "px " + d[1] + "px 0";
@@ -548,10 +551,10 @@ ppc.vbox = function(struct, tagName){
                         amlNode.$ext.style.position = "relative";
                     }
                     else {
-                        amlNode.$altExt.style.display = ppc.CSSPREFIX2 + "-box";
-                        amlNode.$altExt.style[ppc.CSSPREFIX + "BoxOrient"] = "horizontal";
-                        amlNode.$altExt.style[ppc.CSSPREFIX + "BoxAlign"]  = "stretch";
-                        amlNode.$ext.style[ppc.CSSPREFIX + "BoxFlex"] = 1;
+                        amlNode.$altExt.style.display = "flex";
+                        amlNode.$altExt.style.flexDirection = "row";
+                        amlNode.$altExt.style.alignItems = "stretch";
+                        amlNode.$ext.style.flex = "1";
                     }
                 }
                 else {
@@ -562,7 +565,7 @@ ppc.vbox = function(struct, tagName){
                         //amlNode.$ext.style.position = "relative"; //@todo undo
                 }
                 
-                amlNode.$ext.style[ppc.CSSPREFIX + "BoxSizing"] = "border-box";
+                amlNode.$ext.style.boxSizing = "border-box";
             }
             else {
                 if (this.$vbox) {
@@ -681,7 +684,7 @@ ppc.vbox = function(struct, tagName){
             }
             
             if (ppc.hasFlexibleBox) {
-                amlNode.$ext.style[ppc.CSSPREFIX + "BoxSizing"] = "";
+                amlNode.$ext.style.boxSizing = "";
                 
                 if (ppc.isGecko) {
                     this.$int.style.overflow = "visible";
@@ -747,7 +750,7 @@ ppc.vbox = function(struct, tagName){
     this.addEventListener("DOMNodeInserted", function(e){
         if (e.currentTarget == this) {
             if (this.visible)
-                this.$ext.style.display = ppc.CSSPREFIX2 + "-box"; //Webkit issue
+                this.$ext.style.display = "flex";
             return;
         }
         
@@ -767,7 +770,7 @@ ppc.vbox = function(struct, tagName){
 
     function myVisibleHandler(e){
         if (e.value)
-            this.$int.style.display = ppc.CSSPREFIX2 + "-box";
+            this.$int.style.display = "flex";
     }
     
     function myHeightHandler(e){
@@ -815,7 +818,7 @@ ppc.vbox = function(struct, tagName){
           && "hbox|vbox".indexOf(this.parentNode.localName) > -1)) {
             this.$int.style.width = "100%";
             this.$int.style.height = "100%";
-            this.$int.style.display = "-webkit-box";
+            this.$int.style.display = "flex";
         }
         else if (!ppc.hasFlexibleBox && this.$vbox) {
             this.$int.style.display = ppc.INLINE;
@@ -823,17 +826,17 @@ ppc.vbox = function(struct, tagName){
                 this.$int.style.zoom = 1;
             this.$int.style.width   = "100%";
         }
-        
+
         if (ppc.hasFlexibleBox) {
-            this.$display = "-" + ppc.CSSPREFIX +"-box";
-            
-            this.$int.style.display = ppc.CSSPREFIX2 + "-box";
-            this.$int.style[ppc.CSSPREFIX + "BoxOrient"] = this.localName == "hbox" ? "horizontal" : "vertical";
-            if (ppc.isGecko)  { //!webkit
-                this.$int.style[ppc.CSSPREFIX + "BoxSizing"] = "border-box";
+            this.$display = "flex";
+
+            this.$int.style.display = "flex";
+            this.$int.style.flexDirection = getFlexDirection(this.$vbox, this.reverse);
+            if (ppc.isGecko) {
+                this.$int.style.boxSizing = "border-box";
                 this.$int.style.verticalAlign = "top";
             }
-            this.$int.style[ppc.CSSPREFIX + "BoxAlign"]  = "stretch";
+            this.$int.style.alignItems = "stretch";
             
             this.addEventListener("prop.visible", myVisibleHandler);
         }
