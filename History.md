@@ -1,3 +1,9 @@
+v2.12.1
+=======
+* Critical fix for node-pty permissions
+* Postinstall verified to work correctly if pln is part of a dependency
+* Ace build patch to drop legacy TypeScript dependency
+
 v2.12.0
 =======
 * Cutting legacy Node.JS support, new minimum node requirement v22.22.2
