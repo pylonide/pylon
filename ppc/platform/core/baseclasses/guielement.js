@@ -690,7 +690,11 @@ ppc.GuiElement.propHandlers = {
         else { //if (ppc.isTrue(value)) default
             if (this.$ext) {
                 this.$ext.style.display = ""; //Some form of inheritance detection
-                if (!this.$ext.offsetHeight)
+                //Probe the computed style instead of offsetHeight; this
+                //still detects css hidden elements, but without forcing a
+                //synchronous layout pass for every element that is shown
+                var cssDisplay = ppc.getStyle(this.$ext, "display");
+                if (!cssDisplay || cssDisplay == "none")
                     this.$ext.style.display = this.$display || "block";
             }
             

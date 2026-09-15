@@ -452,8 +452,14 @@ ppc.AmlNode = function(){
         }
 
         var doc = this.nodeType == this.NODE_DOCUMENT ? this : this.ownerDocument;
-        if (!doc || doc.$domParser.$isPaused(this))
+        if (!doc || doc.$domParser.$isPaused(this)) {
+            //Parsing of this element is paused; remember the insert so the
+            //parser can signal the node once parsing continues (the second
+            //parse pass only walks the nodes it created itself)
+            if (doc)
+                doc.$domParser.$pendingInserts.pushUnique(amlNode);
             return amlNode;
+        }
 
         // Don't update the tree if this is a doc fragment or if this element is not inited yet
         if (this.nodeType == this.NODE_DOCUMENT_FRAGMENT || !this.$amlLoaded)

@@ -42,6 +42,7 @@ ppc.DOMParser.prototype = new (function(){
     this.preserveWhiteSpace = false; //@todo ppc3.0 whitespace issue
 
     this.$waitQueue  = {}
+    this.$pendingInserts = [];
     this.$callCount  = 0;
 
     // privates
@@ -144,6 +145,9 @@ ppc.DOMParser.prototype = new (function(){
 
         //First pass - Node creation
         var nodes, nodelist = {}, prios = [], _self = this;
+        //Remember where the newly created nodes start, so that the second
+        //pass of include parses can be limited to just those nodes
+        var newFrom = amlNode.childNodes.length;
         var recur;
         (recur = function(amlNode, nodes){
             var cL, newNode, node, nNodes,
@@ -183,6 +187,9 @@ ppc.DOMParser.prototype = new (function(){
             amlNode.firstChild = cNodes[0];
             amlNode.lastChild  = cNodes[cL];
         })(amlNode, xmlNode.childNodes);
+
+        if (options.include)
+            options.$createdNodes = amlNode.childNodes.slice(newFrom);
 
         if (options.include && rest.length) {
             var index = n.length - 1;
@@ -277,6 +284,32 @@ ppc.DOMParser.prototype = new (function(){
         else
             this.$parseState(amlNode, options || {});
 
+        //Signal nodes that were appended while parsing was paused; the
+        //parse states above only walk the nodes they created themselves.
+        if (this.$pendingInserts.length) {
+            var pending = this.$pendingInserts.splice(0, this.$pendingInserts.length);
+            for (var pNode, anc, blocked, j = 0; j < pending.length; j++) {
+                if (!(pNode = pending[j]).parentNode)
+                    continue; //Node was removed in the meantime
+
+                anc     = pNode.parentNode;
+                blocked = false;
+                while (anc && anc.nodeType == 1) {
+                    if (this.$waitQueue[anc.$uniqueId]
+                      && this.$waitQueue[anc.$uniqueId].$shouldWait) {
+                        blocked = true;
+                        break;
+                    }
+                    anc = anc.parentNode;
+                }
+
+                if (blocked) //Still paused; retry at the next continue
+                    this.$pendingInserts.push(pNode);
+                else
+                    this.$parseState(pNode, {});
+            }
+        }
+
         delete this.$parseContext;
     }
 
@@ -305,11 +338,21 @@ ppc.DOMParser.prototype = new (function(){
         if (!options.ignoreSelf && !amlNode.$amlLoaded)
             amlNode.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
 
-        //Recursively signal non prio nodes
+        //Recursively signal non prio nodes. Include parses only walk the
+        //nodes they created themselves; re-walking the entire (possibly
+        //document sized) subtree for every piece of inserted markup makes
+        //loading quadratic. Nodes appended while parsing was paused are
+        //signalled by $continueParsing through $pendingInserts.
+        var startNodes = options.$createdNodes || amlNode.childNodes;
+        delete options.$createdNodes;
+
         (function _recur(nodes){
             var node, nNodes;
             for (var i = 0, l = nodes.length; i < l; i++) {
-                if (!(node = nodes[i]).$amlLoaded) {
+                if (!(node = nodes[i]).parentNode)
+                    continue; //Node was removed after creation
+
+                if (!node.$amlLoaded) {
                     node.dispatchEvent("DOMNodeInsertedIntoDocument"); //{relatedParent : nodes[j].parentNode}
                 }
 
@@ -317,7 +360,7 @@ ppc.DOMParser.prototype = new (function(){
                 if (!node.render && (nNodes = node.childNodes).length)
                     _recur(nNodes);
             }
-        })(amlNode.childNodes);
+        })(startNodes);
 
         if (!--this.$callCount && !options.delay)
             ppc.queue.empty();

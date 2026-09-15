@@ -433,15 +433,32 @@ ppc.getAbsolutePosition = function(o, refParent, inclSelf){
 
 //@todo its much faster to move these to browser specific files and eliminate ppc.getStyle()
 /**
+ * Retrieves the computed style declaration of an HTML element, so several
+ * properties can be read from a single style resolution instead of one
+ * ppc.getStyle() call (and computed style object) per property.
+ * @param {HTMLElement} el The element to read the styles from
+ * @returns {Object} The live computed style declaration, or an empty object
+ */
+ppc.getStyles = function(el){
+    try {
+        return el.currentStyle || window.getComputedStyle(el, "") || {};
+    }
+    catch(e) {
+        return {};
+    }
+};
+
+/**
  * Returns the distance between the border left and border right values of an element.
  * @param {HTMLElement} oHtml The element to check
  * @returns {Number} The final calculation, or 0, if there's no difference
  * @see ppc.getWidthDiff
  */
 ppc.getHorBorders = function(oHtml){
+    var cs = ppc.getStyles(oHtml);
     return Math.max(0,
-          (parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderRightWidth")) || 0));
+          (parseInt(cs.borderLeftWidth) || 0)
+        + (parseInt(cs.borderRightWidth) || 0));
 };
 
 /**
@@ -450,9 +467,10 @@ ppc.getHorBorders = function(oHtml){
  * @returns {Number} The final calculation, or 0, if there's no difference
  */
 ppc.getVerBorders = function(oHtml){
+    var cs = ppc.getStyles(oHtml);
     return Math.max(0,
-          (parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderBottomWidth")) || 0));
+          (parseInt(cs.borderTopWidth) || 0)
+        + (parseInt(cs.borderBottomWidth) || 0));
 };
 
 /**
@@ -462,14 +480,15 @@ ppc.getVerBorders = function(oHtml){
  * @see ppc.getHorBorders
  */
 ppc.getWidthDiff = function(oHtml){
+    var cs = ppc.getStyles(oHtml);
     if (ppc.hasFlexibleBox 
-      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
+      && (cs[ppc.CSSPREFIX + "BoxSizing"] || "") != "content-box")
         return 0;
     
-    return Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingLeft")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "paddingRight")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderRightWidth")) || 0));
+    return Math.max(0, (parseInt(cs.paddingLeft) || 0)
+        + (parseInt(cs.paddingRight) || 0)
+        + (parseInt(cs.borderLeftWidth) || 0)
+        + (parseInt(cs.borderRightWidth) || 0));
 };
 
 /**
@@ -478,14 +497,15 @@ ppc.getWidthDiff = function(oHtml){
  * @returns {Number} The final calculation, or 0, if there's no difference
  */
 ppc.getHeightDiff = function(oHtml){
+    var cs = ppc.getStyles(oHtml);
     if (ppc.hasFlexibleBox 
-      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
+      && (cs[ppc.CSSPREFIX + "BoxSizing"] || "") != "content-box")
         return 0;
     
-    return Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingTop")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "paddingBottom")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderBottomWidth")) || 0));
+    return Math.max(0, (parseInt(cs.paddingTop) || 0)
+        + (parseInt(cs.paddingBottom) || 0)
+        + (parseInt(cs.borderTopWidth) || 0)
+        + (parseInt(cs.borderBottomWidth) || 0));
 };
 
 /**
@@ -495,18 +515,19 @@ ppc.getHeightDiff = function(oHtml){
  * @returns {[Number]} An array containing the differences
  */
 ppc.getDiff = function(oHtml){
+    var cs = ppc.getStyles(oHtml);
     if (ppc.hasFlexibleBox 
-      && ppc.getStyle(oHtml, ppc.CSSPREFIX + "BoxSizing") != "content-box")
+      && (cs[ppc.CSSPREFIX + "BoxSizing"] || "") != "content-box")
         return [0,0];
     
-    return [Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingLeft")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "paddingRight")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderRightWidth")) || 0)),
-        Math.max(0, (parseInt(ppc.getStyle(oHtml, "paddingTop")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "paddingBottom")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "borderBottomWidth")) || 0))];
+    return [Math.max(0, (parseInt(cs.paddingLeft) || 0)
+        + (parseInt(cs.paddingRight) || 0)
+        + (parseInt(cs.borderLeftWidth) || 0)
+        + (parseInt(cs.borderRightWidth) || 0)),
+        Math.max(0, (parseInt(cs.paddingTop) || 0)
+        + (parseInt(cs.paddingBottom) || 0)
+        + (parseInt(cs.borderTopWidth) || 0)
+        + (parseInt(cs.borderBottomWidth) || 0))];
 };
 
 /**
@@ -516,10 +537,11 @@ ppc.getDiff = function(oHtml){
  * @returns {[Number]} An array containing the differences
  */
 ppc.getMargin = function(oHtml) {
-    return [(parseInt(ppc.getStyle(oHtml, "marginLeft")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "marginRight")) || 0),
-      (parseInt(ppc.getStyle(oHtml, "marginTop")) || 0)
-        + (parseInt(ppc.getStyle(oHtml, "marginBottom")) || 0)]
+    var cs = ppc.getStyles(oHtml);
+    return [(parseInt(cs.marginLeft) || 0)
+        + (parseInt(cs.marginRight) || 0),
+      (parseInt(cs.marginTop) || 0)
+        + (parseInt(cs.marginBottom) || 0)]
 };
 
 /**
@@ -528,9 +550,10 @@ ppc.getMargin = function(oHtml) {
  * @returns {Number} The final calculation
  */
 ppc.getHtmlInnerWidth = function(oHtml){
+    var cs = ppc.getStyles(oHtml);
     return (oHtml.offsetWidth
-        - (parseInt(ppc.getStyle(oHtml, "borderLeftWidth")) || 0)
-        - (parseInt(ppc.getStyle(oHtml, "borderRightWidth")) || 0));
+        - (parseInt(cs.borderLeftWidth) || 0)
+        - (parseInt(cs.borderRightWidth) || 0));
 };
 
 /**
@@ -539,9 +562,10 @@ ppc.getHtmlInnerWidth = function(oHtml){
  * @returns {Number} The final calculation
  */
 ppc.getHtmlInnerHeight = function(oHtml){
+    var cs = ppc.getStyles(oHtml);
     return (oHtml.offsetHeight
-        - (parseInt(ppc.getStyle(oHtml, "borderTopWidth")) || 0)
-        - (parseInt(ppc.getStyle(oHtml, "borderBottomWidth")) || 0));
+        - (parseInt(cs.borderTopWidth) || 0)
+        - (parseInt(cs.borderBottomWidth) || 0));
 };
 
 /**

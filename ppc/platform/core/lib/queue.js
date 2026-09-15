@@ -34,28 +34,43 @@ ppc.setZeroTimeout = !window.postMessage
         return setZeroTimeout;
     })()
   : (function() {
-        var timeouts = [];
+        var pending     = {};
+        var order       = [];
+        var lastId      = 0;
         var messageName = "zero-timeout-message";
 
         // Like setTimeout, but only takes a function argument.  There's
         // no time argument (always zero) and no arguments (you have to
         // use a closure).
         function setZeroTimeout(fn) {
-            var id = timeouts.push(fn);
+            var id = ++lastId;
+            pending[id] = fn;
+            order.push(id);
             window.postMessage(messageName, "*");
             return id;
         }
         
         setZeroTimeout.clearTimeout = function(id){
-            timeouts[id] = null;
+            //Release the callback immediately; its queue entry is skipped
+            //in handleMessage. (The previous array based implementation
+            //cleared the wrong slot, cancelling unrelated callbacks and
+            //retaining cleared closures until their message arrived.)
+            delete pending[id];
         }
 
         function handleMessage(e) {
             if (!e) e = event;
             if (e.source == window && e.data == messageName) {
                 ppc.stopPropagation(e);
-                if (timeouts.length > 0 && (t = timeouts.shift()))
-                    t();
+                var id, fn;
+                while (order.length) {
+                    fn = pending[id = order.shift()];
+                    if (fn) {
+                        delete pending[id];
+                        fn();
+                        break;
+                    }
+                }
             }
         }
 
